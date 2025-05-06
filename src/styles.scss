@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use 'assets/sakai-ng/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use 'assets/sakai-ng/demo/demo.scss';
+
+@import "primeicons/primeicons.css";
+
