@@ -3,6 +3,7 @@ import {Observable, tap} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {jwtDecode} from 'jwt-decode';
 import {Router} from '@angular/router';
+import {environment} from '../../../enviroments/enviroment';
 
 interface LoginResponse {
   token: string;
@@ -56,7 +57,7 @@ interface MensajeResponse {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth'; // Ajusta la URL según tu backend
+  private apiUrl = environment.apiUrl + '/auth';
 
   constructor(
     private http: HttpClient,
