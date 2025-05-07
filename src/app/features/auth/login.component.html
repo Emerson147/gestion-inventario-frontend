@@ -1,16 +1,17 @@
 <app-floating-configurator />
-<!-- Spiner de carga -->
-<div *ngIf="loading" class="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-70">
-  <div class="flex flex-col items-center">
-    <p-progressSpinner
-      styleClass="w-16 h-16"
-      strokeWidth="4"
-      fill="var(--surface-ground)"
-      animationDuration=".5s">
-    </p-progressSpinner>
-    <p class="text-white mt-4 text-xl">Iniciando sesión...</p>
-  </div>
-</div>
+<!--&lt;!&ndash; Spiner de carga &ndash;&gt;-->
+<!--<div *ngIf="loading" class="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-70">-->
+<!--  <div class="flex flex-col items-center">-->
+<!--    <p-progressSpinner-->
+<!--      styleClass="w-16 h-16"-->
+<!--      strokeWidth="4"-->
+<!--      fill="var(&#45;&#45;surface-ground)"-->
+<!--      animationDuration="2s">-->
+<!--    </p-progressSpinner>-->
+<!--    <p class="text-white mt-4 text-xl">Iniciando sesión...</p>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<app-gsap-spinner *ngIf="loading" message="Iniciando sesión..."></app-gsap-spinner>-->
 <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden" #loginContainer>
   <div class="flex flex-col items-center justify-center">
     <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)" #cardContainer>
@@ -58,7 +59,7 @@
             <a routerLink="/register" class="font-medium no-underline ml-2 text-right cursor-pointer text-primary register-link">¿Desea crear un nuevo usuario?</a>
           </div>
 
-          <p-button type="submit" label="Ingresar" styleClass="w-full login-button" #loginButton></p-button>
+          <p-button type="submit" label="Ingresar" styleClass="w-full login-button" [loading]="loading" #loginButton></p-button>
         </form>
       </div>
     </div>
@@ -83,3 +84,12 @@
     </div>
   </div>
 </div>
+<!-- Al final de tu template -->
+<ngx-spinner name="loginSpinner"
+             bdColor="rgba(0, 0, 0, 0.8)"
+             size="large"
+             color="#fff"
+             type="ball-scale-multiple"
+             [fullScreen]="true">
+  <p style="color: white; font-size: 18px; margin-top: 60px; font-weight: 500;">Iniciando sesión...</p>
+</ngx-spinner>

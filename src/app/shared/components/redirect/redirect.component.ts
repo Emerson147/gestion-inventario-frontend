@@ -3,7 +3,32 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-  template: '<div>Redirigiendo...</div>' // Opcional: mostrar un spinner o mensaje
+  template:  `
+    <div class="redirect-container">
+      <div class="redirect-message">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p>Redirigiendo a tu panel...</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .redirect-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: var(--surface-ground);
+    }
+    .redirect-message {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 1.2rem;
+    }
+    .pi {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+  `]
 })
 export class RedirectComponent implements OnInit {
   constructor(
@@ -15,6 +40,6 @@ export class RedirectComponent implements OnInit {
     // Redireccionar según el rol
     setTimeout(() => {
       this.authService.redirectBasedOnRole();
-    }, 100);
+    }, 2000);
   }
 }

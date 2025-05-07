@@ -11,6 +11,9 @@ import { PasswordModule } from 'primeng/password';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { MessageService } from 'primeng/api';
 import { AnimationService } from '../../core/animations/animation.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import {GsapSpinnerComponent} from '../../shared/components/gsap-spinner/gsap-spinner.component';
+import {NgxSpinnerModule, NgxSpinnerService} from 'ngx-spinner';
 
 interface LoginResponse {
   token: string;
@@ -27,7 +30,7 @@ interface LoginResponse {
   standalone: true,
   providers: [MessageService],
   imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ReactiveFormsModule,
-    AppFloatingConfigurator, ToastModule, PasswordModule, FloatLabelModule],
+    AppFloatingConfigurator, ToastModule, PasswordModule, FloatLabelModule, ProgressSpinnerModule, NgxSpinnerModule],
   templateUrl: './login.component.html',
 
 
@@ -35,6 +38,7 @@ interface LoginResponse {
 export class LoginComponent implements OnInit, AfterViewInit {
   username: string = '';
   password: string = '';
+  loading: boolean = false;
   forgotVisible: boolean = false;
 
   @ViewChild('loginForm') loginForm!: ElementRef;
@@ -50,7 +54,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private animService: AnimationService
+    private animService: AnimationService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit() {
@@ -58,6 +63,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
     if (window.location.search.includes('no-animations')) {
       this.animationsEnabled = false;
     }
+    // Mostrar el spinner de carga al iniciar
+    this.spinner.show('loginSpinner');
+    setTimeout(() => {
+      this.spinner.hide('loginSpinner');
+    }, 100);
   }
 
   ngAfterViewInit() {
@@ -82,6 +92,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    //Mostrar spinner
+    this.spinner.show('loginSpinner');
+
+    const loadingStartTime = Date.now();
+    const minLoadingTime = 2000; // Tiempo mínimo de carga en milisegundos
+
+    // this.loading = true; // Activa el spinner de carga
+
     const buttonElement = this.loginButton?.nativeElement?.querySelector('button');
     if (buttonElement && this.animationsEnabled) {
       this.animService.buttonLoadingAnimation(buttonElement);
@@ -91,37 +109,47 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.authService.login(loginRequest).subscribe({
       next: (response: LoginResponse) => {
         this.loginResponse = response;
+        // this.loading = false; // Desactiva el spinner de carga
 
-        console.log('Respuesta de login completa:', this.loginResponse);
-        console.log('Token:', this.loginResponse.token);
-        console.log('Username:', this.loginResponse.username);
-        console.log('Email:', this.loginResponse.email);
-        console.log('ID:', this.loginResponse.id);
-        console.log('Roles:', this.loginResponse.roles);
-        console.log('Tipo de token:', this.loginResponse.tokenType);
-        console.log('Refresh token:', this.loginResponse.refreshToken);
-
-        if (buttonElement && this.animationsEnabled) {
-          this.animService.buttonSuccessAnimation(buttonElement);
-        }
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: `Bienvenido ${response.username}`
-        });
+        const elapsedTime = Date.now() - loadingStartTime;
+        const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
 
         setTimeout(() => {
-          if (this.cardContainer && this.cardContainer.nativeElement && this.animationsEnabled) {
-            this.animService.successExit(this.cardContainer.nativeElement, {}, () => {
-              this.authService.redirectBasedOnRole();
-            });
-          } else {
-            this.authService.redirectBasedOnRole();
+          this.spinner.hide('loginSpinner');
+
+          console.log('Respuesta de login completa:', this.loginResponse);
+          console.log('Token:', this.loginResponse?.token);
+          console.log('Username:', this.loginResponse?.username);
+          console.log('Email:', this.loginResponse?.email);
+          console.log('ID:', this.loginResponse?.id);
+          console.log('Roles:', this.loginResponse?.roles);
+          console.log('Tipo de token:', this.loginResponse?.tokenType);
+          console.log('Refresh token:', this.loginResponse?.refreshToken);
+
+          if (buttonElement && this.animationsEnabled) {
+            this.animService.buttonSuccessAnimation(buttonElement);
           }
-        }, 1000);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: `Bienvenido ${response.username}`
+          });
+
+          setTimeout(() => {
+            if (this.cardContainer && this.cardContainer.nativeElement && this.animationsEnabled) {
+              this.animService.successExit(this.cardContainer.nativeElement, {}, () => {
+                this.authService.redirectBasedOnRole();
+              });
+            } else {
+              this.authService.redirectBasedOnRole();
+            }
+          }, 1000);
+        }, remainingTime);
       },
       error: (error) => {
+        // this.loading = false; // Desactiva el spinner de carga
+        this.spinner.hide('loginSpinner');
         if (buttonElement && this.animationsEnabled) {
           this.animService.buttonErrorAnimation(buttonElement);
         }
