@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Table, TableModule } from 'primeng/table';
@@ -20,7 +20,7 @@ import { PasswordModule } from 'primeng/password';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { User } from '../../../core/models/user.model';
-
+import { AnimationService } from '../../../core/animations/animation.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -46,7 +46,14 @@ import { User } from '../../../core/models/user.model';
   providers: [MessageService, ConfirmationService],
   templateUrl: './usuarios.component.html'
 })
-export class UsuariosComponent implements OnInit {
+export class UsuariosComponent implements OnInit, AfterViewInit {
+  @ViewChild('usuariosTable') usuariosTable!: ElementRef;
+  @ViewChild('dialogContent') dialogContent!: ElementRef;
+  @ViewChild('toolbar') toolbar!: ElementRef;
+  @ViewChildren('rowElement') rowElements!: QueryList<ElementRef>;
+  @ViewChildren('formField') formFields!: QueryList<ElementRef>;
+  @ViewChildren('actionButton') actionButtons!: QueryList<ElementRef>;
+
   users: User[] = [];
   user: User = this.getEmptyUser();
   submitted = false;
@@ -76,7 +83,8 @@ export class UsuariosComponent implements OnInit {
   constructor(
     private userService: UsuarioService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private animationService: AnimationService
   ) { }
 
   private getEmptyUser(): User {
@@ -86,13 +94,23 @@ export class UsuariosComponent implements OnInit {
       username: '',
       email: '',
       password: '',
-      roles: ['ventas'],
-      activo: true
+      activo: true,
+      roles: ['ventas']
     };
   }
 
   ngOnInit(): void {
     this.loadUsers();
+  }
+
+  ngAfterViewInit(): void {
+    // Animar la entrada de la toolbar
+    if (this.toolbar) {
+      this.animationService.headerElementsEntrance([this.toolbar.nativeElement], {
+        distance: 30,
+        delay: 0.1
+      });
+    }
   }
 
   loadUsers(): void {
@@ -110,6 +128,27 @@ export class UsuariosComponent implements OnInit {
         
         console.log('Usuarios cargados:', this.users);
         this.loading = false;
+
+        // Animar la tabla después de cargar los datos
+        setTimeout(() => {
+          if (this.usuariosTable) {
+            this.animationService.cardEntrance(this.usuariosTable.nativeElement, {
+              duration: 0.5,
+              delay: 0.2
+            });
+
+            // Animar las filas
+            if (this.rowElements) {
+              const rowElementsArray = this.rowElements.map(item => item.nativeElement);
+              this.animationService.listItemsEntrance(rowElementsArray, {
+                stagger: 0.05,
+                direction: 'up',
+                distance: 10,
+                delay: 0.3
+              });
+            }
+          }
+        }, 100);
       },
       error: (error: any) => {
         this.showError('No se pudieron cargar los usuarios', error);
@@ -132,11 +171,33 @@ export class UsuariosComponent implements OnInit {
     this.submitted = false;
     this.userDialog = true;
     this.editMode = false;
+    
+    // Animar la apertura del diálogo después de que se muestre
+    setTimeout(() => {
+        // Animar los campos del formulario dentro del diálogo
+        const formFields = document.querySelectorAll('.p-dialog .flex.flex-col.gap-6 > div') as NodeListOf<HTMLElement>;
+        if (formFields.length) {
+          this.animationService.formFieldsEntrance(Array.from(formFields), {
+            stagger: 0.1,
+            direction: 'left',
+            delay: 0.3
+          });
+        }
+    }, 100);
   }
 
   hideDialog(): void {
-    this.userDialog = false;
-    this.submitted = false;
+    // Animar la salida del diálogo
+    const dialogElement = document.querySelector('.p-dialog') as HTMLElement;
+    if (dialogElement) {
+      this.animationService.dialogExit(dialogElement, {}, () => {
+        this.userDialog = false;
+        this.submitted = false;
+      });
+    } else {
+      this.userDialog = false;
+      this.submitted = false;
+    }
   }
 
   editUser(user: User): void {
@@ -146,10 +207,27 @@ export class UsuariosComponent implements OnInit {
       ...user, 
       password: '' };
 
-      this.editMode = true;
-      this.userDialog = true;
+    this.editMode = true;
+    this.userDialog = true;
+    
+    // Animar la apertura del diálogo después de que se muestre
+    setTimeout(() => {
+      const dialogElement = document.querySelector('.p-dialog') as HTMLElement;
+      if (dialogElement) {
+        this.animationService.dialogEntrance(dialogElement);
+        
+        // Animar los campos del formulario dentro del diálogo
+        const formFields = document.querySelectorAll('.p-dialog .flex.flex-col.gap-6 > div') as NodeListOf<HTMLElement>;
+        if (formFields.length) {
+          this.animationService.formFieldsEntrance(Array.from(formFields), {
+            stagger: 0.1,
+            direction: 'left',
+            delay: 0.3
+          });
+        }
+      }
+    }, 100);
   }
-
 
   saveUser(): void {
     this.submitted = true;
@@ -162,6 +240,14 @@ export class UsuariosComponent implements OnInit {
         summary: 'Formulario incompleto',
         detail: 'Por favor complete todos los campos requeridos correctamente'
       });
+      
+      // Animar sacudida al formulario cuando hay error
+      const formElement = document.querySelector('.p-dialog .flex.flex-col.gap-6') as HTMLElement;
+      if (formElement) {
+        this.animationService.shakeElement(formElement, {
+          intensity: 0.5
+        });
+      }
       return;
     }
 
@@ -172,6 +258,14 @@ export class UsuariosComponent implements OnInit {
         summary: 'Formulario incompleto',
         detail: 'La contraseña es obligatoria para nuevos usuarios'
       });
+      
+      // Animar campo de contraseña
+      const passwordField = document.getElementById('password')?.closest('div') as HTMLElement;
+      if (passwordField) {
+        this.animationService.shakeElement(passwordField, {
+          intensity: 0.5
+        });
+      }
       return;
     }
 
@@ -183,6 +277,14 @@ export class UsuariosComponent implements OnInit {
           summary: 'Contraseña inválida',
           detail: 'La contraseña debe tener al menos 8 caracteres'
         });
+        
+        // Animar campo de contraseña
+        const passwordField = document.getElementById('password')?.closest('div') as HTMLElement;
+        if (passwordField) {
+          this.animationService.shakeElement(passwordField, {
+            intensity: 0.5
+          });
+        }
         return;
       }
 
@@ -192,8 +294,22 @@ export class UsuariosComponent implements OnInit {
           summary: 'Contraseña inválida',
           detail: 'La contraseña debe contener al menos: un número, una minúscula, una mayúscula y un carácter especial'
         });
+        
+        // Animar campo de contraseña
+        const passwordField = document.getElementById('password')?.closest('div') as HTMLElement;
+        if (passwordField) {
+          this.animationService.shakeElement(passwordField, {
+            intensity: 0.5
+          });
+        }
         return;
       }
+    }
+
+    // Animar botón de guardar cuando se hace clic
+    const saveButton = document.querySelector('.p-dialog-footer button:last-child') as HTMLElement;
+    if (saveButton) {
+      this.animationService.buttonLoadingAnimation(saveButton);
     }
 
     // Si la contraseña está vacía en modo edición, la eliminamos
@@ -208,6 +324,12 @@ export class UsuariosComponent implements OnInit {
       const userId = this.user.id;
       if (!userId) {
         this.showError('No se pudo determinar el ID del usuario');
+        
+        // Animar botón de guardar con error
+        if (saveButton) {
+          this.animationService.buttonErrorAnimation(saveButton);
+        }
+        
         this.loading = false;
         return;
       }
@@ -220,12 +342,34 @@ export class UsuariosComponent implements OnInit {
   private updateExistingUser(userId: number, userData: any): void {
     this.userService.updateUser(userId, userData).subscribe({
       next: () => {
+        // Animar el botón con éxito
+        const saveButton = document.querySelector('.p-dialog-footer button:last-child') as HTMLElement;
+        if (saveButton) {
+          this.animationService.buttonSuccessAnimation(saveButton);
+        }
+        
+        // Animar salida del formulario
+        const dialogElement = document.querySelector('.p-dialog') as HTMLElement;
+        if (dialogElement) {
+          this.animationService.dialogExit(dialogElement, {}, () => {
+            this.userDialog = false;
+            this.loadUsers();
+          });
+        } else {
+          this.userDialog = false;
+          this.loadUsers();
+        }
+        
         this.showSuccess('Usuario actualizado correctamente');
-        this.userDialog = false;
-        this.loadUsers();
         this.loading = false;
       },
       error: (error: any) => {
+        // Animar botón con error
+        const saveButton = document.querySelector('.p-dialog-footer button:last-child') as HTMLElement;
+        if (saveButton) {
+          this.animationService.buttonErrorAnimation(saveButton);
+        }
+        
         this.showError('Error al actualizar usuario', error);
         this.loading = false;
       }
@@ -239,13 +383,37 @@ export class UsuariosComponent implements OnInit {
     this.userService.createUser(userData).subscribe({
       next: (response: any) => {
         console.log('Respuesta de éxito:', response);
+        
+        // Animar el botón con éxito
+        const saveButton = document.querySelector('.p-dialog-footer button:last-child') as HTMLElement;
+        if (saveButton) {
+          this.animationService.buttonSuccessAnimation(saveButton);
+        }
+        
+        // Animar salida del formulario
+        const dialogElement = document.querySelector('.p-dialog') as HTMLElement;
+        if (dialogElement) {
+          this.animationService.successExit(dialogElement, {}, () => {
+            this.userDialog = false;
+            this.loadUsers();
+          });
+        } else {
+          this.userDialog = false;
+          this.loadUsers();
+        }
+        
         this.showSuccess('Usuario creado correctamente');
-        this.userDialog = false;
-        this.loadUsers();
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error completo:', error);
+        
+        // Animar botón con error
+        const saveButton = document.querySelector('.p-dialog-footer button:last-child') as HTMLElement;
+        if (saveButton) {
+          this.animationService.buttonErrorAnimation(saveButton);
+        }
+        
         this.showError('Error al crear usuario', error);
         this.loading = false;
       }
@@ -253,6 +421,12 @@ export class UsuariosComponent implements OnInit {
   }
 
   deleteUser(user: User): void {
+    // Animar botón de eliminar
+    const deleteButton = document.activeElement as HTMLElement;
+    if (deleteButton) {
+      this.animationService.buttonLoadingAnimation(deleteButton);
+    }
+    
     this.confirmationService.confirm({
       message: `¿Está seguro que desea eliminar al usuario ${user.nombres} ${user.apellidos}?`,
       header: 'Confirmar eliminación',
@@ -263,20 +437,49 @@ export class UsuariosComponent implements OnInit {
         this.loading = true;
         this.userService.deleteUser(user.id).subscribe({
           next: () => {
-            this.users = this.users.filter(val => val.id !== user.id);
+            // Encontrar la fila del usuario eliminado
+            const userRow = document.querySelector(`[data-user-id="${user.id}"]`) as HTMLElement;
+            if (userRow) {
+              // Animar la salida de la fila
+              this.animationService.successExit(userRow, {}, () => {
+                this.users = this.users.filter(val => val.id !== user.id);
+              });
+            } else {
+              this.users = this.users.filter(val => val.id !== user.id);
+            }
+            
             this.showSuccess('Usuario eliminado correctamente');
             this.loading = false;
           },
           error: (error: any) => {
+            // Animar botón con error
+            if (deleteButton) {
+              this.animationService.buttonErrorAnimation(deleteButton);
+            }
+            
             this.showError('Error al eliminar usuario', error);
             this.loading = false;
           }
         });
+      },
+      reject: () => {
+        // Restaurar botón
+        if (deleteButton) {
+          this.animationService.buttonEntrance(deleteButton, {
+            duration: 0.3
+          });
+        }
       }
     });
   }
 
   deleteSelectedUsers(): void {
+    // Animar botón de eliminar seleccionados
+    const deleteButton = document.querySelector('.p-toolbar button:nth-child(2)') as HTMLElement;
+    if (deleteButton) {
+      this.animationService.buttonLoadingAnimation(deleteButton);
+    }
+    
     this.confirmationService.confirm({
       message: '¿Está seguro que desea eliminar los usuarios seleccionados?',
       header: 'Confirmar eliminación múltiple',
@@ -290,15 +493,42 @@ export class UsuariosComponent implements OnInit {
 
           await Promise.all(deletionPromises);
 
-          this.users = this.users.filter(
-            val => !this.selectedUsers.some(selectedUser => selectedUser.id === val.id)
-          );
-          this.showSuccess('Usuarios eliminados correctamente');
-          this.selectedUsers = [];
-          this.loading = false;
+          // Animar filas de usuarios eliminados
+          const selectedIds = this.selectedUsers.map(user => user.id);
+          selectedIds.forEach(id => {
+            const userRow = document.querySelector(`[data-user-id="${id}"]`) as HTMLElement;
+            if (userRow) {
+              this.animationService.successExit(userRow, {
+                delay: 0.1 * (selectedIds.indexOf(id) || 0)
+              });
+            }
+          });
+
+          // Esperar un momento para que se vea la animación
+          setTimeout(() => {
+            this.users = this.users.filter(
+              val => !this.selectedUsers.some(selectedUser => selectedUser.id === val.id)
+            );
+            this.showSuccess('Usuarios eliminados correctamente');
+            this.selectedUsers = [];
+            this.loading = false;
+          }, 500);
         } catch (error) {
+          // Animar botón con error
+          if (deleteButton) {
+            this.animationService.buttonErrorAnimation(deleteButton);
+          }
+          
           this.showError('Error al eliminar usuarios', error as any);
           this.loading = false;
+        }
+      },
+      reject: () => {
+        // Restaurar botón
+        if (deleteButton) {
+          this.animationService.buttonEntrance(deleteButton, {
+            duration: 0.3
+          });
         }
       }
     });
@@ -340,6 +570,16 @@ export class UsuariosComponent implements OnInit {
       detail,
       life: 3000
     });
+    
+    // Animar la notificación
+    setTimeout(() => {
+      const toastElement = document.querySelector('.p-toast-message-success') as HTMLElement;
+      if (toastElement) {
+        this.animationService.toastNotification(toastElement, {
+          duration: 0.5
+        }, true, 3);
+      }
+    }, 100);
   }
 
   private showError(detail: string, error?: any): void {
@@ -350,6 +590,16 @@ export class UsuariosComponent implements OnInit {
       detail: error?.error?.message ? `${detail}: ${error.error.message}` : detail,
       life: 5000
     });
+    
+    // Animar la notificación
+    setTimeout(() => {
+      const toastElement = document.querySelector('.p-toast-message-error') as HTMLElement;
+      if (toastElement) {
+        this.animationService.toastNotification(toastElement, {
+          duration: 0.5
+        }, true, 5);
+      }
+    }, 100);
   }
 
   onGlobalFilter(table: Table, event: Event): void {
@@ -357,6 +607,12 @@ export class UsuariosComponent implements OnInit {
   }
 
   async exportCSV(): Promise<void> {
+    // Animar botón de exportar
+    const exportButton = document.querySelector('.p-toolbar button:last-child') as HTMLElement;
+    if (exportButton) {
+      this.animationService.buttonLoadingAnimation(exportButton);
+    }
+    
     try {
       // Preparar datos para exportación
       const exportData = this.users.map(user => ({
@@ -376,7 +632,22 @@ export class UsuariosComponent implements OnInit {
       const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
       const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
       this.saveAsExcelFile(excelBuffer, 'usuarios');
+      
+      // Animar botón con éxito
+      if (exportButton) {
+        this.animationService.buttonSuccessAnimation(exportButton);
+        setTimeout(() => {
+          this.animationService.buttonEntrance(exportButton, {
+            duration: 0.3
+          });
+        }, 1000);
+      }
     } catch (error) {
+      // Animar botón con error
+      if (exportButton) {
+        this.animationService.buttonErrorAnimation(exportButton);
+      }
+      
       this.showError('Error al exportar usuarios', error);
     }
   }
@@ -388,4 +659,24 @@ export class UsuariosComponent implements OnInit {
     const fileSaver = await import('file-saver');
     fileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
+
+  // Configurar efectos hover para botones
+  setupHoverEffects(): void {
+    // Para botones de acción
+    const actionButtons = document.querySelectorAll('.p-button') as NodeListOf<HTMLElement>;
+    if (actionButtons.length) {
+      actionButtons.forEach(button => {
+        this.animationService.setupButtonHoverEffect(button);
+      });
+    }
+  }
+
+  ngAfterContentInit(): void {
+    // Configurar efectos hover después de que el contenido esté listo
+    setTimeout(() => {
+      this.setupHoverEffects();
+    }, 500);
+  }
+
+
 }

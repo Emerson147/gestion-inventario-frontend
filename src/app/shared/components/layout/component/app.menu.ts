@@ -36,10 +36,11 @@ export class AppMenu implements OnInit{
             items: [
               { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] },
               { label: 'Usuarios', icon: 'pi pi-user', routerLink: ['/admin/usuarios'] },
-              { label: 'Categorias', icon: 'pi pi-fw pi-tags', routerLink: ['/admin/categorias'] },
               { label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/admin/productos'] },
+              { label: 'Colores y Tallas', icon: 'pi pi-fw pi-palette', routerLink: ['/admin/colores'] },  
+              { label: 'Almacenes', icon: 'pi pi-fw pi-warehouse', routerLink: ['/admin/almacenes'] },
+              { label: 'Inventario', icon: 'pi pi-fw pi-file', routerLink: ['/admin/inventario'] },
               { label: 'Facturas', icon: 'pi pi-fw pi-file', routerLink: ['/admin/facturas'] },
-              { label: 'Almacén', icon: 'pi pi-fw pi-warehouse', routerLink: ['/admin/almacen'] },
             ]
           },
           {

@@ -1,16 +1,17 @@
-<p-toolbar styleClass="mb-6">
+<p-toolbar #toolbar styleClass="mb-6">
   <ng-template pTemplate="start">
-    <p-button label="Nuevo Usuario" icon="pi pi-plus" severity="secondary" class="mr-2" (click)="openNew()" />
-    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (click)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length" />
+    <p-button label="Nuevo Usuario" icon="pi pi-plus" severity="secondary" class="mr-2" (click)="openNew()" #actionButton />
+    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (click)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length" #actionButton />
   </ng-template>
 
   <ng-template pTemplate="end">
-    <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (click)="exportCSV()" />
+    <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (click)="exportCSV()" #actionButton />
   </ng-template>
 </p-toolbar>
 
 <p-table
   #dt
+  #usuariosTable
   [value]="users"
   [rows]="10"
   [columns]="cols"
@@ -68,7 +69,7 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-user>
-    <tr>
+    <tr #rowElement [attr.data-user-id]="user.id">
       <td style="width: 3rem">
         <p-tableCheckbox [value]="user" />
       </td>
@@ -85,8 +86,8 @@
         ></p-tag>
       </td>
       <td>
-        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editUser(user)"></p-button>
-        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteUser(user)"></p-button>
+        <p-button #actionButton icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editUser(user)"></p-button>
+        <p-button #actionButton icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteUser(user)"></p-button>
       </td>
     </tr>
   </ng-template>
@@ -100,39 +101,46 @@
 
 <p-toast></p-toast>
 
+<!-- Diaglogo de formulario de Usuario -->
 <p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" header="Detalles del Usuario" [modal]="true">
   <ng-template pTemplate="content">
-    <div class="flex flex-col gap-6">
-      <div>
+    <div #dialogContent class="flex flex-col gap-6">
+      <div #formField>
         <label for="nombres" class="block font-bold mb-3">Nombres</label>
         <input type="text" pInputText id="nombres" [(ngModel)]="user.nombres" fluid/>
         <small class="text-red-500" *ngIf="submitted && !user.nombres">El nombre es obligatorio.</small>
       </div>
-      <div>
+      <div #formField>
         <label for="apellidos" class="block font-bold mb-3">Apellidos</label>
         <input type="text" pInputText id="apellidos" [(ngModel)]="user.apellidos" fluid/>
        <small class="text-red-500" *ngIf="submitted && !user.apellidos">El apellido es obligatorio.</small>
       </div>
-      <div>
+      <div #formField>
         <label for="username" class="block font-bold mb-3">Usuario</label>
         <input type="text" pInputText id="username" [(ngModel)]="user.username" fluid/>
         <small class="text-red-500" *ngIf="submitted && !user.username">El usuario es obligatorio.</small>
       </div>
-      <div>
+      <div #formField>
         <label for="email" class="block font-bold mb-3">Email</label>
         <input type="email" pInputText id="email" [(ngModel)]="user.email" required fluid/>
         <small class="text-red-500" *ngIf="submitted && !user.email">El email es obligatorio.</small>
       </div>
-      <div>
+      <div #formField>
         <label for="password" class="block font-bold mb-3">Contraseña {{editMode ? '(Dejar en blanco para mantener la actual)' : ''}}</label>
         <p-password id="password" [(ngModel)]="user.password" [required]="!editMode" [feedback]="true" [toggleMask]="true" fluid></p-password>
         <small class="text-red-500" *ngIf="submitted && !editMode && !user.password">La contraseña es obligatoria para nuevos usuarios.</small>
+        <small class="text-red-500" *ngIf="submitted && user.password && user.password.length < 8">
+          La contraseña debe tener al menos 8 caracteres.
+        </small>
+        <small class="text-red-500" *ngIf="submitted && user.password && !passwordIsValid(user.password)">
+          La contraseña debe contener al menos: un número, una minúscula, una mayúscula y un carácter especial.
+        </small>
       </div>
-      <div>
+      <div #formField>
         <label for="role" class="block font-bold mb-3">Rol</label>
         <p-selectButton [options]="roles" [(ngModel)]="user.roles" optionLabel="label" optionValue="value"></p-selectButton>
       </div>
-      <div>
+      <div #formField>
         <label for="activo" class="block font-bold mb-3">Estado</label>
         <p-selectButton [options]="estados" [(ngModel)]="user.activo" optionLabel="label" optionValue="value"></p-selectButton>
       </div>
@@ -140,8 +148,8 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()"></p-button>
-    <p-button label="Guardar" icon="pi pi-check" (click)="saveUser()"></p-button>
+    <p-button #actionButton label="Cancelar" icon="pi pi-times" text (click)="hideDialog()"></p-button>
+    <p-button #actionButton label="Guardar" icon="pi pi-check" (click)="saveUser()"></p-button>
   </ng-template>
 </p-dialog>
 

@@ -567,94 +567,62 @@ export class AnimationService {
 
   // ========== ANIMACIONES DE DIÁLOGOS Y MODALES ==========
 
-  /**
-   * Animación de entrada para diálogos y modales
-   * @param dialog Elemento diálogo
-   * @param options Opciones de animación
-   * @returns Instancia de la animación GSAP
-   */
-  dialogEntrance(dialog: HTMLElement, options: EntranceAnimationOptions = {}) {
-    if (!this.ensureElement(dialog)) return null;
+/**
+ * Anima la entrada de un diálogo sin modificar el fondo
+ */
+dialogEntrance(dialogElement: HTMLElement, options: any = {}) {
+  const {
+    duration = 0.5,
+    ease = 'back.out(1.7)',
+    delay = 0
+  } = options;
 
-    const {
-      duration = 0.5,
-      ease = 'back.out(1.7)',
-      delay = 0
-    } = options;
-
-    // Mostrar overlay con fade in
-    gsap.fromTo(
-      'body',
-      {
-        backgroundColor: 'rgba(0,0,0,0)'
-      },
-      {
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        duration: 0.3
-      }
-    );
-
-    // Animar el diálogo
-    return gsap.fromTo(
-      dialog,
-      {
-        opacity: 0,
-        scale: 0.7,
-        y: 20
-      },
-      {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration,
-        delay,
-        ease
-      }
-    );
-  }
-
-  /**
-   * Animación de salida para diálogos y modales
-   * @param dialog Elemento diálogo
-   * @param options Opciones de animación
-   * @param onComplete Función a ejecutar al completar
-   * @returns Instancia de la animación GSAP
-   */
-  dialogExit(dialog: HTMLElement, options: BaseAnimationOptions = {}, onComplete?: () => void) {
-    if (!this.ensureElement(dialog)) return null;
-
-    const {
-      duration = 0.4,
-      ease = 'power2.in',
-      delay = 0
-    } = options;
-
-    // Eliminar overlay
-    gsap.to('body', {
-      backgroundColor: 'rgba(0,0,0,0)',
-      duration: 0.2,
-      delay: delay + 0.1
-    });
-
-    // Animar salida del diálogo
-    return gsap.to(dialog, {
+  return gsap.fromTo(
+    dialogElement,
+    {
       opacity: 0,
-      scale: 0.9,
-      y: -10,
+      scale: 0.7,
+      y: 20
+    },
+    {
+      opacity: 1,
+      scale: 1,
+      y: 0,
       duration,
       delay,
-      ease,
-      onComplete
-    });
-  }
+      ease
+    }
+  );
+}
 
-  /**
-   * Animación para elementos dentro de un diálogo
-   * @param elements Elementos dentro del diálogo
-   * @param options Opciones de animación
-   * @returns Instancia de la animación GSAP
+/**
+ * Anima la salida de un diálogo sin modificar el fondo
+ */
+dialogExit(dialogElement: HTMLElement, options: any = {}, onComplete?: () => void) {
+  const {
+    duration = 0.3,
+    ease = 'power2.in',
+    delay = 0
+  } = options;
+
+  return gsap.to(dialogElement, {
+    opacity: 0,
+    scale: 0.9,
+    y: -10,
+    duration,
+    delay,
+    ease,
+    onComplete
+  });
+}
+
+/**
+ * Animación para elementos dentro de un diálogo
+ * @param elements Elementos dentro del diálogo
+ * @param options Opciones de animación
+ * @returns Instancia de la animación GSAP
    */
-  dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: EntranceAnimationOptions = {}) {
+dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: EntranceAnimationOptions = {}) {
     if (!elements || (elements instanceof NodeList && elements.length === 0) ||
       (Array.isArray(elements) && elements.length === 0)) return null;
 

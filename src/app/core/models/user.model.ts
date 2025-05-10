@@ -5,8 +5,8 @@ export interface User {
   username: string;
   password?: string;
   email: string;
-  activo: boolean;
   roles: string[];
+  activo: boolean;
   fechaCreacion?: string;
   fechaActualizacion?: string;
 }
@@ -18,6 +18,5 @@ export interface UsuarioRequest {
   username: string;
   password?: string;
   email: string;
-  activo: boolean;
   roles: string[];  
 }

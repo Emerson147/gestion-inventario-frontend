@@ -1,0 +1,206 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<p-toolbar styleClass="mb-6">
+  <ng-template pTemplate="start">
+    <p-button label="Nuevo Color" icon="pi pi-plus" severity="secondary" class="mr-2" (click)="openNew()" />
+    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (click)="eliminarColoresSeleccionados()" [disabled]="!selectedColores || !selectedColores.length" />
+  </ng-template>
+
+</p-toolbar>
+
+<!-- Selector de Productos -->
+<div class="mb-4">
+  <h5 class="mb-2">Seleccionar Producto</h5>
+  <p-dropdown 
+    [options]="productos" 
+    [(ngModel)]="productoSeleccionadoFiltro" 
+    optionLabel="nombre"
+    placeholder="Seleccione un producto para ver sus colores"
+    [filter]="true"
+    filterBy="nombre"
+    [style]="{'width':'100%', 'max-width': '400px'}"
+    (onChange)="cargarColoresPorProducto()"
+    [showClear]="true">
+  </p-dropdown>
+  <small *ngIf="productoSeleccionadoFiltro" class="block mt-2">Mostrando colores y tallas para: <strong>{{productoSeleccionadoFiltro.nombre}}</strong></small>
+  <small *ngIf="!productoSeleccionadoFiltro" class="block mt-2">Seleccione un producto para ver sus colores y tallas asociados</small>
+</div>
+
+<p-table
+  #dt
+  [value]="coloresFiltrados"
+  [rows]="10"
+  [paginator]="true"
+  [totalRecords]="coloresFiltrados.length"
+  [globalFilterFields]="['nombre']"
+  [tableStyle]="{'min-width': '75rem'}"
+  [(selection)]="selectedColores"
+  [rowHover]="true"
+  dataKey="id"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} colores y tallas"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+  [loading]="loading"
+  [paginator]="true"
+  [alwaysShowPaginator]="true"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Colores y Tallas del Producto</h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="nombre" style="min-width:10rem">
+        Color
+        <p-sortIcon field="nombre" />
+      </th>
+      <th style="min-width:10rem">
+        Tallas
+      </th>
+      <th style="min-width:8rem">
+        Acciones
+      </th>
+    </tr>
+  </ng-template>
+  
+  <ng-template pTemplate="body" let-color>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="color" />
+      </td>
+      <td>{{color.nombre}}</td>
+      <td>
+        <div class="flex flex-wrap gap-1" *ngIf="color.tallas && color.tallas.length > 0">
+          <p-tag *ngFor="let talla of color.tallas" [value]="talla.numero" styleClass="mr-1"></p-tag>
+        </div>
+        <span *ngIf="!color.tallas || color.tallas.length === 0">Sin tallas</span>
+      </td>
+      <td class="flex gap-2">
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="openForEdit(color, productoSeleccionadoFiltro?.id || 0)"></p-button>
+        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="confirmarEliminacion(color)"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+  
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4" class="text-center">
+        <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
+          No hay colores disponibles para este producto.
+          <button pButton label="Añadir Color" icon="pi pi-plus" class="p-button-sm p-button-outlined mt-2" (click)="openNew()"></button>
+        </div>
+        <ng-template #sinProductoSeleccionado>
+          Seleccione un producto para ver sus colores y tallas
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo de formulario de color -->
+<p-dialog [(visible)]="visible" [style]="{width: '600px'}" [header]="editMode ? 'Editar Color' : 'Nuevo Color'" [modal]="true" (onHide)="hide()">
+  <ng-template pTemplate="content">
+    <div class="flex flex-col gap-6">
+      <!-- Selección de producto cuando no es modo edición -->
+      <div *ngIf="!editMode">
+        <label for="producto" class="block font-bold mb-3">Producto*</label>
+        <p-dropdown 
+          id="producto" 
+          [options]="productos" 
+          [(ngModel)]="productoSeleccionado" 
+          optionLabel="nombre" 
+          [filter]="true" 
+          filterBy="nombre" 
+          placeholder="Seleccione un producto"
+          [style]="{'width':'100%'}"
+          [ngClass]="{'ng-invalid': submitted && !productoSeleccionado}">
+        </p-dropdown>
+        <small class="text-red-500" *ngIf="submitted && !productoSeleccionado">Debe seleccionar un producto.</small>
+      </div>
+
+      <!-- Nombre del color -->
+      <div>
+        <label for="nombre" class="block font-bold mb-3">Nombre del Color*</label>
+        <input 
+          type="text" 
+          pInputText 
+          id="nombre" 
+          [(ngModel)]="color.nombre" 
+          class="w-full"
+          [ngClass]="{'ng-invalid': submitted && !color.nombre.trim()}" 
+          placeholder="Ej: Rojo, Negro, Azul..." />
+        <small class="text-red-500" *ngIf="submitted && !color.nombre.trim()">El nombre del color es obligatorio.</small>
+      </div>
+      
+      <!-- Sección de tallas -->
+      <div>
+        <label class="block font-bold mb-3">Tallas</label>
+        <div class="grid formgrid mb-3">
+          <div class="col-12">
+            <div class="p-inputgroup">
+              <input 
+                pInputText 
+                type="text" 
+                [(ngModel)]="nuevaTalla" 
+                class="w-full"
+                placeholder="Ej: 38, 39, 40..." />
+              <button 
+                pButton 
+                type="button" 
+                label="Añadir" 
+                icon="pi pi-plus"
+                (click)="agregarTalla()" 
+                [disabled]="!nuevaTalla.trim()"></button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabla de tallas -->
+        <div *ngIf="tallas.length > 0" class="mt-3">
+          <p-table [value]="tallas" [tableStyle]="{'min-width': '100%'}" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Número</th>
+                <th style="width: 4rem"></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-talla let-i="rowIndex">
+              <tr>
+                <td>{{talla.numero}}</td>
+                <td>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    [rounded]="true" 
+                    [outlined]="true" 
+                    (click)="eliminarTalla(i)">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center">No hay tallas registradas.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hide()"></p-button>
+    <p-button label="Guardar" icon="pi pi-check" (click)="guardarColor()" [loading]="loading"></p-button>
+  </ng-template>
+</p-dialog>
