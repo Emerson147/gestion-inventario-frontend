@@ -1,0 +1,436 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<!-- Header con estadísticas rápidas -->
+<div class="mb-4">
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-2xl font-bold m-0">Gestión de Movimientos de Inventario</h2>
+      <p class="mt-1 mb-0 text-sm">Administra tu catálogo de Movimientos de Inventario</p>
+    </div>
+    <div class="flex gap-4">
+      <div class="text-center" *ngIf="selectedMovimientos?.length">
+        <div class="text-xl font-bold text-orange-600">{{ selectedMovimientos.length }}</div>
+        <div class="text-sm">Seleccionados</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toolbar styleClass="mb-6">
+  <ng-template pTemplate="start">
+    <p-button 
+      *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
+      label="Nuevo Movimiento" 
+      icon="pi pi-plus" 
+      class="mr-2" 
+      (click)="openNew()" 
+    />
+    <p-button 
+      *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
+      severity="secondary" 
+      label="Eliminar Seleccionados" 
+      icon="pi pi-trash" 
+      outlined 
+      (click)="deleteSelectedMovimientos()" 
+      [disabled]="!selectedMovimientos || !selectedMovimientos.length || !inventarioSeleccionadoFiltro" 
+    />
+  </ng-template>
+  <ng-template pTemplate="end">
+    <p-button 
+      label="Limpiar Filtros" 
+      icon="pi pi-filter-slash" 
+      severity="secondary" 
+      outlined
+      class="mr-2"
+      (click)="limpiarFiltros()"
+      [disabled]="!inventarioSeleccionadoFiltro"
+    />
+    <p-button 
+      label="Exportar" 
+      icon="pi pi-upload" 
+      severity="secondary" 
+      (click)="exportarExcel()"
+      [disabled]="movimientosFiltrados.length === 0"
+    />
+  </ng-template>
+</p-toolbar>
+
+<!-- Filtro por inventario origen -->
+<div class="mb-4">
+  <h5 class="mb-2">Filtrar por Inventario de Origen</h5>
+  <p-select 
+    [options]="inventarios" 
+    [(ngModel)]="inventarioSeleccionadoFiltro" 
+    optionLabel="serie"
+    placeholder="Seleccione un inventario para filtrar movimientos"
+    [filter]="true"
+    filterBy="serie"
+    [style]="{'width':'100%', 'max-width': '400px'}"
+    (onChange)="filtrarMovimientosPorInventario()"
+    [showClear]="true">
+    <ng-template pTemplate="selectedItem">
+      <div *ngIf="inventarioSeleccionadoFiltro">
+        <div>{{inventarioSeleccionadoFiltro.serie}} - {{inventarioSeleccionadoFiltro.producto?.nombre}}</div>
+      </div>
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      <div>
+        <div>{{item.serie}} - {{item.producto?.nombre}}</div>
+        <small class="text-gray-500">{{item.color?.nombre}} - Talla {{item.talla?.numero}} - {{item.almacen?.nombre}}</small>
+      </div>
+    </ng-template>
+  </p-select>
+  <small *ngIf="inventarioSeleccionadoFiltro" class="block mt-2">
+    Mostrando movimientos para: <strong>{{inventarioSeleccionadoFiltro.serie}} - {{inventarioSeleccionadoFiltro.producto?.nombre}}</strong>
+  </small>
+  <small *ngIf="!inventarioSeleccionadoFiltro" class="block mt-2">
+    Seleccione un inventario para filtrar movimientos
+  </small>
+</div>
+
+<p-table
+  #dt
+  [value]="movimientosFiltrados"
+  [rows]="10"
+  [paginator]="true"
+  [totalRecords]="movimientosFiltrados.length"
+  [globalFilterFields]="['id', 'tipo', 'descripcion', 'referencia', 'cantidad', 'usuario']"
+  [tableStyle]="{'min-width': '75rem'}"
+  [(selection)]="selectedMovimientos"
+  [rowHover]="true"
+  dataKey="id"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} movimientos"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+  [loading]="loading"
+  [alwaysShowPaginator]="true"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Movimientos de Inventario</h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="tipo" style="min-width:8rem">
+        Tipo
+        <p-sortIcon field="tipo" />
+      </th>
+      <th pSortableColumn="cantidad" style="min-width:8rem">
+        Cantidad
+        <p-sortIcon field="cantidad" />
+      </th>
+      <th pSortableColumn="usuario" style="min-width:8rem">
+        Usuario
+        <p-sortIcon field="usuario" />
+      </th>
+      <th pSortableColumn="descripcion" style="min-width:15rem">
+        Descripción
+        <p-sortIcon field="descripcion" />
+      </th>
+      <th pSortableColumn="referencia" style="min-width:10rem">
+        Referencia
+        <p-sortIcon field="referencia" />
+      </th>
+      <th pSortableColumn="inventario.serie" style="min-width:10rem">
+        Inventario Origen
+        <p-sortIcon field="inventario.serie" />
+      </th>
+      <th pSortableColumn="inventarioDestino.serie" style="min-width:10rem">
+        Inventario Destino
+        <p-sortIcon field="inventarioDestino.serie" />
+      </th>
+      <th pSortableColumn="fechaMovimiento" style="min-width:10rem">
+        Fecha Movimiento
+        <p-sortIcon field="fechaMovimiento" />
+      </th>  
+      <th style="min-width:8rem">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-movimiento>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="movimiento" />
+      </td>
+      <td>
+        <p-tag 
+          [value]="movimiento.tipo" 
+          [severity]="getTipoSeverity(movimiento.tipo)"
+          [icon]="getTipoIcon(movimiento.tipo)">
+        </p-tag>
+      </td>
+      <td>
+        <span class="font-semibold">{{movimiento.cantidad}}</span>
+      </td>
+      <td>{{movimiento.usuario}}</td>
+      <td>
+        <span [title]="movimiento.descripcion">
+          {{movimiento.descripcion.length > 50 ? (movimiento.descripcion | slice:0:50) + '...' : movimiento.descripcion}}
+        </span>
+      </td>
+      <td>{{movimiento.referencia}}</td>
+      <td>
+        <div *ngIf="movimiento.inventario">
+          <div class="font-medium">{{movimiento.inventario.serie}}</div>
+          <small class="text-gray-500">{{movimiento.inventario.producto?.nombre}}</small>
+        </div>
+      </td>
+      <td>
+        <div *ngIf="movimiento.inventarioDestino; else noDestino">
+          <div class="font-medium">{{movimiento.inventarioDestino.serie}}</div>
+          <small class="text-gray-500">{{movimiento.inventarioDestino.producto?.nombre}}</small>
+        </div>
+        <ng-template #noDestino>
+          <span class="text-gray-400">No aplica</span>
+        </ng-template>
+      </td>
+      <td>{{movimiento.fechaMovimiento | date:'dd/MM/yyyy HH:mm'}}</td>
+      <td class="flex gap-2">
+        <button 
+          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.EDIT}"
+          pButton 
+          icon="pi pi-pencil" 
+          class="mr-2" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="editMovimiento(movimiento)"
+          pTooltip="Editar movimiento">
+        </button>
+        <button 
+          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
+          pButton 
+          icon="pi pi-trash" 
+          severity="danger" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="deleteMovimiento(movimiento)"
+          pTooltip="Eliminar movimiento">
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10" class="text-center py-8">
+        <div *ngIf="inventarioSeleccionadoFiltro; else sinInventarioSeleccionado">
+          <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
+          <div class="text-lg font-medium text-gray-600 mb-2">No hay movimientos disponibles</div>
+          <div class="text-gray-500 mb-4">No se encontraron movimientos para este inventario.</div>
+          <button 
+            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}" 
+            pButton 
+            class="p-button-sm p-button-outlined" 
+            (click)="openNew()">
+            <i class="pi pi-plus mr-2"></i>
+            <span>Añadir Primer Movimiento</span>
+          </button>
+        </div>
+        <ng-template #sinInventarioSeleccionado>
+          <i class="pi pi-filter text-4xl text-gray-400 mb-3"></i>
+          <div class="text-lg font-medium text-gray-600 mb-2">Seleccione un inventario</div>
+          <div class="text-gray-500">Elija un inventario de origen para ver sus movimientos</div>
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo para crear/editar movimiento -->
+<p-dialog 
+  [(visible)]="movimientoDialog" 
+  [style]="{'width': '650px', 'height': 'auto'}" 
+  [header]="editMode ? 'Editar Movimiento' : 'Nuevo Movimiento'" 
+  [modal]="true" 
+  (onHide)="hideDialog()"
+  [contentStyle]="{'padding':'0'}"
+>
+  <ng-template pTemplate="content">
+    <div class="p-6">
+      <!-- Selector de Tipo de Movimiento -->
+      <div class="mb-5">
+        <label for="tipo" class="block font-bold mb-3">Tipo de Movimiento*</label>
+        <p-selectButton 
+          [options]="tiposMovimiento" 
+          [(ngModel)]="movimiento.tipo" 
+          optionLabel="label"
+          optionValue="value"
+          [disabled]="editMode"
+          [ngClass]="{'ng-invalid': submitted && !movimiento.tipo}"
+        >
+          <ng-template let-item>
+            <i [class]="item.icon + ' mr-2'"></i>{{item.label}}
+          </ng-template>
+        </p-selectButton>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !movimiento.tipo">
+          El tipo de movimiento es obligatorio.
+        </small>
+      </div>
+      
+      <!-- Selector de Inventario Origen -->
+      <div class="mb-5">
+        <label for="inventario" class="block font-bold mb-3">Inventario Origen*</label>
+        <p-select 
+          id="inventario" 
+          [options]="inventarios" 
+          [(ngModel)]="inventarioSeleccionado"
+          optionLabel="serie"
+          placeholder="Selecciona el inventario de origen"
+          [filter]="true"
+          filterBy="serie"
+          [showClear]="true"
+          [disabled]="editMode"
+          [ngClass]="{'ng-invalid': submitted && !inventarioSeleccionado}"
+          [style]="{'width':'100%'}"
+        >
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="inventarioSeleccionado">
+              <div class="font-medium">{{inventarioSeleccionado.serie}}</div>
+              <small class="text-gray-500">{{inventarioSeleccionado.producto?.nombre}} - {{inventarioSeleccionado.color?.nombre}} - Talla {{inventarioSeleccionado.talla?.numero}}</small>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <div>
+              <div class="font-medium">{{item.serie}}</div>
+              <small class="text-gray-500">{{item.producto?.nombre}} - {{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
+              <div class="text-xs text-blue-600 mt-1">Stock disponible: {{item.cantidad}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !inventarioSeleccionado">
+          El inventario de origen es obligatorio.
+        </small>
+        <small class="text-blue-600 block mt-1" *ngIf="inventarioSeleccionado">
+          Stock disponible: <strong>{{inventarioSeleccionado.cantidad}}</strong> unidades
+        </small>
+      </div>
+      
+      <!-- Selector de Inventario Destino (solo para traslados) -->
+      <div class="mb-5" *ngIf="movimiento.tipo === 'TRASLADO'">
+        <label for="inventarioDestino" class="block font-bold mb-3">Inventario Destino*</label>
+        <p-select 
+          id="inventarioDestino" 
+          [options]="inventarios" 
+          [(ngModel)]="inventarioDestinoSeleccionado"
+          optionLabel="serie"
+          placeholder="Selecciona el inventario de destino"
+          [filter]="true"
+          filterBy="serie"
+          [showClear]="true"
+          [ngClass]="{'ng-invalid': submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado}"
+          [style]="{'width':'100%'}"
+        >
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="inventarioDestinoSeleccionado">
+              <div class="font-medium">{{inventarioDestinoSeleccionado.serie}}</div>
+              <small class="text-gray-500">{{inventarioDestinoSeleccionado.producto?.nombre}} - {{inventarioDestinoSeleccionado.color?.nombre}} - Talla {{inventarioDestinoSeleccionado.talla?.numero}}</small>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <div>
+              <div class="font-medium">{{item.serie}}</div>
+              <small class="text-gray-500">{{item.producto?.nombre}} - {{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
+            </div>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado">
+          El inventario de destino es obligatorio para traslados.
+        </small>
+      </div>
+      
+      <!-- Campo de Cantidad -->
+      <div class="mb-5">
+        <label for="cantidad" class="block font-bold mb-3">Cantidad*</label>
+        <p-inputNumber 
+          id="cantidad" 
+          [(ngModel)]="movimiento.cantidad"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="1"
+          [max]="inventarioSeleccionado?.cantidad || 9999"
+          [step]="1"
+          decrementButtonClass="p-button-danger"
+          incrementButtonClass="p-button-success"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+          [ngClass]="{'ng-invalid': submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)}"
+          [style]="{'width':'200px'}"
+        />
+        <small class="text-red-500 block mt-1" *ngIf="submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)">
+          La cantidad debe ser mayor a 0.
+        </small>
+        <small class="text-orange-500 block mt-1" *ngIf="movimiento.tipo === 'SALIDA' && inventarioSeleccionado && movimiento.cantidad > inventarioSeleccionado.cantidad">
+          ⚠️ La cantidad excede el stock disponible ({{inventarioSeleccionado.cantidad}})
+        </small>
+      </div>
+      
+      <!-- Campo de Descripción -->
+      <div class="mb-5">
+        <label for="descripcion" class="block font-bold mb-3">Descripción*</label>
+        <textarea 
+          id="descripcion" 
+          pInputTextarea 
+          class="w-full" 
+          [(ngModel)]="movimiento.descripcion"
+          rows="3" 
+          placeholder="Describe el motivo del movimiento..."
+          [ngClass]="{'ng-invalid': submitted && !movimiento.descripcion.trim()}"
+        ></textarea>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !movimiento.descripcion?.trim()">
+          La descripción es obligatoria.
+        </small>
+      </div>
+
+      <!-- Campo de Referencia -->
+      <div class="mb-5">
+        <label for="referencia" class="block font-bold mb-3">Referencia*</label>
+        <input 
+          type="text" 
+          pInputText 
+          id="referencia" 
+          [(ngModel)]="movimiento.referencia"
+          class="w-full"
+          placeholder="Número de documento, orden, etc..."
+          [ngClass]="{'ng-invalid': submitted && !movimiento.referencia.trim()}" 
+        />
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !movimiento.referencia?.trim()">
+          La referencia es obligatoria.
+        </small>
+      </div>
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 px-6 pb-4">
+      <button 
+        pButton 
+        pRipple 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        class="p-button-text"
+        (click)="hideDialog()"
+        [disabled]="loading">
+      </button>
+      <button 
+        pButton 
+        pRipple 
+        [label]="editMode ? 'Actualizar' : 'Crear Movimiento'" 
+        icon="pi pi-check" 
+        (click)="guardarMovimiento()"
+        [loading]="loading">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

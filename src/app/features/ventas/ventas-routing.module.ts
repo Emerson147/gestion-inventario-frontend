@@ -5,6 +5,8 @@ import { AuthGuard } from '../../core/guards/auth.guard';
 // Importar componentes
 import { VentasDashboardComponent } from './dashboard/ventas-dashboard.component';
 import { RealizarVentaComponent } from './realizar-venta/realizar-venta.component';
+import { UsuariosComponent } from '../admin/usuarios/usuarios.component';
+import { ClientesComponent } from './clientes/clientes.component';
 // Otros componentes...
 
 const routes: Routes = [
@@ -15,11 +17,17 @@ const routes: Routes = [
     data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
   },
   {
+    path: 'clientes',
+    component: ClientesComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
+  },
+  {
     path: 'realizar-venta',
     component: RealizarVentaComponent,
     canActivate: [AuthGuard],
     data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
-  },
+  }
   // Otras rutas...
 ];
 

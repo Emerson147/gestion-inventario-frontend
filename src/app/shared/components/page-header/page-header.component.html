@@ -1,0 +1,26 @@
+<div class="mb-6">
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800 m-0 flex items-center gap-3">
+        <i [class]="iconClass"></i>
+        {{ title }}
+      </h2>
+      <p class="text-gray-600 mt-2 mb-0 text-lg">{{ subtitle }}</p>
+    </div>
+    <div class="flex gap-6">
+      <ng-container *ngFor="let stat of stats">
+        <div 
+          class="text-center rounded-xl p-4 border min-w-[100px]"
+          [ngClass]="stat.cssClass"
+        >
+          <div class="text-2xl font-bold" [ngClass]="stat.valueClass">
+            {{ stat.value }}
+          </div>
+          <div class="text-sm font-medium" [ngClass]="stat.labelClass">
+            {{ stat.label }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

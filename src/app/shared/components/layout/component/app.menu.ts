@@ -31,25 +31,25 @@ export class AppMenu implements OnInit{
         //Definir el modelo completo
         this.model = [
           {
-            label: 'Admin',
-            visible: this.hasRole(['ROLE_ADMIN']),
+            label: 'Gestion Inventario',
+            visible: this.hasRole(['ROLE_ADMIN', 'ROLE_VENTAS']),
             items: [
               { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] },
               { label: 'Usuarios', icon: 'pi pi-user', routerLink: ['/admin/usuarios'] },
               { label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/admin/productos'] },
               { label: 'Colores y Tallas', icon: 'pi pi-fw pi-palette', routerLink: ['/admin/colores'] },  
               { label: 'Almacenes', icon: 'pi pi-fw pi-warehouse', routerLink: ['/admin/almacenes'] },
-              { label: 'Inventario', icon: 'pi pi-fw pi-file', routerLink: ['/admin/inventario'] },
-              { label: 'Facturas', icon: 'pi pi-fw pi-file', routerLink: ['/admin/facturas'] },
+              { label: 'Inventario', icon: 'pi pi-fw pi-database', routerLink: ['/admin/inventario'] },
+              { label: 'Movimientos', icon: 'pi pi-fw pi-sitemap', routerLink: ['/admin/movimientos-inventario'] }              
             ]
           },
           {
             label: 'Ventas',
             visible: this.hasRole(['ROLE_VENTAS', 'ROLE_ADMIN']),
-            items: [
-              { label: 'Clientes', icon: 'pi pi-fw pi-user', routerLink: ['/ventas/clientes'] },
+            items: [ 
+              { label: 'Clientes', icon: 'pi pi-fw pi-users', routerLink: ['/ventas/clientes'] },
+              { label: 'Ventas', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/ventas/realizar-venta'] },
               { label: 'Reportes', icon: 'pi pi-fw pi-file', routerLink: ['/ventas/reportes'] },
-              { label: 'Ventas', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/ventas/ventas'] },
               { label: 'Busqueda', icon: 'pi pi-fw pi-search', routerLink: ['/ventas/busqueda'] }
             ]
           }

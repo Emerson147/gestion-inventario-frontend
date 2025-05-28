@@ -1,0 +1,31 @@
+<div class="mb-6">
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex justify-between items-center">
+    <div class="flex gap-3">
+      <ng-container *ngFor="let action of primaryActions">
+        <p-button 
+          *ngIf="showAction(action)"
+          [label]="action.label" 
+          [icon]="action.icon" 
+          [class]="action.cssClass"
+          [disabled]="action.disabled"
+          [pTooltip]="action.tooltip"
+          (click)="executeAction(action)"
+        />
+      </ng-container>
+    </div>
+    <div class="flex gap-3">
+      <ng-container *ngFor="let action of secondaryActions">
+        <p-button 
+          *ngIf="showAction(action)"
+          [label]="action.label" 
+          [icon]="action.icon" 
+          [severity]="action.severity"
+          [class]="action.cssClass"
+          [disabled]="action.disabled"
+          [pTooltip]="action.tooltip"
+          (click)="executeAction(action)"
+        />
+      </ng-container>
+    </div>
+  </div>
+</div>

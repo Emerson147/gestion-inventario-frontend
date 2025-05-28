@@ -1,206 +1,1514 @@
-<p-toast></p-toast>
+<p-toast position="top-right" [life]="4000" />
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-<p-toolbar styleClass="mb-6">
-  <ng-template pTemplate="start">
-    <p-button label="Nuevo Color" icon="pi pi-plus" severity="secondary" class="mr-2" (click)="openNew()" />
-    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (click)="eliminarColoresSeleccionados()" [disabled]="!selectedColores || !selectedColores.length" />
-  </ng-template>
-
-</p-toolbar>
-
-<!-- Selector de Productos -->
-<div class="mb-4">
-  <h5 class="mb-2">Seleccionar Producto</h5>
-  <p-dropdown 
-    [options]="productos" 
-    [(ngModel)]="productoSeleccionadoFiltro" 
-    optionLabel="nombre"
-    placeholder="Seleccione un producto para ver sus colores"
-    [filter]="true"
-    filterBy="nombre"
-    [style]="{'width':'100%', 'max-width': '400px'}"
-    (onChange)="cargarColoresPorProducto()"
-    [showClear]="true">
-  </p-dropdown>
-  <small *ngIf="productoSeleccionadoFiltro" class="block mt-2">Mostrando colores y tallas para: <strong>{{productoSeleccionadoFiltro.nombre}}</strong></small>
-  <small *ngIf="!productoSeleccionadoFiltro" class="block mt-2">Seleccione un producto para ver sus colores y tallas asociados</small>
-</div>
-
-<p-table
-  #dt
-  [value]="coloresFiltrados"
-  [rows]="10"
-  [paginator]="true"
-  [totalRecords]="coloresFiltrados.length"
-  [globalFilterFields]="['nombre']"
-  [tableStyle]="{'min-width': '75rem'}"
-  [(selection)]="selectedColores"
-  [rowHover]="true"
-  dataKey="id"
-  [showCurrentPageReport]="true"
-  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} colores y tallas"
-  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
-  [loading]="loading"
-  [paginator]="true"
-  [alwaysShowPaginator]="true"
->
-  <ng-template pTemplate="caption">
-    <div class="flex items-center justify-between">
-      <h5 class="m-0">Colores y Tallas del Producto</h5>
-      <p-iconfield>
-        <p-inputicon styleClass="pi pi-search" />
-        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
-      </p-iconfield>
-    </div>
-  </ng-template>
-
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 3rem">
-        <p-tableHeaderCheckbox />
-      </th>
-      <th pSortableColumn="nombre" style="min-width:10rem">
-        Color
-        <p-sortIcon field="nombre" />
-      </th>
-      <th style="min-width:10rem">
-        Tallas
-      </th>
-      <th style="min-width:8rem">
-        Acciones
-      </th>
-    </tr>
-  </ng-template>
-  
-  <ng-template pTemplate="body" let-color>
-    <tr>
-      <td style="width: 3rem">
-        <p-tableCheckbox [value]="color" />
-      </td>
-      <td>{{color.nombre}}</td>
-      <td>
-        <div class="flex flex-wrap gap-1" *ngIf="color.tallas && color.tallas.length > 0">
-          <p-tag *ngFor="let talla of color.tallas" [value]="talla.numero" styleClass="mr-1"></p-tag>
-        </div>
-        <span *ngIf="!color.tallas || color.tallas.length === 0">Sin tallas</span>
-      </td>
-      <td class="flex gap-2">
-        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="openForEdit(color, productoSeleccionadoFiltro?.id || 0)"></p-button>
-        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="confirmarEliminacion(color)"></p-button>
-      </td>
-    </tr>
-  </ng-template>
-  
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="4" class="text-center">
-        <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
-          No hay colores disponibles para este producto.
-          <button pButton label="Añadir Color" icon="pi pi-plus" class="p-button-sm p-button-outlined mt-2" (click)="openNew()"></button>
-        </div>
-        <ng-template #sinProductoSeleccionado>
-          Seleccione un producto para ver sus colores y tallas
-        </ng-template>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
-
-<!-- Diálogo de formulario de color -->
-<p-dialog [(visible)]="visible" [style]="{width: '600px'}" [header]="editMode ? 'Editar Color' : 'Nuevo Color'" [modal]="true" (onHide)="hide()">
-  <ng-template pTemplate="content">
-    <div class="flex flex-col gap-6">
-      <!-- Selección de producto cuando no es modo edición -->
-      <div *ngIf="!editMode">
-        <label for="producto" class="block font-bold mb-3">Producto*</label>
-        <p-dropdown 
-          id="producto" 
-          [options]="productos" 
-          [(ngModel)]="productoSeleccionado" 
-          optionLabel="nombre" 
-          [filter]="true" 
-          filterBy="nombre" 
-          placeholder="Seleccione un producto"
-          [style]="{'width':'100%'}"
-          [ngClass]="{'ng-invalid': submitted && !productoSeleccionado}">
-        </p-dropdown>
-        <small class="text-red-500" *ngIf="submitted && !productoSeleccionado">Debe seleccionar un producto.</small>
-      </div>
-
-      <!-- Nombre del color -->
+<!-- Header con dashboard metrics mejorado -->
+<div class="mb-6">
+  <!-- Header principal con gradiente sutil -->
+  <div class="bg-gradient-to-r from-white via-purple-50 to-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+      <!-- Título principal -->
       <div>
-        <label for="nombre" class="block font-bold mb-3">Nombre del Color*</label>
-        <input 
-          type="text" 
-          pInputText 
-          id="nombre" 
-          [(ngModel)]="color.nombre" 
-          class="w-full"
-          [ngClass]="{'ng-invalid': submitted && !color.nombre.trim()}" 
-          placeholder="Ej: Rojo, Negro, Azul..." />
-        <small class="text-red-500" *ngIf="submitted && !color.nombre.trim()">El nombre del color es obligatorio.</small>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-purple-600 p-2 rounded-lg shadow-lg">
+            <i class="pi pi-palette text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 m-0">Gestión de Colores y Tallas</h1>
+            <p class="text-gray-600 mt-1 mb-0">Administra paletas de colores y sistemas de tallas por producto</p>
+          </div>
+        </div>
       </div>
       
-      <!-- Sección de tallas -->
-      <div>
-        <label class="block font-bold mb-3">Tallas</label>
-        <div class="grid formgrid mb-3">
-          <div class="col-12">
-            <div class="p-inputgroup">
-              <input 
-                pInputText 
-                type="text" 
-                [(ngModel)]="nuevaTalla" 
-                class="w-full"
-                placeholder="Ej: 38, 39, 40..." />
-              <button 
-                pButton 
-                type="button" 
-                label="Añadir" 
-                icon="pi pi-plus"
-                (click)="agregarTalla()" 
-                [disabled]="!nuevaTalla.trim()"></button>
+      <!-- Dashboard metrics con hover effects -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Total colores -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+             *ngIf="coloresFiltrados?.length">
+          <div class="flex items-center gap-3">
+            <div class="bg-purple-100 p-2 rounded-lg">
+              <i class="pi pi-palette text-purple-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-purple-600">{{ calcularEstadisticas().totalColores }}</div>
+              <div class="text-sm text-gray-600 font-medium">Total Colores</div>
             </div>
           </div>
         </div>
         
-        <!-- Tabla de tallas -->
-        <div *ngIf="tallas.length > 0" class="mt-3">
-          <p-table [value]="tallas" [tableStyle]="{'min-width': '100%'}" styleClass="p-datatable-sm">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Número</th>
-                <th style="width: 4rem"></th>
-              </tr>
+        <!-- Total tallas -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+             *ngIf="calcularEstadisticas().totalTallas > 0">
+          <div class="flex items-center gap-3">
+            <div class="bg-green-100 p-2 rounded-lg">
+              <i class="pi pi-tags text-green-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-green-600">{{ calcularEstadisticas().totalTallas }}</div>
+              <div class="text-sm text-gray-600 font-medium">Tallas Únicas</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Combinaciones -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+             *ngIf="calcularEstadisticas().combinaciones > 0">
+          <div class="flex items-center gap-3">
+            <div class="bg-blue-100 p-2 rounded-lg">
+              <i class="pi pi-sitemap text-blue-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-blue-600">{{ calcularEstadisticas().combinaciones }}</div>
+              <div class="text-sm text-gray-600 font-medium">Combinaciones</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Seleccionados -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+             *ngIf="selectedColores?.length">
+          <div class="flex items-center gap-3">
+            <div class="bg-orange-100 p-2 rounded-lg">
+              <i class="pi pi-check-square text-orange-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-orange-600">{{ selectedColores.length }}</div>
+              <div class="text-sm text-gray-600 font-medium">Seleccionados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toolbar mejorado con diseño más limpio -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+    <!-- Acciones principales -->
+    <div class="flex flex-wrap gap-3">
+      <p-button 
+        *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}" 
+        label="Nuevo Color" 
+        icon="pi pi-plus" 
+        size="large"
+        class="shadow-sm hover:shadow-md transition-all duration-300" 
+        (click)="openNew()"
+        pTooltip="Crear nuevo color con tallas"
+      />
+      <p-button 
+        *appHasPermission="{module: 'colores', permission: permissionTypes.DELETE}"
+        [label]="'Eliminar (' + (selectedColores.length || 0) + ')'" 
+        icon="pi pi-trash" 
+        severity="danger"
+        [outlined]="true"
+        size="large"
+        class="shadow-sm hover:shadow-md transition-all duration-300" 
+        (click)="eliminarColoresSeleccionados()" 
+        [disabled]="!selectedColores.length"
+        pTooltip="Eliminar colores seleccionados"
+      />
+    </div>
+
+    <!-- Controles de vista y utilidades -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Selector de vista mejorado -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-700">Vista:</span>
+        <p-selectButton 
+          [(ngModel)]="currentView" 
+          [options]="viewOptions" 
+          optionLabel="label" 
+          optionValue="value"
+          size="small"
+          class="shadow-sm"
+        >
+          <ng-template let-option pTemplate="option">
+            <i [class]="option.icon" class="mr-2"></i>
+            {{option.label}}
+          </ng-template>
+        </p-selectButton>
+      </div>
+
+      <!-- Utilidades -->
+      <div class="flex gap-2">
+        <p-button 
+          icon="pi pi-refresh" 
+          severity="secondary" 
+          [outlined]="true"
+          [rounded]="true"
+          size="large"
+          pTooltip="Actualizar colores"
+          class="shadow-sm hover:shadow-md transition-all duration-300"
+          (click)="cargarColoresPorProducto()" 
+        />
+        <p-button 
+          icon="pi pi-download" 
+          severity="success" 
+          [outlined]="true"
+          [rounded]="true"
+          size="large"
+          pTooltip="Exportar a Excel"
+          class="shadow-sm hover:shadow-md transition-all duration-300"
+          (click)="exportarExcel()"
+          [disabled]="!coloresFiltrados.length"
+        />
+        <p-button 
+          icon="pi pi-chart-bar" 
+          severity="info" 
+          [outlined]="true"
+          [rounded]="true"
+          size="large"
+          pTooltip="Ver estadísticas"
+          class="shadow-sm hover:shadow-md transition-all duration-300"
+          (click)="mostrarEstadisticas()"
+        />
+        <p-button 
+          icon="pi pi-filter-slash" 
+          severity="secondary" 
+          [outlined]="true"
+          [rounded]="true"
+          size="large"
+          pTooltip="Limpiar filtros"
+          class="shadow-sm hover:shadow-md transition-all duration-300"
+          (click)="limpiarFiltros()"
+          [disabled]="!productoSeleccionadoFiltro"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de filtros con diseño más moderno -->
+<div class="mb-6">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <p-panel 
+      header="Filtros de Productos y Búsqueda" 
+      [toggleable]="true" 
+      [collapsed]="filtrosPanelCollapsed"
+      styleClass="border-0 shadow-none"
+    >
+      <ng-template pTemplate="header">
+        <div class="flex items-center gap-2">
+          <div class="bg-blue-100 p-2 rounded-lg">
+            <i class="pi pi-filter text-blue-600"></i>
+          </div>
+          <span class="font-semibold text-gray-800">Filtros de Productos y Búsqueda</span>
+          <p-tag 
+            *ngIf="getTotalFiltrosActivos() > 0" 
+            [value]="getTotalFiltrosActivos() + ' activo' + (getTotalFiltrosActivos() > 1 ? 's' : '')"
+            severity="info"
+            size="small"
+          />
+        </div>
+      </ng-template>
+      
+      <div class="grid gap-4 pt-4">
+        <!-- Selector de producto principal -->
+        <div class="col-12 md:col-5">
+          <label class="block font-semibold mb-3 text-gray-700">
+            <i class="pi pi-box mr-2 text-blue-600"></i>
+            Producto
+          </label>
+          <p-select 
+            [options]="productos" 
+            [(ngModel)]="productoSeleccionadoFiltro" 
+            optionLabel="codigo"
+            placeholder="Seleccione un producto"
+            [filter]="true"
+            filterBy="nombre,codigo"
+            [showClear]="true"
+            class="w-full"
+            styleClass="h-12"
+            (onChange)="cargarColoresPorProducto()"
+          >
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="productoSeleccionadoFiltro" class="flex items-center gap-3">
+                <div class="bg-blue-100 p-1 rounded">
+                  <i class="pi pi-box text-blue-600 text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-800">{{productoSeleccionadoFiltro.codigo}}</div>
+                  <div class="text-sm text-gray-500">{{productoSeleccionadoFiltro.nombre}}</div>
+                </div>
+              </div>
             </ng-template>
-            <ng-template pTemplate="body" let-talla let-i="rowIndex">
-              <tr>
-                <td>{{talla.numero}}</td>
-                <td>
-                  <p-button 
-                    icon="pi pi-trash" 
-                    severity="danger" 
-                    [rounded]="true" 
-                    [outlined]="true" 
-                    (click)="eliminarTalla(i)">
-                  </p-button>
-                </td>
-              </tr>
+            <ng-template let-item pTemplate="item">
+              <div class="flex items-center gap-3 p-2">
+                <div class="bg-blue-100 p-2 rounded">
+                  <i class="pi pi-box text-blue-600"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-800">{{item.codigo}} - {{item.nombre}}</div>
+                  <div class="text-sm text-gray-500">${{item.precio | number:'1.2-2'}}</div>
+                </div>
+              </div>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="2" class="text-center">No hay tallas registradas.</td>
-              </tr>
+          </p-select>
+        </div>
+        
+        <!-- Filtro por texto -->
+        <div class="col-12 md:col-3">
+          <label class="block font-semibold mb-3 text-gray-700">
+            <i class="pi pi-search mr-2 text-purple-600"></i>
+            Buscar Color
+          </label>
+          <p-iconfield class="w-full">
+            <p-inputicon styleClass="pi pi-search" />
+            <input 
+              pInputText 
+              [(ngModel)]="filtroTexto" 
+              (input)="aplicarFiltrosTexto()"
+              placeholder="Nombre del color..."
+              class="w-full h-12 text-base rounded-lg"
+            />
+          </p-iconfield>
+        </div>
+        
+        <!-- Filtro por talla -->
+        <div class="col-12 md:col-2">
+          <label class="block font-semibold mb-3 text-gray-700">
+            <i class="pi pi-tags mr-2 text-green-600"></i>
+            Talla
+          </label>
+          <input 
+            pInputText 
+            [(ngModel)]="filtroTalla" 
+            (input)="aplicarFiltrosTexto()"
+            placeholder="Ej: XL, 42..."
+            class="w-full h-12 text-base rounded-lg"
+          />
+        </div>
+        
+        <!-- Acciones de filtro -->
+        <div class="col-12 md:col-2 flex items-end">
+          <p-button 
+            label="Limpiar Filtros" 
+            icon="pi pi-filter-slash" 
+            severity="secondary" 
+            [outlined]="true"
+            size="small"
+            (click)="limpiarFiltros()"
+            class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
+          />
+        </div>
+      </div>
+      
+      <!-- Información del producto seleccionado -->
+      <div *ngIf="productoSeleccionadoFiltro" class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="pi pi-check text-white"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-gray-800">Producto Seleccionado</div>
+            <div class="text-sm text-gray-600">
+              <strong>{{productoSeleccionadoFiltro.codigo}}</strong> - {{productoSeleccionadoFiltro.nombre}} 
+              <span class="text-green-600 font-semibold">${{productoSeleccionadoFiltro.precioVenta | number:'1.2-2'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-panel>
+  </div>
+</div>
+
+<!-- Vista de Paleta de Colores (Nueva vista principal) -->
+<div *ngIf="currentView === 'palette'" class="mb-6">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <!-- Header de la paleta -->
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="bg-purple-600 p-2 rounded-lg">
+            <i class="pi pi-palette text-white"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 m-0">Paleta de Colores</h3>
+            <p class="text-sm text-gray-600 mt-1" *ngIf="coloresFiltrados?.length">
+              {{coloresFiltrados.length}} colores encontrados
+            </p>
+          </div>
+        </div>
+        <div class="text-right" *ngIf="productoSeleccionadoFiltro">
+          <div class="text-sm font-medium text-gray-700">{{productoSeleccionadoFiltro.codigo}}</div>
+          <div class="text-xs text-gray-500">{{productoSeleccionadoFiltro.nombre}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de colores -->
+    <div class="p-6" *ngIf="coloresFiltrados?.length; else emptyPalette">
+      <div class="palette-grid">
+        <div 
+          *ngFor="let color of coloresFiltrados; trackBy: trackByColor" 
+          class="color-palette-item bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+        >
+          <!-- Header del color con muestra -->
+          <div class="relative h-24 flex items-center justify-center" 
+               [style.background]="'linear-gradient(135deg, ' + (color.codigoHex || '#cccccc') + ' 0%, ' + (color.codigoHex || '#cccccc') + '80 100%)'">
+            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <p-button 
+                icon="pi pi-eye" 
+                [rounded]="true"
+                size="small"
+                severity="info"
+                class="bg-white bg-opacity-90"
+                pTooltip="Ver detalles"
+                (click)="verDetallesColor(color)"
+              />
+            </div>
+            <div class="text-center">
+              <div class="bg-white bg-opacity-90 rounded-lg px-3 py-1 shadow-sm">
+                <div class="font-bold text-sm" [style.color]="getContrastColor(color.codigoHex)">
+                  {{color.codigoHex || 'Sin código'}}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Información del color -->
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-lg font-bold text-gray-800 m-0">{{color.nombre}}</h4>
+              <p-checkbox 
+                value="color"
+                [(ngModel)]="selectedColores"
+                class="ml-2"
+              />
+            </div>
+            
+            <!-- Código del color -->
+            <div class="flex items-center gap-2 mb-3">
+              <div class="bg-gray-100 p-2 rounded-lg">
+                <i class="pi pi-hashtag text-gray-600 text-sm"></i>
+              </div>
+              <span class="text-sm font-mono text-gray-600">{{color.codigoHex || 'No definido'}}</span>
+            </div>
+            
+            <!-- Tallas disponibles -->
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i class="pi pi-tags text-green-600"></i>
+                <span class="text-sm font-semibold text-gray-700">Tallas ({{color.tallas?.length || 0}})</span>
+              </div>
+              <div class="size-chart" *ngIf="color.tallas?.length; else noSizes">
+                <span 
+                  *ngFor="let talla of color.tallas" 
+                  class="talla-chip bg-green-100 text-green-800 border border-green-200"
+                >
+                  {{talla.numero}}
+                </span>
+              </div>
+              <ng-template #noSizes>
+                <div class="flex items-center gap-2 text-gray-500 text-sm">
+                  <i class="pi pi-exclamation-triangle text-orange-500"></i>
+                  <span class="italic">Sin tallas definidas</span>
+                </div>
+              </ng-template>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="flex gap-2 pt-3 border-t border-gray-100">
+              <p-button 
+                *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
+                icon="pi pi-pencil" 
+                [outlined]="true"
+                size="small"
+                class="flex-1"
+                pTooltip="Editar"
+                (click)="editColor(color)"
+              />
+              <p-button 
+                *appHasPermission="{module: 'colores', permission: permissionTypes.DELETE}"
+                icon="pi pi-trash" 
+                severity="danger" 
+                [outlined]="true"
+                size="small"
+                class="flex-1"
+                pTooltip="Eliminar"
+                (click)="eliminarColor(color)"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Card para agregar nuevo color -->
+        <div 
+          *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
+          class="border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300 cursor-pointer group min-h-[300px]"
+          (click)="openNew()"
+        >
+          <div class="bg-purple-100 p-6 rounded-full mb-4 group-hover:bg-purple-200 transition-colors duration-300">
+            <i class="pi pi-plus text-3xl text-purple-600"></i>
+          </div>
+          <span class="text-xl font-semibold text-gray-700 mb-2">Agregar Color</span>
+          <span class="text-sm text-gray-500 text-center">Clic para crear un nuevo color con tallas</span>
+        </div>
+      </div>
+    </div>
+    
+    <ng-template #emptyPalette>
+      <div class="text-center py-12">
+        <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
+          <div class="bg-purple-100 p-8 rounded-full inline-block mb-4">
+            <i class="pi pi-palette text-4xl text-purple-600"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-700 mb-2">No hay colores disponibles</h3>
+          <p class="text-gray-500 mb-6">Este producto no tiene colores configurados aún</p>
+          <p-button 
+            *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
+            label="Crear Primer Color" 
+            icon="pi pi-plus" 
+            size="large"
+            class="shadow-lg hover:shadow-xl transition-all duration-300" 
+            (click)="openNew()"
+          />
+        </div>
+        <ng-template #sinProductoSeleccionado>
+          <div class="bg-blue-100 p-8 rounded-full inline-block mb-4">
+            <i class="pi pi-filter text-4xl text-blue-600"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-700 mb-2">Seleccione un producto</h3>
+          <p class="text-gray-500">Elija un producto para ver y gestionar su paleta de colores</p>
+        </ng-template>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Vista de Tabla Modernizada -->
+<div *ngIf="currentView === 'table'" class="mb-6">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <p-table
+      #dt
+      [value]="coloresFiltrados"
+      [rows]="10"
+      [paginator]="true"
+      [totalRecords]="coloresFiltrados.length"
+      [globalFilterFields]="['nombre']"
+      [tableStyle]="{'min-width': '75rem'}"
+      [(selection)]="selectedColores"
+      [rowHover]="true"
+      dataKey="id"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} colores"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+      [loading]="loading"
+      [alwaysShowPaginator]="true"
+      styleClass="p-datatable-gridlines p-datatable-striped"
+    >
+      <!-- Caption modernizado -->
+      <ng-template pTemplate="caption">
+        <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 border-b border-gray-200">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="bg-purple-600 p-2 rounded-lg">
+                <i class="pi pi-list text-white"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-800 m-0">Lista de Colores y Tallas</h3>
+                <p class="text-sm text-gray-600 mt-1" *ngIf="coloresFiltrados?.length">
+                  {{coloresFiltrados.length}} colores encontrados
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input 
+                  pInputText 
+                  type="text" 
+                  (input)="onGlobalFilter(dt, $event)" 
+                  placeholder="Búsqueda rápida..." 
+                  class="w-80 h-10 rounded-lg"
+                />
+              </p-iconfield>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Header modernizado -->
+      <ng-template pTemplate="header">
+        <tr class="bg-gray-50">
+          <th style="width: 3rem" class="text-center border-b-2 border-gray-200">
+            <p-tableHeaderCheckbox />
+          </th>
+          <th style="width:8rem" class="text-center border-b-2 border-gray-200">
+            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-eye text-purple-600"></i>
+              Color
+            </div>
+          </th>
+          <th pSortableColumn="nombre" style="min-width:15rem" class="border-b-2 border-gray-200">
+            <div class="flex items-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-palette text-blue-600"></i>
+              Nombre
+              <p-sortIcon field="nombre" />
+            </div>
+          </th>
+          <th pSortableColumn="codigoHex" style="min-width:10rem" class="border-b-2 border-gray-200">
+            <div class="flex items-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-hashtag text-green-600"></i>
+              Código HEX
+              <p-sortIcon field="codigoHex" />
+            </div>
+          </th>
+          <th style="min-width:20rem" class="text-center border-b-2 border-gray-200">
+            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-tags text-orange-600"></i>
+              Tallas Disponibles
+            </div>
+          </th>
+          <th style="min-width:8rem" class="text-center border-b-2 border-gray-200">
+            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-hashtag text-pink-600"></i>
+              Total
+            </div>
+          </th>
+          <th style="min-width:12rem" class="text-center border-b-2 border-gray-200">
+            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+              <i class="pi pi-cog text-gray-600"></i>
+              Acciones
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+
+      <!-- Body de la tabla modernizado -->
+      <ng-template pTemplate="body" let-color let-rowIndex="rowIndex">
+        <tr class="hover:bg-purple-50 transition-colors duration-200" [class.bg-gray-25]="rowIndex % 2 === 0">
+          <td class="text-center">
+            <p-tableCheckbox [value]="color" />
+          </td>
+          
+          <!-- Muestra de color -->
+          <td class="text-center">
+            <div class="flex justify-center">
+              <div class="relative group">
+                <div 
+                  class="color-preview shadow-lg cursor-pointer"
+                  [style.background-color]="color.codigoHex || '#cccccc'"
+                  pTooltip="{{color.codigoHex || 'Sin código definido'}}"
+                  (click)="verDetallesColor(color)"
+                ></div>
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <i class="pi pi-eye text-white text-lg"></i>
+                </div>
+              </div>
+            </div>
+          </td>
+          
+          <!-- Nombre del color -->
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="bg-purple-100 p-2 rounded-lg">
+                <i class="pi pi-palette text-purple-600"></i>
+              </div>
+              <div>
+                <div class="font-bold text-gray-900 text-lg">{{ color.nombre }}</div>
+                <div class="text-sm text-gray-500">ID: {{ color.id }}</div>
+              </div>
+            </div>
+          </td>
+          
+          <!-- Código HEX -->
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="bg-green-100 p-2 rounded-lg">
+                <i class="pi pi-hashtag text-green-600"></i>
+              </div>
+              <div>
+                <div class="font-mono font-bold text-gray-800">{{ color.codigoHex || 'No definido' }}</div>
+                <div class="text-xs text-gray-500" *ngIf="color.codigoHex">RGB: {{ hexToRgb(color.codigoHex)?.r }}, {{ hexToRgb(color.codigoHex)?.g }}, {{ hexToRgb(color.codigoHex)?.b }}</div>
+              </div>
+            </div>
+          </td>
+          
+          <!-- Tallas con chips modernos -->
+          <td>
+            <div class="flex flex-wrap gap-1 justify-center max-w-md" *ngIf="color.tallas?.length; else sinTallas">
+              <p-chip 
+                *ngFor="let talla of color.tallas; let i = index" 
+                [label]="talla.numero" 
+                class="text-xs font-bold"
+                styleClass="bg-orange-100 text-orange-800 border border-orange-200"
+              />
+            </div>
+            <ng-template #sinTallas>
+              <div class="flex items-center justify-center gap-2 text-gray-500">
+                <i class="pi pi-exclamation-triangle text-orange-500"></i>
+                <span class="italic">Sin tallas</span>
+              </div>
             </ng-template>
-          </p-table>
+          </td>
+          
+          <!-- Total tallas con indicador -->
+          <td class="text-center">
+            <div class="flex items-center justify-center">
+              <p-tag 
+                [value]="color.tallas?.length || 0" 
+                [severity]="(color.tallas?.length || 0) > 0 ? 'success' : 'danger'"
+                [icon]="(color.tallas?.length || 0) > 0 ? 'pi pi-check' : 'pi pi-times'"
+                class="shadow-md"
+              />
+            </div>
+          </td>
+          
+          <!-- Acciones con hover -->
+          <td>
+            <div class="flex gap-2 justify-center">
+              <!-- Botón Ver Detalles -->
+              <p-button 
+                icon="pi pi-eye" 
+                [rounded]="true" 
+                [outlined]="true"
+                severity="info"
+                size="small"
+                pTooltip="Ver detalles"
+                class="hover:shadow-md transition-all duration-300"
+                (click)="verDetallesColor(color)"
+              />
+              <!-- Botón Editar -->
+              <p-button 
+                *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
+                icon="pi pi-pencil" 
+                [rounded]="true" 
+                [outlined]="true"
+                size="small"
+                pTooltip="Editar"
+                class="hover:shadow-md transition-all duration-300"
+                (click)="editColor(color)"
+              />
+              <!-- Botón Eliminar -->
+              <p-button 
+                *appHasPermission="{module: 'colores', permission: permissionTypes.DELETE}"
+                icon="pi pi-trash" 
+                severity="danger" 
+                [rounded]="true" 
+                [outlined]="true"
+                size="small"
+                pTooltip="Eliminar"
+                class="hover:shadow-md transition-all duration-300"
+                (click)="eliminarColor(color)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty message modernizado -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center py-12">
+            <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
+              <div class="bg-purple-100 p-8 rounded-full inline-block mb-4">
+                <i class="pi pi-palette text-6xl text-purple-600"></i>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-gray-700 mb-2">No hay colores disponibles</div>
+                <div class="text-gray-500 mb-6">Este producto no tiene colores configurados aún</div>
+                <p-button 
+                  *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
+                  label="Crear Primer Color" 
+                  icon="pi pi-plus" 
+                  size="large"
+                  class="shadow-lg hover:shadow-xl transition-all duration-300" 
+                  (click)="openNew()"
+                />
+              </div>
+            </div>
+            <ng-template #sinProductoSeleccionado>
+              <div class="bg-blue-100 p-8 rounded-full inline-block mb-4">
+                <i class="pi pi-filter text-6xl text-blue-600"></i>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-gray-700 mb-2">Seleccione un producto</div>
+                <div class="text-gray-500">Elija un producto para ver y gestionar sus colores</div>
+              </div>
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Loading template -->
+      <ng-template pTemplate="loadingbody">
+        <tr>
+          <td colspan="7">
+            <div class="flex items-center justify-center py-8">
+              <div class="flex items-center gap-3">
+                <i class="pi pi-spin pi-spinner text-purple-600 text-2xl"></i>
+                <span class="text-lg font-medium text-gray-600">Cargando colores...</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Vista de Cuadrícula -->
+<div *ngIf="currentView === 'grid'" class="mb-6">
+  <div class="grid">
+    <div class="col-12 sm:col-6 lg:col-4 xl:col-3" *ngFor="let color of coloresFiltrados; trackBy: trackByColor">
+      <!-- Card compacta modernizada -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
+        <!-- Header del color -->
+        <div class="h-20 relative flex items-center justify-center" 
+             [style.background]="'linear-gradient(135deg, ' + (color.codigoHex || '#cccccc') + ' 0%, ' + (color.codigoHex || '#cccccc') + '80 100%)'">
+          <div class="bg-white bg-opacity-90 rounded-lg px-3 py-1 shadow-sm">
+            <span class="font-bold text-sm" [style.color]="getContrastColor(color.codigoHex)">
+              {{color.nombre}}
+            </span>
+          </div>
+          <p-checkbox 
+            value="color"
+            [(ngModel)]="selectedColores"
+            class="absolute top-2 right-2 bg-white bg-opacity-90 rounded"
+          />
+        </div>
+        
+        <!-- Contenido -->
+        <div class="p-4">
+          <div class="text-center mb-3">
+            <div class="font-mono text-sm text-gray-600">{{color.codigoHex || 'Sin código'}}</div>
+          </div>
+          
+          <!-- Tallas -->
+          <div class="mb-3">
+            <div class="text-xs text-gray-600 mb-1">Tallas ({{color.tallas?.length || 0}})</div>
+            <div class="flex flex-wrap gap-1" *ngIf="color.tallas?.length; else noTallas">
+              <span 
+                *ngFor="let talla of color.tallas" 
+                class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium"
+              >
+                {{talla.numero}}
+              </span>
+            </div>
+            <ng-template #noTallas>
+              <div class="text-xs text-gray-400 italic">Sin tallas</div>
+            </ng-template>
+          </div>
+          
+          <!-- Acciones -->
+          <div class="flex gap-1">
+            <p-button 
+              icon="pi pi-eye" 
+              [outlined]="true"
+              size="small"
+              severity="info"
+              class="flex-1"
+              pTooltip="Ver"
+              (click)="verDetallesColor(color)"
+            />
+            <p-button 
+              *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
+              icon="pi pi-pencil" 
+              [outlined]="true"
+              size="small"
+              class="flex-1"
+              pTooltip="Editar"
+              (click)="editColor(color)"
+            />
+            <p-button 
+              *appHasPermission="{module: 'colores', permission: permissionTypes.DELETE}"
+              icon="pi pi-trash" 
+              severity="danger" 
+              [outlined]="true"
+              size="small"
+              class="flex-1"
+              pTooltip="Eliminar"
+              (click)="eliminarColor(color)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Diálogo premium para crear/editar color -->
+<p-dialog 
+  [(visible)]="visible" 
+  [style]="{width: '900px', height: 'auto'}" 
+  [header]="editMode ? 'Editar Color y Tallas' : 'Nuevo Color y Tallas'" 
+  [modal]="true" 
+  (onHide)="hideDialog()"
+  [contentStyle]="{'padding':'0'}"
+  styleClass="color-dialog-header"
+>
+  <ng-template pTemplate="content">
+    <div class="p-6">
+      <!-- Indicador de modo -->
+      <div class="mb-4" *ngIf="editMode">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+          <i class="pi pi-info-circle text-blue-600"></i>
+          <span class="text-blue-800 text-sm">Editando color existente</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Panel izquierdo: Vista previa del color -->
+        <div class="col-12 lg:col-4">
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 h-full">
+            <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <i class="pi pi-eye text-purple-600"></i>
+              Vista Previa
+            </h4>
+            
+            <!-- Muestra grande del color -->
+            <div class="mb-4">
+              <div 
+                class="w-full h-32 rounded-xl border-4 border-white shadow-lg transition-all duration-300"
+                [style.background-color]="color.codigoHex || '#cccccc'"
+              ></div>
+              <div class="text-center mt-2">
+                <span class="font-mono text-sm text-gray-600">{{color.codigoHex || 'Sin código'}}</span>
+              </div>
+            </div>
+            
+            <!-- Información del color -->
+            <div class="space-y-3">
+              <div class="bg-white rounded-lg p-3">
+                <div class="text-xs text-gray-600 mb-1">Nombre del Color</div>
+                <div class="font-semibold text-gray-800">{{color.nombre || 'Sin nombre'}}</div>
+              </div>
+              
+              <div class="bg-white rounded-lg p-3" *ngIf="color.codigoHex">
+                <div class="text-xs text-gray-600 mb-1">Valores RGB</div>
+                <div class="font-mono text-sm text-gray-800" *ngIf="hexToRgb(color.codigoHex)">
+                  R: {{hexToRgb(color.codigoHex)?.r}} 
+                  G: {{hexToRgb(color.codigoHex)?.g}} 
+                  B: {{hexToRgb(color.codigoHex)?.b}}
+                </div>
+              </div>
+              
+              <div class="bg-white rounded-lg p-3">
+                <div class="text-xs text-gray-600 mb-1">Tallas Configuradas</div>
+                <div class="font-semibold text-gray-800">{{tallas.length}} tallas</div>
+              </div>
+            </div>
+            
+            <!-- Colores sugeridos -->
+            <div class="mt-4" *ngIf="!editMode">
+              <h5 class="text-sm font-semibold text-gray-700 mb-2">Colores Populares</h5>
+              <div class="grid grid-cols-4 gap-2">
+                <div 
+                  *ngFor="let preset of coloresPreset.slice(0, 8)"
+                  class="w-8 h-8 rounded-lg border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
+                  [style.background-color]="preset.hex"
+                  [title]="preset.nombre"
+                  (click)="aplicarColorPreset(preset)"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel derecho: Formulario -->
+        <div class="col-12 lg:col-8">
+          <!-- Selector de producto (solo si es nuevo color) -->
+          <div class="mb-5" *ngIf="!editMode && !productoSeleccionadoFiltro">
+            <label for="producto" class="block font-bold mb-3">
+              <i class="pi pi-box mr-2 text-blue-600"></i>
+              Producto*
+            </label>
+            <p-select 
+              id="producto" 
+              [options]="productos" 
+              [(ngModel)]="productoSeleccionado" 
+              optionLabel="codigo"
+              placeholder="Seleccione un producto"
+              [filter]="true"
+              filterBy="nombre,codigo"
+              class="w-full"
+              styleClass="h-12"
+              [showClear]="true"
+              [ngClass]="{'ng-invalid': submitted && !productoSeleccionado}">
+              <ng-template pTemplate="selectedItem">
+                <div *ngIf="productoSeleccionado" class="flex items-center gap-3">
+                  <div class="bg-blue-100 p-2 rounded-lg">
+                    <i class="pi pi-box text-blue-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">{{productoSeleccionado.codigo}}</div>
+                    <div class="text-sm text-gray-500">{{productoSeleccionado.nombre}}</div>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex items-center gap-3 p-2">
+                  <div class="bg-blue-100 p-2 rounded-lg">
+                    <i class="pi pi-box text-blue-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">{{item.codigo}} - {{item.nombre}}</div>
+                    <div class="text-sm text-gray-500">${{item.precio | number:'1.2-2'}}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-select>
+            <small class="text-red-500 block mt-1" *ngIf="submitted && !productoSeleccionado">
+              El producto es obligatorio.
+            </small>
+          </div>
+
+          <!-- Producto preseleccionado -->
+          <div class="mb-5" *ngIf="!editMode && productoSeleccionadoFiltro">
+            <label class="block font-bold mb-3">
+              <i class="pi pi-box mr-2 text-blue-600"></i>
+              Producto Seleccionado
+            </label>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg">
+                  <i class="pi pi-box text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-800">{{productoSeleccionadoFiltro.codigo}}</div>
+                  <div class="text-sm text-gray-600">{{productoSeleccionadoFiltro.nombre}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Nombre del color -->
+          <div class="mb-5">
+            <label for="nombre" class="block font-bold mb-3">
+              <i class="pi pi-palette mr-2 text-purple-600"></i>
+              Nombre del Color*
+            </label>
+            <input 
+              id="nombre" 
+              type="text" 
+              pInputText 
+              [(ngModel)]="color.nombre" 
+              class="w-full h-12 text-base"
+              placeholder="Ej: Rojo Carmesí, Azul Océano, Verde Esmeralda..."
+              [ngClass]="{'ng-invalid': submitted && !color.nombre.trim()}" 
+            />
+            <small class="text-red-500 block mt-1" *ngIf="submitted && !color.nombre?.trim()">
+              El nombre del color es obligatorio.
+            </small>
+            <small class="text-gray-500 block mt-1" *ngIf="!submitted || color.nombre?.trim()">
+              Ingrese un nombre descriptivo para el color
+            </small>
+          </div>
+
+          <!-- Selector de color avanzado -->
+          <div class="mb-5">
+            <label for="codigoHex" class="block font-bold mb-3">
+              <i class="pi pi-eyedropper mr-2 text-green-600"></i>
+              Color Visual
+            </label>
+            
+            <div class="bg-gray-50 rounded-lg p-4">
+              <!-- Color picker principal -->
+              <div class="flex items-center gap-4 mb-4">
+                <p-colorPicker 
+                  [(ngModel)]="color.codigoHex" 
+                  [style]="{'width': '60px', 'height': '50px'}"
+                  class="border-2 border-gray-300 rounded-lg"
+                />
+                <div class="flex-1">
+                  <input 
+                    type="text" 
+                    pInputText 
+                    [(ngModel)]="color.codigoHex" 
+                    placeholder="#000000"
+                    class="w-full h-12 font-mono text-base"
+                    maxlength="7"
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                  />
+                </div>
+                <p-button 
+                  icon="pi pi-refresh" 
+                  [outlined]="true"
+                  size="small"
+                  pTooltip="Generar color aleatorio"
+                  (click)="generarColorAleatorio()"
+                />
+              </div>
+              
+              <!-- Paleta de colores populares -->
+              <div class="mb-4">
+                <small class="text-gray-600 block mb-2">Colores populares (clic para seleccionar):</small>
+                <div class="grid grid-cols-6 gap-2">
+                  <div 
+                    *ngFor="let preset of coloresPreset"
+                    class="w-10 h-10 rounded-lg border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-all duration-300 relative group"
+                    [style.background-color]="preset.hex"
+                    [title]="preset.nombre + ' - ' + preset.hex"
+                    (click)="aplicarColorPreset(preset)"
+                  >
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-300 flex items-center justify-center">
+                      <i class="pi pi-check text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Sugerencia de nombre -->
+              <div *ngIf="color.codigoHex && !color.nombre.trim()">
+                <small class="text-blue-600 block">
+                  <i class="pi pi-lightbulb mr-1"></i>
+                  Sugerencia: "{{getNombreColorSugerido(color.codigoHex)}}"
+                  <button 
+                    type="button" 
+                    class="ml-2 text-blue-600 underline hover:text-blue-800"
+                    (click)="color.nombre = getNombreColorSugerido(color.codigoHex)"
+                  >
+                    Usar esta sugerencia
+                  </button>
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gestión de tallas mejorada -->
+          <div class="mb-5">
+            <label class="block font-bold mb-3">
+              <i class="pi pi-tags mr-2 text-orange-600"></i>
+              Tallas Disponibles*
+            </label>
+            
+            <!-- Categorías de tallas -->
+            <div class="mb-4">
+              <small class="text-gray-600 block mb-3">Agregar por categorías:</small>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div 
+                  *ngFor="let categoria of tallaCategories" 
+                  class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors duration-300 cursor-pointer"
+                  (click)="agregarTallasCategoria(categoria)"
+                >
+                  <div class="flex items-center gap-3">
+                    <div [ngClass]="'bg-' + categoria.color + '-100 p-2 rounded-lg'">
+                      <i [class]="categoria.icon" [ngClass]="'text-' + categoria.color + '-600'"></i>
+                    </div>
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-800">{{categoria.label}}</div>
+                      <div class="text-xs text-gray-500">{{categoria.sizes.length}} tallas disponibles</div>
+                      <div class="text-xs text-gray-400 mt-1">{{categoria.sizes.slice(0, 5).join(', ')}}...</div>
+                    </div>
+                    <div class="text-xs text-gray-500">Clic para agregar</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tallas comunes individuales -->
+            <div class="mb-4">
+              <small class="text-gray-600 block mb-2">Tallas comunes (clic individual):</small>
+              <div class="flex flex-wrap gap-2">
+                <span 
+                  *ngFor="let tallaComun of ['XS', 'S', 'M', 'L', 'XL', 'XXL', '32', '34', '36', '38', '40', '42']"
+                  class="px-3 py-2 border border-gray-300 rounded-lg cursor-pointer transition-all duration-300 text-sm font-medium hover:bg-gray-100"
+                  [ngClass]="{
+                    'bg-gray-200 text-gray-500 cursor-not-allowed': isTallaAdded(tallaComun),
+                    'bg-white text-gray-700 hover:bg-blue-50 hover:border-blue-300': !isTallaAdded(tallaComun)
+                  }"
+                  (click)="!isTallaAdded(tallaComun) && agregarTallaComun(tallaComun)"
+                  [title]="isTallaAdded(tallaComun) ? 'Talla ya agregada' : 'Clic para agregar'"
+                >
+                  {{tallaComun}}
+                  <i class="pi pi-check ml-1 text-green-600" *ngIf="isTallaAdded(tallaComun)"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- Input para talla personalizada -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Talla personalizada:</label>
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  pInputText 
+                  [(ngModel)]="nuevaTalla" 
+                  class="flex-1 h-12"
+                  placeholder="Ingrese talla personalizada (ej: 36.5, XS-P, 2XL...)" 
+                  (keyup.enter)="agregarTalla()"
+                  style="text-transform: uppercase"
+                />
+                <p-button 
+                  type="button" 
+                  label="Agregar" 
+                  icon="pi pi-plus" 
+                  size="large"
+                  (click)="agregarTalla()"
+                  [disabled]="!nuevaTalla.trim()"
+                  class="shadow-sm"
+                />
+              </div>
+            </div>
+            
+            <!-- Lista de tallas agregadas -->
+            <div class="mb-3" *ngIf="tallas.length > 0">
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                Tallas configuradas ({{tallas.length}}):
+              </label>
+              <div class="bg-gray-50 rounded-lg p-4 max-h-32 overflow-y-auto">
+                <div class="flex flex-wrap gap-2">
+                  <div 
+                    *ngFor="let talla of tallas; trackBy: trackByTalla; let i = index" 
+                    class="flex items-center bg-orange-100 border border-orange-300 rounded-lg px-3 py-2 gap-2 group hover:bg-orange-200 transition-colors duration-300"
+                  >
+                    <span class="font-semibold text-orange-800">{{talla.numero}}</span>
+                    <button 
+                      type="button"
+                      class="text-red-500 hover:text-red-700 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      (click)="eliminarTalla(i)"
+                      title="Eliminar talla"
+                    >
+                      <i class="pi pi-times text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Mensajes de validación -->
+            <small class="text-red-500 block mt-1" *ngIf="submitted && !tallas.length">
+              Debe agregar al menos una talla.
+            </small>
+            <small class="text-gray-500 block mt-1" *ngIf="tallas.length > 0">
+              {{tallas.length}} talla{{tallas.length !== 1 ? 's' : ''}} configurada{{tallas.length !== 1 ? 's' : ''}}. Hover sobre una talla para eliminarla.
+            </small>
+          </div>
         </div>
       </div>
     </div>
   </ng-template>
-  
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancelar" icon="pi pi-times" text (click)="hide()"></p-button>
-    <p-button label="Guardar" icon="pi pi-check" (click)="guardarColor()" [loading]="loading"></p-button>
+    <div class="flex justify-between items-center px-6 pb-4">
+      <!-- Info del lado izquierdo -->
+      <div class="text-sm text-gray-600">
+        <i class="pi pi-info-circle mr-1"></i>
+        {{tallas.length}} talla{{tallas.length !== 1 ? 's' : ''}} configurada{{tallas.length !== 1 ? 's' : ''}}
+      </div>
+      
+      <!-- Botones del lado derecho -->
+      <div class="flex gap-3">
+        <p-button 
+          type="button" 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          class="p-button-text" 
+          (click)="hideDialog()" 
+          [disabled]="loading"
+        />
+        <p-button 
+          type="button" 
+          [label]="editMode ? 'Actualizar Color' : 'Crear Color'" 
+          icon="pi pi-check" 
+          (click)="guardarColor()" 
+          [loading]="loading"
+          class="shadow-lg"
+        />
+      </div>
+    </div>
   </ng-template>
 </p-dialog>
+
+<!-- Modal de Detalles del Color -->
+<p-dialog 
+  [(visible)]="detalleColorDialog" 
+  [style]="{width: '700px'}" 
+  header="Detalles del Color" 
+  [modal]="true" 
+  (onHide)="hideDetalleColorDialog()"
+>
+  <div *ngIf="colorDetalle" class="p-4">
+    <div class="grid">
+      <!-- Muestra visual del color -->
+      <div class="col-12 md:col-5 text-center">
+        <div 
+          class="w-full h-48 rounded-xl border-4 border-white shadow-lg mb-4"
+          [style.background]="'linear-gradient(135deg, ' + (colorDetalle.codigoHex || '#cccccc') + ' 0%, ' + (colorDetalle.codigoHex || '#cccccc') + '80 100%)'">
+        </div>
+        <h4 class="font-bold text-gray-800 mb-2">{{ colorDetalle.nombre }}</h4>
+        <p class="text-gray-600 font-mono">{{ colorDetalle.codigoHex || 'Sin código definido' }}</p>
+        
+        <!-- Información RGB -->
+        <div class="bg-gray-50 rounded-lg p-3 mt-4" *ngIf="colorDetalle.codigoHex">
+          <h5 class="font-semibold text-gray-700 mb-2">Valores RGB</h5>
+          <div class="font-mono text-sm text-gray-600" *ngIf="hexToRgb(colorDetalle.codigoHex)">
+            <div>R: {{ hexToRgb(colorDetalle.codigoHex)?.r }}</div>
+            <div>G: {{ hexToRgb(colorDetalle.codigoHex)?.g }}</div>
+            <div>B: {{ hexToRgb(colorDetalle.codigoHex)?.b }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Información detallada -->
+      <div class="col-12 md:col-7">
+        <div class="space-y-4">
+          <!-- Información básica -->
+          <div class="bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-palette text-purple-600"></i>
+              Información del Color
+            </h4>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-tag text-gray-500"></i>
+                <span class="font-semibold">Nombre:</span>
+                <span>{{ colorDetalle.nombre }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-hashtag text-gray-500"></i>
+                <span class="font-semibold">Código HEX:</span>
+                <span class="font-mono">{{ colorDetalle.codigoHex || 'No definido' }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-database text-gray-500"></i>
+                <span class="font-semibold">ID:</span>
+                <span>{{ colorDetalle.id }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tallas disponibles -->
+          <div class="bg-gradient-to-r from-gray-50 to-orange-50 rounded-xl p-4">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-tags text-orange-600"></i>
+              Tallas Disponibles ({{ colorDetalle.tallas?.length || 0 }})
+            </h4>
+            <div class="flex flex-wrap gap-2" *ngIf="colorDetalle.tallas?.length; else sinTallasDetalle">
+              <p-chip 
+                *ngFor="let talla of colorDetalle.tallas"
+                [label]="talla.numero"
+                styleClass="bg-orange-100 text-orange-800 border border-orange-200"
+                class="font-medium"
+              />
+            </div>
+            <ng-template #sinTallasDetalle>
+              <div class="flex items-center gap-2 text-gray-500">
+                <i class="pi pi-exclamation-triangle text-orange-500"></i>
+                <span class="italic">No hay tallas configuradas para este color</span>
+              </div>
+            </ng-template>
+          </div>
+          
+          <!-- Colores similares -->
+          <div class="bg-gray-50 rounded-lg p-3" *ngIf="getColoresSimilares(colorDetalle).length > 0">
+            <h4 class="font-bold text-gray-800 mb-2">Colores Similares</h4>
+            <div class="flex gap-2">
+              <div 
+                *ngFor="let similar of getColoresSimilares(colorDetalle)"
+                class="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm"
+              >
+                <div 
+                  class="w-6 h-6 rounded border border-gray-300"
+                  [style.background-color]="similar.codigoHex"
+                ></div>
+                <span class="text-sm font-medium">{{ similar.nombre }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3">
+      <p-button 
+        label="Cerrar" 
+        icon="pi pi-times" 
+        class="p-button-text" 
+        (click)="hideDetalleColorDialog()" 
+      />
+      <p-button 
+        *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
+        label="Editar Color" 
+        icon="pi pi-pencil" 
+        (click)="editColor(colorDetalle!); hideDetalleColorDialog()" 
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Estadísticas -->
+<p-dialog 
+  [(visible)]="estadisticasDialog" 
+  [style]="{width: '1000px'}" 
+  header="Estadísticas de Colores y Tallas" 
+  [modal]="true" 
+  (onHide)="hideEstadisticasDialog()"
+>
+  <div *ngIf="coloresFiltrados?.length; else noEstadisticas">
+    <!-- Tabs para diferentes vistas de estadísticas -->
+    <p-tabView [(activeIndex)]="activeTab">
+      <!-- Tab: Resumen General -->
+      <p-tabPanel header="Resumen General" leftIcon="pi pi-chart-pie">
+        <div class="grid">
+          <!-- Métricas principales -->
+          <div class="col-12">
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 mb-4">
+              <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="pi pi-chart-bar text-purple-600"></i>
+                Resumen General
+              </h3>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-3xl font-bold text-purple-600">{{calcularEstadisticas().totalColores}}</div>
+                  <div class="text-sm text-gray-600">Total Colores</div>
+                </div>
+                <div class="text-center bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-3xl font-bold text-green-600">{{calcularEstadisticas().totalTallas}}</div>
+                  <div class="text-sm text-gray-600">Tallas Únicas</div>
+                </div>
+                <div class="text-center bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-3xl font-bold text-blue-600">{{calcularEstadisticas().combinaciones}}</div>
+                  <div class="text-sm text-gray-600">Combinaciones</div>
+                </div>
+                <div class="text-center bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-3xl font-bold text-orange-600">{{(calcularEstadisticas().combinaciones / calcularEstadisticas().totalColores) | number:'1.1-1'}}</div>
+                  <div class="text-sm text-gray-600">Promedio Tallas/Color</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Colores más populares -->
+          <div class="col-12 md:col-6">
+            <div class="bg-white rounded-xl p-4 border border-gray-200 h-full">
+              <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <i class="pi pi-palette text-purple-600"></i>
+                Colores con Más Tallas
+              </h4>
+              <div class="space-y-3">
+                <div 
+                  *ngFor="let colorPopular of calcularEstadisticas().coloresPopulares.slice(0, 5)" 
+                  class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                >
+                  <div class="flex items-center gap-3">
+                    <div 
+                      class="w-8 h-8 rounded border border-gray-300"
+                      [style.background-color]="colorPopular.color.codigoHex || '#cccccc'"
+                    ></div>
+                    <div>
+                      <span class="font-semibold text-gray-800">{{colorPopular.color.nombre}}</span>
+                      <div class="text-xs text-gray-500">{{colorPopular.color.codigoHex}}</div>
+                    </div>
+                  </div>
+                  <span class="font-bold text-purple-600">{{colorPopular.count}} tallas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tallas más utilizadas -->
+          <div class="col-12 md:col-6">
+            <div class="bg-white rounded-xl p-4 border border-gray-200 h-full">
+              <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <i class="pi pi-tags text-green-600"></i>
+                Tallas Más Utilizadas
+              </h4>
+              <div class="space-y-3">
+                <div 
+                  *ngFor="let tallaPopular of calcularEstadisticas().tallasPopulares.slice(0, 5)" 
+                  class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                >
+                  <div class="flex items-center gap-3">
+                    <div class="bg-green-100 p-2 rounded-lg">
+                      <i class="pi pi-tag text-green-600"></i>
+                    </div>
+                    <span class="font-semibold text-gray-800">Talla {{tallaPopular.talla}}</span>
+                  </div>
+                  <span class="font-bold text-green-600">{{tallaPopular.count}} colores</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      
+      <!-- Tab: Distribución por Categorías -->
+      <p-tabPanel header="Distribución" leftIcon="pi pi-chart-bar">
+        <div class="grid">
+          <div class="col-12">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Distribución de Tallas por Categorías</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div 
+                *ngFor="let distribucion of calcularEstadisticas().distribucionTallas" 
+                class="bg-white rounded-xl p-4 border border-gray-200 text-center hover:shadow-md transition-shadow duration-300"
+              >
+                <div class="text-2xl font-bold text-blue-600 mb-2">{{distribucion.count}}</div>
+                <div class="text-sm text-gray-700 font-medium">{{distribucion.categoria}}</div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                  <div 
+                    class="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                    [style.width.%]="(distribucion.count / calcularEstadisticas().totalTallas) * 100"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      
+      <!-- Tab: Paleta de Colores -->
+      <p-tabPanel header="Paleta Visual" leftIcon="pi pi-palette">
+        <div class="grid">
+          <div class="col-12">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Paleta Completa de Colores</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div 
+                *ngFor="let color of coloresFiltrados" 
+                class="text-center"
+              >
+                <div 
+                  class="w-full h-20 rounded-lg border-4 border-white shadow-lg mb-2"
+                  [style.background-color]="color.codigoHex || '#cccccc'"
+                ></div>
+                <div class="font-semibold text-sm text-gray-800">{{color.nombre}}</div>
+                <div class="font-mono text-xs text-gray-500">{{color.codigoHex}}</div>
+                <div class="text-xs text-gray-400">{{color.tallas?.length || 0}} tallas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+  
+  <ng-template #noEstadisticas>
+    <div class="text-center py-8">
+      <div class="bg-gray-100 p-8 rounded-full inline-block mb-4">
+        <i class="pi pi-chart-bar text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-lg font-bold text-gray-700 mb-2">No hay datos disponibles</h3>
+      <p class="text-gray-500">Seleccione un producto y agregue colores para ver las estadísticas</p>
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3">
+      <p-button 
+        label="Cerrar" 
+        icon="pi pi-times" 
+        class="p-button-text" 
+        (click)="hideEstadisticasDialog()" 
+      />
+      <p-button 
+        label="Exportar Estadísticas" 
+        icon="pi pi-download" 
+        severity="info"
+        (click)="exportarEstadisticas()" 
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-button 
+  label="Debug Colores" 
+  icon="pi pi-bug" 
+  severity="secondary" 
+  [outlined]="true"
+  size="small"
+  (click)="debugColores()"
+  pTooltip="Ver estado de colores en consola"
+/>

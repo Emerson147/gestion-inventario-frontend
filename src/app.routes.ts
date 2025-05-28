@@ -5,6 +5,7 @@ import {AuthGuard} from './app/core/guards/auth.guard';
 import {RedirectComponent} from './app/shared/components/redirect/redirect.component';
 import {AppLayout} from './app/shared/components/layout/component/app.layout';
 import {NotFoundComponent} from './app/shared/components/not-found/not-found.component';
+import { AdminDashboardComponent } from './app/features/admin/dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -33,7 +34,7 @@ export const routes: Routes = [
       // Redireccionar inteligente desde dashboard
       {
         path: 'dashboard',
-        component: RedirectComponent
+        component: AdminDashboardComponent
       },
 
       // Redirección por defecto dentro del layout

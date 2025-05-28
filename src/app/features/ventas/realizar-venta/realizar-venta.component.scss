@@ -1,0 +1,104 @@
+/* Importar fuente moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Estilos globales */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #F9FAFB;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+/* Reducir animaciones para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in, .animate-pulse {
+    animation: none;
+  }
+}
+
+/* Estilos para botones */
+.p-button {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.p-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsividad */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .p-6 {
+    padding: 1rem;
+  }
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1) {
+    display: none; /* Oculta la columna de imagen en móviles */
+  }
+}
+
+/* Inputs táctiles */
+.p-autocomplete,
+.p-dropdown,
+.p-inputnumber {
+  min-height: 2.5rem;
+  font-size: 1rem;
+}
+
+/* Sombras suaves */
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.steps-modern .p-steps-item.p-highlight {
+  background: linear-gradient(45deg, #6200ea, #b388ff);
+  box-shadow: 0 6px 12px rgba(98, 0, 234, 0.4);
+  border-radius: 8px;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+.steps-modern .p-steps-item.p-highlight .p-steps-title {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.steps-modern .p-steps-item.p-highlight .p-steps-number {
+  background: #ffffff;
+  color: #6200ea;
+  border: 2px solid #b388ff;
+}
+
+.steps-modern .p-steps-item {
+  background: #e9ecef;
+  color: #6c757d;
+  border-radius: 8px;
+}
+
+.steps-modern .p-steps-item::before {
+  border-color: #6200ea;
+}

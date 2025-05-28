@@ -22,3 +22,13 @@ export interface Producto {
   fechaCreacion?: string;
   fechaActualizacion?: string;
 }
+
+// Respuestas paginadas
+export interface PagedResponse<T> {
+  contenido: T[];
+  numeroPagina: number;
+  tamañoPagina: number;
+  totalElementos: number;
+  totalPaginas: number;
+  ultima: boolean;
+}

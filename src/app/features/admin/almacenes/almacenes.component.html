@@ -1,1 +1,348 @@
-<p>almacenes works!</p>
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<!-- Header con estadísticas y resumen -->
+<div class="mb-4">
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 m-0 flex items-center gap-2">
+        <i class="pi pi-warehouse text-blue-600"></i>
+        Gestión de Almacenes
+      </h2>
+      <p class="text-gray-600 mt-1 mb-0">Administra tu catálogo de Almacenes</p>
+    </div>
+    <div class="flex gap-4">
+      <div class="text-center" *ngIf="almacenes?.length">
+        <div class="text-xl font-bold text-blue-600">{{ almacenes.length }}</div>
+        <div class="text-sm text-gray-600">Total Almacenes</div>
+      </div>
+      <div class="text-center" *ngIf="selectedAlmacenes?.length">
+        <div class="text-xl font-bold text-orange-600">{{ selectedAlmacenes.length }}</div>
+        <div class="text-sm text-gray-600">Seleccionados</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toolbar styleClass="mb-6 border-round">
+  <ng-template pTemplate="start">
+    <p-button 
+      *appHasPermission="{module: 'almacenes', permission: permissionTypes.CREATE}" 
+      label="Nuevo Almacén" 
+      icon="pi pi-plus" 
+      class="mr-2" 
+      (click)="openNew()"
+      pTooltip="Crear un nuevo almacén"
+    />
+    <p-button 
+      *appHasPermission="{module: 'almacenes', permission: permissionTypes.DELETE}"
+      label="Eliminar Seleccionados" 
+      icon="pi pi-trash" 
+      severity="secondary"
+      outlined 
+      (click)="deleteSelectedAlmacenes()" 
+      [disabled]="!selectedAlmacenes.length"
+      pTooltip="Eliminar almacenes seleccionados"
+    ></p-button>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+    <p-button 
+      label="Exportar" 
+      icon="pi pi-upload" 
+      severity="secondary" 
+      (click)="exportarExcel()"
+      [disabled]="!almacenes.length"
+      pTooltip="Exportar lista a Excel"
+    ></p-button>
+  </ng-template> 
+</p-toolbar>
+
+<p-table
+  #dt
+  [value]="almacenes"
+  [rows]="10"
+  [paginator]="true"
+  [globalFilterFields]="['nombre', 'ubicacion', 'descripcion']"
+  [tableStyle]="{'min-width': '75rem'}"
+  [(selection)]="selectedAlmacenes"
+  [rowHover]="true"
+  dataKey="id"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} almacenes"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+  [loading]="loading"
+  [alwaysShowPaginator]="true"
+  styleClass="p-datatable-gridlines"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex items-center justify-between">
+      <h5 class="m-0 flex items-center gap-2">
+        <i class="pi pi-list text-blue-600"></i>
+        Lista de Almacenes
+        <span class="text-sm font-normal text-gray-600" *ngIf="almacenes?.length">
+          ({{almacenes.length}} registros)
+        </span>
+      </h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input 
+          pInputText 
+          type="text" 
+          (input)="onGlobalFilter(dt, $event)" 
+          placeholder="Buscar almacenes..." 
+          class="w-80"
+        />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="nombre" style="min-width:12rem">
+        <i class="pi pi-tag mr-2"></i>
+        Nombre
+        <p-sortIcon field="nombre" />
+      </th>
+      <th pSortableColumn="ubicacion" style="min-width:15rem">
+        <i class="pi pi-map-marker mr-2"></i>
+        Ubicación
+        <p-sortIcon field="ubicacion" />
+      </th>
+      <th pSortableColumn="descripcion" style="min-width:20rem">
+        <i class="pi pi-file-edit mr-2"></i>
+        Descripción
+        <p-sortIcon field="descripcion" />
+      </th>
+      <th pSortableColumn="fechaCreacion" style="min-width:12rem">
+        <i class="pi pi-calendar mr-2"></i>
+        Fecha Creación
+        <p-sortIcon field="fechaCreacion" />
+      </th>
+      <th style="min-width: 10rem">
+        <i class="pi pi-cog mr-2"></i>
+        Acciones
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-almacen>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="almacen" />
+      </td>
+      <td>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-warehouse text-blue-500"></i>
+          <div>
+            <div class="font-semibold">{{almacen.nombre}}</div>
+            <small class="text-gray-500" *ngIf="almacen.id">ID: {{almacen.id}}</small>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-map-marker text-green-500"></i>
+          <span>{{almacen.ubicacion}}</span>
+        </div>
+      </td>
+      <td>
+        <div *ngIf="almacen.descripcion; else sinDescripcion">
+          <span 
+            [title]="almacen.descripcion"
+            class="block"
+          >
+            {{almacen.descripcion?.length > 50 ? (almacen.descripcion | slice:0:50) + '...' : almacen.descripcion}}
+          </span>
+        </div>
+        <ng-template #sinDescripcion>
+          <span class="text-gray-400 italic">Sin descripción</span>
+        </ng-template>
+      </td>
+      <td>
+        <div *ngIf="almacen.fechaCreacion; else sinFecha" class="text-sm">
+          <div>{{almacen.fechaCreacion | date:'dd/MM/yyyy'}}</div>
+          <small class="text-gray-500">{{almacen.fechaCreacion | date:'HH:mm'}}</small>
+        </div>
+        <ng-template #sinFecha>
+          <span class="text-gray-400">No disponible</span>
+        </ng-template>
+      </td>
+      <td class="flex gap-2">
+        <p-button 
+          *appHasPermission="{module: 'almacenes', permission: permissionTypes.EDIT}" 
+          icon="pi pi-pencil" 
+          class="mr-2" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="editAlmacen(almacen)"
+          pTooltip="Editar almacén"
+        />
+        <p-button 
+          *appHasPermission="{module: 'almacenes', permission: permissionTypes.DELETE}" 
+          icon="pi pi-trash" 
+          severity="danger" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="deleteAlmacen(almacen)"
+          pTooltip="Eliminar almacén"
+        />
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6" class="text-center py-8">
+        <div class="flex flex-col items-center gap-4">
+          <i class="pi pi-inbox text-4xl text-gray-400"></i>
+          <div class="text-lg font-medium text-gray-600">No hay almacenes disponibles</div>
+          <div class="text-gray-500">No se encontraron almacenes en el sistema</div>
+          <button 
+            *appHasPermission="{module: 'almacenes', permission: permissionTypes.CREATE}"
+            pButton 
+            label="Crear Primer Almacén" 
+            icon="pi pi-plus" 
+            class="p-button-sm p-button-outlined" 
+            (click)="openNew()"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo para crear/editar almacén -->
+<p-dialog 
+  [(visible)]="almacenDialog" 
+  [style]="{'width': '550px', 'height': 'auto'}" 
+  [header]="editMode ? 'Editar Almacén' : 'Nuevo Almacén'" 
+  [modal]="true" 
+  (onHide)="hideDialog()"
+  [contentStyle]="{'padding':'0'}"
+>
+  <ng-template pTemplate="content">
+    <div class="p-6">
+      <!-- Indicador de modo -->
+      <div class="mb-4" *ngIf="editMode">
+        <div class="bg-blue-50 border border-blue-200 rounded p-3 flex items-center gap-2">
+          <i class="pi pi-info-circle text-blue-600"></i>
+          <span class="text-blue-800 text-sm">Editando almacén existente</span>
+        </div>
+      </div>
+
+      <!-- Campo Nombre -->
+      <div class="mb-5">
+        <label for="nombre" class="block font-bold mb-3">
+          <i class="pi pi-tag mr-2"></i>
+          Nombre del Almacén*
+        </label>
+        <input 
+          type="text" 
+          pInputText 
+          id="nombre" 
+          [(ngModel)]="almacen.nombre" 
+          class="w-full"
+          placeholder="Ej: Almacén Principal, Bodega Norte..."
+          autofocus 
+          [ngClass]="{'ng-invalid': submitted && !almacen.nombre.trim()}" 
+        />
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !almacen.nombre.trim()">
+          El nombre del almacén es obligatorio.
+        </small>
+        <small class="text-gray-500 block mt-1" *ngIf="!submitted || almacen.nombre.trim()">
+          Mínimo 2 caracteres
+        </small>
+      </div>
+      
+      <!-- Campo Ubicación -->
+      <div class="mb-5">
+        <label for="ubicacion" class="block font-bold mb-3">
+          <i class="pi pi-map-marker mr-2"></i>
+          Ubicación*
+        </label>
+        <input 
+          type="text" 
+          pInputText 
+          id="ubicacion" 
+          [(ngModel)]="almacen.ubicacion" 
+          class="w-full"
+          placeholder="Ej: Sector A, Piso 2, Calle 123..."
+          [ngClass]="{'ng-invalid': submitted && !almacen.ubicacion?.trim()}" 
+        />
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !almacen.ubicacion?.trim()">
+          La ubicación es obligatoria.
+        </small>
+        <small class="text-gray-500 block mt-1" *ngIf="!submitted || almacen.ubicacion?.trim()">
+          Mínimo 3 caracteres
+        </small>
+      </div>
+      
+      <!-- Campo Descripción -->
+      <div class="mb-5">
+        <label for="descripcion" class="block font-bold mb-3">
+          <i class="pi pi-file-edit mr-2"></i>
+          Descripción (Opcional)
+        </label>
+        <textarea 
+          id="descripcion" 
+          pInputTextarea 
+          class="w-full" 
+          [(ngModel)]="almacen.descripcion" 
+          rows="4" 
+          placeholder="Describe las características, capacidad o uso del almacén..."
+          [maxlength]="500"
+        ></textarea>
+        <div class="flex justify-between mt-1">
+          <small class="text-gray-500">Información adicional sobre el almacén</small>
+          <small class="text-gray-400" *ngIf="almacen.descripcion">
+            {{almacen.descripcion.length || 0}}/500
+          </small>
+        </div>
+      </div>
+
+      <!-- Información adicional en modo edición -->
+      <div class="mb-4" *ngIf="editMode && almacen.fechaCreacion">
+        <div class="bg-gray-50 rounded p-3">
+          <h6 class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+            <i class="pi pi-calendar"></i>
+            Información del Registro
+          </h6>
+          <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
+            <div *ngIf="almacen.fechaCreacion">
+              <strong>Creado:</strong> {{almacen.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+            </div>
+            <div *ngIf="almacen.fechaActualizacion">
+              <strong>Última actualización:</strong> {{almacen.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 px-6 pb-4">
+      <p-button 
+        pRipple 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        class="p-button-text"
+        (click)="hideDialog()"
+        [disabled]="loading"
+      ></p-button>
+      <p-button 
+        pRipple 
+        [label]="editMode ? 'Actualizar Almacén' : 'Crear Almacén'" 
+        icon="pi pi-check" 
+        (click)="saveAlmacen()"
+        [loading]="loading"
+      ></p-button> 
+    </div>
+  </ng-template>
+</p-dialog>

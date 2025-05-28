@@ -1,1 +1,514 @@
-<p>inventario works!</p>
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<!-- Header con estadísticas rápidas -->
+<div class="mb-4">
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-2xl font-bold m-0">Gestión de Inventario</h2>
+      <p class="mt-1 mb-0 text-sm">Administra tu catálogo de Inventario</p>
+    </div>
+    <div class="flex gap-4">
+      <div class="text-center" *ngIf="selectedInventarios?.length">
+        <div class="text-xl font-bold text-orange-600">{{ selectedInventarios.length }}</div>
+        <div class="text-sm">Seleccionados</div>
+      </div>
+      <div class="text-center" *ngIf="inventariosFiltrados?.length">
+        <div class="text-xl font-bold text-blue-600">{{ inventariosFiltrados.length }}</div>
+        <div class="text-sm">Total Items</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toolbar styleClass="mb-6">
+  <ng-template pTemplate="start">
+    <p-button 
+      *appHasPermission="{module: 'inventario', permission: permissionTypes.CREATE}"
+      label="Nuevo Inventario" 
+      icon="pi pi-plus" 
+      class="mr-2" 
+      (click)="openNew()" 
+    />
+    <p-button 
+      *appHasPermission="{module: 'inventario', permission: permissionTypes.DELETE}"
+      label="Eliminar Seleccionados" 
+      icon="pi pi-trash" 
+      severity="secondary" 
+      outlined 
+      (click)="deleteSelectedInventarios()" 
+      [disabled]="!selectedInventarios.length || !productoSeleccionadoFiltro" 
+    />
+  </ng-template>
+  <ng-template pTemplate="end">
+    <p-button 
+      label="Limpiar Filtros" 
+      icon="pi pi-filter-slash" 
+      severity="secondary" 
+      outlined
+      class="mr-2"
+      (click)="limpiarFiltros()"
+      [disabled]="!productoSeleccionadoFiltro"
+    />
+    <p-button 
+      label="Exportar" 
+      icon="pi pi-upload" 
+      severity="secondary" 
+      (click)="exportarExcel()"
+      [disabled]="!inventariosFiltrados.length"
+    />
+  </ng-template>
+</p-toolbar>
+
+<!-- Filtro por producto -->
+<div class="mb-4">
+  <h5 class="mb-2">Seleccionar Producto</h5>
+  <p-select 
+    [options]="productos" 
+    [(ngModel)]="productoSeleccionadoFiltro" 
+    optionLabel="codigo"
+    placeholder="Seleccione un producto para ver su inventario"
+    [filter]="true"
+    filterBy="nombre,codigo"
+    [style]="{'width':'100%', 'max-width': '500px'}"
+    (onChange)="filtrarInventarioPorProducto()"
+    [showClear]="true">
+    <ng-template pTemplate="selectedItem">
+      <div *ngIf="productoSeleccionadoFiltro">
+        <div class="font-medium">{{productoSeleccionadoFiltro.codigo}} - {{productoSeleccionadoFiltro.nombre}}</div>
+        <small class="text-gray-500">{{productoSeleccionadoFiltro.nombre}}</small>
+      </div>
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      <div>
+        <div class="font-medium">{{item.codigo}} - {{item.nombre}}</div>
+        <small class="text-gray-500">{{item.categoria?.nombre}} - Precio: S/. 2{{item.precioVenta}}</small>
+      </div>
+    </ng-template>
+  </p-select>
+  <small *ngIf="productoSeleccionadoFiltro" class="block mt-2 text-blue-600">
+    Mostrando inventarios para: <strong>{{productoSeleccionadoFiltro.codigo}} - {{productoSeleccionadoFiltro.nombre}}</strong>
+  </small>
+  <small *ngIf="!productoSeleccionadoFiltro" class="block mt-2 text-gray-500">
+    Seleccione un producto para ver su inventario
+  </small>
+</div>
+
+<p-table
+  #dt
+  [value]="inventariosFiltrados"
+  [rows]="10"
+  [paginator]="true"
+  [totalRecords]="inventariosFiltrados.length"
+  [globalFilterFields]="['serie', 'color.nombre', 'talla.numero', 'almacen.nombre', 'estado']"
+  [tableStyle]="{'min-width': '75rem'}"
+  [(selection)]="selectedInventarios"
+  [rowHover]="true"
+  dataKey="id"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+  [loading]="loading"
+  [alwaysShowPaginator]="true"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">
+        <i class="pi pi-warehouse mr-2"></i>
+        Inventario 
+        <span *ngIf="productoSeleccionadoFiltro" class="text-sm font-normal text-gray-600">
+          - {{productoSeleccionadoFiltro.nombre}}
+        </span>
+      </h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar en inventario..." />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="serie" style="min-width:12rem">
+        Serie 
+        <p-sortIcon field="serie" />
+      </th>
+      <th pSortableColumn="color.nombre" style="min-width:10rem">
+        Color 
+        <p-sortIcon field="color.nombre" />
+      </th>
+      <th pSortableColumn="talla.numero" style="min-width:8rem">
+        Talla 
+        <p-sortIcon field="talla.numero" />
+      </th>
+      <th pSortableColumn="almacen.nombre" style="min-width:12rem">
+        Almacén 
+        <p-sortIcon field="almacen.nombre" />
+      </th>
+      <th pSortableColumn="cantidad" style="min-width:8rem">
+        Cantidad 
+        <p-sortIcon field="cantidad" />
+      </th>
+      <th pSortableColumn="estado" style="min-width:10rem">
+        Estado 
+        <p-sortIcon field="estado" />
+      </th>
+      <th pSortableColumn="fechaActualizacion" style="min-width:12rem">
+        Última Actualización
+        <p-sortIcon field="fechaActualizacion" />
+      </th>
+      <th style="min-width:10rem">Acciones</th>
+    </tr>
+  </ng-template>
+  
+  <ng-template pTemplate="body" let-inventario>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="inventario" />
+      </td>
+      <td>
+        <div class="font-medium">{{inventario.serie}}</div>
+        <small class="text-gray-500">{{inventario.producto?.codigo}}</small>
+      </td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div 
+            class="w-4 h-4 rounded-full border" 
+            [style.background-color]="inventario.color?.codigoHex || '#ccc'"
+            [title]="inventario.color?.nombre"
+          ></div>
+          <span>{{inventario.color?.nombre}}</span>
+        </div>
+      </td>
+      <td>
+        <p-tag 
+          [value]="inventario.talla?.numero" 
+          severity="secondary"
+          [style]="{'font-weight': 'bold'}"
+        />
+      </td>
+      <td>
+        <div>
+          <div class="font-medium">{{inventario.almacen?.nombre}}</div>
+          <small class="text-gray-500">{{inventario.almacen?.ubicacion}}</small>
+        </div>
+      </td>
+      <td>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-lg" 
+                [class]="inventario.cantidad === 0 ? 'text-red-600' : 
+                         inventario.cantidad < 10 ? 'text-orange-600' : 'text-green-600'">
+            {{inventario.cantidad}}
+          </span>
+          <i class="pi pi-box text-gray-400"></i>
+        </div>
+      </td>
+      <td>
+        <p-tag 
+          [value]="inventario.estado"
+          [severity]="getEstadoSeverity(inventario.estado)"
+          [icon]="inventario.estado === 'DISPONIBLE' ? 'pi pi-check-circle' : 
+                  inventario.estado === 'AGOTADO' ? 'pi pi-times-circle' : 
+                  inventario.estado === 'BAJO_STOCK' ? 'pi pi-exclamation-triangle' : 'pi pi-clock'"
+        />
+      </td>
+      <td>
+        <div class="text-sm">
+          <div>{{inventario.fechaActualizacion | date:'dd/MM/yyyy'}}</div>
+          <small class="text-gray-500">{{inventario.fechaActualizacion | date:'HH:mm'}}</small>
+        </div>
+      </td>
+      <td class="flex gap-2">
+        <p-button 
+          *appHasPermission="{module: 'inventario', permission: permissionTypes.EDIT}" 
+          icon="pi pi-pencil" 
+          class="mr-2" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="editInventario(inventario)"
+          pTooltip="Editar inventario"
+        />
+        <p-button 
+          *appHasPermission="{module: 'inventario', permission: permissionTypes.DELETE}" 
+          icon="pi pi-trash" 
+          severity="danger" 
+          [rounded]="true" 
+          [outlined]="true"
+          size="small"
+          (click)="eliminarInventario(inventario)"
+          pTooltip="Eliminar inventario"
+        />
+      </td>
+    </tr>
+  </ng-template>
+  
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9" class="text-center py-8">
+        <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
+          <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
+          <div class="text-lg font-medium text-gray-600 mb-2">No hay inventarios disponibles</div>
+          <div class="text-gray-500 mb-4">No se encontraron registros de inventario para este producto.</div>
+          <button 
+            *appHasPermission="{module: 'inventario', permission: permissionTypes.CREATE}" 
+            pButton 
+            label="Crear Primer Inventario" 
+            icon="pi pi-plus" 
+            class="p-button-sm p-button-outlined" 
+            (click)="openNew()"
+          ></button>
+        </div>
+        <ng-template #sinProductoSeleccionado>
+          <i class="pi pi-filter text-4xl text-gray-400 mb-3"></i>
+          <div class="text-lg font-medium text-gray-600 mb-2">Seleccione un producto</div>
+          <div class="text-gray-500">Elija un producto para ver su inventario disponible</div>
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo de formulario de Inventario -->
+<p-dialog 
+  [(visible)]="inventarioDialog" 
+  [style]="{'width': '600px', 'height': '800px'}" 
+  [header]="editMode ? 'Editar Inventario' : 'Nuevo Inventario'" 
+  [modal]="true" 
+  (onHide)="hideDialog()"
+  [contentStyle]="{'padding':'0'}"
+>
+  <ng-template pTemplate="content">
+    <div class="p-6">
+      <!-- Selector de producto -->
+      <div class="mb-5" *ngIf="!editMode">
+        <label for="producto" class="block font-bold mb-3">Producto*</label>
+        <p-select 
+          id="producto" 
+          [options]="productos" 
+          [(ngModel)]="productoSeleccionado" 
+          optionLabel="codigo"
+          placeholder="Seleccione un producto"
+          [filter]="true"
+          filterBy="nombre,codigo"
+          [showClear]="true"
+          [style]="{'width':'100%'}"
+          [ngClass]="{'ng-invalid': submitted && !productoSeleccionado}"
+          (onChange)="loadColoresPorProducto(productoSeleccionado?.id || 0)">
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="productoSeleccionado">
+              <div class="font-medium">{{productoSeleccionado.codigo}} - {{productoSeleccionado.nombre}}</div>
+              <small class="text-gray-500">Precio: S/. {{productoSeleccionado.precioVenta}}</small>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <div>
+              <div class="font-medium">{{item.codigo}} - {{item.nombre}}</div>
+              <small class="text-gray-500">S/. {{item.precioVenta}}</small>
+            </div>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !productoSeleccionado">
+          El producto es obligatorio.
+        </small>
+      </div>
+
+      <!-- Producto en modo edición (solo lectura) -->
+      <div class="mb-5" *ngIf="editMode && productoSeleccionado">
+        <label class="block font-bold mb-3">Producto</label>
+        <div class="bg-gray-100 rounded p-3 text-gray-700">
+          <div class="font-medium">{{productoSeleccionado.codigo}} - {{productoSeleccionado.nombre}}</div>
+          <small class="text-gray-500">{{productoSeleccionado.marca}} {{productoSeleccionado.modelo}}</small>
+        </div>
+      </div>
+
+      <!-- Selector de color -->
+      <div class="mb-5" *ngIf="!editMode">
+        <label class="block font-bold mb-3" for="color">Color*</label>
+        <p-select 
+          id="color" 
+          [options]="colores" 
+          [(ngModel)]="colorSeleccionado" 
+          optionLabel="nombre"
+          placeholder="Seleccione un color"
+          [filter]="true"
+          [showClear]="true"
+          [style]="{'width':'100%'}"
+          [disabled]="!productoSeleccionado"
+          [ngClass]="{'ng-invalid': submitted && !colorSeleccionado}"
+          (onChange)="loadTallasPorColor(colorSeleccionado?.id || 0)">
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="colorSeleccionado" class="flex items-center gap-2">
+              <div 
+                class="w-4 h-4 rounded-full border" 
+                [style.background-color]="'#' + (colorSeleccionado.nombre.toLowerCase() === 'rojo' ? 'ff0000' : 
+                  colorSeleccionado.nombre.toLowerCase() === 'azul' ? '0000ff' : 
+                  colorSeleccionado.nombre.toLowerCase() === 'verde' ? '00ff00' : 'cccccc')"
+              ></div>
+              <span>{{colorSeleccionado.nombre}}</span>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <div class="flex items-center gap-2">
+              <div 
+                class="w-4 h-4 rounded-full border" 
+                [style.background-color]="'#' + (item.nombre.toLowerCase() === 'rojo' ? 'ff0000' : 
+                  item.nombre.toLowerCase() === 'azul' ? '0000ff' : 
+                  item.nombre.toLowerCase() === 'verde' ? '00ff00' : 'cccccc')"
+              ></div>
+              <span>{{item.nombre}}</span>
+            </div>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !colorSeleccionado">
+          El color es obligatorio.
+        </small>
+        <small class="text-gray-500 block mt-1" *ngIf="!productoSeleccionado">
+          Primero seleccione un producto
+        </small>
+      </div>
+
+      <!-- Color en modo edición (solo lectura) -->
+      <div class="mb-5" *ngIf="editMode && colorSeleccionado">
+        <label class="block font-bold mb-3">Color</label>
+        <div class="bg-gray-100 rounded p-3 text-gray-700 flex items-center gap-2">
+          <div 
+            class="w-4 h-4 rounded-full border" 
+            [style.background-color]="'#' + (colorSeleccionado.nombre.toLowerCase() === 'rojo' ? 'ff0000' : 
+              colorSeleccionado.nombre.toLowerCase() === 'azul' ? '0000ff' : 
+              colorSeleccionado.nombre.toLowerCase() === 'verde' ? '00ff00' : 'cccccc')"
+          ></div>
+          <span>{{colorSeleccionado.nombre}}</span>
+        </div>
+      </div>
+
+      <!-- Selector de talla -->
+      <div class="mb-5" *ngIf="!editMode">
+        <label class="block font-bold mb-3" for="talla">Talla*</label>
+        <p-select 
+          id="talla" 
+          [options]="tallas" 
+          [(ngModel)]="tallaSeleccionada" 
+          optionLabel="numero"
+          placeholder="Seleccione una talla"
+          [filter]="true"
+          [style]="{'width':'100%'}"
+          [showClear]="true"
+          [disabled]="!colorSeleccionado"
+          [ngClass]="{'ng-invalid': submitted && !tallaSeleccionada}">
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="tallaSeleccionada">
+              <span class="font-medium">Talla {{tallaSeleccionada.numero}}</span>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <span>Talla {{item.numero}}</span>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !tallaSeleccionada">
+          La talla es obligatoria.
+        </small>
+        <small class="text-gray-500 block mt-1" *ngIf="!colorSeleccionado">
+          Primero seleccione un color
+        </small>
+      </div>
+
+      <!-- Talla en modo edición (solo lectura) -->
+      <div class="mb-5" *ngIf="editMode && tallaSeleccionada">
+        <label class="block font-bold mb-3">Talla</label>
+        <div class="bg-gray-100 rounded p-3 text-gray-700">
+          <span class="font-medium">Talla {{tallaSeleccionada.numero}}</span>
+        </div>
+      </div>
+
+      <!-- Selector de Almacén -->
+      <div class="mb-5" *ngIf="!editMode">
+        <label class="block font-bold mb-3" for="almacen">Almacén*</label>
+        <p-select 
+          id="almacen" 
+          [options]="almacenes" 
+          [(ngModel)]="almacenSeleccionado" 
+          optionLabel="nombre"
+          placeholder="Seleccione un almacén"
+          [filter]="true"
+          [style]="{'width':'100%'}"
+          [showClear]="true"
+          [disabled]="!productoSeleccionado"
+          [ngClass]="{'ng-invalid': submitted && !almacenSeleccionado}">
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="almacenSeleccionado">
+              <div class="font-medium">{{almacenSeleccionado.nombre}}</div>
+              <small class="text-gray-500">{{almacenSeleccionado.ubicacion}}</small>
+            </div>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <div>
+              <div class="font-medium">{{item.nombre}}</div>
+              <small class="text-gray-500">{{item.ubicacion}}</small>
+            </div>
+          </ng-template>
+        </p-select>
+        <small class="text-red-500 block mt-1" *ngIf="submitted && !almacenSeleccionado">
+          El almacén es obligatorio.
+        </small>
+      </div>
+
+      <!-- Almacén en modo edición (solo lectura) -->
+      <div class="mb-5" *ngIf="editMode && almacenSeleccionado">
+        <label class="block font-bold mb-3">Almacén</label>
+        <div class="bg-gray-100 rounded p-3 text-gray-700">
+          <div class="font-medium">{{almacenSeleccionado.nombre}}</div>
+          <small class="text-gray-500">{{almacenSeleccionado.ubicacion}}</small>
+        </div>
+      </div>
+
+      <!-- Campo de Cantidad -->
+      <div class="mb-5">
+        <label for="cantidad" class="block font-bold mb-3">Cantidad*</label>
+        <p-inputNumber
+          id="cantidad"
+          [(ngModel)]="inventario.cantidad"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="0"
+          [max]="9999"
+          [step]="1"
+          decrementButtonClass="p-button-danger"
+          incrementButtonClass="p-button-success"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+          [style]="{'width':'200px'}"
+          [ngClass]="{'ng-invalid': submitted && inventario.cantidad < 0}"
+        />
+        <small class="text-red-500 block mt-1" *ngIf="submitted && inventario.cantidad < 0">
+          La cantidad debe ser mayor o igual a 0.
+        </small>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 px-6 pb-4">
+      <button 
+        pButton 
+        pRipple 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        class="p-button-text"
+        (click)="hideDialog()"
+        [disabled]="loading"
+      ></button>
+      <button 
+        pButton 
+        pRipple 
+        [label]="editMode ? 'Actualizar' : 'Crear Inventario'" 
+        icon="pi pi-check" 
+        (click)="guardarInventario()"
+        [loading]="loading"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

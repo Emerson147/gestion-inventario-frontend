@@ -1,1 +1,534 @@
-<p>realizar-venta works!</p>
+<p-steps
+  [model]="[{label: 'Cliente'}, {label: 'Productos'}, {label: 'Venta'}, {label: 'Pagos'}]"
+  [readonly]="true"
+  [activeIndex]="currentStep"
+  styleClass="mb-4 steps-modern "
+></p-steps>
+
+<div class="container mx-auto p-4 md:p-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Panel Izquierdo: Datos de la Venta -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <div class="flex items-center gap-2 mb-6">
+        <i class="pi pi-user text-2xl text-gray-600"></i>
+        <h2 class="text-xl font-semibold text-gray-800">Datos de la Venta</h2>
+      </div>
+      <form [formGroup]="ventaForm" class="space-y-6">
+        <!-- Cliente -->
+        <div>
+          <label for="cliente" class="block text-sm font-medium text-gray-700 mb-1">
+            Cliente <span class="text-red-500">*</span>
+          </label>
+          <div class="relative flex items-center">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <i class="pi pi-search text-gray-400"></i>
+            </div>
+            <p-autoComplete
+              id="cliente"
+              formControlName="cliente"
+              [suggestions]="clientes"
+              (completeMethod)="cargarClientes($event)"
+              field="nombres"
+              [dropdown]="true"
+              [forceSelection]="true"
+              [minLength]="1"
+              placeholder="Buscar cliente por nombre o documento"
+              [showClear]="true"
+              aria-label="Seleccionar cliente"
+              class="w-full rounded-lg border border-gray-300 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <ng-template let-cliente pTemplate="item">
+                <div class="flex items-center p-2">
+                  <span>{{ cliente.nombres }} {{ cliente.apellidos }}</span>
+                  <small class="text-gray-500 ml-2">({{ cliente.documento || 'Sin documento' }})</small>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+            <p-progressSpinner
+              *ngIf="isLoadingClientes"
+              styleClass="w-6 h-6 ml-2"
+              strokeWidth="4"
+            ></p-progressSpinner>
+          </div>
+          <small
+            *ngIf="ventaForm.get('cliente')?.touched && ventaForm.get('cliente')?.invalid"
+            class="text-red-500 text-xs mt-1"
+          >
+            El cliente es obligatorio.
+          </small>
+        </div>
+
+        <!-- Tipo Comprobante -->
+        <div>
+          <label for="tipoComprobante" class="block text-sm font-medium text-gray-700 mb-1">
+            Tipo Comprobante
+          </label>
+          <p-dropdown
+            id="tipoComprobante"
+            formControlName="tipoComprobante"
+            [options]="tiposComprobante"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecciona un tipo"
+            aria-label="Seleccionar tipo de comprobante"
+            class="w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          ></p-dropdown>
+        </div>
+
+        <!-- Serie y Número Comprobante -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="serieComprobante" class="block text-sm font-medium text-gray-700 mb-1">
+              Serie
+            </label>
+            <input
+              id="serieComprobante"
+              pInputText
+              formControlName="serieComprobante"
+              maxlength="4"
+              class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <small
+              *ngIf="ventaForm.get('serieComprobante')?.touched && ventaForm.get('serieComprobante')?.invalid"
+              class="text-red-500 text-xs mt-1"
+            >
+              La serie es obligatoria y debe tener 4 caracteres.
+            </small>
+          </div>
+          <div>
+            <label for="numeroComprobante" class="block text-sm font-medium text-gray-700 mb-1">
+              N° Comprobante
+            </label>
+            <input
+              id="numeroComprobante"
+              pInputText
+              formControlName="numeroComprobante"
+              class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div>
+          <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">
+            Observaciones
+          </label>
+          <textarea
+            id="observaciones"
+            pInputTextarea
+            formControlName="observaciones"
+            rows="3"
+            class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          ></textarea>
+        </div>
+      </form>
+    </div>
+
+    <!-- Panel Derecho: Detalle de Productos -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <div class="flex items-center gap-2 mb-6">
+        <i class="pi pi-shopping-cart text-2xl text-gray-600"></i>
+        <h2 class="text-xl font-semibold text-gray-800">Detalle de Productos</h2>
+      </div>
+      <form [formGroup]="detalleForm" class="space-y-6">
+        <div class="flex flex-col sm:flex-row gap-4 items-end">
+          <div class="flex-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i class="pi pi-search text-gray-400"></i>
+              </div>
+              <p-autoComplete
+                #inventarioAutocomplete
+                id="inventario"
+                formControlName="inventario"
+                [suggestions]="inventarios"
+                (completeMethod)="cargarInventario($event)"
+                field="inventario.producto.nombre"
+                [dropdown]="true"
+                [forceSelection]="true"
+                [minLength]="100"
+                placeholder="Buscar producto"
+                [showClear]="true"
+                aria-label="Seleccionar producto"
+                class="w-full rounded-lg border border-gray-300 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <ng-template let-item pTemplate="item">
+                  <div class="flex items-center justify-between p-2">
+                    <div>
+                      <span>{{ item.producto?.nombre }}</span>
+                      <small class="text-gray-500 ml-2">({{ item.color?.nombre }} - {{ item.talla?.numero }})</small>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      Stock: {{ item.cantidadDisponible || item.cantidad || 'N/A' }}
+                    </span>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+              <p-progressSpinner
+                *ngIf="isLoadingInventario"
+                styleClass="w-6 h-6 ml-2 absolute right-2 top-1/2 -translate-y-1/2"
+                strokeWidth="4"
+              ></p-progressSpinner>
+            </div>
+          </div>
+          <p-inputNumber
+            id="cantidad"
+            formControlName="cantidad"
+            [showButtons]="true"
+            buttonLayout="vertical"
+            [min]="1"
+            [max]="detalleForm.get('inventario')?.value?.cantidadDisponible || detalleForm.get('inventario')?.value?.cantidad || 999"
+            class="w-32"
+            aria-label="Cantidad de producto"
+            [disabled]="!detalleForm.get('inventario')?.value || isLoadingInventario || (detalleForm.get('inventario')?.value?.cantidadDisponible === 0 && detalleForm.get('inventario')?.value?.cantidad === 0)"
+          ></p-inputNumber>
+          <button
+            type="button"
+            (click)="agregarDetalle()"
+            [disabled]="detalleForm.invalid || !detalleForm.get('inventario')?.value || (detalleForm.get('inventario')?.value?.cantidadDisponible === 0 && detalleForm.get('inventario')?.value?.cantidad === 0)"
+            class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
+            pTooltip="Agregar producto al detalle"
+            tooltipPosition="top"
+          >
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Tabla de Detalles -->
+      <div class="overflow-x-auto mt-6">
+        <table class="w-full text-sm text-left text-gray-700">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <tr>
+              <th class="px-4 py-3">Producto</th>
+              <th class="px-4 py-3 w-28 text-center">Cant.</th>
+              <th class="px-4 py-3 w-24 text-right">P. Unit.</th>
+              <th class="px-4 py-3 w-28 text-right">Subtotal</th>
+              <th class="px-4 py-3 w-16"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="detalles.length > 0; else emptyMessage">
+              <tr *ngFor="let detalle of detalles; let i = index" class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3">
+                  {{ getProductoNombrePorInventarioId(detalle.inventarioId) }}
+                  <div class="text-gray-500 text-xs">
+                    {{ getColorPorInventarioId(detalle.inventarioId) }} | {{ getTallaPorInventarioId(detalle.inventarioId) }}
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <p-inputNumber
+                    [(ngModel)]="detalle.cantidad"
+                    (onInput)="actualizarCantidadEnTabla(detalle, i, $event)"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    [min]="1"
+                    [max]="getMaxCantidadParaDetalleEnTabla(detalle.inventarioId)"
+                    class="w-full"
+                    [ngModelOptions]="{standalone: true}"
+                  ></p-inputNumber>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  {{ getPrecioUnitario(detalle.inventarioId) | currency:'S/':'symbol':'1.2-2' }}
+                </td>
+                <td class="px-4 py-3 text-right">
+                  {{ calcularSubtotalPorDetalle(detalle) | currency:'S/':'symbol':'1.2-2' }}
+                </td>
+                <td class="px-4 py-3">
+                  <button
+                    (click)="quitarDetalle(i)"
+                    class="text-red-500 hover:text-red-700"
+                    pTooltip="Eliminar producto"
+                    tooltipPosition="top"
+                    aria-label="Eliminar producto"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-template #emptyMessage>
+              <tr>
+                <td colspan="6" class="text-center py-8">
+                  <i class="pi pi-shopping-cart text-gray-400 text-4xl" aria-hidden="true"></i>
+                  <div class="text-gray-400 mt-2">Aún no has agregado productos</div>
+                </td>
+              </tr>
+            </ng-template>
+          </tbody>
+          <tfoot *ngIf="detalles.length > 0">
+            <tr class="font-semibold">
+              <td colspan="4" class="px-4 py-3 text-right">Total Estimado:</td>
+              <td class="px-4 py-3 text-right">
+                {{ calcularTotalEstimado() | currency:'S/':'symbol':'1.2-2' }}
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex justify-end gap-4 mt-6">
+        <button
+          type="button"
+          (click)="confirmarLimpiarVenta()"
+          class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+          pTooltip="Limpiar formulario y productos"
+          tooltipPosition="top"
+          aria-label="Limpiar formulario y productos"
+        >
+          <i class="pi pi-refresh mr-2"></i> Limpiar Todo
+        </button>
+        <button
+          type="button"
+          (click)="registrarVenta()"
+          [disabled]="ventaForm.invalid || detalles.length === 0 || isLoading"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+          aria-label="Registrar venta"
+        >
+          <i class="pi pi-save mr-2"></i> Registrar Venta
+          <p-progressSpinner
+            *ngIf="isLoading"
+            styleClass="w-5 h-5 ml-2"
+            strokeWidth="4"
+          ></p-progressSpinner>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="ventaRegistrada" class="mt-4">
+  <p-card styleClass="shadow-2 card-modern">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <i class="pi pi-check-circle mr-2 text-green-500"></i>
+        <span>Venta Registrada Exitosamente</span>
+      </div>
+      <div class="card-subheader">Información de la venta y gestión de pagos</div>
+    </ng-template>
+    <div class="grid">
+      <div class="col-12 lg:col-6">
+        <h5 class="section-title">Datos de la Venta</h5>
+        <ul class="list-none p-0 m-0">
+            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
+                <span class="font-medium text-gray-700">N° Venta:</span>
+                <span class="font-semibold">{{ ventaRegistrada.numeroVenta }}</span>
+            </li>
+            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
+                <span class="font-medium text-gray-700">Cliente:</span>
+                <span class="font-semibold">{{ ventaRegistrada.cliente.nombres }} {{ ventaRegistrada.cliente.apellidos }}</span>
+            </li>
+            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
+                <span class="font-medium text-gray-700">Fecha:</span>
+                <span class="font-semibold">{{ ventaRegistrada.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+            </li>
+            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
+                <span class="font-medium text-gray-700">Comprobante:</span>
+                <span class="font-semibold">{{ ventaRegistrada.tipoComprobante }} {{ ventaRegistrada.serieComprobante }}-{{ ventaRegistrada.numeroComprobante }}</span>
+            </li>
+            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
+                <span class="font-medium text-gray-700">Total Venta:</span>
+                <span class="font-bold text-xl text-primary">S/ {{ ventaRegistrada.total | number:'1.2-2' }}</span>
+            </li>
+            <li class="flex justify-content-between align-items-center py-2">
+                <span class="font-medium text-gray-700">Estado:</span>
+                <p-tag [severity]="calcularSaldoPendiente() > 0 ? 'warning' : 'success'" [value]="calcularSaldoPendiente() > 0 ? 'PENDIENTE DE PAGO' : 'PAGADO'"></p-tag>
+            </li>
+        </ul>
+      </div>
+      <div class="col-12 lg:col-6">
+        <div class="flex justify-content-between align-items-center mb-3">
+          <h5 class="section-title m-0">Pagos Realizados</h5>
+          <p-button
+            label="Nuevo Pago"
+            icon="pi pi-plus"
+            (click)="togglePanelPago()"
+            [outlined]="true"
+            [disabled]="calcularSaldoPendiente() <= 0"
+            styleClass="button-modern-secondary"
+            pTooltip="Registrar un nuevo pago"
+            tooltipPosition="top"
+            aria-label="Registrar nuevo pago"
+          ></p-button>
+        </div>
+        <p-panel
+          header="Registrar Nuevo Pago"
+          [toggleable]="true"
+          [collapsed]="!mostrarPanelPago"
+          (onToggle)="mostrarPanelPago = !$event.cancelable"
+          styleClass="mb-3 panel-modern panel-pago"
+          [transitionOptions]="'225ms ease-out'"
+        >
+          <ng-template pTemplate="header">`
+            <div class="flex align-items-center">
+              <i class="pi pi-dollar mr-2"></i>
+              <span>Registrar Nuevo Pago</span>
+            </div>
+          </ng-template>
+          <form [formGroup]="pagoForm" class="p-fluid">
+            <div class="field">
+              <label for="montoPago">Monto a Pagar (S/)</label>
+              <p-inputNumber
+                id="montoPago"
+                formControlName="monto"
+                mode="currency" currency="PEN" locale="es-PE"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                [max]="calcularSaldoPendiente()"
+                [min]="0.01"
+                styleClass="input-modern"
+                aria-label="Monto del pago"
+              ></p-inputNumber>
+              <small *ngIf="pagoForm.get('monto')?.touched && pagoForm.get('monto')?.invalid" class="p-error">
+                El monto es obligatorio y debe ser mayor a cero y menor o igual al saldo pendiente.
+              </small>
+            </div>
+            <div class="field">
+              <label for="metodoPago">Método de Pago</label>
+              <p-dropdown
+                id="metodoPago"
+                formControlName="metodoPago"
+                [options]="metodosPago"
+                optionLabel="label"
+                optionValue="value"
+                (onChange)="onMetodoPagoChange()"
+                placeholder="Seleccione método"
+                styleClass="input-modern"
+                aria-label="Seleccionar método de pago"
+              ></p-dropdown>
+            </div>
+            <ng-container *ngIf="pagoForm.get('metodoPago')?.value as metodo">
+                <div class="field" *ngIf="metodo === 'TARJETA_CREDITO' || metodo === 'TARJETA_DEBITO'">
+                  <label for="nombreTarjeta">Nombre Tarjeta</label>
+                  <input id="nombreTarjeta" pInputText formControlName="nombreTarjeta" class="input-modern" />
+                  <small *ngIf="pagoForm.get('nombreTarjeta')?.touched && pagoForm.get('nombreTarjeta')?.invalid" class="p-error">
+                    El nombre de la tarjeta es obligatorio.
+                  </small>
+                </div>
+                <div class="field" *ngIf="metodo === 'TARJETA_CREDITO' || metodo === 'TARJETA_DEBITO'">
+                  <label for="ultimos4Digitos">Últimos 4 dígitos</label>
+                  <p-inputMask id="ultimos4Digitos" formControlName="ultimos4Digitos" mask="9999" placeholder="****" styleClass="input-modern"></p-inputMask>
+                  <small *ngIf="pagoForm.get('ultimos4Digitos')?.touched && pagoForm.get('ultimos4Digitos')?.invalid" class="p-error">
+                    Deben ser 4 dígitos.
+                  </small>
+                </div>
+                <div class="field" *ngIf="metodo === 'YAPE' || metodo === 'PLIN'">
+                  <label for="numeroReferencia">Número de Teléfono/Referencia</label>
+                  <input id="numeroReferencia" pInputText formControlName="numeroReferencia" placeholder="Ej. 999123456 o código de operación" class="input-modern" />
+                </div>
+            </ng-container>
+            <div class="field">
+              <label for="observacionPago">Observación (Opcional)</label>
+              <textarea id="observacionPago" pInputTextarea formControlName="observaciones" rows="2" class="input-modern"></textarea>
+            </div>
+
+            <div class="p-3 border-1 surface-border border-round mt-3 bg-gray-50">
+                <div class="flex justify-content-between mb-2">
+                  <span>Total Venta:</span>
+                  <span class="font-semibold">S/ {{ ventaRegistrada.total | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-content-between mb-2">
+                  <span>Total Pagado:</span>
+                  <span class="font-semibold text-green-600">S/ {{ calcularTotalPagado() | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-content-between">
+                  <span class="font-bold">Saldo Pendiente:</span>
+                  <span class="font-bold text-xl" [ngClass]="calcularSaldoPendiente() > 0 ? 'text-orange-500' : 'text-primary'">
+                    S/ {{ calcularSaldoPendiente() | number:'1.2-2' }}
+                  </span>
+                </div>
+            </div>
+
+            <p-button
+              label="Registrar Pago"
+              icon="pi pi-check-circle"
+              (click)="registrarPago()"
+              [disabled]="pagoForm.invalid || isLoadingPago"
+              [loading]="isLoadingPago"
+              styleClass="p-button-raised p-button-primary button-modern mt-3 w-full"
+              aria-label="Registrar pago"
+            ></p-button>
+          </form>
+        </p-panel>
+
+        <p-table [value]="pagos" styleClass="p-datatable-sm table-modern" dataKey="id" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>N° Pago</th>
+              <th>Método</th>
+              <th class="text-right">Monto</th>
+              <th>Fecha</th>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-pago>
+            <tr>
+              <td>{{ pago.numeroPago || pago.id }}</td>
+              <td>{{ getMetodoPagoLabel(pago.metodoPago) }}</td> <td class="text-right">S/ {{ pago.monto | number:'1.2-2' }}</td>
+              <td>{{ pago.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="footer" *ngIf="pagos.length > 0">
+            <tr>
+              <td colspan="2" class="text-right font-bold">Total Pagado:</td>
+              <td class="text-right font-bold">S/ {{ calcularTotalPagado() | number:'1.2-2' }}</td>
+              <td></td>
+            </tr>
+            <tr *ngIf="calcularSaldoPendiente() > 0">
+              <td colspan="2" class="text-right font-bold">Saldo Pendiente:</td>
+              <td class="text-right font-bold text-orange-500">S/ {{ calcularSaldoPendiente() | number:'1.2-2' }}</td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center p-4">
+                <i class="pi pi-info-circle text-gray-400" style="font-size: 2rem" aria-hidden="true"></i>
+                <div class="text-gray-400 mt-3">Aún no hay pagos registrados para esta venta.</div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <div class="flex flex-wrap justify-content-end gap-2 mt-4">
+      <p-button
+        label="Imprimir Comprobante"
+        icon="pi pi-print"
+        (click)="imprimirComprobante()"
+        [outlined]="true"
+        styleClass="button-modern-secondary"
+        aria-label="Imprimir comprobante"
+      ></p-button>
+      <p-button
+        label="Nueva Venta"
+        icon="pi pi-plus-circle"
+        (click)="iniciarNuevaVenta()"
+        [outlined]="true"
+        styleClass="button-modern-secondary"
+        aria-label="Iniciar una nueva venta"
+      ></p-button>
+      <p-button
+        label="Finalizar y Cerrar"
+        icon="pi pi-check-square"
+        (click)="finalizarVenta()"
+        [disabled]="calcularSaldoPendiente() > 0"
+        styleClass="p-button-raised p-button-primary button-modern"
+        pTooltip="Solo se puede finalizar si el saldo pendiente es cero."
+        tooltipPosition="top"
+        aria-label="Finalizar venta y cerrar"
+      ></p-button>
+    </div>
+  </p-card>
+</div>
+
+<p-progressSpinner
+  *ngIf="isLoading" styleClass="w-4rem h-4rem"
+  strokeWidth="4"
+  animationDuration=".5s"
+  class="loading-spinner"
+></p-progressSpinner>
+
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

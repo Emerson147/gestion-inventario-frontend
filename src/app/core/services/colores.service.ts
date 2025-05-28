@@ -8,7 +8,7 @@ import { Color, ColorRequest, ColorResponse, PagedResponse } from '../models/col
   providedIn: 'root'
 })
 export class ColorService {
-  private apiUrl = `${environment.apiUrl}api/color`;
+  private apiUrl = `${environment.apiUrl}api/colores`;
 
   constructor(private http: HttpClient) {}
 
@@ -71,5 +71,10 @@ export class ColorService {
    */
   eliminarColor(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+ // En tu ColorService
+  eliminarTalla(colorId: number, tallaId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${colorId}/tallas/${tallaId}`);
   }
 }

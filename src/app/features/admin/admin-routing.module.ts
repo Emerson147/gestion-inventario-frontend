@@ -9,6 +9,7 @@ import { ProductosComponent } from './productos/productos.component';
 import { ColoresComponent } from './colores/colores.component';
 import { AlmacenesComponent } from './almacenes/almacenes.component';
 import { InventarioComponent } from './inventario/inventario.component';
+import { MovimientosInventarioComponent } from './movimientos-inventario/movimientos-inventario.component';
 // Otros componentes...
 
 const routes: Routes = [
@@ -16,19 +17,19 @@ const routes: Routes = [
     path: 'dashboard',
     component: AdminDashboardComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN'] }
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
   },
   {
     path: 'usuarios',
     component: UsuariosComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN'] }
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
   },
   {
     path: 'productos',
     component: ProductosComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN']}
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
   },
   {
     path: 'colores',
@@ -46,7 +47,13 @@ const routes: Routes = [
     path: 'inventario',
     component: InventarioComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN']}
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS']}
+  },
+  {
+    path: 'movimientos-inventario',
+    component: MovimientosInventarioComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS']}
   }
 
 ];
