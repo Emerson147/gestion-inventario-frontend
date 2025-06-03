@@ -8,8 +8,10 @@ export interface User {
   email: string;
   roles: string[];
   activo: boolean;
+  ultimoLogin?: string;
   fechaCreacion?: string;
   fechaActualizacion?: string;
+  requieresCambioPassword?: boolean;
 }
 
 // DTO para crear/actualizar usuarios

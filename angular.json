@@ -34,7 +34,15 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./node_modules/"
+              ]
+            },
+            "allowedCommonJsDependencies": [
+              "tailwindcss-primeui"
+            ]
           },
           "configurations": {
             "production": {

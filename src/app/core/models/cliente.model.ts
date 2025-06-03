@@ -11,4 +11,8 @@ export interface Cliente {
   fechaNacimiento?: string; // ISO string
   fechaCreacion?: string;   // ISO string
   fechaActualizacion?: string; // ISO string
+  // Estadísticas del cliente
+  compras?: number;         // Número total de compras
+  totalCompras?: number;    // Monto total gastado
+  ultimaCompra?: string;    // Fecha de la última compra
 }

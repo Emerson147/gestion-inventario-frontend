@@ -1,534 +1,3802 @@
-<p-steps
-  [model]="[{label: 'Cliente'}, {label: 'Productos'}, {label: 'Venta'}, {label: 'Pagos'}]"
-  [readonly]="true"
-  [activeIndex]="currentStep"
-  styleClass="mb-4 steps-modern "
-></p-steps>
+<!-- Toast y confirmaciones con animaciones mejoradas -->
+<p-toast 
+  position="top-right" 
+  [life]="5000"
+  styleClass="custom-toast-container">
+</p-toast>
+<p-confirmDialog 
+  [style]="{width: '500px'}"
+  styleClass="custom-confirm-dialog">
+</p-confirmDialog>
 
-<div class="container mx-auto p-4 md:p-6">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Panel Izquierdo: Datos de la Venta -->
-    <div class="bg-white rounded-2xl shadow-lg p-6">
-      <div class="flex items-center gap-2 mb-6">
-        <i class="pi pi-user text-2xl text-gray-600"></i>
-        <h2 class="text-xl font-semibold text-gray-800">Datos de la Venta</h2>
+<!-- Header Premium ULTRA del Módulo de Ventas -->
+<div class="relative -mx-4 -mt-4 mb-8 overflow-hidden">
+  <!-- Mega Glass Container con Efectos Avanzados -->
+  <div class="relative bg-gradient-to-br from-blue-50/90 via-indigo-50/80 to-purple-50/90 
+              backdrop-blur-2xl border border-white/40 rounded-[2rem] shadow-2xl 
+              hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] transition-all duration-700
+              before:absolute before:inset-0 before:bg-gradient-to-r 
+              before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 
+              before:rounded-[2rem] before:blur-3xl before:-z-10
+              overflow-hidden group">
+    
+    <!-- Background Pattern Mejorado -->
+    <div class="absolute inset-0 opacity-[0.03]">
+      <div class="absolute inset-0" 
+           style="background-image: 
+                  radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.4) 1.5px, transparent 0),
+                  radial-gradient(circle at 15px 15px, rgb(139 92 246 / 0.3) 1px, transparent 0); 
+                  background-size: 40px 40px, 60px 60px;
+                  animation: backgroundShift 20s ease-in-out infinite;">
       </div>
-      <form [formGroup]="ventaForm" class="space-y-6">
-        <!-- Cliente -->
-        <div>
-          <label for="cliente" class="block text-sm font-medium text-gray-700 mb-1">
-            Cliente <span class="text-red-500">*</span>
-          </label>
-          <div class="relative flex items-center">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-              <i class="pi pi-search text-gray-400"></i>
-            </div>
-            <p-autoComplete
-              id="cliente"
-              formControlName="cliente"
-              [suggestions]="clientes"
-              (completeMethod)="cargarClientes($event)"
-              field="nombres"
-              [dropdown]="true"
-              [forceSelection]="true"
-              [minLength]="1"
-              placeholder="Buscar cliente por nombre o documento"
-              [showClear]="true"
-              aria-label="Seleccionar cliente"
-              class="w-full rounded-lg border border-gray-300 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <ng-template let-cliente pTemplate="item">
-                <div class="flex items-center p-2">
-                  <span>{{ cliente.nombres }} {{ cliente.apellidos }}</span>
-                  <small class="text-gray-500 ml-2">({{ cliente.documento || 'Sin documento' }})</small>
-                </div>
-              </ng-template>
-            </p-autoComplete>
-            <p-progressSpinner
-              *ngIf="isLoadingClientes"
-              styleClass="w-6 h-6 ml-2"
-              strokeWidth="4"
-            ></p-progressSpinner>
-          </div>
-          <small
-            *ngIf="ventaForm.get('cliente')?.touched && ventaForm.get('cliente')?.invalid"
-            class="text-red-500 text-xs mt-1"
-          >
-            El cliente es obligatorio.
-          </small>
-        </div>
-
-        <!-- Tipo Comprobante -->
-        <div>
-          <label for="tipoComprobante" class="block text-sm font-medium text-gray-700 mb-1">
-            Tipo Comprobante
-          </label>
-          <p-dropdown
-            id="tipoComprobante"
-            formControlName="tipoComprobante"
-            [options]="tiposComprobante"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Selecciona un tipo"
-            aria-label="Seleccionar tipo de comprobante"
-            class="w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          ></p-dropdown>
-        </div>
-
-        <!-- Serie y Número Comprobante -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="serieComprobante" class="block text-sm font-medium text-gray-700 mb-1">
-              Serie
-            </label>
-            <input
-              id="serieComprobante"
-              pInputText
-              formControlName="serieComprobante"
-              maxlength="4"
-              class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <small
-              *ngIf="ventaForm.get('serieComprobante')?.touched && ventaForm.get('serieComprobante')?.invalid"
-              class="text-red-500 text-xs mt-1"
-            >
-              La serie es obligatoria y debe tener 4 caracteres.
-            </small>
-          </div>
-          <div>
-            <label for="numeroComprobante" class="block text-sm font-medium text-gray-700 mb-1">
-              N° Comprobante
-            </label>
-            <input
-              id="numeroComprobante"
-              pInputText
-              formControlName="numeroComprobante"
-              class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        <!-- Observaciones -->
-        <div>
-          <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">
-            Observaciones
-          </label>
-          <textarea
-            id="observaciones"
-            pInputTextarea
-            formControlName="observaciones"
-            rows="3"
-            class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          ></textarea>
-        </div>
-      </form>
     </div>
-
-    <!-- Panel Derecho: Detalle de Productos -->
-    <div class="bg-white rounded-2xl shadow-lg p-6">
-      <div class="flex items-center gap-2 mb-6">
-        <i class="pi pi-shopping-cart text-2xl text-gray-600"></i>
-        <h2 class="text-xl font-semibold text-gray-800">Detalle de Productos</h2>
+    
+    <!-- Floating Orbs Mejorados con Más Efectos -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <!-- Orb 1 - Grande con rotación -->
+      <div class="absolute top-8 left-16 w-32 h-32 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 
+                  rounded-full blur-2xl animate-float-slow">
       </div>
-      <form [formGroup]="detalleForm" class="space-y-6">
-        <div class="flex flex-col sm:flex-row gap-4 items-end">
-          <div class="flex-1">
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                <i class="pi pi-search text-gray-400"></i>
+      
+      <!-- Orb 2 - Mediano con pulse -->
+      <div class="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-purple-400/25 to-pink-400/25 
+                  rounded-full blur-xl animate-pulse-glow">
+      </div>
+      
+      <!-- Orb 3 - Pequeño con bounce -->
+      <div class="absolute bottom-16 left-1/3 w-16 h-16 bg-gradient-to-r from-emerald-400/30 to-teal-400/30 
+                  rounded-full blur-lg animate-bounce-gentle">
+      </div>
+      
+      <!-- Orb 4 - Extra con movimiento -->
+      <div class="absolute bottom-32 right-1/4 w-20 h-20 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 
+                  rounded-full blur-xl animate-drift">
+      </div>
+      
+      <!-- Partículas Flotantes -->
+      <div class="absolute inset-0">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+      </div>
+    </div>
+    
+    <!-- Efecto de Brillo en Bordes -->
+    <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-r 
+                from-blue-500/20 via-purple-500/20 to-pink-500/20 
+                opacity-0 group-hover:opacity-100 transition-opacity duration-1000 
+                blur-xl animate-border-glow">
+    </div>
+    
+    <div class="relative z-10 p-10">
+      <!-- Header Principal con Animaciones Mejoradas -->
+      <div class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-10">
+        
+        <!-- Sección del Título ULTRA -->
+        <div class="flex-1 space-y-8">
+          <div class="flex items-center gap-8 mb-8">
+            <!-- Ícono Principal Ultra Premium -->
+            <div class="relative group/icon">
+              <!-- Ícono Principal -->
+              <div class="w-24 h-24 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 
+                          rounded-3xl flex items-center justify-center shadow-2xl 
+                          transform rotate-3 hover:rotate-6 hover:scale-110
+                          transition-all duration-500 ease-out
+                          before:absolute before:inset-0 before:bg-gradient-to-br 
+                          before:from-white/20 before:to-transparent before:rounded-3xl
+                          after:absolute after:inset-0 after:bg-gradient-to-t 
+                          after:from-black/10 after:to-transparent after:rounded-3xl">
+                <i class="pi pi-shopping-cart text-white text-4xl transform 
+                         group-hover/icon:scale-110 transition-transform duration-300"></i>
               </div>
-              <p-autoComplete
-                #inventarioAutocomplete
-                id="inventario"
-                formControlName="inventario"
-                [suggestions]="inventarios"
-                (completeMethod)="cargarInventario($event)"
-                field="inventario.producto.nombre"
-                [dropdown]="true"
-                [forceSelection]="true"
-                [minLength]="100"
-                placeholder="Buscar producto"
-                [showClear]="true"
-                aria-label="Seleccionar producto"
-                class="w-full rounded-lg border border-gray-300 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <ng-template let-item pTemplate="item">
-                  <div class="flex items-center justify-between p-2">
-                    <div>
-                      <span>{{ item.producto?.nombre }}</span>
-                      <small class="text-gray-500 ml-2">({{ item.color?.nombre }} - {{ item.talla?.numero }})</small>
-                    </div>
-                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      Stock: {{ item.cantidadDisponible || item.cantidad || 'N/A' }}
+              
+              <!-- Pulse Rings Múltiples -->
+              <div class="absolute inset-0 rounded-3xl border-2 border-blue-400/40 
+                          animate-ping-slow transform rotate-3"></div>
+              <div class="absolute inset-0 rounded-3xl border border-purple-400/30 
+                          animate-ping-slower transform rotate-3" style="animation-delay: 1s;"></div>
+              
+              <!-- Glow Effect -->
+              <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-600/30 to-purple-600/30 
+                          blur-xl scale-150 opacity-0 group-hover/icon:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <!-- Badge de Status -->
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 
+                          rounded-full flex items-center justify-center shadow-lg animate-pulse-gentle">
+                <i class="pi pi-check text-white text-sm font-bold"></i>
+              </div>
+            </div>
+            
+            <!-- Títulos Ultra Premium -->
+            <div class="space-y-4">
+              <!-- Título Principal con Efectos -->
+              <h1 class="text-5xl xl:text-6xl font-black leading-tight">
+                <span class="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-800 
+                           bg-clip-text text-transparent animate-text-shimmer">
+                  Sistema de Ventas
+                </span>
+                <br>
+                <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 
+                           bg-clip-text text-transparent animate-gradient-x inline-flex items-center gap-3">
+                  Premium
+                  <span class="inline-block animate-bounce-gentle">✨</span>
+                  <span class="inline-block animate-spin-slow">⚡</span>
+                </span>
+              </h1>
+              
+              <!-- Subtítulo Animado -->
+              <p class="text-xl font-bold text-gray-600 flex items-center gap-3 animate-fade-in-up">
+                <span class="inline-block w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 
+                           rounded-full animate-pulse-fast"></span>
+                <span class="bg-gradient-to-r from-gray-600 to-gray-500 bg-clip-text text-transparent">
+                  Gestión empresarial de próxima generación
+                </span>
+                <span class="inline-block animate-wiggle">🚀</span>
+              </p>
+              
+              <!-- Badges Dinámicos -->
+              <div class="flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.3s;">
+                <p-tag 
+                  value="v2.0 ULTRA" 
+                  severity="success" 
+                  icon="pi pi-star-fill"
+                  styleClass="bg-gradient-to-r from-green-500 to-emerald-600 border-0 
+                             shadow-lg animate-pulse-glow text-sm font-bold">
+                </p-tag>
+                
+                <p-tag 
+                  value="AI Powered" 
+                  severity="info" 
+                  icon="pi pi-android"
+                  styleClass="bg-gradient-to-r from-blue-500 to-cyan-600 border-0 
+                             shadow-lg text-sm font-bold animate-glow-cycle">
+                </p-tag>
+                
+                <p-tag 
+                  value="Real-time" 
+                  severity="warning" 
+                  icon="pi pi-bolt"
+                  styleClass="bg-gradient-to-r from-yellow-500 to-orange-600 border-0 
+                             shadow-lg text-sm font-bold animate-electric">
+                </p-tag>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Usuario Info Card Ultra Premium -->
+          <div class="bg-white/95 backdrop-blur-2xl border border-white/60 rounded-3xl p-6 
+                      shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] 
+                      transition-all duration-500 max-w-md
+                      hover:scale-105 hover:-translate-y-2
+                      before:absolute before:inset-0 before:bg-gradient-to-r 
+                      before:from-blue-500/5 before:to-purple-500/5 before:rounded-3xl before:opacity-0 
+                      before:hover:opacity-100 before:transition-opacity before:duration-500
+                      relative overflow-hidden group/card">
+            
+            <!-- Efecto de Brillo -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                        -skew-x-12 translate-x-[-100%] group-hover/card:translate-x-[200%] 
+                        transition-transform duration-1000"></div>
+            
+            <div class="flex items-center gap-6 relative z-10">
+              <div class="relative">
+                <!-- Avatar con Efectos Múltiples -->
+                <div class="relative w-16 h-16 rounded-2xl overflow-hidden shadow-xl 
+                           ring-4 ring-white/50 ring-offset-2 ring-offset-transparent
+                           hover:ring-blue-400/50 transition-all duration-300">
+                  <img 
+                    [src]="currentUser.avatar || '/assets/images/avatar-default.jpg'" 
+                    alt="Avatar de {{currentUser.name}}"
+                    class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
+                  />
+                  <!-- Overlay Gradient -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-transparent"></div>
+                </div>
+                
+                <!-- Status Online Ultra -->
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 
+                           border-3 border-white rounded-full shadow-lg">
+                  <div class="w-full h-full bg-gradient-to-r from-green-400 to-emerald-500 
+                             rounded-full animate-ping"></div>
+                </div>
+                
+                <!-- Badge de Nivel -->
+                <div class="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 
+                           rounded-full flex items-center justify-center shadow-lg">
+                  <span class="text-white text-xs font-bold">★</span>
+                </div>
+              </div>
+              
+              <div class="flex-1 space-y-2">
+                <!-- Nombre con Efecto -->
+                <div class="flex items-center gap-2">
+                  <div class="font-black text-xl bg-gradient-to-r from-gray-800 to-gray-600 
+                             bg-clip-text text-transparent">
+                    {{currentUser.name}}
+                  </div>
+                  <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 
+                             rounded-full animate-pulse"></div>
+                </div>
+                
+                <!-- Rol con Badge Premium -->
+                <div class="flex items-center gap-2">
+                  <p-tag 
+                    [value]="currentUser.role" 
+                    severity="info" 
+                    icon="pi pi-crown"
+                    styleClass="bg-gradient-to-r from-blue-100 to-purple-100 
+                               text-blue-700 border-0 text-sm font-bold
+                               shadow-sm">
+                  </p-tag>
+                </div>
+                
+                <!-- Información de Sesión Premium -->
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 text-sm">
+                    <i class="pi pi-clock text-green-500 animate-spin-slow"></i>
+                    <span class="font-mono font-semibold text-gray-600">
+                      {{getCurrentTime() | date:'HH:mm:ss'}}
+                    </span>
+                    <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                      EN VIVO
                     </span>
                   </div>
-                </ng-template>
-              </p-autoComplete>
-              <p-progressSpinner
-                *ngIf="isLoadingInventario"
-                styleClass="w-6 h-6 ml-2 absolute right-2 top-1/2 -translate-y-1/2"
-                strokeWidth="4"
-              ></p-progressSpinner>
+                  
+                  <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <i class="pi pi-calendar text-blue-500"></i>
+                    <span>{{getCurrentTime() | date:'EEEE, dd MMMM yyyy'}}</span>
+                  </div>
+                  
+                  <!-- Barra de Productividad -->
+                  <div class="mt-3">
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span class="text-gray-500 font-semibold">Productividad Hoy</span>
+                      <span class="text-blue-600 font-bold">92%</span>
+                    div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-full rounded-full 
+                                 transition-all duration-1000 animate-progress-fill" 
+                           style="width: 92%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <p-inputNumber
-            id="cantidad"
-            formControlName="cantidad"
-            [showButtons]="true"
-            buttonLayout="vertical"
-            [min]="1"
-            [max]="detalleForm.get('inventario')?.value?.cantidadDisponible || detalleForm.get('inventario')?.value?.cantidad || 999"
-            class="w-32"
-            aria-label="Cantidad de producto"
-            [disabled]="!detalleForm.get('inventario')?.value || isLoadingInventario || (detalleForm.get('inventario')?.value?.cantidadDisponible === 0 && detalleForm.get('inventario')?.value?.cantidad === 0)"
-          ></p-inputNumber>
-          <button
-            type="button"
-            (click)="agregarDetalle()"
-            [disabled]="detalleForm.invalid || !detalleForm.get('inventario')?.value || (detalleForm.get('inventario')?.value?.cantidadDisponible === 0 && detalleForm.get('inventario')?.value?.cantidad === 0)"
-            class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
-            pTooltip="Agregar producto al detalle"
-            tooltipPosition="top"
-          >
-            <i class="pi pi-plus"></i>
-          </button>
         </div>
-      </form>
-
-      <!-- Tabla de Detalles -->
-      <div class="overflow-x-auto mt-6">
-        <table class="w-full text-sm text-left text-gray-700">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-            <tr>
-              <th class="px-4 py-3">Producto</th>
-              <th class="px-4 py-3 w-28 text-center">Cant.</th>
-              <th class="px-4 py-3 w-24 text-right">P. Unit.</th>
-              <th class="px-4 py-3 w-28 text-right">Subtotal</th>
-              <th class="px-4 py-3 w-16"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngIf="detalles.length > 0; else emptyMessage">
-              <tr *ngFor="let detalle of detalles; let i = index" class="border-b hover:bg-gray-50">
-                <td class="px-4 py-3">
-                  {{ getProductoNombrePorInventarioId(detalle.inventarioId) }}
-                  <div class="text-gray-500 text-xs">
-                    {{ getColorPorInventarioId(detalle.inventarioId) }} | {{ getTallaPorInventarioId(detalle.inventarioId) }}
+        
+        <!-- Dashboard de Métricas ULTRA PREMIUM -->
+        <div class="xl:w-2/3 space-y-8">
+          <!-- Header del Dashboard Mejorado -->
+          <div class="flex items-center justify-between">
+            <div class="space-y-2">
+              <h3 class="text-2xl font-black bg-gradient-to-r from-gray-800 to-gray-600 
+                        bg-clip-text text-transparent flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 
+                           rounded-xl flex items-center justify-center shadow-lg animate-pulse-gentle">
+                  <i class="pi pi-chart-line text-white text-sm"></i>
+                </div>
+                Dashboard Ultra Premium
+              </h3>
+              <p class="text-gray-500 font-semibold">Métricas en tiempo real con IA</p>
+            </div>
+            
+            <!-- Status Indicators Mejorados -->
+            <div class="flex items-center gap-4">
+              <!-- Conexión Status -->
+              <div class="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm 
+                          rounded-2xl shadow-lg border border-white/50">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse-fast"></div>
+                  <span class="text-sm font-bold text-green-700">CONECTADO</span>
+                </div>
+                <div class="w-px h-4 bg-gray-300"></div>
+                <span class="text-xs font-mono text-gray-600">{{ping}}ms</span>
+              </div>
+              
+              <!-- Actualización Automática -->
+              <div class="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-xl">
+                <i class="pi pi-sync animate-spin text-blue-600"></i>
+                <span class="text-xs font-bold text-blue-700">AUTO-SYNC</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Grid de Métricas ULTRA -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            
+            <!-- Métrica 1: Ventas Hoy ULTRA -->
+            <div class="group/metric relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/metric:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative bg-white/95 backdrop-blur-2xl border border-white/60 
+                          rounded-3xl shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(34,197,94,0.3)]
+                          transition-all duration-500 overflow-hidden
+                          hover:scale-105 hover:-translate-y-2">
+                
+                <!-- Efecto de Brillo Deslizante -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                            -skew-x-12 translate-x-[-100%] group-hover/metric:translate-x-[200%] 
+                            transition-transform duration-1000"></div>
+                
+                <!-- Header de la Métrica -->
+                <div class="p-6 pb-4 relative z-10">
+                  <div class="flex items-start justify-between mb-4">
+                    <!-- Ícono Ultra Premium -->
+                    <div class="relative">
+                      <div class="w-14 h-14 bg-gradient-to-br from-green-500 via-emerald-600 to-green-700 
+                                  rounded-2xl flex items-center justify-center shadow-xl
+                                  group-hover/metric:scale-110 group-hover/metric:rotate-12
+                                  transition-all duration-500">
+                        <i class="pi pi-chart-line text-white text-xl"></i>
+                      </div>
+                      <!-- Pulse Ring -->
+                      <div class="absolute inset-0 bg-green-500/30 rounded-2xl animate-ping-slow"></div>
+                    </div>
+                    
+                    <!-- Tendencia Premium -->
+                    <div class="text-right space-y-1">
+                      <p-tag 
+                        value="+12.5%" 
+                        severity="success" 
+                        icon="pi pi-trending-up"
+                        styleClass="bg-gradient-to-r from-green-500 to-emerald-600 border-0 
+                                   shadow-lg text-xs font-bold animate-bounce-gentle">
+                      </p-tag>
+                      <div class="text-xs text-gray-500 font-semibold">vs ayer</div>
+                    </div>
                   </div>
-                </td>
-                <td class="px-4 py-3 text-center">
-                  <p-inputNumber
-                    [(ngModel)]="detalle.cantidad"
-                    (onInput)="actualizarCantidadEnTabla(detalle, i, $event)"
-                    [showButtons]="true"
-                    buttonLayout="horizontal"
-                    [min]="1"
-                    [max]="getMaxCantidadParaDetalleEnTabla(detalle.inventarioId)"
-                    class="w-full"
-                    [ngModelOptions]="{standalone: true}"
-                  ></p-inputNumber>
-                </td>
-                <td class="px-4 py-3 text-right">
-                  {{ getPrecioUnitario(detalle.inventarioId) | currency:'S/':'symbol':'1.2-2' }}
-                </td>
-                <td class="px-4 py-3 text-right">
-                  {{ calcularSubtotalPorDetalle(detalle) | currency:'S/':'symbol':'1.2-2' }}
-                </td>
-                <td class="px-4 py-3">
-                  <button
-                    (click)="quitarDetalle(i)"
-                    class="text-red-500 hover:text-red-700"
-                    pTooltip="Eliminar producto"
-                    tooltipPosition="top"
-                    aria-label="Eliminar producto"
-                  >
-                    <i class="pi pi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </ng-container>
-            <ng-template #emptyMessage>
-              <tr>
-                <td colspan="6" class="text-center py-8">
-                  <i class="pi pi-shopping-cart text-gray-400 text-4xl" aria-hidden="true"></i>
-                  <div class="text-gray-400 mt-2">Aún no has agregado productos</div>
-                </td>
-              </tr>
-            </ng-template>
-          </tbody>
-          <tfoot *ngIf="detalles.length > 0">
-            <tr class="font-semibold">
-              <td colspan="4" class="px-4 py-3 text-right">Total Estimado:</td>
-              <td class="px-4 py-3 text-right">
-                {{ calcularTotalEstimado() | currency:'S/':'symbol':'1.2-2' }}
-              </td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+                </div>
+                
+                <!-- Contenido de la Métrica -->
+                <div class="px-6 pb-6 relative z-10">
+                  <!-- Valor Principal -->
+                  <div class="mb-4">
+                    <div class="text-4xl font-black bg-gradient-to-r from-green-600 to-emerald-600 
+                               bg-clip-text text-transparent mb-2 font-mono">
+                      {{estadisticas.totalVentasHoy | number:'1.0-0'}}
+                    </div>
+                    <div class="text-sm font-bold text-gray-600 flex items-center gap-2">
+                      Ventas Hoy
+                      <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    </div>
+                  </div>
+                  
+                  <!-- Progress Bar Ultra -->
+                  <div class="space-y-3">
+                    <div class="flex justify-between text-xs font-semibold">
+                      <span class="text-gray-500">Objetivo: 50 ventas</span>
+                      <span class="text-green-600">{{(estadisticas.totalVentasHoy / 50 * 100) | number:'1.0-0'}}%</span>
+                    </div>
+                    
+                    <div class="relative">
+                      <div class="w-full bg-green-100 rounded-full h-3 overflow-hidden">
+                        <div class="bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 
+                                   h-full rounded-full transition-all duration-2000 
+                                   animate-progress-wave relative overflow-hidden"
+                             [style.width.%]="(estadisticas.totalVentasHoy / 50 * 100)">
+                          <!-- Efecto de brillo en movimiento -->
+                          <div class="absolute inset-0 bg-gradient-to-r from-transparent 
+                                     via-white/30 to-transparent animate-shimmer"></div>
+                        </div>
+                      </div>
+                      <!-- Indicador de posición -->
+                      <div class="absolute top-0 bg-white border-2 border-green-500 
+                                 w-3 h-3 rounded-full shadow-lg animate-bounce-gentle"
+                           [style.left.%]="(estadisticas.totalVentasHoy / 50 * 100)"></div>
+                    </div>
+                  </div>
+                  
+                  <!-- Mini Gráfico -->
+                  <div class="mt-4 h-8 flex items-end gap-1">
+                    <div *ngFor="let valor of miniGraficoVentas" 
+                         class="flex-1 bg-gradient-to-t from-green-500 to-emerald-400 
+                               rounded-t-sm opacity-60 hover:opacity-100 
+                               transition-all duration-300 animate-bar-grow"
+                         [style.height.%]="valor"></div>
+                  </div>
+                </div>
+                
+                <!-- Footer de Acción -->
+                <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50 
+                           border-t border-green-100 relative z-10">
+                  <p-button 
+                    label="Ver Detalles" 
+                    icon="pi pi-external-link" 
+                    [text]="true" 
+                    size="small"
+                    styleClass="text-green-700 hover:text-green-800 font-bold
+                               hover:bg-green-100 p-2 rounded-xl transition-all duration-300"
+                    (click)="verDetalleVentasHoy()">
+                  </p-button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Métrica 2: Ingresos ULTRA -->
+            <div class="group/metric relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/metric:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative bg-white/95 backdrop-blur-2xl border border-white/60 
+                          rounded-3xl shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(59,130,246,0.3)]
+                          transition-all duration-500 overflow-hidden
+                          hover:scale-105 hover:-translate-y-2">
+                
+                <!-- Efecto de Brillo Deslizante -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                            -skew-x-12 translate-x-[-100%] group-hover/metric:translate-x-[200%] 
+                            transition-transform duration-1000"></div>
+                
+                <!-- Header -->
+                <div class="p-6 pb-4 relative z-10">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="relative">
+                      <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-indigo-600 to-blue-700 
+                                  rounded-2xl flex items-center justify-center shadow-xl
+                                  group-hover/metric:scale-110 group-hover/metric:rotate-12
+                                  transition-all duration-500">
+                        <i class="pi pi-dollar text-white text-xl"></i>
+                      </div>
+                      <div class="absolute inset-0 bg-blue-500/30 rounded-2xl animate-ping-slow"></div>
+                    </div>
+                    
+                    <div class="text-right space-y-1">
+                      <div class="text-xs text-gray-500 font-semibold">vs ayer</div>
+                      <div class="flex items-center gap-1">
+                        <i class="pi pi-arrow-up text-blue-600 text-xs"></i>
+                        <span class="text-blue-600 font-bold text-sm">+8.2%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="px-6 pb-6 relative z-10">
+                  <div class="mb-4">
+                    <div class="text-3xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 
+                               bg-clip-text text-transparent mb-2 font-mono">
+                      {{formatearMoneda(estadisticas.montoVentasHoy)}}
+                    </div>
+                    <div class="text-sm font-bold text-gray-600 flex items-center gap-2">
+                      Ingresos Hoy
+                      <span class="inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                    </div>
+                  </div>
+                  
+                  <!-- Objetivo Progress -->
+                  <div class="space-y-3">
+                    <div class="flex justify-between text-xs font-semibold">
+                      <span class="text-gray-500">Objetivo diario</span>
+                      <span class="text-blue-600">72%</span>
+                    </div>
+                    
+                    <div class="relative">
+                      <div class="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-600 
+                                   h-full rounded-full transition-all duration-2000 
+                                   relative overflow-hidden w-3/4">
+                          <div class="absolute inset-0 bg-gradient-to-r from-transparent 
+                                     via-white/30 to-transparent animate-shimmer"></div>
+                        </div>
+                      </div>
+                      <div class="absolute top-0 bg-white border-2 border-blue-500 
+                                 w-3 h-3 rounded-full shadow-lg animate-bounce-gentle left-3/4"></div>
+                    </div>
+                  </div>
+                  
+                  <!-- Comparativa Semanal -->
+                  <div class="mt-4 space-y-2">
+                    <div class="text-xs font-semibold text-gray-500">Esta semana vs anterior</div>
+                    <div class="flex items-center gap-2">
+                      <div class="flex-1 bg-gray-200 rounded-full h-1">
+                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-1 rounded-full w-4/5"></div>
+                      </div>
+                      <span class="text-xs font-bold text-blue-600">+15%</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 
+                           border-t border-blue-100 relative z-10">
+                  <div class="flex items-center justify-between">
+                    <p-button 
+                      label="Analizar" 
+                      icon="pi pi-chart-pie" 
+                      [text]="true" 
+                      size="small"
+                      styleClass="text-blue-700 hover:text-blue-800 font-bold">
+                    </p-button>
+                    <div class="text-xs text-blue-600 font-mono">
+                      {{getCurrentTime() | date:'HH:mm'}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Métrica 3: Pendientes ULTRA -->
+            <div class="group/metric relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/metric:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative bg-white/95 backdrop-blur-2xl border border-white/60 
+                          rounded-3xl shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.3)]
+                          transition-all duration-500 overflow-hidden
+                          hover:scale-105 hover:-translate-y-2"
+                   [class.ring-2]="estadisticas.ventasPendientes > 5"
+                   [class.ring-red-400]="estadisticas.ventasPendientes > 5"
+                   [class.ring-offset-2]="estadisticas.ventasPendientes > 5">
+                
+                <!-- Alerta Crítica -->
+                <div *ngIf="estadisticas.ventasPendientes > 5" 
+                     class="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 
+                            h-1 animate-pulse-fast"></div>
+                
+                <!-- Header -->
+                <div class="p-6 pb-4 relative z-10">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="relative">
+                      <div class="w-14 h-14 bg-gradient-to-br from-orange-500 via-red-600 to-orange-700 
+                                  rounded-2xl flex items-center justify-center shadow-xl
+                                  group-hover/metric:scale-110 group-hover/metric:rotate-12
+                                  transition-all duration-500"
+                           [class.animate-shake]="estadisticas.ventasPendientes > 5">
+                        <i class="pi pi-clock text-white text-xl"></i>
+                      </div>
+                      <div class="absolute inset-0 bg-orange-500/30 rounded-2xl animate-ping-slow"></div>
+                    </div>
+                    
+                    <!-- Alerta Badge -->
+                    <div *ngIf="estadisticas.ventasPendientes > 5" 
+                         class="animate-bounce">
+                      <p-tag 
+                        icon="pi pi-exclamation-triangle" 
+                        severity="danger" 
+                        styleClass="bg-gradient-to-r from-red-500 to-orange-500 border-0 
+                                   shadow-lg text-xs font-bold animate-pulse-fast">
+                      </p-tag>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="px-6 pb-6 relative z-10">
+                  <div class="mb-4">
+                    <div class="text-4xl font-black bg-gradient-to-r from-orange-600 to-red-600 
+                               bg-clip-text text-transparent mb-2 font-mono"
+                         [class.animate-pulse]="estadisticas.ventasPendientes > 5">
+                      {{estadisticas.ventasPendientes}}
+                    </div>
+                    <div class="text-sm font-bold text-gray-600 flex items-center gap-2">
+                      Pendientes
+                      <span class="inline-block w-2 h-2 bg-orange-500 rounded-full 
+                                 animate-pulse"
+                            [class.bg-red-500]="estadisticas.ventasPendientes > 5"></span>
+                    </div>
+                  </div>
+                  
+                  <!-- Desglose Rápido -->
+                  <div class="space-y-2" *ngIf="estadisticas.ventasPendientes > 0">
+                    <div class="flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse-fast"></div>
+                        <span class="text-gray-600 font-semibold">Pagos vencidos</span>
+                      </div>
+                      <span class="font-bold text-red-600">2</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span class="text-gray-600 font-semibold">Por confirmar</span>
+                      </div>
+                      <span class="font-bold text-orange-600">3</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span class="text-gray-600 font-semibold">En proceso</span>
+                      </div>
+                      <span class="font-bold text-yellow-600">1</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Tiempo Promedio -->
+                  <div class="mt-4 p-3 bg-orange-50 rounded-xl border border-orange-100">
+                    <div class="text-xs text-orange-700 font-semibold mb-1">Tiempo promedio</div>
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-clock text-orange-600"></i>
+                      <span class="text-sm font-bold text-orange-700">2.3 días</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-red-50 
+                           border-t border-orange-100 relative z-10">
+                  <p-button 
+                    label="Gestionar Ahora" 
+                    icon="pi pi-bell" 
+                    [text]="true" 
+                    size="small"
+                    styleClass="text-orange-700 hover:text-orange-800 font-bold
+                               hover:bg-orange-100 p-2 rounded-xl transition-all duration-300"
+                    [class.animate-pulse]="estadisticas.ventasPendientes > 5"
+                    (click)="verPendientes()">
+                  </p-button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Métrica 4: Performance ULTRA -->
+            <div class="group/metric relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/metric:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative bg-white/95 backdrop-blur-2xl border border-white/60 
+                          rounded-3xl shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(168,85,247,0.3)]
+                          transition-all duration-500 overflow-hidden
+                          hover:scale-105 hover:-translate-y-2">
+                
+                <!-- Header -->
+                <div class="p-6 pb-4 relative z-10">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="relative">
+                      <div class="w-14 h-14 bg-gradient-to-br from-purple-500 via-pink-600 to-purple-700 
+                                  rounded-2xl flex items-center justify-center shadow-xl
+                                  group-hover/metric:scale-110 group-hover/metric:rotate-12
+                                  transition-all duration-500">
+                        <i class="pi pi-star text-white text-xl"></i>
+                      </div>
+                      <div class="absolute inset-0 bg-purple-500/30 rounded-2xl animate-ping-slow"></div>
+                    </div>
+                    
+                    <p-tag 
+                      value="Excelente" 
+                      severity="info" 
+                      styleClass="bg-gradient-to-r from-purple-100 to-pink-100 
+                                 text-purple-700 border-0 text-xs font-bold
+                                 shadow-sm animate-glow-cycle">
+                    </p-tag>
+                  </div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="px-6 pb-6 relative z-10 text-center">
+                  <div class="mb-6">
+                    <div class="text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 
+                               bg-clip-text text-transparent mb-2 font-mono">
+                      96%
+                    </div>
+                    <div class="text-sm font-bold text-gray-600">Performance Score</div>
+                  </div>
+                  
+                  <!-- Knob Circular Ultra Premium -->
+                  <div class="flex justify-center mb-6">
+                    <div class="relative">
+                      <!-- Knob Principal -->
+                      <p-knob 
+                        [(ngModel)]="performanceScore" 
+                        [size]="80"
+                        [strokeWidth]="8"
+                        valueColor="url(#gradient-purple)"
+                        rangeColor="#e5e7eb"
+                        [showValue]="false"
+                        [readonly]="true"
+                        styleClass="performance-knob">
+                      </p-knob>
+                      
+                      <!-- Valor Central -->
+                      <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-2xl font-black text-purple-600">96%</div>
+                      </div>
+                      
+                      <!-- Glow Effect -->
+                      <div class="absolute inset-0 bg-purple-500/20 rounded-full blur-xl 
+                                 scale-150 animate-pulse-glow"></div>
+                    </div>
+                  </div>
+                  
+                  <!-- Métricas Secundarias -->
+                  <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="space-y-1">
+                      <div class="text-lg font-black text-purple-600">A+</div>
+                      <div class="text-xs text-gray-500 font-semibold">Calidad</div>
+                    </div>
+                    <div class="space-y-1">
+                      <div class="text-lg font-black text-pink-600">4.9</div>
+                      <div class="text-xs text-gray-500 font-semibold">Rating</div>
+                    </div>
+                    <div class="space-y-1">
+                      <div class="text-lg font-black text-indigo-600">1°</div>
+                      <div class="text-xs text-gray-500 font-semibold">Ranking</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-pink-50 
+                           border-t border-purple-100 relative z-10">
+                  <div class="flex items-center justify-between">
+                    <p-button 
+                      label="Optimizar" 
+                      icon="pi pi-cog" 
+                      [text]="true" 
+                      size="small"
+                      styleClass="text-purple-700 hover:text-purple-800 font-bold">
+                    </p-button>
+                    <div class="flex items-center gap-1">
+                      <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                      <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                      <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                      <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                      <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      <!-- Barra de Acciones Rápidas ULTRA PREMIUM -->
+      <div class="mt-12">
+        <div class="bg-white/95 backdrop-blur-2xl border border-white/60 rounded-3xl 
+                    shadow-2xl hover:shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)] 
+                    transition-all duration-700 p-8 overflow-hidden
+                    relative group/actions">
+          
+          <!-- Background Effect -->
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 
+                      opacity-0 group-hover/actions:opacity-100 transition-opacity duration-1000"></div>
+          
+          <!-- Header Premium -->
+          <div class="flex items-center justify-between mb-8 relative z-10">
+            <div class="space-y-2">
+              <h4 class="text-2xl font-black bg-gradient-to-r from-gray-800 to-gray-600 
+                        bg-clip-text text-transparent flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 
+                           rounded-2xl flex items-center justify-center shadow-lg animate-pulse-gentle">
+                  <i class="pi pi-bolt text-white text-lg"></i>
+                </div>
+                Centro de Comando Ultra
+              </h4>
+              <p class="text-gray-500 font-semibold flex items-center gap-2">
+                Acciones instantáneas con IA
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-bold">
+                  BETA
+                </span>
+              </p>
+            </div>
+            
+            <!-- Tiempo y Status -->
+            <div class="flex items-center gap-6">
+              <div class="text-right space-y-1">
+                <div class="flex items-center gap-2 text-sm font-mono font-bold text-gray-700">
+                  <i class="pi pi-clock text-blue-500 animate-spin-slow"></i>
+                  <span>{{getCurrentTime() | date:'HH:mm:ss'}}</span>
+                </div>
+                <div class="text-xs text-gray-500 font-semibold">
+                  {{getCurrentTime() | date:'EEEE, dd MMMM'}}
+                </div>
+              </div>
+              
+              <!-- Status Indicator -->
+              <div class="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-2xl border border-green-200">
+                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse-fast"></div>
+                <span class="text-sm font-bold text-green-700">SISTEMA ÓPTIMO</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Grid de Acciones ULTRA -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 relative z-10">
+            
+            <!-- Nueva Venta Ultra -->
+            <div class="group/action relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/action:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative">
+                <p-button 
+                  (click)="nuevaVentaRapida()"
+                  styleClass="w-full h-24 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 
+                             hover:from-blue-700 hover:via-purple-700 hover:to-indigo-800
+                             border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(59,130,246,0.5)]
+                             transform hover:-translate-y-3 hover:scale-105
+                             transition-all duration-500 group-hover/action:rotate-3
+                             before:absolute before:inset-0 before:bg-gradient-to-r 
+                             before:from-white/20 before:to-transparent before:rounded-3xl
+                             overflow-hidden"
+                  [rounded]="true">
+                  
+                  <!-- Contenido del Botón -->
+                  <div class="flex flex-col items-center gap-3 relative z-10">
+                    <div class="relative">
+                      <i class="pi pi-plus text-2xl text-white 
+                               group-hover/action:scale-125 group-hover/action:rotate-180
+                               transition-all duration-500"></i>
+                      <!-- Glow Effect -->
+                      <div class="absolute inset-0 bg-white/30 rounded-full blur-sm 
+                                 scale-150 opacity-0 group-hover/action:opacity-100 
+                                 transition-opacity duration-300"></div>
+                    </div>
+                    
+                    <div class="text-center">
+                      <div class="text-sm font-black text-white mb-1">Nueva Venta</div>
+                      <div class="text-xs text-blue-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                        F1
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Efecto de Brillo -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                             -skew-x-12 translate-x-[-100%] group-hover/action:translate-x-[200%] 
+                             transition-transform duration-1000"></div>
+                </p-button>
+              </div>
+            </div>
+            
+            <!-- Buscar Ultra -->
+            <div class="group/action relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-slate-500/20 
+                          rounded-3xl blur-xl opacity-0 group-hover/action:opacity-100 
+                          transition-opacity duration-500"></div>
+              
+              <div class="relative">
+                <p-button 
+                  (click)="busquedaRapida()"
+                  styleClass="w-full h-24 bg-gradient-to-br from-gray-600 via-slate-600 to-gray-700
+                             hover:from-gray-700 hover:via-slate-700 hover:to-gray-800
+                             border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(71,85,105,0.5)]
+                             transform hover:-translate-y-3 hover:scale-105
+                             transition-all duration-500 group-hover/action:rotate-3
+                             overflow-hidden"
+                  [rounded]="true">
+                  
+                  <div class="flex flex-col items-center gap-3 relative z-10">
+                    <div class="relative">
+                      <i class="pi pi-search text-2xl text-white 
+                               group-hover/action:scale-125 
+                               transition-all duration-500"></i>
+                      <!-- Pulse Ring -->
+                      <div class="absolute inset-0 border-2 border-white/50 rounded-full 
+                                 animate-ping scale-150"></div>
+                    </div>
+                    
+                    <div class="text-center">
+                      <div class="text-sm font-black text-white mb-1">Buscar</div>
+                      <div class="text-xs text-gray-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                        F2
+                      </div>
+                    </div>
+                  </div>
+                </p-button>
+              </div>
+            </div>
+            
+            <!-- Reportes Ultra -->
+            <div class="group/action relative">
+              <p-button 
+                (click)="reportesRapidos()"
+                styleClass="w-full h-24 bg-gradient-to-br from-cyan-600 via-blue-600 to-cyan-700
+                           hover:from-cyan-700 hover:via-blue-700 hover:to-cyan-800
+                           border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(8,145,178,0.5)]
+                           transform hover:-translate-y-3 hover:scale-105
+                           transition-all duration-500 group-hover/action:rotate-3
+                           overflow-hidden"
+                [rounded]="true">
+                
+                <div class="flex flex-col items-center gap-3 relative z-10">
+                  <div class="relative">
+                    <i class="pi pi-chart-bar text-2xl text-white 
+                             group-hover/action:scale-125 
+                             transition-all duration-500"></i>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="text-sm font-black text-white mb-1">Reportes</div>
+                    <div class="text-xs text-cyan-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                      F3
+                    </div>
+                  </div>
+                </div>
+              </p-button>
+            </div>
+            
+            <!-- Exportar Ultra -->
+            <div class="group/action relative">
+              <p-button 
+                (click)="exportarRapido()"
+                styleClass="w-full h-24 bg-gradient-to-br from-emerald-600 via-green-600 to-emerald-700
+                           hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800
+                           border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(16,185,129,0.5)]
+                           transform hover:-translate-y-3 hover:scale-105
+                           transition-all duration-500 group-hover/action:rotate-3
+                           overflow-hidden"
+                [rounded]="true">
+                
+                <div class="flex flex-col items-center gap-3 relative z-10">
+                  <div class="relative">
+                    <i class="pi pi-download text-2xl text-white 
+                             group-hover/action:scale-125 group-hover/action:animate-bounce
+                             transition-all duration-500"></i>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="text-sm font-black text-white mb-1">Exportar</div>
+                    <div class="text-xs text-emerald-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                      F4
+                    </div>
+                  </div>
+                </div>
+              </p-button>
+            </div>
+            
+            <!-- Configuración Ultra -->
+            <div class="group/action relative">
+              <p-button 
+                (click)="configuracionRapida()"
+                styleClass="w-full h-24 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700
+                           hover:from-orange-700 hover:via-red-700 hover:to-orange-800
+                           border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(234,88,12,0.5)]
+                           transform hover:-translate-y-3 hover:scale-105
+                           transition-all duration-500 group-hover/action:rotate-3
+                           overflow-hidden"
+                [rounded]="true">
+                
+                <div class="flex flex-col items-center gap-3 relative z-10">
+                  <div class="relative">
+                    <i class="pi pi-cog text-2xl text-white 
+                             group-hover/action:scale-125 group-hover/action:rotate-180
+                             transition-all duration-500"></i>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="text-sm font-black text-white mb-1">Config</div>
+                    <div class="text-xs text-orange-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                      F5
+                    </div>
+                  </div>
+                </div>
+              </p-button>
+            </div>
+            
+            <!-- Tema Toggle Ultra -->
+            <div class="group/action relative">
+              <p-button 
+                (click)="toggleTheme()"
+                styleClass="w-full h-24 bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700
+                           hover:from-violet-700 hover:via-purple-700 hover:to-violet-800
+                           border-0 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(139,92,246,0.5)]
+                           transform hover:-translate-y-3 hover:scale-105
+                           transition-all duration-500 group-hover/action:rotate-3
+                           overflow-hidden"
+                [rounded]="true">
+                
+                <div class="flex flex-col items-center gap-3 relative z-10">
+                  <div class="relative">
+                    <i class="pi text-2xl text-white 
+                             group-hover/action:scale-125 
+                             transition-all duration-500"
+                       [class]="isDarkMode ? 'pi-sun' : 'pi-moon'"></i>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="text-sm font-black text-white mb-1">
+                      {{isDarkMode ? 'Claro' : 'Oscuro'}}
+                    </div>
+                    <div class="text-xs text-violet-100 bg-white/20 px-3 py-1 rounded-full font-bold">
+                      F6
+                    </div>
+                  </div>
+                </div>
+              </p-button>
+            </div>
+          </div>
+          
+          <!-- Footer del Centro de Comando -->
+          <div class="mt-8 pt-6 border-t border-gray-200/50 flex items-center justify-between relative z-10">
+            <div class="text-sm text-gray-500 font-semibold">
+              💡 Usa las teclas de función para accesos rápidos
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <!-- Indicador de Rendimiento -->
+              <div class="flex items-center gap-2 text-sm">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-gray-600 font-semibold">Sistema: 98% óptimo</span>
+              </div>
+              
+              <!-- Shortcut Info -->
+              <p-button 
+                icon="pi pi-question-circle" 
+                [text]="true" 
+                [rounded]="true"
+                size="small"
+                pTooltip="Ver todos los shortcuts disponibles"
+                styleClass="text-gray-500 hover:text-gray-700">
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <!-- Botones de Acción -->
-      <div class="flex justify-end gap-4 mt-6">
-        <button
-          type="button"
-          (click)="confirmarLimpiarVenta()"
-          class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          pTooltip="Limpiar formulario y productos"
-          tooltipPosition="top"
-          aria-label="Limpiar formulario y productos"
-        >
-          <i class="pi pi-refresh mr-2"></i> Limpiar Todo
-        </button>
-        <button
-          type="button"
-          (click)="registrarVenta()"
-          [disabled]="ventaForm.invalid || detalles.length === 0 || isLoading"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-          aria-label="Registrar venta"
-        >
-          <i class="pi pi-save mr-2"></i> Registrar Venta
-          <p-progressSpinner
-            *ngIf="isLoading"
-            styleClass="w-5 h-5 ml-2"
-            strokeWidth="4"
-          ></p-progressSpinner>
+<!-- Gradientes SVG para efectos avanzados -->
+<svg width="0" height="0" style="position: absolute;">
+  <defs>
+    <linearGradient id="gradient-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- Navegación por pestañas -->
+<div class="relative mb-8">
+  <!-- Container de Pestañas con Glassmorphism -->
+  <div class="bg-white/80 backdrop-blur-xl border border-white/30 rounded-2xl shadow-xl overflow-hidden">
+    
+    <!-- Indicador de Estado Global -->
+    <div class="bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 px-6 py-3 border-b border-white/20">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-sm font-semibold text-gray-700">Sistema Activo</span>
+          </div>
+          
+          <div class="h-4 w-px bg-gray-300"></div>
+          
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <i class="pi pi-users text-blue-500"></i>
+            <span>{{clienteSeleccionado ? clienteSeleccionado.nombres + ' ' + clienteSeleccionado.apellidos : 'Sin cliente'}}</span>
+          </div>
+          
+          <div class="h-4 w-px bg-gray-300"></div>
+          
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <i class="pi pi-shopping-cart text-emerald-500"></i>
+            <span>{{carrito.length}} producto(s)</span>
+          </div>
+        </div>
+        
+        <!-- Información de Sesión -->
+        <div class="flex items-center gap-4 text-sm text-gray-500">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-clock text-blue-500"></i>
+            <span>{{getCurrentTime() | date:'HH:mm:ss'}}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="pi pi-calendar text-purple-500"></i>
+            <span>{{getCurrentTime() | date:'dd/MM/yyyy'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TabView Premium -->
+    <p-tabView 
+      [(activeIndex)]="activeTabIndex" 
+      styleClass="premium-tabview-custom"
+      (onChange)="onTabChange($event)">
+      
+      <!-- PESTAÑA 1: PUNTO DE VENTA -->
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="tab-header-premium group">
+            <!-- Ícono de la pestaña -->
+            <div class="tab-icon-container">
+              <div class="tab-icon-bg"></div>
+              <i class="pi pi-shopping-cart text-xl relative z-10 
+                        group-hover:scale-110 transition-transform duration-300"></i>
+              
+              <!-- Badge dinámico -->
+              <div *ngIf="carrito.length > 0" 
+                   class="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-green-600 
+                          text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center 
+                          justify-center shadow-lg animate-bounce">
+                {{carrito.length}}
+              </div>
+              
+              <!-- Pulse effect cuando está activo -->
+              <div *ngIf="activeTabIndex === 0" 
+                   class="absolute inset-0 bg-blue-400/30 rounded-full animate-ping"></div>
+            </div>
+            
+            <!-- Contenido del header -->
+            <div class="tab-content">
+              <div class="tab-title">Punto de Venta</div>
+              <div class="tab-subtitle">Nueva venta en tiempo real</div>
+              
+              <!-- Indicadores de estado -->
+              <div class="tab-indicators">
+                <div *ngIf="clienteSeleccionado" 
+                     class="indicator success">
+                  <i class="pi pi-check-circle"></i>
+                  <span>Cliente</span>
+                </div>
+                
+                <div *ngIf="carrito.length > 0" 
+                     class="indicator info">
+                  <i class="pi pi-shopping-bag"></i>
+                  <span>{{carrito.length}} items</span>
+                </div>
+                
+                <div *ngIf="totalVenta > 0" 
+                     class="indicator warning">
+                  <i class="pi pi-dollar"></i>
+                  <span>{{formatearMoneda(totalVenta)}}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Progress bar del proceso -->
+            <div class="tab-progress">
+              <div class="progress-track">
+                <div class="progress-fill" 
+                     [style.width.%]="getPasoProgress()"></div>
+              </div>
+              <div class="progress-label">
+                Paso {{pasoActual + 1}} de 4
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        
+        <!-- Contenido de POS -->
+        <div class="tab-content-container pos-content">
+          <!-- Aquí irá el contenido del POS que crearemos después -->
+          <div class="p-6">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 
+                          rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-shopping-cart text-white text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Sistema de Punto de Venta</h3>
+              <p class="text-gray-600">Gestión completa de ventas en tiempo real</p>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      
+      <!-- PESTAÑA 2: HISTORIAL DE VENTAS -->
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="tab-header-premium group">
+            <div class="tab-icon-container">
+              <div class="tab-icon-bg bg-gradient-to-r from-indigo-500 to-blue-600"></div>
+              <i class="pi pi-history text-xl relative z-10 
+                        group-hover:rotate-12 transition-transform duration-300"></i>
+              
+              <!-- Notification badge -->
+              <div *ngIf="ventasPendientesCount > 0" 
+                   class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-600 
+                          text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center 
+                          justify-center shadow-lg animate-pulse">
+                {{ventasPendientesCount}}
+              </div>
+            </div>
+            
+            <div class="tab-content">
+              <div class="tab-title">Historial</div>
+              <div class="tab-subtitle">Consultar ventas anteriores</div>
+              
+              <div class="tab-indicators">
+                <div class="indicator info">
+                  <i class="pi pi-list"></i>
+                  <span>{{ventasFiltradas.length}} ventas</span>
+                </div>
+                
+                <div *ngIf="ventasPendientesCount > 0" 
+                     class="indicator danger">
+                  <i class="pi pi-exclamation-triangle"></i>
+                  <span>{{ventasPendientesCount}} pendientes</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Quick stats -->
+            <div class="tab-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ventasHoyCount}}</div>
+                <div class="stat-label">Hoy</div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <div class="stat-value">{{formatearMoneda(montoTotalHoy)}}</div>
+                <div class="stat-label">Total</div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        
+        <!-- Contenido de Historial -->
+        <div class="tab-content-container historial-content">
+          <div class="p-6">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-indigo-500 to-blue-600 
+                          rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-history text-white text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Historial de Ventas</h3>
+              <p class="text-gray-600">Consulta y gestiona todas las ventas realizadas</p>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      
+      <!-- PESTAÑA 3: REPORTES Y ANÁLISIS -->
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="tab-header-premium group">
+            <div class="tab-icon-container">
+              <div class="tab-icon-bg bg-gradient-to-r from-emerald-500 to-teal-600"></div>
+              <i class="pi pi-chart-bar text-xl relative z-10 
+                        group-hover:scale-110 transition-transform duration-300"></i>
+              
+              <!-- Loading indicator cuando se cargan reportes -->
+              <div *ngIf="loadingReportes" 
+                   class="absolute -top-1 -right-1">
+                <i class="pi pi-spin pi-spinner text-emerald-500 text-sm"></i>
+              </div>
+            </div>
+            
+            <div class="tab-content">
+              <div class="tab-title">Reportes</div>
+              <div class="tab-subtitle">Análisis y estadísticas</div>
+              
+              <div class="tab-indicators">
+                <div class="indicator success">
+                  <i class="pi pi-trending-up"></i>
+                  <span>Performance 96%</span>
+                </div>
+                
+                <div class="indicator info">
+                  <i class="pi pi-calendar"></i>
+                  <span>Este mes</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Chart preview mini -->
+            <div class="tab-chart-preview">
+              <div class="chart-mini">
+                <div class="chart-bar" style="height: 60%"></div>
+                <div class="chart-bar" style="height: 80%"></div>
+                <div class="chart-bar" style="height: 45%"></div>
+                <div class="chart-bar" style="height: 90%"></div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        
+        <!-- Contenido de Reportes -->
+        <div class="tab-content-container reportes-content">
+          <div class="p-6">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-emerald-500 to-teal-600 
+                          rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-chart-bar text-white text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Reportes y Análisis</h3>
+              <p class="text-gray-600">Estadísticas detalladas y análisis de performance</p>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      
+      <!-- PESTAÑA 4: CONFIGURACIÓN -->
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="tab-header-premium group">
+            <div class="tab-icon-container">
+              <div class="tab-icon-bg bg-gradient-to-r from-purple-500 to-pink-600"></div>
+              <i class="pi pi-cog text-xl relative z-10 
+                        group-hover:rotate-90 transition-transform duration-500"></i>
+              
+              <!-- Badge de configuraciones pendientes -->
+              <div *ngIf="configPendientes > 0" 
+                   class="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 
+                          text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center 
+                          justify-center shadow-lg">
+                {{configPendientes}}
+              </div>
+            </div>
+            
+            <div class="tab-content">
+              <div class="tab-title">Configuración</div>
+              <div class="tab-subtitle">Ajustes del sistema</div>
+              
+              <div class="tab-indicators">
+                <div class="indicator info">
+                  <i class="pi pi-shield"></i>
+                  <span>Seguro</span>
+                </div>
+                
+                <div *ngIf="configPendientes > 0" 
+                     class="indicator warning">
+                  <i class="pi pi-exclamation-circle"></i>
+                  <span>{{configPendientes}} pendientes</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Settings preview -->
+            <div class="tab-settings-preview">
+              <div class="settings-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        
+        <!-- Contenido de Configuración -->
+        <div class="tab-content-container config-content">
+          <div class="p-6">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-600 
+                          rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-cog text-white text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Configuración del Sistema</h3>
+              <p class="text-gray-600">Ajustes personalizados y preferencias</p>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+    
+    <!-- Barra de Estado Inferior -->
+    <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-3 border-t border-white/20">
+      <div class="flex items-center justify-between">
+        <!-- Estado de la pestaña actual -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <span class="text-sm font-medium text-gray-700">{{getTabStatus()}}</span>
+          </div>
+          
+          <!-- Shortcuts de navegación -->
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <span class="bg-gray-200 px-2 py-1 rounded">Ctrl+1</span>
+            <span>POS</span>
+            <span class="bg-gray-200 px-2 py-1 rounded">Ctrl+2</span>
+            <span>Historial</span>
+            <span class="bg-gray-200 px-2 py-1 rounded">Ctrl+3</span>
+            <span>Reportes</span>
+          </div>
+        </div>
+        
+        <!-- Acciones rápidas de pestaña -->
+        <div class="flex items-center gap-2">
+          <!-- Botón de refrescar -->
+          <p-button 
+            icon="pi pi-refresh" 
+            [text]="true" 
+            [rounded]="true" 
+            size="small"
+            severity="secondary"
+            pTooltip="Refrescar datos (F5)"
+            (click)="refrescarPestanaActual()">
+          </p-button>
+          
+          <!-- Botón de ayuda -->
+          <p-button 
+            icon="pi pi-question-circle" 
+            [text]="true" 
+            [rounded]="true" 
+            size="small"
+            severity="help"
+            pTooltip="Ayuda contextual (F1)"
+            (click)="mostrarAyuda()">
+          </p-button>
+          
+          <!-- Botón de fullscreen -->
+          <p-button 
+            [icon]="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'" 
+            [text]="true" 
+            [rounded]="true" 
+            size="small"
+            severity="secondary"
+            pTooltip="Pantalla completa (F11)"
+            (click)="toggleFullscreen()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Floating Tab Switcher (Para mobile) -->
+  <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 lg:hidden z-50">
+    <div class="bg-white/90 backdrop-blur-xl border border-white/30 rounded-2xl shadow-xl p-2">
+      <div class="flex items-center gap-2">
+        <button 
+          *ngFor="let tab of tabsInfo; let i = index"
+          (click)="activeTabIndex = i"
+          [class]="'w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ' + 
+                   (activeTabIndex === i ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-100')">
+          <i [class]="tab.icon"></i>
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="ventaRegistrada" class="mt-4">
-  <p-card styleClass="shadow-2 card-modern">
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <i class="pi pi-check-circle mr-2 text-green-500"></i>
-        <span>Venta Registrada Exitosamente</span>
-      </div>
-      <div class="card-subheader">Información de la venta y gestión de pagos</div>
-    </ng-template>
-    <div class="grid">
-      <div class="col-12 lg:col-6">
-        <h5 class="section-title">Datos de la Venta</h5>
-        <ul class="list-none p-0 m-0">
-            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
-                <span class="font-medium text-gray-700">N° Venta:</span>
-                <span class="font-semibold">{{ ventaRegistrada.numeroVenta }}</span>
-            </li>
-            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
-                <span class="font-medium text-gray-700">Cliente:</span>
-                <span class="font-semibold">{{ ventaRegistrada.cliente.nombres }} {{ ventaRegistrada.cliente.apellidos }}</span>
-            </li>
-            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
-                <span class="font-medium text-gray-700">Fecha:</span>
-                <span class="font-semibold">{{ ventaRegistrada.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
-            </li>
-            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
-                <span class="font-medium text-gray-700">Comprobante:</span>
-                <span class="font-semibold">{{ ventaRegistrada.tipoComprobante }} {{ ventaRegistrada.serieComprobante }}-{{ ventaRegistrada.numeroComprobante }}</span>
-            </li>
-            <li class="flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
-                <span class="font-medium text-gray-700">Total Venta:</span>
-                <span class="font-bold text-xl text-primary">S/ {{ ventaRegistrada.total | number:'1.2-2' }}</span>
-            </li>
-            <li class="flex justify-content-between align-items-center py-2">
-                <span class="font-medium text-gray-700">Estado:</span>
-                <p-tag [severity]="calcularSaldoPendiente() > 0 ? 'warning' : 'success'" [value]="calcularSaldoPendiente() > 0 ? 'PENDIENTE DE PAGO' : 'PAGADO'"></p-tag>
-            </li>
-        </ul>
-      </div>
-      <div class="col-12 lg:col-6">
-        <div class="flex justify-content-between align-items-center mb-3">
-          <h5 class="section-title m-0">Pagos Realizados</h5>
-          <p-button
-            label="Nuevo Pago"
-            icon="pi pi-plus"
-            (click)="togglePanelPago()"
-            [outlined]="true"
-            [disabled]="calcularSaldoPendiente() <= 0"
-            styleClass="button-modern-secondary"
-            pTooltip="Registrar un nuevo pago"
-            tooltipPosition="top"
-            aria-label="Registrar nuevo pago"
-          ></p-button>
+
+<!-- Contenido del Punto de Venta Premium -->
+<div class="pos-layout">
+  <!-- Layout de Punto de Venta con Splitter -->
+  <p-splitter [style]="{'height': 'calc(100vh - 330px)'}" styleClass="premium-splitter">
+    
+    <!-- Panel Izquierdo: Selección de Cliente y Productos -->
+    <ng-template pTemplate="panel1">
+      <div class="panel-content left-panel">
+        
+        <!-- Sección de Cliente -->
+        <div class="panel-section cliente-section mb-6" 
+             [class.completed]="clienteSeleccionado"
+             [class.active]="pasoActual === 0">
+          
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-user"></i>
+              <div *ngIf="pasoActual === 0" class="pulse-ring"></div>
+            </div>
+            <h3 class="header-title">Seleccionar Cliente</h3>
+            <div class="header-badge" *ngIf="clienteSeleccionado">
+              <i class="pi pi-check-circle text-green-500"></i>
+            </div>
+          </div>
+          
+          <div class="section-content">
+            <!-- Estado: Sin Cliente -->
+            <div *ngIf="!clienteSeleccionado" class="cliente-search">
+              <div class="search-container">
+                <span class="p-input-icon-left w-full">
+                  <i class="pi pi-search"></i>
+                  <p-autoComplete 
+                    [(ngModel)]="clienteBusqueda"
+                    [suggestions]="clientesFiltrados"
+                    (completeMethod)="buscarClientes($event)"
+                    (onSelect)="onClienteSelect($event)"
+                    field="nombres"
+                    placeholder="Buscar cliente por nombre, DNI o RUC..."
+                    styleClass="w-full premium-autocomplete"
+                    [dropdown]="true"
+                    [minLength]="1">
+                    <ng-template let-cliente pTemplate="item">
+                      <div class="cliente-item">
+                        <div class="cliente-avatar">
+                          <div class="avatar-bg">
+                            {{cliente.nombres.charAt(0)}}{{cliente.apellidos.charAt(0)}}
+                          </div>
+                        </div>
+                        <div class="cliente-info">
+                          <div class="cliente-name">{{cliente.nombres}} {{cliente.apellidos}}</div>
+                          <div class="cliente-doc">{{cliente.dni || cliente.ruc || 'Sin documento'}}</div>
+                        </div>
+                        <div class="cliente-select">
+                          <i class="pi pi-chevron-right"></i>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </p-autoComplete>
+                </span>
+              </div>
+              
+              <!-- Clientes recientes -->
+              <div class="mt-4" *ngIf="clientesRecientes.length > 0">
+                <div class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <i class="pi pi-clock text-blue-500"></i>
+                  <span>Clientes recientes</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div *ngFor="let cliente of clientesRecientes.slice(0, 3)"
+                       class="recent-cliente-card"
+                       (click)="seleccionarCliente(cliente)">
+                    <div class="avatar">
+                      {{cliente.nombres.charAt(0)}}{{cliente.apellidos.charAt(0)}}
+                    </div>
+                    <div class="info">
+                      <div class="name">{{cliente.nombres}} {{cliente.apellidos}}</div>
+                      <div class="doc">{{cliente.dni || cliente.ruc}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Botón para nuevo cliente -->
+              <div class="mt-4 flex justify-center">
+                <p-button 
+                  label="Nuevo Cliente" 
+                  icon="pi pi-plus"
+                  [outlined]="true"
+                  size="small"
+                  (click)="nuevoCliente()">
+                </p-button>
+              </div>
+            </div>
+            
+            <!-- Estado: Cliente Seleccionado -->
+            <div *ngIf="clienteSeleccionado" class="cliente-selected">
+              <div class="cliente-card">
+                <div class="cliente-header">
+                  <div class="cliente-avatar">
+                    <div class="avatar-bg">
+                      {{clienteSeleccionado.nombres.charAt(0)}}{{clienteSeleccionado.apellidos.charAt(0)}}
+                    </div>
+                    <div class="avatar-border"></div>
+                  </div>
+                  
+                  <div class="cliente-info">
+                    <div class="cliente-name">
+                      {{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}
+                    </div>
+                    <div class="cliente-doc">
+                      <span class="doc-label">{{clienteSeleccionado.dni ? 'DNI' : 'RUC'}}:</span>
+                      <span class="doc-value">{{clienteSeleccionado.dni || clienteSeleccionado.ruc}}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="cliente-actions">
+                    <button class="action-btn edit" pTooltip="Editar cliente" (click)="editarCliente()">
+                      <i class="pi pi-pencil"></i>
+                    </button>
+                    <button class="action-btn change" pTooltip="Cambiar cliente" (click)="limpiarClienteSeleccionado()">
+                      <i class="pi pi-sync"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="cliente-details">
+                  <div class="detail-item" *ngIf="clienteSeleccionado.email">
+                    <i class="pi pi-envelope"></i>
+                    <span>{{clienteSeleccionado.email}}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="clienteSeleccionado.telefono">
+                    <i class="pi pi-phone"></i>
+                    <span>{{clienteSeleccionado.telefono}}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="clienteSeleccionado.direccion">
+                    <i class="pi pi-map-marker"></i>
+                    <span>{{clienteSeleccionado.direccion}}</span>
+                  </div>
+                </div>
+                
+                <!-- Cliente Stats Preview -->
+                <div class="cliente-stats">
+                  <div class="stat-item">
+                    <div class="stat-value">{{clienteSeleccionado.compras || 0}}</div>
+                    <div class="stat-label">Compras</div>
+                  </div>
+                  <div class="stat-divider"></div>
+                  <div class="stat-item">
+                    <div class="stat-value">{{formatearMoneda(clienteSeleccionado.totalCompras || 0)}}</div>
+                    <div class="stat-label">Total</div>
+                  </div>
+                  <div class="stat-divider"></div>
+                  <div class="stat-item">
+                    <div class="stat-value">{{clienteSeleccionado.ultimaCompra || 'Ninguna'}}</div>
+                    <div class="stat-label">Últ. compra</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <p-panel
-          header="Registrar Nuevo Pago"
-          [toggleable]="true"
-          [collapsed]="!mostrarPanelPago"
-          (onToggle)="mostrarPanelPago = !$event.cancelable"
-          styleClass="mb-3 panel-modern panel-pago"
-          [transitionOptions]="'225ms ease-out'"
+        
+        <!-- Sección de Productos -->
+        <div class="panel-section productos-section mb-6" 
+             [class.disabled]="!clienteSeleccionado"
+             [class.active]="pasoActual === 1">
+          
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-box"></i>
+              <div *ngIf="pasoActual === 1" class="pulse-ring"></div>
+            </div>
+            <h3 class="header-title">Agregar Productos</h3>
+            <div class="header-stats" *ngIf="carrito.length">
+              <div class="stats-badge">
+                {{carrito.length}} <span class="text-xs">items</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section-content">
+            <!-- Búsqueda por código -->
+            <div class="product-search">
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <label class="input-label">
+                    <i class="pi pi-barcode text-blue-500"></i>
+                    <span>Código de Producto</span>
+                  </label>
+                  <div class="p-inputgroup">
+                    <input 
+                      #codigoInput
+                      pInputText 
+                      [(ngModel)]="codigoBusqueda" 
+                      placeholder="Escanear o escribir código..." 
+                      (keyup.enter)="buscarProductoPorCodigo()"
+                      class="w-full font-mono text-lg"
+                      [disabled]="!clienteSeleccionado"
+                    />
+                    <button 
+                      pButton 
+                      icon="pi pi-search" 
+                      class="p-button-primary"
+                      (click)="buscarProductoPorCodigo()"
+                      [disabled]="!clienteSeleccionado"
+                    ></button>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="input-label">
+                    <i class="pi pi-hashtag text-green-500"></i>
+                    <span>Cantidad</span>
+                  </label>
+                  <p-inputNumber 
+                    #cantidadInput
+                    [(ngModel)]="cantidadInput" 
+                    [min]="1" 
+                    [max]="999"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    decrementButtonClass="p-button-secondary"
+                    incrementButtonClass="p-button-secondary"
+                    incrementButtonIcon="pi pi-plus" 
+                    decrementButtonIcon="pi pi-minus"
+                    styleClass="w-full"
+                    [disabled]="!clienteSeleccionado"
+                  ></p-inputNumber>
+                </div>
+                
+                <div>
+                  <label class="input-label text-white opacity-0">
+                    Acción
+                  </label>
+                  <button 
+                    pButton
+                    icon="pi pi-camera"
+                    class="p-button-outlined p-button-secondary h-full"
+                    pTooltip="Escanear código (F8)"
+                    (click)="activarScanner()"
+                    [disabled]="!clienteSeleccionado"
+                  ></button>
+                </div>
+              </div>
+              
+              <!-- Búsqueda avanzada -->
+              <div class="mt-4">
+                <label class="input-label">
+                  <i class="pi pi-search text-purple-500"></i>
+                  <span>Búsqueda Avanzada</span>
+                </label>
+                <p-autoComplete 
+                  [(ngModel)]="productoBusqueda"
+                  [suggestions]="productosAutoComplete"
+                  (completeMethod)="buscarProductosAutoComplete($event)"
+                  (onSelect)="seleccionarProductoAutoComplete($event)"
+                  field="displayLabel"
+                  placeholder="Buscar por nombre, código o descripción..."
+                  styleClass="w-full premium-autocomplete"
+                  [dropdown]="true"
+                  [disabled]="!clienteSeleccionado"
+                  [minLength]="1">
+                  <ng-template let-producto pTemplate="item">
+                    <div class="producto-item">
+                      <div class="producto-image">
+                        <img [src]="producto.imagen || '/assets/images/product-placeholder.jpg'" 
+                             [alt]="producto.producto?.nombre"
+                             onerror="this.src='/assets/images/product-placeholder.jpg'"
+                             class="product-thumb" />
+                        <div [class]="'stock-indicator ' + getStockClass(producto.stock)"></div>
+                      </div>
+                      <div class="producto-info">
+                        <div class="producto-name">{{producto.producto?.nombre}}</div>
+                        <div class="producto-details">
+                          <span>{{producto.color?.nombre}}</span>
+                          <span class="separator">•</span>
+                          <span>{{producto.talla?.numero}}</span>
+                          <span class="separator">•</span>
+                          <span class="code">{{producto.codigoCompleto}}</span>
+                        </div>
+                        <div class="producto-stock">
+                          <span [class]="getStockClass(producto.stock)">Stock: {{producto.stock}}</span>
+                        </div>
+                      </div>
+                      <div class="producto-price">
+                        <div class="price">{{formatearMoneda(producto.precioVenta)}}</div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+              
+              <!-- Scanner Camera (si está activo) -->
+              <div *ngIf="scannerActive" class="scanner-container mt-4">
+                <div class="scanner-wrapper">
+                  <video #videoElement class="scanner-video"></video>
+                  <div class="scanner-overlay">
+                    <div class="scanner-corners">
+                      <div class="corner-tl"></div>
+                      <div class="corner-tr"></div>
+                      <div class="corner-bl"></div>
+                      <div class="corner-br"></div>
+                    </div>
+                    <div class="scanner-line"></div>
+                  </div>
+                  <div class="scanner-controls">
+                    <button 
+                      pButton 
+                      icon="pi pi-times" 
+                      class="p-button-rounded p-button-danger"
+                      pTooltip="Cerrar scanner"
+                      (click)="cerrarScanner()"
+                    ></button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Productos populares (Quick access) -->
+              <div *ngIf="productosPopulares.length && !scannerActive" class="mt-4">
+                <div class="popular-products-header">
+                  <div class="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <i class="pi pi-star-fill text-yellow-500"></i>
+                    <span>Productos populares</span>
+                  </div>
+                </div>
+                
+                <div class="popular-products-grid">
+                  <div *ngFor="let producto of productosPopulares.slice(0, 4)" 
+                       class="popular-product-card"
+                       (click)="seleccionarProductoPopular(producto)">
+                    <div class="product-preview">
+                      <img [src]="producto.imagen || '/assets/images/product-placeholder.jpg'" 
+                           [alt]="producto.producto?.nombre"
+                           onerror="this.src='/assets/images/product-placeholder.jpg'" />
+                      <div [class]="'stock-badge ' + getStockClass(producto.stock)">{{producto.stock}}</div>
+                    </div>
+                    <div class="product-info">
+                      <div class="name">{{producto.producto?.nombre}}</div>
+                      <div class="price">{{formatearMoneda(producto.precioVenta)}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sección del Carrito -->
+        <div class="panel-section carrito-section" 
+             [class.disabled]="!clienteSeleccionado"
+             [class.active]="pasoActual === 2">
+          
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-shopping-cart"></i>
+              <div *ngIf="pasoActual === 2" class="pulse-ring"></div>
+              <div *ngIf="carrito.length" class="cart-badge">{{carrito.length}}</div>
+            </div>
+            <h3 class="header-title">Carrito de Compras</h3>
+            <div class="header-actions" *ngIf="carrito.length">
+              <button 
+                class="action-btn danger" 
+                pTooltip="Limpiar carrito"
+                (click)="limpiarCarrito()">
+                <i class="pi pi-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="section-content">
+            <!-- Carrito Vacío -->
+            <div *ngIf="carrito.length === 0" class="empty-cart">
+              <div class="empty-illustration">
+                <i class="pi pi-shopping-cart"></i>
+                <div class="empty-dots">
+                  <div class="dot dot1"></div>
+                  <div class="dot dot2"></div>
+                  <div class="dot dot3"></div>
+                </div>
+              </div>
+              <div class="empty-message">
+                <h4>Carrito Vacío</h4>
+                <p>Agregue productos para comenzar la venta</p>
+              </div>
+            </div>
+            
+            <!-- Lista de Productos en Carrito -->
+            <div *ngIf="carrito.length > 0" class="cart-products">
+              <div *ngFor="let item of carrito; trackBy: trackByInventarioId; let i = index" 
+                   class="cart-item" 
+                   [class.even]="i % 2 === 0"
+                   [@fadeInUp]="{ value: '', params: { delay: i * 100 } }">
+                
+                <div class="item-preview">
+                  <img [src]="item.producto?.imagen || '/assets/images/product-placeholder.jpg'" 
+                       [alt]="item.producto?.nombre"
+                       onerror="this.src='/assets/images/product-placeholder.jpg'" />
+                  <div class="item-number">{{i + 1}}</div>
+                </div>
+                
+                <div class="item-details">
+                  <div class="item-name">{{item.producto?.nombre}}</div>
+                  <div class="item-specs">
+                    <span class="badge color">{{item.color?.nombre}}</span>
+                    <span class="badge size">{{item.talla?.numero}}</span>
+                    <span class="badge code">{{item.codigoCompleto}}</span>
+                  </div>
+                </div>
+                
+                <div class="item-price">
+                  <div class="price-tag">{{formatearMoneda(item.precioUnitario)}}</div>
+                  <div class="price-unit">precio unitario</div>
+                </div>
+                
+                <div class="item-quantity">
+                  <div class="quantity-controls">
+                    <button 
+                      class="quantity-btn decrease"
+                      [disabled]="item.cantidad <= 1"
+                      (click)="actualizarCantidadItem(item, item.cantidad - 1)">
+                      <i class="pi pi-minus"></i>
+                    </button>
+                    
+                    <input 
+                      type="number" 
+                      class="quantity-input"
+                      [(ngModel)]="item.cantidad"
+                      (blur)="actualizarCantidadItem(item, item.cantidad)"
+                      min="1"
+                      [max]="item.stock"
+                    />
+                    
+                    <button 
+                      class="quantity-btn increase"
+                      [disabled]="item.cantidad >= item.stock"
+                      (click)="actualizarCantidadItem(item, item.cantidad + 1)">
+                      <i class="pi pi-plus"></i>
+                    </button>
+                  </div>
+                  <div class="stock-info">
+                    Stock: {{item.stock}}
+                  </div>
+                </div>
+                
+                <div class="item-subtotal">
+                  <div class="subtotal-amount">{{formatearMoneda(item.subtotal)}}</div>
+                  <div class="subtotal-label">subtotal</div>
+                </div>
+                
+                <div class="item-actions">
+                  <button 
+                    class="action-btn delete"
+                    pTooltip="Eliminar producto"
+                    (click)="eliminarItemCarrito(item)">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    
+    <!-- Panel Derecho: Resumen y Procesamiento de Venta -->
+    <ng-template pTemplate="panel2">
+      <div class="panel-content right-panel">
+        
+        <!-- Sección de Resumen -->
+        <div class="panel-section resumen-section mb-6" [class.active]="pasoActual === 2">
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-calculator"></i>
+              <div *ngIf="pasoActual === 2" class="pulse-ring"></div>
+            </div>
+            <h3 class="header-title">Resumen de Venta</h3>
+            <div class="header-amount">
+              {{formatearMoneda(totalVenta)}}
+            </div>
+          </div>
+          
+          <div class="section-content">
+            <!-- Resumen de Importes -->
+            <div class="resumen-card">
+              <div class="resumen-breakdown">
+                <div class="breakdown-row">
+                  <div class="row-label">Subtotal</div>
+                  <div class="row-value">{{formatearMoneda(subtotalVenta)}}</div>
+                </div>
+                
+                <div class="breakdown-row">
+                  <div class="row-label">IGV (18%)</div>
+                  <div class="row-value">{{formatearMoneda(igvVenta)}}</div>
+                </div>
+                
+                <div class="breakdown-row discount" *ngIf="descuentoVenta > 0">
+                  <div class="row-label">
+                    <i class="pi pi-percentage"></i>
+                    Descuento
+                  </div>
+                  <div class="row-value">-{{formatearMoneda(descuentoVenta)}}</div>
+                </div>
+                
+                <div class="breakdown-divider"></div>
+                
+                <div class="breakdown-row total">
+                  <div class="row-label">TOTAL</div>
+                  <div class="row-value">{{formatearMoneda(totalVenta)}}</div>
+                </div>
+              </div>
+              
+              <!-- Aplicar Descuento -->
+              <div class="mt-4">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <i class="pi pi-percentage text-blue-500"></i>
+                    <span>Aplicar Descuento</span>
+                  </label>
+                  <p-inputSwitch 
+                    [(ngModel)]="aplicarDescuento" 
+                    (onChange)="toggleDescuento()"
+                    [disabled]="carrito.length === 0">
+                  </p-inputSwitch>
+                </div>
+                
+                <div *ngIf="aplicarDescuento" class="descuento-controls">
+                  <div class="flex items-center gap-2">
+                    <p-inputNumber
+                      [(ngModel)]="porcentajeDescuento"
+                      (onInput)="calcularDescuento()"
+                      mode="decimal"
+                      [min]="0"
+                      [max]="100"
+                      [showButtons]="true"
+                      suffix="%"
+                      [minFractionDigits]="2"
+                      [maxFractionDigits]="2"
+                      placeholder="0.00"
+                      styleClass="flex-1"
+                    ></p-inputNumber>
+                    
+                    <p-button
+                      icon="pi pi-sync"
+                      severity="secondary"
+                      [text]="true"
+                      [rounded]="true"
+                      pTooltip="Alternar entre % y monto"
+                      (click)="toggleTipoDescuento()">
+                    </p-button>
+                  </div>
+                  
+                  <p-message 
+                    *ngIf="descuentoVenta > 0"
+                    severity="info" 
+                    text="Descuento aplicado"
+                    styleClass="mt-2 w-full">
+                  </p-message>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sección de Comprobante -->
+        <div class="panel-section comprobante-section mb-6" [class.active]="pasoActual === 2">
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-file"></i>
+            </div>
+            <h3 class="header-title">Datos del Comprobante</h3>
+          </div>
+          
+          <div class="section-content">
+            <div class="comprobante-form">
+              <!-- Selector de Tipo de Comprobante -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="pi pi-file"></i>
+                  Tipo de Comprobante
+                </label>
+                <p-dropdown 
+                  [(ngModel)]="nuevaVenta.tipoComprobante" 
+                  [options]="tiposComprobante" 
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccionar tipo"
+                  styleClass="w-full"
+                  [disabled]="carrito.length === 0"
+                  (onChange)="onComprobanteChange()"
+                ></p-dropdown>
+              </div>
+              
+              <!-- Número de Serie -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="pi pi-id-card"></i>
+                  Serie
+                </label>
+                <p-dropdown 
+                  [(ngModel)]="nuevaVenta.serieComprobante" 
+                  [options]="seriesComprobante" 
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccionar serie"
+                  styleClass="w-full"
+                  [disabled]="carrito.length === 0 || !nuevaVenta.tipoComprobante"
+                ></p-dropdown>
+              </div>
+              
+              <!-- Observaciones -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="pi pi-comment"></i>
+                  Observaciones
+                </label>
+                <textarea 
+                  pInputTextarea 
+                  [(ngModel)]="nuevaVenta.observaciones" 
+                  placeholder="Observaciones adicionales..."
+                  rows="2"
+                  class="w-full"
+                  [disabled]="carrito.length === 0"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sección de Pago -->
+        <div class="panel-section pago-section" [class.active]="pasoActual === 3">
+          <div class="section-header">
+            <div class="header-icon">
+              <i class="pi pi-credit-card"></i>
+              <div *ngIf="pasoActual === 3" class="pulse-ring"></div>
+            </div>
+            <h3 class="header-title">Procesar Pago</h3>
+          </div>
+          
+          <div class="section-content">
+            <!-- Botón grande de Procesar Pago -->
+            <div class="pago-container">
+              <!-- Progress Steps -->
+              <div class="pago-progress-steps">
+                <div 
+                  *ngFor="let paso of pasosPago; let i = index"
+                  class="pago-step"
+                  [class.active]="pasoPagoActual === i"
+                  [class.completed]="pasoPagoActual > i"
+                >
+                  <div class="step-icon">
+                    <i [class]="paso.icon"></i>
+                    <div class="step-check" *ngIf="pasoPagoActual > i">
+                      <i class="pi pi-check"></i>
+                    </div>
+                  </div>
+                  <div class="step-label">{{paso.label}}</div>
+                </div>
+              </div>
+              
+              <!-- Botón Principal -->
+              <button 
+                class="pago-btn primary"
+                [disabled]="!canProcessPayment()"
+                (click)="iniciarPago()"
+              >
+                <div class="btn-content">
+                  <i class="pi pi-credit-card"></i>
+                  <span>Procesar Pago</span>
+                  <div class="btn-amount">{{formatearMoneda(totalVenta)}}</div>
+                </div>
+                <div class="btn-shine"></div>
+              </button>
+              
+              <!-- Métodos de Pago Rápido -->
+              <div class="pago-metodos">
+                <div class="metodos-label">Métodos de Pago</div>
+                <div class="metodos-grid">
+                  <button 
+                    class="metodo-btn efectivo" 
+                    [disabled]="!canProcessPayment()"
+                    (click)="pagoRapido('EFECTIVO')">
+                    <i class="pi pi-wallet"></i>
+                    <span>Efectivo</span>
+                  </button>
+                  
+                  <button 
+                    class="metodo-btn tarjeta" 
+                    [disabled]="!canProcessPayment()"
+                    (click)="pagoRapido('TARJETA_DEBITO')">
+                    <i class="pi pi-credit-card"></i>
+                    <span>Tarjeta</span>
+                  </button>
+                  
+                  <button 
+                    class="metodo-btn yape" 
+                    [disabled]="!canProcessPayment()"
+                    (click)="pagoRapido('YAPE')">
+                    <i class="pi pi-mobile"></i>
+                    <span>Yape</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Control de Venta a Crédito -->
+              <div class="credito-toggle">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-calendar text-blue-500"></i>
+                    <span class="text-sm font-medium">Venta a Crédito</span>
+                  </div>
+                  <p-inputSwitch 
+                    [(ngModel)]="esVentaCredito" 
+                    [disabled]="!canProcessPayment()">
+                  </p-inputSwitch>
+                </div>
+                
+                <div *ngIf="esVentaCredito" class="credito-details mt-2">
+                  <div class="flex gap-2 items-center">
+                    <p-calendar 
+                      [(ngModel)]="fechaVencimientoCredito" 
+                      dateFormat="dd/mm/yy" 
+                      [minDate]="minFechaCredito" 
+                      placeholder="Fecha vencimiento"
+                      styleClass="flex-1"
+                      appendTo="body"
+                    ></p-calendar>
+                    
+                    <p-dropdown 
+                      [(ngModel)]="cuotasCredito" 
+                      [options]="opcionesCuotas"
+                      placeholder="Cuotas"
+                      styleClass="w-28"
+                      optionLabel="label"
+                      optionValue="value"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-splitter>
+</div>
+
+
+
+<!-- DIÁLOGO: PROCESAMIENTO DE PAGO -->
+<p-dialog 
+  [(visible)]="pagoDialog" 
+  [header]="'Procesar Pago - ' + formatearMoneda(totalVenta)" 
+  [modal]="true" 
+  [style]="{width: '650px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl pago-dialog"
+  [closable]="!procesandoPago"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi pi-credit-card text-white text-xl"></i>
+      </div>
+      <div>
+        <div class="text-sm text-gray-500">Total a Pagar</div>
+        <div class="text-2xl font-bold text-gray-800">{{formatearMoneda(totalVenta)}}</div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <div class="p-5">
+    <!-- Resumen de la venta -->
+    <div class="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-100">
+      <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <i class="pi pi-shopping-cart text-blue-600"></i>
+        Resumen de la Venta
+      </h4>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div class="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-blue-50">
+          <div class="text-gray-500 mb-1">Cliente</div>
+          <div class="font-semibold text-gray-800">{{clienteSeleccionado?.nombres}} {{clienteSeleccionado?.apellidos}}</div>
+          <div class="text-sm text-gray-600">{{clienteSeleccionado?.dni || clienteSeleccionado?.ruc}}</div>
+        </div>
+        
+        <div class="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-blue-50">
+          <div class="text-gray-500 mb-1">Comprobante</div>
+          <div class="font-semibold text-gray-800">{{getTipoComprobanteLabel(nuevaVenta.tipoComprobante)}}</div>
+          <div class="text-sm text-gray-600">Serie: {{nuevaVenta.serieComprobante}}</div>
+        </div>
+        
+        <div class="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-blue-50 md:col-span-2">
+          <div class="text-gray-500 mb-1">Productos</div>
+          <div class="font-semibold text-gray-800">{{carrito.length}} productos en total</div>
+          <div class="text-sm text-gray-600">{{getTotalItems()}} unidades</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Métodos de Pago -->
+    <div class="pago-metodos-form">
+      <h4 class="text-lg font-bold text-gray-800 mb-3">Método de Pago</h4>
+      
+      <div class="payment-options">
+        <div class="payment-option-buttons">
+          <div 
+            *ngFor="let metodo of metodosPago"
+            class="payment-option"
+            [class.active]="pagoActual.metodoPago === metodo.value"
+            (click)="seleccionarMetodoPago(metodo.value)"
+          >
+            <div class="option-icon">
+              <i [class]="getMetodoPagoIcon(metodo.value)"></i>
+            </div>
+            <span class="option-label">{{metodo.label}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Detalles del Método de Pago -->
+      <div class="payment-details mt-6">
+        <!-- Campos para todos los métodos -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="pi pi-dollar"></i>
+            Monto a Pagar
+          </label>
+          <p-inputNumber 
+            [(ngModel)]="montoPagado" 
+            mode="currency" 
+            currency="PEN" 
+            locale="es-PE"
+            [min]="0"
+            placeholder="0.00"
+            styleClass="w-full"
+            (onInput)="calcularVuelto()"
+            [class.border-red-300]="montoPagado < totalVenta"
+          ></p-inputNumber>
+          
+          <small *ngIf="montoPagado < totalVenta" class="text-red-500 flex gap-1 items-center mt-1">
+            <i class="pi pi-exclamation-circle"></i>
+            El monto debe ser mayor o igual al total
+          </small>
+        </div>
+        
+        <!-- Tarjeta de Crédito/Débito -->
+        <div *ngIf="pagoActual.metodoPago === 'TARJETA_CREDITO' || pagoActual.metodoPago === 'TARJETA_DEBITO'"  
+             class="mt-4 space-y-4 animate-fade-in">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="pi pi-user"></i>
+              Nombre en Tarjeta
+            </label>
+            <input 
+              pInputText 
+              [(ngModel)]="pagoActual.nombreTarjeta" 
+              placeholder="Nombre completo del titular"
+              class="w-full"
+            />
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="pi pi-id-card"></i>
+                Últimos 4 Dígitos
+              </label>
+              <p-inputMask 
+                [(ngModel)]="pagoActual.ultimos4Digitos" 
+                mask="9999" 
+                placeholder="****"
+                styleClass="w-full"
+              ></p-inputMask>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">
+                <i class="pi pi-hashtag"></i>
+                Referencia
+              </label>
+              <input 
+                pInputText 
+                [(ngModel)]="pagoActual.numeroReferencia" 
+                placeholder="Número de operación"
+                class="w-full"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Transferencia / Yape / Plin -->
+        <div *ngIf="pagoActual.metodoPago === 'TRANSFERENCIA' || 
+                   pagoActual.metodoPago === 'YAPE' || 
+                   pagoActual.metodoPago === 'PLIN'" 
+             class="mt-4 animate-fade-in">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="pi pi-hashtag"></i>
+              Número de Referencia
+            </label>
+            <input 
+              pInputText 
+              [(ngModel)]="pagoActual.numeroReferencia" 
+              placeholder="Número de operación o referencia"
+              class="w-full"
+            />
+          </div>
+        </div>
+        
+        <!-- Vuelto (para efectivo) -->
+        <div *ngIf="pagoActual.metodoPago === 'EFECTIVO' && vuelto > 0" 
+             class="mt-4 bg-green-50 rounded-lg p-4 border border-green-100 animate-fade-in">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-green-600 font-medium">Vuelto a entregar</div>
+              <div class="text-sm text-green-500">Cambio para el cliente</div>
+            </div>
+            <div class="text-2xl font-bold text-green-600">{{formatearMoneda(vuelto)}}</div>
+          </div>
+        </div>
+        
+        <!-- Observaciones -->
+        <div class="form-group mt-4">
+          <label class="form-label">
+            <i class="pi pi-comment"></i>
+            Observaciones del Pago
+          </label>
+          <textarea 
+            pInputTextarea 
+            [(ngModel)]="pagoActual.observaciones" 
+            placeholder="Observaciones adicionales..."
+            rows="2"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center px-3">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="procesandoPago"
+        (click)="cancelarPago()"
+      ></p-button>
+      
+      <p-button 
+        label="Procesar Venta" 
+        icon="pi pi-check" 
+        severity="success"
+        [loading]="procesandoPago"
+        [disabled]="!isPagoValid()"
+        (click)="procesarVenta()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIÁLOGO: COMPROBANTE FINAL -->
+<p-dialog 
+  [(visible)]="comprobanteDialog" 
+  [header]="'Venta Completada'" 
+  [modal]="true" 
+  [style]="{width: '700px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl comprobante-dialog"
+  [closable]="true"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi pi-check-circle text-white text-xl"></i>
+      </div>
+      <div>
+        <div class="text-sm text-gray-500">Venta #{{ventaParaComprobante?.numeroVenta}}</div>
+        <div class="text-2xl font-bold text-gray-800">¡Venta Completada!</div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <div class="p-5">
+    <!-- Vista previa del comprobante -->
+    <div class="comprobante-preview" *ngIf="ventaParaComprobante">
+      <!-- Encabezado del comprobante -->
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-1">{{getTipoComprobanteLabel(ventaParaComprobante.tipoComprobante)}}</h3>
+        <div class="text-lg font-mono font-semibold text-blue-600">
+          {{ventaParaComprobante.serieComprobante}}-{{ventaParaComprobante.numeroComprobante || 'PENDIENTE'}}
+        </div>
+        <div class="text-sm text-gray-600 mt-2">
+          Fecha: {{ventaParaComprobante.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+        </div>
+      </div>
+      
+      <!-- Información del cliente -->
+      <div class="bg-blue-50/60 backdrop-blur-sm rounded-lg p-4 mb-4 border border-blue-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <h5 class="font-bold text-blue-800 mb-1">Datos del Cliente</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              <div><span class="text-gray-500">Nombre:</span> <span class="font-medium">{{ventaParaComprobante.cliente.nombres}} {{ventaParaComprobante.cliente.apellidos}}</span></div>
+              <div><span class="text-gray-500">Documento:</span> <span class="font-medium">{{ventaParaComprobante.cliente.documento}}</span></div>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="bg-blue-100 rounded-lg py-1 px-3 text-blue-800 font-medium text-sm inline-block">
+              <i class="pi pi-user-plus mr-1"></i>
+              Cliente registrado
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Detalle de productos -->
+      <div class="mb-4">
+        <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <i class="pi pi-shopping-bag text-purple-600"></i>
+          Detalle de Productos
+        </h5>
+        
+        <div class="overflow-auto max-h-48">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 text-left">
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold">Producto</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-center">Cant.</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">P. Unit.</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of ventaParaComprobante.detalles" class="border-b border-gray-100">
+                <td class="p-2">
+                  <div class="font-medium text-gray-800">{{detalle.producto.nombre}}</div>
+                  <div class="text-xs text-gray-500">
+                    {{detalle.color.nombre}} - {{detalle.talla}} - {{detalle.producto.codigo}}
+                  </div>
+                </td>
+                <td class="p-2 text-center font-medium">{{detalle.cantidad}}</td>
+                <td class="p-2 text-right font-mono">{{formatearMoneda(detalle.precioUnitario)}}</td>
+                <td class="p-2 text-right font-mono font-medium text-blue-700">{{formatearMoneda(detalle.subtotal)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Totales -->
+      <div class="bg-gray-50/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+        <div class="grid grid-cols-2">
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Método de pago</div>
+            <div class="flex items-center gap-2">
+              <i class="pi pi-wallet text-blue-600"></i>
+              <span class="font-medium">{{getMetodoPagoLabel(pagoActual.metodoPago)}}</span>
+            </div>
+          </div>
+          
+          <div>
+            <div class="space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Subtotal:</span>
+                <span class="font-mono">{{formatearMoneda(ventaParaComprobante.subtotal)}}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">IGV (18%):</span>
+                <span class="font-mono">{{formatearMoneda(ventaParaComprobante.igv)}}</span>
+              </div>
+              <div class="flex justify-between font-medium pt-2 border-t border-gray-300">
+                <span class="text-gray-800">TOTAL:</span>
+                <span class="font-mono text-xl text-emerald-600">{{formatearMoneda(ventaParaComprobante.total)}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Observaciones -->
+      <div *ngIf="ventaParaComprobante.observaciones" class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+        <h5 class="font-semibold text-yellow-800 mb-1 flex items-center gap-2">
+          <i class="pi pi-comment"></i>
+          Observaciones:
+        </h5>
+        <p class="text-sm text-yellow-700">{{ventaParaComprobante.observaciones}}</p>
+      </div>
+      
+      <!-- Mensajes finales -->
+      <div class="mt-6 text-center">
+        <div class="text-gray-500 text-sm mb-2">Vendedor: {{ventaParaComprobante.usuario.nombre}}</div>
+        <div class="text-gray-400 text-xs">¡Gracias por su compra!</div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center px-3">
+      <div class="flex gap-2">
+        <p-button 
+          label="Imprimir" 
+          icon="pi pi-print" 
+          severity="secondary"
+          [outlined]="true"
+          (click)="imprimirComprobante(ventaParaComprobante!)"
+        ></p-button>
+        
+        <p-button 
+          label="Enviar" 
+          icon="pi pi-envelope" 
+          severity="info"
+          [outlined]="true"
+          (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
+        ></p-button>
+        
+        <p-button 
+          label="Descargar PDF" 
+          icon="pi pi-file-pdf" 
+          severity="danger"
+          [outlined]="true"
+          (click)="descargarComprobantePDF(ventaParaComprobante!)"
+        ></p-button>
+      </div>
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cerrar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          (click)="cerrarComprobante()"
+        ></p-button>
+        
+        <p-button 
+          label="Nueva Venta" 
+          icon="pi pi-plus" 
+          severity="success"
+          (click)="nuevaVentaRapida()"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIÁLOGO: PROCESAMIENTO DE PAGO -->
+<p-dialog 
+  [(visible)]="pagoDialog" 
+  [header]="'Procesar Pago - ' + formatearMoneda(totalVenta)" 
+  [modal]="true" 
+  [style]="{width: '600px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl"
+  [closable]="!procesandoPago"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 p-2 rounded-lg">
+        <i class="pi pi-credit-card text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">Procesar Pago - {{formatearMoneda(totalVenta)}}</span>
+    </div>
+  </ng-template>
+  
+  <div class="p-5">
+    <!-- Resumen de la venta -->
+    <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200">
+      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
+        <i class="pi pi-receipt text-blue-600"></i>
+        Resumen de la Venta
+      </h4>
+      
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div class="flex justify-between">
+          <span>Subtotal:</span>
+          <span class="font-semibold">{{formatearMoneda(subtotalVenta)}}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>IGV (18%):</span>
+          <span class="font-semibold">{{formatearMoneda(igvVenta)}}</span>
+        </div>
+        <div class="flex justify-between col-span-2 pt-2 border-t border-slate-300">
+          <span class="font-bold text-lg">TOTAL A PAGAR:</span>
+          <span class="font-bold text-lg text-emerald-600">{{formatearMoneda(totalVenta)}}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Información del pago -->
+    <div class="space-y-4">
+      <!-- Método de pago -->
+      <div>
+        <label class="flex text-sm font-medium text-neutral-700 mb-2">
+          <i class="pi pi-credit-card text-emerald-600 mr-2"></i>
+          Método de Pago
+        </label>
+        <p-dropdown 
+          [(ngModel)]="pagoActual.metodoPago" 
+          [options]="metodosPago" 
+          optionLabel="label" 
+          optionValue="value"
+          placeholder="Seleccionar método"
+          styleClass="w-full"
+          (onChange)="onMetodoPagoChange()"
+        />
+      </div>
+      
+      <!-- Monto recibido -->
+      <div>
+        <label class="flex text-sm font-medium text-neutral-700 mb-2">
+          <i class="pi pi-dollar text-blue-600 mr-2"></i>
+          Monto Recibido
+        </label>
+        <p-inputNumber 
+          [(ngModel)]="montoPagado" 
+          mode="currency" 
+          currency="PEN" 
+          locale="es-PE"
+          styleClass="w-full"
+          [min]="0"
+          (onInput)="calcularVuelto()"
+          [class.border-red-300]="montoPagado < totalVenta"
+        />
+        <small *ngIf="montoPagado < totalVenta" class="text-red-500 flex mt-1">
+          <i class="pi pi-exclamation-circle mr-1"></i>
+          El monto debe ser mayor o igual al total
+        </small>
+      </div>
+      
+      <!-- Vuelto -->
+      <div *ngIf="vuelto > 0" class="bg-green-50 border border-green-200 rounded-lg p-3">
+        <div class="flex items-center justify-between">
+          <span class="font-medium text-green-700">Vuelto a entregar:</span>
+          <span class="text-xl font-bold text-green-600">{{formatearMoneda(vuelto)}}</span>
+        </div>
+      </div>
+      
+      <!-- Campos adicionales según método de pago -->
+      <div *ngIf="pagoActual.metodoPago === 'TARJETA_CREDITO' || pagoActual.metodoPago === 'TARJETA_DEBITO'" class="space-y-3">
+        <div>
+          <label class="flex text-sm font-medium text-neutral-700 mb-2">
+            <i class="pi pi-id-card text-purple-600 mr-2"></i>
+            Nombre en la Tarjeta
+          </label>
+          <input 
+            pInputText 
+            [(ngModel)]="pagoActual.nombreTarjeta" 
+            placeholder="Nombre del titular"
+            class="w-full"
+          />
+        </div>
+        
+        <div>
+          <label class="flex text-sm font-medium text-neutral-700 mb-2">
+            <i class="pi pi-hashtag text-indigo-600 mr-2"></i>
+            Últimos 4 Dígitos
+          </label>
+          <input 
+            pInputText 
+            [(ngModel)]="pagoActual.ultimos4Digitos" 
+            placeholder="****"
+            maxlength="4"
+            class="w-full font-mono"
+          />
+        </div>
+      </div>
+      
+      <div *ngIf="pagoActual.metodoPago === 'TRANSFERENCIA' || pagoActual.metodoPago === 'YAPE' || pagoActual.metodoPago === 'PLIN'">
+        <label class="flex text-sm font-medium text-neutral-700 mb-2">
+          <i class="pi pi-link text-orange-600 mr-2"></i>
+          Número de Referencia
+        </label>
+        <input 
+          pInputText 
+          [(ngModel)]="pagoActual.numeroReferencia" 
+          placeholder="Número de operación"
+          class="w-full font-mono"
+        />
+      </div>
+      
+      <!-- Observaciones del pago -->
+      <div>
+        <label class="flex text-sm font-medium text-neutral-700 mb-2">
+          <i class="pi pi-comment text-amber-600 mr-2"></i>
+          Observaciones del Pago
+        </label>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="pagoActual.observaciones" 
+          placeholder="Observaciones adicionales..."
+          rows="2"
+          class="w-full"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between gap-3 px-3">
+      <div class="flex items-center gap-2 text-sm text-neutral-600">
+        <i class="pi pi-info-circle"></i>
+        <span>Cliente: {{clienteSeleccionado?.nombres}} {{clienteSeleccionado?.apellidos}}</span>
+      </div>
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="procesandoPago"
+          (click)="pagoDialog = false"
+        />
+        <p-button 
+          label="Procesar Venta" 
+          icon="pi pi-check" 
+          styleClass="bg-gradient-to-r from-emerald-600 to-emerald-700"
+          [loading]="procesandoPago"
+          [disabled]="montoPagado < totalVenta"
+          (click)="procesarVenta()"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIÁLOGO: COMPROBANTE -->
+<p-dialog 
+  [(visible)]="comprobanteDialog" 
+  [header]="'Comprobante de Venta'" 
+  [modal]="true" 
+  [style]="{width: '700px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-lg">
+        <i class="pi pi-file text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">Comprobante de Venta</span>
+    </div>
+  </ng-template>
+  
+  <div *ngIf="ventaParaComprobante" class="p-5">
+    <!-- Header del comprobante -->
+    <div class="text-center mb-6 pb-4 border-b-2 border-slate-200">
+      <h2 class="text-2xl font-bold text-neutral-800">{{ventaParaComprobante.tipoComprobante}}</h2>
+      <div class="text-lg font-mono font-semibold text-blue-600">
+        {{ventaParaComprobante.serieComprobante}}-{{ventaParaComprobante.numeroComprobante || 'PENDIENTE'}}
+      </div>
+      <div class="text-sm text-neutral-600 mt-2">
+        Fecha: {{ventaParaComprobante.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+      </div>
+    </div>
+    
+    <!-- Información del cliente -->
+    <div class="bg-blue-50 rounded-lg p-4 mb-4">
+      <h4 class="font-bold text-blue-800 mb-2 flex items-center gap-2">
+        <i class="pi pi-user"></i>
+        Datos del Cliente
+      </h4>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <div><strong>Nombre:</strong> {{ventaParaComprobante.cliente.nombres}} {{ventaParaComprobante.cliente.apellidos}}</div>
+        <div><strong>Documento:</strong> {{ventaParaComprobante.cliente.documento}}</div>
+      </div>
+    </div>
+    
+    <!-- Detalle de productos -->
+    <div class="mb-4">
+      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
+        <i class="pi pi-list text-emerald-600"></i>
+        Detalle de Productos
+      </h4>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="text-left p-2 border">Producto</th>
+              <th class="text-center p-2 border">Cant.</th>
+              <th class="text-right p-2 border">Precio Unit.</th>
+              <th class="text-right p-2 border">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detalle of ventaParaComprobante.detalles" class="border-b">
+              <td class="p-2 border">
+                <div class="font-semibold">{{detalle.producto.nombre}}</div>
+                <div class="text-xs text-neutral-600">
+                  {{detalle.color.nombre}} - {{detalle.talla.numero}} - {{detalle.producto.codigo}}
+                </div>
+              </td>
+              <td class="text-center p-2 border font-mono">{{detalle.cantidad}}</td>
+              <td class="text-right p-2 border font-mono">{{formatearMoneda(detalle.precioUnitario)}}</td>
+              <td class="text-right p-2 border font-mono font-semibold">{{formatearMoneda(detalle.subtotal)}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Totales -->
+    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span>Subtotal:</span>
+          <span class="font-mono">{{formatearMoneda(ventaParaComprobante.subtotal)}}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span>IGV (18%):</span>
+          <span class="font-mono">{{formatearMoneda(ventaParaComprobante.igv)}}</span>
+        </div>
+        <div class="flex justify-between text-lg font-bold pt-2 border-t border-slate-300">
+          <span>TOTAL:</span>
+          <span class="font-mono text-emerald-600">{{formatearMoneda(ventaParaComprobante.total)}}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Observaciones -->
+    <div *ngIf="ventaParaComprobante.observaciones" class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+      <h5 class="font-semibold text-amber-800 mb-1">Observaciones:</h5>
+      <p class="text-sm text-amber-700">{{ventaParaComprobante.observaciones}}</p>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between gap-3 px-3">
+      <div class="flex gap-2">
+        <p-button 
+          label="Imprimir" 
+          icon="pi pi-print" 
+          severity="secondary"
+          [outlined]="true"
+          (click)="imprimirComprobante(ventaParaComprobante!)"
+        />
+        <p-button 
+          label="Enviar por Email" 
+          icon="pi pi-envelope" 
+          severity="info"
+          [outlined]="true"
+          (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
+        />
+      </div>
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cerrar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          [outlined]="true"
+          (click)="comprobanteDialog = false"
+        />
+        <p-button 
+          label="Nueva Venta" 
+          icon="pi pi-plus" 
+          styleClass="bg-gradient-to-r from-emerald-600 to-emerald-700"
+          (click)="comprobanteDialog = false; activeTabIndex = 0"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIÁLOGO: DEVOLUCIONES -->
+<!-- DIÁLOGO: DEVOLUCIONES - SECCIÓN CORREGIDA -->
+<p-dialog 
+  [(visible)]="devolucionDialog" 
+  [header]="'Procesar Devolución'" 
+  [modal]="true" 
+  [style]="{width: '800px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-2 rounded-lg">
+        <i class="pi pi-refresh text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">Procesar Devolución</span>
+    </div>
+  </ng-template>
+  
+  <div *ngIf="ventaDevolucion" class="p-5">
+    <!-- Información de la venta -->
+    <div class="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-200">
+      <h4 class="font-bold text-blue-800 mb-2">Información de la Venta</h4>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <div><strong>N° Venta:</strong> {{ventaDevolucion.numeroVenta}}</div>
+        <div><strong>Fecha:</strong> {{ventaDevolucion.fechaCreacion | date:'dd/MM/yyyy'}}</div>
+        <div><strong>Cliente:</strong> {{ventaDevolucion.cliente.nombres}} {{ventaDevolucion.cliente.apellidos}}</div>
+        <div><strong>Total:</strong> {{formatearMoneda(ventaDevolucion.total)}}</div>
+      </div>
+    </div>
+    
+    <!-- Productos a devolver -->
+    <div class="mb-4">
+      <h4 class="font-bold text-neutral-800 mb-3">Seleccionar Productos a Devolver</h4>
+      
+      <div class="space-y-3">
+        <div *ngFor="let item of itemsDevolucion" 
+             class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+          <div class="flex items-center gap-4">
+            <!-- Checkbox de selección -->
+            <p-checkbox 
+              [(ngModel)]="item.seleccionado" 
+              [binary]="true"
+            />
+            
+            <!-- Información del producto -->
+            <div class="flex-1">
+              <div class="font-semibold">{{item.producto.nombre}}</div>
+              <div class="text-sm text-neutral-600">
+                {{item.color?.nombre}} - {{item.talla?.numero}} - {{item.producto.codigo}}
+              </div>
+              <div class="text-sm">
+                <span class="text-neutral-500">Cantidad vendida:</span> 
+                <span class="font-mono font-semibold">{{item.cantidad}}</span>
+              </div>
+            </div>
+            
+            <!-- Cantidad a devolver -->
+            <div class="w-32">
+              <label class="text-xs text-neutral-600 block mb-1">Cant. a devolver</label>
+              <p-inputNumber 
+                [(ngModel)]="item.cantidadDevolver" 
+                [min]="0" 
+                [max]="item.cantidad"
+                [disabled]="!item.seleccionado"
+                styleClass="w-full"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+              />
+            </div>
+            
+            <!-- Precio -->
+            <div class="w-24 text-right">
+              <div class="text-sm text-neutral-500">Precio Unit.</div>
+              <div class="font-semibold">{{formatearMoneda(item.precioUnitario)}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Motivo de devolución -->
+    <div class="mb-4">
+      <label class="flex text-sm font-medium text-neutral-700 mb-2">
+        <i class="pi pi-comment text-orange-600 mr-2"></i>
+        Motivo de la Devolución
+      </label>
+      <textarea 
+        pInputTextarea 
+        [(ngModel)]="motivoDevolucion" 
+        placeholder="Explique el motivo de la devolución..."
+        rows="3"
+        class="w-full"
+        required
+      ></textarea>
+    </div>
+    
+    <!-- Resumen de devolución -->
+    <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+      <h5 class="font-semibold text-orange-800 mb-2">Resumen de Devolución</h5>
+      <div class="text-sm space-y-1">
+        <div class="flex justify-between">
+          <span>Items seleccionados:</span>
+          <span class="font-semibold">{{getItemsSeleccionados()}}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Cantidad total a devolver:</span>
+          <span class="font-semibold">{{getCantidadTotalDevolver()}}</span>
+        </div>
+        <div class="flex justify-between font-bold text-lg pt-2 border-t border-orange-300">
+          <span>Monto a devolver:</span>
+          <span class="text-orange-600">{{formatearMoneda(getMontoTotalDevolver())}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between gap-3 px-3">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        severity="secondary"
+        [outlined]="true"
+        (click)="devolucionDialog = false"
+      />
+      
+      <p-button 
+        label="Procesar Devolución" 
+        icon="pi pi-check" 
+        severity="danger"
+        [disabled]="!isDevolucionValid()"
+        (click)="procesarDevolucion()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Menú contextual para ventas -->
+<p-menu #menuAcciones [popup]="true" [model]="itemsMenuAcciones"></p-menu>
+
+<div class="mb-6">
+  <p-tabView [(activeIndex)]="activeTabIndex" styleClass="custom-tab-view">
+    
+    <!-- PESTAÑA: PUNTO DE VENTA -->
+    <p-tabPanel header="Punto de Venta" [selected]="true">
+      <ng-template pTemplate="header">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-shopping-cart"></i>
+          <span>Punto de Venta</span>
+          <p-badge *ngIf="carrito.length" [value]="carrito.length" severity="success"></p-badge>
+        </div>
+      </ng-template>
+      
+      <!-- Contenido del POS -->
+      <div class="grid">
+        <!-- Panel izquierdo: Selección de productos -->
+        <div class="col-12 lg:col-8">
+          
+          <!-- Pasos del proceso -->
+          <div class="mb-6">
+            <p-steps [model]="pasos" [activeIndex]="pasoActual" [readonly]="true" styleClass="steps-custom"></p-steps>
+          </div>
+          
+          <!-- Selección de cliente -->
+          <div class="bg-white rounded-xl shadow-md border border-slate-200 p-5 mb-6">
+            <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center gap-2">
+              <i class="pi pi-user text-blue-600"></i>
+              Seleccionar Cliente
+            </h3>
+            
+            <div *ngIf="!clienteSeleccionado" class="space-y-4">
+              <p-autoComplete 
+                [(ngModel)]="clienteSeleccionado"
+                [suggestions]="clientesFiltrados"
+                (completeMethod)="buscarClientes($event)"
+                (onSelect)="seleccionarCliente($event)"
+                field="nombres"
+                placeholder="Buscar cliente por nombre, DNI o RUC..."
+                styleClass="w-full"
+                [dropdown]="true"
+                appendTo="body"
+              >
+                <ng-template let-cliente pTemplate="item">
+                  <div class="flex items-center gap-3 p-2">
+                    <div class="bg-blue-100 p-2 rounded-full">
+                      <i class="pi pi-user text-blue-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold">{{cliente.nombres}} {{cliente.apellidos}}</div>
+                      <div class="text-sm text-neutral-600">{{cliente.dni || cliente.ruc}}</div>
+                    </div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+            
+            <div *ngIf="clienteSeleccionado" class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="bg-blue-100 p-3 rounded-full">
+                  <i class="pi pi-user text-blue-600"></i>
+                </div>
+                <div>
+                  <div class="font-bold text-blue-800">{{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}</div>
+                  <div class="text-sm text-blue-600">{{clienteSeleccionado.dni || clienteSeleccionado.ruc}}</div>
+                </div>
+              </div>
+              <p-button 
+                icon="pi pi-times" 
+                severity="secondary" 
+                [text]="true" 
+                [rounded]="true"
+                pTooltip="Cambiar cliente"
+                (click)="limpiarClienteSeleccionado()"
+              />
+            </div>
+          </div>
+          
+          <!-- Búsqueda de productos -->
+          <div class="bg-white rounded-xl shadow-md border border-slate-200 p-5 mb-6">
+            <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center gap-2">
+              <i class="pi pi-search text-emerald-600"></i>
+              Agregar Productos
+            </h3>
+            
+            <div class="grid gap-4">
+              <!-- Búsqueda por código -->
+              <div class="col-12 md:col-8">
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-qrcode text-emerald-600 mr-2"></i>
+                  Código de Producto
+                </label>
+                <div class="p-inputgroup">
+                  <input 
+                    #codigoInput
+                    pInputText 
+                    [(ngModel)]="codigoBusqueda" 
+                    placeholder="Escanear o escribir código..." 
+                    (keyup.enter)="buscarProductoPorCodigo()"
+                    class="font-mono text-lg"
+                  />
+                  <p-button 
+                    icon="pi pi-search" 
+                    styleClass="p-button-success"
+                    (click)="buscarProductoPorCodigo()"
+                  />
+                </div>
+              </div>
+              
+              <!-- Cantidad -->
+              <div class="col-12 md:col-4">
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-hashtag text-blue-600 mr-2"></i>
+                  Cantidad
+                </label>
+                <p-inputNumber 
+                  #cantidadInput
+                  [(ngModel)]="cantidadInput" 
+                  [min]="1" 
+                  [max]="999"
+                  styleClass="w-full"
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  incrementButtonIcon="pi pi-plus" 
+                  decrementButtonIcon="pi pi-minus"
+                />
+              </div>
+              
+              <!-- Búsqueda avanzada -->
+              <div class="col-12">
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-list text-purple-600 mr-2"></i>
+                  Búsqueda Avanzada
+                </label>
+                <p-autoComplete 
+                  [suggestions]="productosAutoComplete"
+                  (completeMethod)="buscarProductosAutoComplete($event)"
+                  (onSelect)="seleccionarProductoAutoComplete($event)"
+                  field="displayLabel"
+                  placeholder="Buscar por nombre, código o descripción..."
+                  styleClass="w-full"
+                  [dropdown]="true"
+                  appendTo="body"
+                >
+                  <ng-template let-producto pTemplate="item">
+                    <div class="flex items-center justify-between p-2">
+                      <div class="flex items-center gap-3">
+                        <div class="bg-purple-100 p-2 rounded-lg">
+                          <i class="pi pi-box text-purple-600"></i>
+                        </div>
+                        <div>
+                          <div class="font-semibold">{{producto.producto?.nombre}}</div>
+                          <div class="text-sm text-neutral-600">
+                            {{producto.color?.nombre}} - {{producto.talla?.numero}} - {{producto.codigoCompleto}}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="font-bold text-emerald-600">{{formatearMoneda(producto.precioVenta)}}</div>
+                        <div class="text-xs text-neutral-500">Stock: {{producto.stock}}</div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Carrito de compras -->
+          <div class="bg-white rounded-xl shadow-md border border-slate-200 p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold text-neutral-800 flex items-center gap-2">
+                <i class="pi pi-shopping-cart text-orange-600"></i>
+                Carrito de Compras
+                <p-badge *ngIf="carrito.length" [value]="carrito.length" severity="info"></p-badge>
+              </h3>
+              <p-button 
+                *ngIf="carrito.length"
+                label="Limpiar Carrito" 
+                icon="pi pi-trash" 
+                severity="danger" 
+                [text]="true"
+                (click)="limpiarCarrito()"
+              />
+            </div>
+            
+            <!-- Lista de productos en el carrito -->
+            <div *ngIf="carrito.length === 0" class="text-center py-8">
+              <div class="bg-slate-100 p-6 rounded-full inline-block mb-4">
+                <i class="pi pi-shopping-cart text-4xl text-slate-400"></i>
+              </div>
+              <div class="text-lg font-medium text-neutral-600">Carrito vacío</div>
+              <div class="text-sm text-neutral-500">Agregue productos para comenzar la venta</div>
+            </div>
+            
+            <div *ngIf="carrito.length > 0" class="space-y-3">
+              <div *ngFor="let item of carrito; trackBy: trackByInventarioId" 
+                   class="bg-slate-50 rounded-lg p-4 border border-slate-200 hover:shadow-sm transition-all duration-200">
+                <div class="flex items-center justify-between">
+                  <!-- Información del producto -->
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="bg-orange-100 p-2 rounded-lg">
+                      <i class="pi pi-box text-orange-600"></i>
+                    </div>
+                    <div class="flex-1">
+                      <div class="font-semibold text-neutral-800">{{item.producto?.nombre}}</div>
+                      <div class="text-sm text-neutral-600">
+                        {{item.color?.nombre}} - {{item.talla?.numero}} - {{item.codigoCompleto}}
+                      </div>
+                      <div class="text-xs text-neutral-500">Stock disponible: {{item.stock}}</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Controles de cantidad y precio -->
+                  <div class="flex items-center gap-4">
+                    <!-- Precio unitario -->
+                    <div class="text-center">
+                      <div class="text-xs text-neutral-500">Precio Unit.</div>
+                      <div class="font-bold text-emerald-600">{{formatearMoneda(item.precioUnitario)}}</div>
+                    </div>
+                    
+                    <!-- Control de cantidad -->
+                    <div class="flex items-center gap-2">
+                      <p-button 
+                        icon="pi pi-minus" 
+                        severity="secondary" 
+                        [text]="true" 
+                        [rounded]="true"
+                        size="small"
+                        (click)="actualizarCantidadItem(item, item.cantidad - 1)"
+                      />
+                      <input 
+                        pInputText 
+                        [(ngModel)]="item.cantidad" 
+                        (blur)="actualizarCantidadItem(item, item.cantidad)"
+                        class="w-16 text-center font-mono font-bold"
+                        type="number"
+                        min="1"
+                        [max]="item.stock"
+                      />
+                      <p-button 
+                        icon="pi pi-plus" 
+                        severity="secondary" 
+                        [text]="true" 
+                        [rounded]="true"
+                        size="small"
+                        (click)="actualizarCantidadItem(item, item.cantidad + 1)"
+                        [disabled]="item.cantidad >= item.stock"
+                      />
+                    </div>
+                    
+                    <!-- Subtotal -->
+                    <div class="text-center">
+                      <div class="text-xs text-neutral-500">Subtotal</div>
+                      <div class="font-bold text-blue-600">{{formatearMoneda(item.subtotal)}}</div>
+                    </div>
+                    
+                    <!-- Eliminar -->
+                    <p-button 
+                      icon="pi pi-trash" 
+                      severity="danger" 
+                      [text]="true" 
+                      [rounded]="true"
+                      size="small"
+                      pTooltip="Eliminar producto"
+                      (click)="eliminarItemCarrito(item)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Panel derecho: Resumen y pago -->
+        <div class="col-12 lg:col-4">
+          <!-- Resumen de la venta -->
+          <div class="bg-white rounded-xl shadow-md border border-slate-200 p-5 mb-6 sticky top-4">
+            <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center gap-2">
+              <i class="pi pi-calculator text-blue-600"></i>
+              Resumen de Venta
+            </h3>
+            
+            <!-- Detalles del resumen -->
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-neutral-600">Subtotal:</span>
+                <span class="font-semibold">{{formatearMoneda(subtotalVenta)}}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-neutral-600">IGV (18%):</span>
+                <span class="font-semibold">{{formatearMoneda(igvVenta)}}</span>
+              </div>
+              
+              <p-divider styleClass="my-3"></p-divider>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-xl font-bold text-neutral-800">TOTAL:</span>
+                <span class="text-2xl font-bold text-emerald-600">{{formatearMoneda(totalVenta)}}</span>
+              </div>
+            </div>
+            
+            <!-- Configuración del comprobante -->
+            <div class="mt-6 space-y-4">
+              <div>
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-file text-purple-600 mr-2"></i>
+                  Tipo de Comprobante
+                </label>
+                <p-dropdown 
+                  [(ngModel)]="nuevaVenta.tipoComprobante" 
+                  [options]="tiposComprobante" 
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccionar tipo"
+                  styleClass="w-full"
+                />
+              </div>
+              
+              <div>
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-hashtag text-indigo-600 mr-2"></i>
+                  Serie
+                </label>
+                <input 
+                  pInputText 
+                  [(ngModel)]="nuevaVenta.serieComprobante" 
+                  placeholder="B001, F001, etc."
+                  class="w-full font-mono"
+                />
+              </div>
+              
+              <div>
+                <label class="flex text-sm font-medium text-neutral-700 mb-2">
+                  <i class="pi pi-comment text-amber-600 mr-2"></i>
+                  Observaciones
+                </label>
+                <textarea 
+                  pInputTextarea 
+                  [(ngModel)]="nuevaVenta.observaciones" 
+                  placeholder="Observaciones adicionales..."
+                  rows="2"
+                  class="w-full"
+                ></textarea>
+              </div>
+            </div>
+            
+            <!-- Botón de pago -->
+            <div class="mt-6">
+              <p-button 
+                label="Procesar Pago" 
+                icon="pi pi-credit-card" 
+                styleClass="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-lg font-bold py-3"
+                [disabled]="!clienteSeleccionado || carrito.length === 0"
+                (click)="iniciarPago()"
+              />
+            </div>
+            
+            <!-- Información del cliente seleccionado -->
+            <div *ngIf="clienteSeleccionado" class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div class="text-xs text-blue-600 mb-1">CLIENTE SELECCIONADO</div>
+              <div class="font-semibold text-blue-800">{{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}</div>
+              <div class="text-sm text-blue-600">{{clienteSeleccionado.dni || clienteSeleccionado.ruc}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+    
+    <!-- PESTAÑA: HISTORIAL DE VENTAS -->
+    <p-tabPanel header="Historial de Ventas">
+      <ng-template pTemplate="header">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-history"></i>
+          <span>Historial</span>
+        </div>
+      </ng-template>
+      
+      <!-- Filtros de búsqueda -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 p-5 mb-6">
+        <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-filter text-indigo-600"></i>
+          Filtros de Búsqueda
+        </h3>
+        
+        <div class="grid gap-4">
+          <div class="col-12 md:col-3">
+            <label class="flex text-sm font-medium text-neutral-700 mb-2">Fecha Inicio</label>
+            <p-calendar 
+              [(ngModel)]="filtros.fechaInicio" 
+              dateFormat="dd/mm/yy"
+              placeholder="Fecha inicio"
+              styleClass="w-full"
+              [showIcon]="true"
+              (onSelect)="aplicarFiltrosVentas()"
+            />
+          </div>
+          
+          <div class="col-12 md:col-3">
+            <label class="flex text-sm font-medium text-neutral-700 mb-2">Fecha Fin</label>
+            <p-calendar 
+              [(ngModel)]="filtros.fechaFin" 
+              dateFormat="dd/mm/yy"
+              placeholder="Fecha fin"
+              styleClass="w-full"
+              [showIcon]="true"
+              (onSelect)="aplicarFiltrosVentas()"
+            />
+          </div>
+          
+          <div class="col-12 md:col-2">
+            <label class="flex text-sm font-medium text-neutral-700 mb-2">Estado</label>
+            <p-dropdown 
+              [(ngModel)]="filtros.estado" 
+              [options]="estadosVenta" 
+              optionLabel="label" 
+              optionValue="value"
+              placeholder="Todos"
+              styleClass="w-full"
+              (onChange)="aplicarFiltrosVentas()"
+            />
+          </div>
+          
+          <div class="col-12 md:col-2">
+            <label class="flex text-sm font-medium text-neutral-700 mb-2">Comprobante</label>
+            <p-dropdown 
+              [(ngModel)]="filtros.tipoComprobante" 
+              [options]="tiposComprobante" 
+              optionLabel="label" 
+              optionValue="value"
+              placeholder="Todos"
+              styleClass="w-full"
+              (onChange)="aplicarFiltrosVentas()"
+            />
+          </div>
+          
+          <div class="col-12 md:col-2 flex items-end">
+            <p-button 
+              icon="pi pi-filter-slash" 
+              severity="secondary" 
+              [outlined]="true"
+              pTooltip="Limpiar filtros"
+              styleClass="w-full"
+              (click)="limpiarFiltros()"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tabla de ventas -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+        <p-table 
+          [value]="ventasFiltradas" 
+          [loading]="loading"
+          [paginator]="true" 
+          [rows]="10"
+          [rowsPerPageOptions]="[5,10,20,50]"
+          [(selection)]="selectedVentas"
+          dataKey="id"
+          [globalFilterFields]="['numeroVenta', 'cliente.nombres', 'cliente.apellidos', 'cliente.documento']"
+          styleClass="p-datatable-sm"
         >
-          <ng-template pTemplate="header">`
-            <div class="flex align-items-center">
-              <i class="pi pi-dollar mr-2"></i>
-              <span>Registrar Nuevo Pago</span>
+          <ng-template pTemplate="caption">
+            <div class="bg-gradient-to-r from-slate-50 to-indigo-50 p-4 border-b border-slate-200">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i class="pi pi-list text-white"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-neutral-800 m-0">Historial de Ventas</h3>
+                    <p class="text-sm text-neutral-600 mt-1">{{ventasFiltradas.length}} ventas encontradas</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </ng-template>
-          <form [formGroup]="pagoForm" class="p-fluid">
-            <div class="field">
-              <label for="montoPago">Monto a Pagar (S/)</label>
-              <p-inputNumber
-                id="montoPago"
-                formControlName="monto"
-                mode="currency" currency="PEN" locale="es-PE"
-                [minFractionDigits]="2"
-                [maxFractionDigits]="2"
-                [max]="calcularSaldoPendiente()"
-                [min]="0.01"
-                styleClass="input-modern"
-                aria-label="Monto del pago"
-              ></p-inputNumber>
-              <small *ngIf="pagoForm.get('monto')?.touched && pagoForm.get('monto')?.invalid" class="p-error">
-                El monto es obligatorio y debe ser mayor a cero y menor o igual al saldo pendiente.
-              </small>
-            </div>
-            <div class="field">
-              <label for="metodoPago">Método de Pago</label>
-              <p-dropdown
-                id="metodoPago"
-                formControlName="metodoPago"
-                [options]="metodosPago"
-                optionLabel="label"
-                optionValue="value"
-                (onChange)="onMetodoPagoChange()"
-                placeholder="Seleccione método"
-                styleClass="input-modern"
-                aria-label="Seleccionar método de pago"
-              ></p-dropdown>
-            </div>
-            <ng-container *ngIf="pagoForm.get('metodoPago')?.value as metodo">
-                <div class="field" *ngIf="metodo === 'TARJETA_CREDITO' || metodo === 'TARJETA_DEBITO'">
-                  <label for="nombreTarjeta">Nombre Tarjeta</label>
-                  <input id="nombreTarjeta" pInputText formControlName="nombreTarjeta" class="input-modern" />
-                  <small *ngIf="pagoForm.get('nombreTarjeta')?.touched && pagoForm.get('nombreTarjeta')?.invalid" class="p-error">
-                    El nombre de la tarjeta es obligatorio.
-                  </small>
-                </div>
-                <div class="field" *ngIf="metodo === 'TARJETA_CREDITO' || metodo === 'TARJETA_DEBITO'">
-                  <label for="ultimos4Digitos">Últimos 4 dígitos</label>
-                  <p-inputMask id="ultimos4Digitos" formControlName="ultimos4Digitos" mask="9999" placeholder="****" styleClass="input-modern"></p-inputMask>
-                  <small *ngIf="pagoForm.get('ultimos4Digitos')?.touched && pagoForm.get('ultimos4Digitos')?.invalid" class="p-error">
-                    Deben ser 4 dígitos.
-                  </small>
-                </div>
-                <div class="field" *ngIf="metodo === 'YAPE' || metodo === 'PLIN'">
-                  <label for="numeroReferencia">Número de Teléfono/Referencia</label>
-                  <input id="numeroReferencia" pInputText formControlName="numeroReferencia" placeholder="Ej. 999123456 o código de operación" class="input-modern" />
-                </div>
-            </ng-container>
-            <div class="field">
-              <label for="observacionPago">Observación (Opcional)</label>
-              <textarea id="observacionPago" pInputTextarea formControlName="observaciones" rows="2" class="input-modern"></textarea>
-            </div>
-
-            <div class="p-3 border-1 surface-border border-round mt-3 bg-gray-50">
-                <div class="flex justify-content-between mb-2">
-                  <span>Total Venta:</span>
-                  <span class="font-semibold">S/ {{ ventaRegistrada.total | number:'1.2-2' }}</span>
-                </div>
-                <div class="flex justify-content-between mb-2">
-                  <span>Total Pagado:</span>
-                  <span class="font-semibold text-green-600">S/ {{ calcularTotalPagado() | number:'1.2-2' }}</span>
-                </div>
-                <div class="flex justify-content-between">
-                  <span class="font-bold">Saldo Pendiente:</span>
-                  <span class="font-bold text-xl" [ngClass]="calcularSaldoPendiente() > 0 ? 'text-orange-500' : 'text-primary'">
-                    S/ {{ calcularSaldoPendiente() | number:'1.2-2' }}
-                  </span>
-                </div>
-            </div>
-
-            <p-button
-              label="Registrar Pago"
-              icon="pi pi-check-circle"
-              (click)="registrarPago()"
-              [disabled]="pagoForm.invalid || isLoadingPago"
-              [loading]="isLoadingPago"
-              styleClass="p-button-raised p-button-primary button-modern mt-3 w-full"
-              aria-label="Registrar pago"
-            ></p-button>
-          </form>
-        </p-panel>
-
-        <p-table [value]="pagos" styleClass="p-datatable-sm table-modern" dataKey="id" responsiveLayout="scroll">
+          
           <ng-template pTemplate="header">
-            <tr>
-              <th>N° Pago</th>
-              <th>Método</th>
-              <th class="text-right">Monto</th>
-              <th>Fecha</th>
-              </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-pago>
-            <tr>
-              <td>{{ pago.numeroPago || pago.id }}</td>
-              <td>{{ getMetodoPagoLabel(pago.metodoPago) }}</td> <td class="text-right">S/ {{ pago.monto | number:'1.2-2' }}</td>
-              <td>{{ pago.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
-              </tr>
-          </ng-template>
-          <ng-template pTemplate="footer" *ngIf="pagos.length > 0">
-            <tr>
-              <td colspan="2" class="text-right font-bold">Total Pagado:</td>
-              <td class="text-right font-bold">S/ {{ calcularTotalPagado() | number:'1.2-2' }}</td>
-              <td></td>
-            </tr>
-            <tr *ngIf="calcularSaldoPendiente() > 0">
-              <td colspan="2" class="text-right font-bold">Saldo Pendiente:</td>
-              <td class="text-right font-bold text-orange-500">S/ {{ calcularSaldoPendiente() | number:'1.2-2' }}</td>
-              <td></td>
+            <tr class="bg-gradient-to-r from-slate-50 to-indigo-50">
+              <th class="border-b-2 border-slate-200">
+                <div class="flex items-center gap-2 font-bold text-neutral-700">
+                  <i class="pi pi-hashtag text-indigo-600"></i>
+                  N° Venta
+                </div>
+              </th>
+              <th class="border-b-2 border-slate-200">Cliente</th>
+              <th class="border-b-2 border-slate-200">Fecha</th>
+              <th class="border-b-2 border-slate-200">Comprobante</th>
+              <th class="border-b-2 border-slate-200">Total</th>
+              <th class="border-b-2 border-slate-200">Estado</th>
+              <th class="border-b-2 border-slate-200 text-center">Acciones</th>
             </tr>
           </ng-template>
+          
+          <ng-template pTemplate="body" let-venta let-rowIndex="rowIndex">
+            <tr class="hover:bg-blue-50 transition-colors duration-200" [class.bg-slate-50]="rowIndex % 2 === 0">
+              <td class="align-middle">
+                <div class="font-mono font-bold text-indigo-700">{{venta.numeroVenta}}</div>
+              </td>
+              
+              <td class="align-middle">
+                <div class="flex items-center gap-2">
+                  <div class="bg-blue-100 p-2 rounded-full">
+                    <i class="pi pi-user text-blue-600 text-sm"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-neutral-800">{{venta.cliente.nombres}} {{venta.cliente.apellidos}}</div>
+                    <div class="text-sm text-neutral-600">{{venta.cliente.documento}}</div>
+                  </div>
+                </div>
+              </td>
+              
+              <td class="align-middle">
+                <div class="text-neutral-700">{{venta.fechaCreacion | date:'dd/MM/yyyy'}}</div>
+                <div class="text-sm text-neutral-500">{{venta.fechaCreacion | date:'HH:mm'}}</div>
+              </td>
+              
+              <td class="align-middle">
+                <div class="flex items-center gap-2">
+                  <p-tag 
+                    [value]="venta.tipoComprobante" 
+                    [severity]="venta.tipoComprobante === 'FACTURA' ? 'info' : 'success'"
+                    styleClass="text-xs"
+                  />
+                  <span class="text-sm font-mono">{{venta.serieComprobante}}-{{venta.numeroComprobante || 'Pendiente'}}</span>
+                </div>
+              </td>
+              
+              <td class="align-middle">
+                <div class="font-bold text-emerald-600 text-lg">{{formatearMoneda(venta.total)}}</div>
+                <div class="text-xs text-neutral-500">IGV: {{formatearMoneda(venta.igv)}}</div>
+              </td>
+              
+              <td class="align-middle">
+                <p-tag 
+                  [value]="venta.estado" 
+                  [severity]="getSeverityEstado(venta.estado)"
+                  [icon]="getIconEstado(venta.estado)"
+                  styleClass="shadow-sm"
+                />
+              </td>
+              
+              <td class="align-middle text-center">
+                <div class="flex gap-1 justify-center">
+                  <p-button 
+                    icon="pi pi-eye" 
+                    [rounded]="true" 
+                    [text]="true"
+                    severity="info"
+                    pTooltip="Ver detalle"
+                    tooltipPosition="top"
+                    (click)="verDetalleVenta(venta)"
+                  />
+                  
+                  <p-button 
+                    *ngIf="venta.estado === 'PAGADA'"
+                    icon="pi pi-refresh" 
+                    [rounded]="true" 
+                    [text]="true"
+                    severity="danger"
+                    pTooltip="Procesar devolución"
+                    tooltipPosition="top"
+                    (click)="iniciarDevolucion(venta)"
+                  />
+                  
+                  <p-button 
+                    icon="pi pi-print" 
+                    [rounded]="true" 
+                    [text]="true"
+                    severity="secondary"
+                    pTooltip="Imprimir comprobante"
+                    tooltipPosition="top"
+                    (click)="imprimirComprobante(venta)"
+                  />
+                  
+                  <p-button 
+                    icon="pi pi-ellipsis-v" 
+                    [rounded]="true" 
+                    [text]="true"
+                    severity="secondary"
+                    pTooltip="Más opciones"
+                    tooltipPosition="top"
+                    (click)="mostrarMenuVenta($event, venta)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="4" class="text-center p-4">
-                <i class="pi pi-info-circle text-gray-400" style="font-size: 2rem" aria-hidden="true"></i>
-                <div class="text-gray-400 mt-3">Aún no hay pagos registrados para esta venta.</div>
+              <td colspan="7" class="text-center py-12">
+                <div class="flex flex-col items-center gap-6">
+                  <div class="bg-slate-100 p-8 rounded-full">
+                    <i class="pi pi-shopping-cart text-6xl text-slate-400"></i>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-neutral-700 mb-2">No se encontraron ventas</div>
+                    <div class="text-neutral-500 mb-6 max-w-md mx-auto">
+                      No hay ventas que coincidan con los filtros aplicados.
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
           </ng-template>
         </p-table>
       </div>
-    </div>
-    <div class="flex flex-wrap justify-content-end gap-2 mt-4">
-      <p-button
-        label="Imprimir Comprobante"
-        icon="pi pi-print"
-        (click)="imprimirComprobante()"
-        [outlined]="true"
-        styleClass="button-modern-secondary"
-        aria-label="Imprimir comprobante"
-      ></p-button>
-      <p-button
-        label="Nueva Venta"
-        icon="pi pi-plus-circle"
-        (click)="iniciarNuevaVenta()"
-        [outlined]="true"
-        styleClass="button-modern-secondary"
-        aria-label="Iniciar una nueva venta"
-      ></p-button>
-      <p-button
-        label="Finalizar y Cerrar"
-        icon="pi pi-check-square"
-        (click)="finalizarVenta()"
-        [disabled]="calcularSaldoPendiente() > 0"
-        styleClass="p-button-raised p-button-primary button-modern"
-        pTooltip="Solo se puede finalizar si el saldo pendiente es cero."
-        tooltipPosition="top"
-        aria-label="Finalizar venta y cerrar"
-      ></p-button>
-    </div>
-  </p-card>
+    </p-tabPanel>
+    
+    <!-- PESTAÑA: REPORTES Y ESTADÍSTICAS -->
+    <p-tabPanel header="Reportes">
+      <ng-template pTemplate="header">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-chart-bar"></i>
+          <span>Reportes</span>
+        </div>
+      </ng-template>
+      
+      <!-- Dashboard de estadísticas -->
+      <div class="grid mb-6">
+        <!-- Métricas principales -->
+        <div class="col-12 md:col-3">
+          <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-bold">{{estadisticas.ventasEsteMes}}</div>
+                <div class="text-emerald-100">Ventas Este Mes</div>
+              </div>
+              <div class="bg-emerald-400 p-3 rounded-full">
+                <i class="pi pi-shopping-cart text-2xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12 md:col-3">
+          <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-bold">{{formatearMoneda(estadisticas.montoEsteMes)}}</div>
+                <div class="text-blue-100">Ingresos del Mes</div>
+              </div>
+              <div class="bg-blue-400 p-3 rounded-full">
+                <i class="pi pi-dollar text-2xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12 md:col-3">
+          <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-bold">{{formatearMoneda(estadisticas.montoVentasHoy)}}</div>
+                <div class="text-purple-100">Ventas de Hoy</div>
+              </div>
+              <div class="bg-purple-400 p-3 rounded-full">
+                <i class="pi pi-calendar text-2xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12 md:col-3">
+          <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-bold">{{estadisticas.ventasPendientes}}</div>
+                <div class="text-amber-100">Ventas Pendientes</div>
+              </div>
+              <div class="bg-amber-400 p-3 rounded-full">
+                <i class="pi pi-clock text-2xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gráfico de ventas -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-6">
+        <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-chart-line text-blue-600"></i>
+          Tendencia de Ventas
+        </h3>
+        <p-chart type="line" [data]="chartVentas" [options]="chartOptions" height="300"></p-chart>
+      </div>
+      
+      <!-- Acciones de reportes -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+        <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-download text-green-600"></i>
+          Exportar Reportes
+        </h3>
+        
+        <div class="grid gap-4">
+          <div class="col-12 md:col-3">
+            <p-button 
+              label="Reporte Diario" 
+              icon="pi pi-file-excel" 
+              severity="success"
+              styleClass="w-full"
+              (click)="exportarReporte('diario')"
+            />
+          </div>
+          
+          <div class="col-12 md:col-3">
+            <p-button 
+              label="Reporte Mensual" 
+              icon="pi pi-file-pdf" 
+              severity="info"
+              styleClass="w-full"
+              (click)="exportarReporte('mensual')"
+            />
+          </div>
+          
+          <div class="col-12 md:col-3">
+            <p-button 
+              label="Top Productos" 
+              icon="pi pi-chart-bar" 
+              severity="danger"
+              styleClass="w-full"
+              (click)="exportarReporte('productos')"
+            />
+          </div>
+          
+          <div class="col-12 md:col-3">
+            <p-button 
+              label="Reporte Completo" 
+              icon="pi pi-file" 
+              severity="secondary"
+              styleClass="w-full"
+              (click)="mostrarReportes()"
+            />
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
 </div>
-
-<p-progressSpinner
-  *ngIf="isLoading" styleClass="w-4rem h-4rem"
-  strokeWidth="4"
-  animationDuration=".5s"
-  class="loading-spinner"
-></p-progressSpinner>
-
-<p-toast></p-toast>
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

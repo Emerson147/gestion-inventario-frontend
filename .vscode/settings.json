@@ -1,0 +1,37 @@
+{
+  "css.validate": false,
+  "scss.validate": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "scss": "css"
+  },
+  "tailwindCSS.emmetCompletions": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.parameterHints.enabled": true,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.suggest.showClasses": true,
+  "editor.suggest.showColors": true,
+  "editor.suggest.showConstants": true,
+  "editor.suggest.showEnums": true,
+  "editor.suggest.showFields": true,
+  "editor.suggest.showFiles": true,
+  "editor.suggest.showFunctions": true,
+  "editor.suggest.showInterfaces": true,
+  "editor.suggest.showIssues": true,
+  "editor.suggest.showKeywords": true,
+  "editor.suggest.showMethods": true,
+  "editor.suggest.showModules": true,
+  "editor.suggest.showOperators": true,
+  "editor.suggest.showProperties": true,
+  "editor.suggest.showReferences": true,
+  "editor.suggest.showSnippets": true,
+  "editor.suggest.showStructs": true,
+  "editor.suggest.showTypeParameters": true,
+  "editor.suggest.showUnits": true,
+  "editor.suggest.showValues": true,
+  "editor.suggest.showVariables": true,
+  "editor.suggest.showWords": true,
+  "editor.suggest.showUsers": true
+}

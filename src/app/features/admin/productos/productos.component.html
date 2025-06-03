@@ -1,79 +1,79 @@
 <p-toast position="top-right" [life]="4000" />
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-<!-- Header con dashboard metrics mejorado -->
-<div class="mb-6">
-  <!-- Header principal con gradiente sutil -->
-  <div class="bg-gradient-to-r from-white via-blue-50 to-white rounded-xl p-6 shadow-sm border border-gray-100">
-    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-      <!-- Título principal -->
-      <div>
-        <div class="flex items-center gap-3 mb-2">
-          <div class="bg-blue-600 p-2 rounded-lg shadow-lg">
-            <i class="pi pi-shopping-bag text-white text-xl"></i>
+<!-- Header corporativo con mejor jerarquía visual -->
+ <div class="mb-8">
+  <div class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl p-8 shadow-lg border border-slate-200/50">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+      <!-- Título principal con mejor tipografía -->
+      <div class="flex-1">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-2xl shadow-lg">
+            <i class="pi pi-shopping-bag text-white text-2xl"></i>
           </div>
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0">Gestión de Productos</h1>
-            <p class="text-gray-600 mt-1 mb-0">Administra y optimiza tu catálogo completo</p>
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
+              Gestión de Productos
+            </h1>
+            <p class="text-slate-600 text-lg font-medium">
+              Administra y optimiza tu catálogo empresarial
+            </p>
+            <div class="flex items-center gap-2 mt-2 text-sm text-slate-500">
+              <i class="pi pi-clock"></i>
+              <span>Última actualización: {{ getCurrentTime() | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Dashboard metrics con hover effects -->
-      <div class="flex flex-wrap gap-4">
+      <!-- Dashboard metrics con diseño más corporativo -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total productos -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300" 
              *ngIf="productos?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-blue-100 p-2 rounded-lg">
-              <i class="pi pi-box text-blue-600"></i>
+          <div class="text-center">
+            <div class="bg-blue-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-box text-blue-600 text-xl"></i>
             </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-600">{{ productos.length }}</div>
-              <div class="text-sm text-gray-600 font-medium">Total Productos</div>
-            </div>
+            <div class="text-3xl font-bold text-blue-700">{{ productos.length }}</div>
+            <div class="text-sm text-slate-600 font-semibold">Productos</div>
           </div>
         </div>
         
-        <!-- Productos filtrados -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
-             *ngIf="productosFiltrados?.length && productosFiltrados.length !== productos.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-green-100 p-2 rounded-lg">
-              <i class="pi pi-filter text-green-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-green-600">{{ productosFiltrados.length }}</div>
-              <div class="text-sm text-gray-600 font-medium">Filtrados</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Seleccionados -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
-             *ngIf="selectedProductos?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-orange-100 p-2 rounded-lg">
-              <i class="pi pi-check-square text-orange-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-orange-600">{{ selectedProductos.length }}</div>
-              <div class="text-sm text-gray-600 font-medium">Seleccionados</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Valor total inventario -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[140px]" 
+        <!-- Valor total con mejor presentación -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300" 
              *ngIf="productos?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-purple-100 p-2 rounded-lg">
-              <i class="pi pi-dollar text-purple-600"></i>
+          <div class="text-center">
+            <div class="bg-emerald-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-dollar text-emerald-600 text-xl"></i>
             </div>
-            <div>
-              <div class="text-2xl font-bold text-purple-600">{{ calcularValorTotal() | currency:'S/. ':'symbol':'1.0-0' }}</div>
-              <div class="text-sm text-gray-600 font-medium">Valor Inventario</div>
+            <div class="text-3xl font-bold text-emerald-700">{{ calcularValorTotal() | currency:'S/. ':'symbol':'1.0-0' }}</div>
+            <div class="text-sm text-slate-600 font-semibold">Inventario</div>
+          </div>
+        </div>
+        
+        <!-- Margen promedio -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300" 
+             *ngIf="productos?.length">
+          <div class="text-center">
+            <div class="bg-purple-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-percentage text-purple-600 text-xl"></i>
             </div>
+            <div class="text-3xl font-bold text-purple-700">{{ getMargenPromedio() | number:'1.0-1' }}%</div>
+            <div class="text-sm text-slate-600 font-semibold">Margen Prom.</div>
+          </div>
+        </div>
+        
+        <!-- Estado del inventario -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-orange-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-chart-line text-orange-600 text-xl"></i>
+            </div>
+            <div class="text-3xl font-bold" [ngClass]="getInventoryHealthColor()">
+              {{ getInventoryHealthPercentage() }}%
+            </div>
+            <div class="text-sm text-slate-600 font-semibold">Salud Inv.</div>
           </div>
         </div>
       </div>
@@ -82,61 +82,90 @@
 </div>
 
 <!-- Toolbar mejorado con diseño más limpio -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-    <!-- Acciones principales -->
+<!-- Toolbar con diseño más empresarial -->
+<div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-8">
+  <!-- Breadcrumb corporativo -->
+  <div class="flex items-center gap-2 text-sm text-slate-500 mb-4">
+    <i class="pi pi-home"></i>
+    <span>Dashboard</span>
+    <i class="pi pi-angle-right"></i>
+    <span>Inventario</span>
+    <i class="pi pi-angle-right"></i>
+    <span class="text-slate-700 font-semibold">Productos</span>
+  </div>
+  
+  <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6">
+    <!-- Acciones principales con mejor agrupación -->
     <div class="flex flex-wrap gap-3">
+      <!-- Botón principal -->
       <p-button 
         *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}" 
         label="Nuevo Producto" 
         icon="pi pi-plus" 
         size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
+        severity="info"
+        class="shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
         (click)="openNew()"
-        pTooltip="Crear un nuevo producto"
+        pTooltip="Agregar nuevo producto al catálogo"
       />
-      <p-button 
-        *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
-        [label]="'Eliminar (' + (selectedProductos.length || 0) + ')'" 
-        icon="pi pi-trash" 
-        severity="danger"
-        [outlined]="true"
-        size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="deleteSelectedProductos()" 
-        [disabled]="!selectedProductos.length"
-        pTooltip="Eliminar productos seleccionados"
-      />
-      <!-- Botón de exportar seleccionados -->
-      <p-splitButton 
-        label="Acciones Masivas" 
-        icon="pi pi-cog"
-        [outlined]="true"
-        size="large"
-        [model]="accionesMasivas"
-        [disabled]="!selectedProductos.length"
-        styleClass="shadow-sm hover:shadow-md transition-all duration-300"
-      />
+      
+      <!-- Acciones secundarias -->
+      <div class="flex gap-2">
+        <p-button 
+          *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
+          [label]="'Eliminar (' + (selectedProductos.length || 0) + ')'" 
+          icon="pi pi-trash" 
+          severity="danger"
+          [outlined]="true"
+          size="large"
+          class="shadow-md hover:shadow-lg transition-all duration-300" 
+          (click)="deleteSelectedProductos()" 
+          [disabled]="!selectedProductos.length"
+          pTooltip="Eliminar productos seleccionados"
+        />
+        
+        <p-button 
+          label="Importar" 
+          icon="pi pi-upload" 
+          severity="success"
+          [outlined]="true"
+          size="large"
+          class="shadow-md hover:shadow-lg transition-all duration-300" 
+          (click)="importarProductos()"
+          pTooltip="Importar productos desde Excel"
+        />
+      </div>
     </div>
 
-    <!-- Controles de vista y utilidades -->
-    <div class="flex flex-wrap items-center gap-3">
+    <!-- Controles avanzados -->
+    <div class="flex flex-wrap items-center gap-4">
+      <!-- Filtro rápido -->
+      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
+        <i class="pi pi-filter text-slate-600"></i>
+        <span class="text-sm font-medium text-slate-700">Filtro rápido:</span>
+        <p-select 
+          [(ngModel)]="filtroRapidos" 
+          [options]="filtrosRapidos" 
+          optionLabel="label" 
+          optionValue="value"
+          placeholder="Todos"
+          class="w-40"
+          size="small"
+          (onChange)="aplicarFiltroRapido()"
+        />
+      </div>
+
       <!-- Selector de vista mejorado -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm font-medium text-gray-700">Vista:</span>
+      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
+        <i class="pi pi-eye text-slate-600"></i>
+        <span class="text-sm font-medium text-slate-700">Vista:</span>
         <p-selectButton 
           [(ngModel)]="currentView" 
           [options]="viewOptions" 
           optionLabel="label" 
           optionValue="value"
           size="small"
-          class="shadow-sm"
-        >
-          <ng-template let-option pTemplate="option">
-            <i [class]="option.icon" class="mr-2"></i>
-            {{option.label}}
-          </ng-template>
-        </p-selectButton>
+        />
       </div>
 
       <!-- Utilidades -->
@@ -147,8 +176,8 @@
           [outlined]="true"
           [rounded]="true"
           size="large"
-          pTooltip="Actualizar lista"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
+          pTooltip="Actualizar datos"
+          class="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="loadProductos()" 
         />
         <p-button 
@@ -157,389 +186,520 @@
           [outlined]="true"
           [rounded]="true"
           size="large"
-          pTooltip="Exportar todos a Excel"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
+          pTooltip="Exportar a Excel"
+          class="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="exportarExcel()"
           [disabled]="!productosFiltrados.length"
         />
         <p-button 
-          icon="pi pi-chart-bar" 
-          severity="info" 
+          icon="pi pi-cog" 
+          severity="secondary" 
           [outlined]="true"
           [rounded]="true"
           size="large"
-          pTooltip="Ver estadísticas"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="mostrarEstadisticas()"
+          pTooltip="Configuración"
+          class="shadow-md hover:shadow-lg transition-all duration-300"
+          (click)="abrirConfiguracion()"
         />
       </div>
     </div>
   </div>
 </div>
 
-<!-- Panel de filtros con diseño más moderno -->
-<div class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <p-panel 
-      header="Filtros Avanzados" 
-      [toggleable]="true" 
-      [collapsed]="filtrosPanelCollapsed"
-      (onToggle)="onFiltrosPanelToggle($event)"
-      styleClass="border-0 shadow-none"
-    >
-      <ng-template pTemplate="header">
-        <div class="flex items-center gap-2">
-          <div class="bg-indigo-100 p-2 rounded-lg">
-            <i class="pi pi-filter text-indigo-600"></i>
+<!-- 🆕 NUEVO: Header empresarial con KPIs en tiempo real -->
+<div class="mb-6" *ngIf="kpiMetrics">
+  <div class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl p-6 shadow-lg border border-slate-200/50">
+    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-6">
+      <!-- Título principal con alertas -->
+      <div class="flex-1">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-2xl shadow-lg">
+            <i class="pi pi-shopping-bag text-white text-2xl"></i>
           </div>
-          <span class="font-semibold text-gray-800">Filtros Avanzados</span>
-          <p-tag 
-            *ngIf="getTotalFiltrosActivos() > 0" 
-            [value]="getTotalFiltrosActivos() + ' activo' + (getTotalFiltrosActivos() > 1 ? 's' : '')"
-            severity="info"
-            size="small"
-          />
-        </div>
-      </ng-template>
-      
-      <div class="grid gap-4 pt-4">
-        <!-- Búsqueda general con icono -->
-        <div class="col-12 md:col-4">
-          <label class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-search mr-2 text-indigo-600"></i>
-            Búsqueda General
-          </label>
-          <p-iconfield class="w-full">
-            <p-inputicon styleClass="pi pi-search" />
-            <input 
-              pInputText 
-              [(ngModel)]="filtroTexto" 
-              (input)="aplicarFiltros()"
-              placeholder="Buscar por nombre, código, marca..."
-              class="w-full h-12 text-base rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </p-iconfield>
-        </div>
-        
-        <!-- Filtro de marca mejorado -->
-        <div class="col-12 md:col-2">
-          <label class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-building mr-2 text-green-600"></i>
-            Marca
-          </label>
-          <p-select 
-            [(ngModel)]="filtroMarca"
-            [options]="marcasDisponibles"
-            placeholder="Todas las marcas"
-            [showClear]="true"
-            [filter]="true"
-            filterPlaceholder="Buscar marca..."
-            class="w-full"
-            styleClass="h-12"
-            (onChange)="aplicarFiltros()"
-          />
-        </div>
-        
-        <!-- Rango de precios mejorado -->
-        <div class="col-12 md:col-4">
-          <label class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-dollar mr-2 text-emerald-600"></i>
-            Rango de Precios
-          </label>
-          <div class="flex gap-2">
-            <p-inputNumber 
-              [(ngModel)]="filtroPrecioMin"
-              placeholder="Mín."
-              [min]="0"
-              [step]="10"
-              prefix="S/. "
-              size="small"
-              class="flex-1"
-              styleClass="h-12"
-              (onInput)="aplicarFiltros()"
-            />
-            <span class="flex items-center text-gray-400 font-bold">-</span>
-            <p-inputNumber 
-              [(ngModel)]="filtroPrecioMax"
-              placeholder="Máx."
-              [min]="0"
-              [step]="10"
-              prefix="S/. "
-              size="small"
-              class="flex-1"
-              styleClass="h-12"
-              (onInput)="aplicarFiltros()"
-            />
-          </div>
-        </div>
-        
-        <!-- Acciones de filtro -->
-        <div class="col-12 md:col-2 flex items-end">
-          <div class="w-full space-y-2">
-            <p-button 
-              label="Limpiar Todo" 
-              icon="pi pi-filter-slash" 
-              severity="secondary" 
-              [outlined]="true"
-              size="small"
-              (click)="limpiarFiltros()"
-              class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
-            />
-            <p-button 
-              label="Buscar" 
-              icon="pi pi-search" 
-              size="small"
-              (click)="aplicarFiltros()"
-              class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
-            />
+          <div>
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
+              Gestión Empresarial de Productos
+            </h1>
+            <p class="text-slate-600 text-lg font-medium">
+              Dashboard inteligente con IA y analytics avanzados
+            </p>
+            
+            <!-- 🆕 Alertas críticas -->
+            <div class="flex items-center gap-3 mt-3" *ngIf="alertasNegocio.length > 0">
+              <p-button 
+                [label]="alertasNegocio.length + ' Alertas'"
+                icon="pi pi-bell" 
+                severity="danger"
+                size="small"
+                [outlined]="true"
+                (click)="verAlertasNegocio()"
+                [badge]="alertasAltaSeveridad.toString()"
+                badgeClass="p-badge-danger"
+              />
+              <span class="text-sm text-slate-500">
+                <i class="pi pi-clock mr-1"></i>
+                Actualizado: {{ getCurrentTime() | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </p-panel>
+      
+      <!-- 🆕 KPIs empresariales en tiempo real -->
+      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <!-- Ventas hoy -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-emerald-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-dollar text-emerald-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-emerald-700">
+              {{ kpiMetrics.ventasHoy | currency:'S/. ':'symbol':'1.0-0' }}
+            </div>
+            <div class="text-xs text-slate-600 font-semibold">Ventas Hoy</div>
+          </div>
+        </div>
+
+        <!-- Ventas mes -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-blue-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-chart-line text-blue-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-blue-700">
+              {{ kpiMetrics.ventasMes | currency:'S/. ':'symbol':'1.0-0' }}
+            </div>
+            <div class="text-xs text-slate-600 font-semibold">Ventas Mes</div>
+          </div>
+        </div>
+
+        <!-- Margen promedio -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-purple-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-percentage text-purple-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-purple-700">
+              {{ kpiMetrics.margenPromedio | number:'1.1-1' }}%
+            </div>
+            <div class="text-xs text-slate-600 font-semibold">Margen Prom.</div>
+          </div>
+        </div>
+
+        <!-- Stock crítico -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-orange-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-exclamation-triangle text-orange-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-orange-700">{{ kpiMetrics.productosAgotandose }}</div>
+            <div class="text-xs text-slate-600 font-semibold">Stock Crítico</div>
+          </div>
+        </div>
+
+        <!-- Crecimiento -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-green-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-arrow-up text-green-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-green-700">
+              +{{ kpiMetrics.crecimientoMensual | number:'1.1-1' }}%
+            </div>
+            <div class="text-xs text-slate-600 font-semibold">Crecimiento</div>
+          </div>
+        </div>
+
+        <!-- Rotación -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div class="text-center">
+            <div class="bg-indigo-50 p-3 rounded-xl mb-3 mx-auto w-fit">
+              <i class="pi pi-refresh text-indigo-600 text-xl"></i>
+            </div>
+            <div class="text-2xl font-bold text-indigo-700">
+              {{ kpiMetrics.rotacionInventario | number:'1.1-1' }}x
+            </div>
+            <div class="text-xs text-slate-600 font-semibold">Rotación</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Vista de Tabla Modernizada -->
-<div *ngIf="currentView === 'table'" class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<!-- 🆕 NUEVO: Toolbar empresarial con funciones IA -->
+<div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-6">
+  <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6">
+    <!-- Acciones principales -->
+    <div class="flex flex-wrap gap-3">
+      <!-- Botón principal -->
+      <p-button 
+        *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}" 
+        label="Nuevo Producto" 
+        icon="pi pi-plus" 
+        size="large"
+        class="shadow-lg hover:shadow-xl transition-all duration-300" 
+        (click)="openNew()"
+      />
+      
+      <!-- 🆕 Funciones empresariales -->
+      <p-button 
+        label="Optimizar Precios IA" 
+        icon="pi pi-android" 
+        severity="info"
+        size="large"
+        [outlined]="true"
+        class="shadow-md hover:shadow-lg transition-all duration-300" 
+        (click)="optimizarPreciosIA()"
+        [disabled]="!selectedProductos.length"
+        pTooltip="Usa IA para optimizar precios automáticamente"
+      />
+
+      <p-button 
+        label="Sincronizar ERP" 
+        icon="pi pi-sync" 
+        severity="secondary"
+        size="large"
+        [outlined]="true"
+        [loading]="sincronizandoERP"
+        class="shadow-md hover:shadow-lg transition-all duration-300" 
+        (click)="sincronizarConERP()"
+        pTooltip="Sincronizar con sistema ERP"
+      />
+
+      <p-button 
+        label="Dashboard Ejecutivo" 
+        icon="pi pi-chart-bar" 
+        severity="help"
+        size="large"
+        [outlined]="true"
+        class="shadow-md hover:shadow-lg transition-all duration-300" 
+        (click)="abrirDashboardEjecutivo()"
+        pTooltip="Ver métricas ejecutivas"
+      />
+    </div>
+
+    <!-- Controles avanzados -->
+    <div class="flex flex-wrap items-center gap-4">
+      <!-- 🆕 Filtros empresariales -->
+      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
+        <i class="pi pi-filter-fill text-slate-600"></i>
+        <span class="text-sm font-medium text-slate-700">Filtros IA:</span>
+        <p-select 
+          [(ngModel)]="filtroAvanzado.soloPorductosConAlertas" 
+          [options]="[
+            {label: 'Todos', value: false},
+            {label: 'Solo con Alertas', value: true}
+          ]" 
+          optionLabel="label" 
+          optionValue="value"
+          class="w-40"
+          size="small"
+          (onChange)="aplicarFiltrosAvanzados()"
+        />
+      </div>
+
+      <!-- Vista selector mejorado -->
+      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
+        <i class="pi pi-eye text-slate-600"></i>
+        <p-selectButton 
+          [(ngModel)]="currentView" 
+          [options]="viewOptions" 
+          optionLabel="label" 
+          optionValue="value"
+          size="small"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Panel de filtros con diseño más moderno -->
+<!-- Tabla con diseño más empresarial -->
+<div *ngIf="currentView === 'table'" class="mb-8">
+  <div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden">
     <p-table
       #dt
       [value]="productosFiltrados"
-      [rows]="10"
+      [rows]="15"
       [paginator]="true"
       [totalRecords]="productosFiltrados.length"
-      [globalFilterFields]="['codigo', 'nombre', 'marca', 'modelo']"
-      [tableStyle]="{'min-width': '75rem'}"
       [(selection)]="selectedProductos"
       [rowHover]="true"
       dataKey="id"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos"
-      [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
+      currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} productos"
+      [rowsPerPageOptions]="[10, 15, 25, 50, 100]"
       [loading]="loading"
-      [alwaysShowPaginator]="true"
-      styleClass="p-datatable-gridlines p-datatable-striped"
+      styleClass="p-datatable-lg p-datatable-gridlines"
+      [scrollable]="true"
+      scrollHeight="600px"
     >
-      <!-- Caption modernizado -->
+      <!-- Caption corporativo -->
       <ng-template pTemplate="caption">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-gray-200">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <div class="bg-blue-600 p-2 rounded-lg">
-                <i class="pi pi-list text-white"></i>
+        <div class="bg-gradient-to-r from-slate-50 to-blue-50 p-6">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl">
+                <i class="pi pi-list text-white text-xl"></i>
               </div>
               <div>
-                <h3 class="text-xl font-bold text-gray-800 m-0">Lista de Productos</h3>
-                <p class="text-sm text-gray-600 mt-1" *ngIf="productosFiltrados?.length">
-                  {{productosFiltrados.length}} productos encontrados
+                <h3 class="text-2xl font-bold text-slate-800 mb-1">Catálogo de Productos</h3>
+                <p class="text-slate-600" *ngIf="productosFiltrados?.length">
+                  {{productosFiltrados.length}} de {{productos.length}} productos
                 </p>
               </div>
             </div>
-            <div class="flex gap-3">
-              <p-iconfield>
-                <p-inputicon styleClass="pi pi-search" />
-                <input 
-                  pInputText 
-                  type="text" 
-                  (input)="onGlobalFilter(dt, $event)" 
-                  placeholder="Búsqueda rápida..." 
-                  class="w-80 h-10 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </p-iconfield>
+            
+            <!-- Búsqueda global mejorada -->
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <p-iconfield class="w-80">
+                  <p-inputicon styleClass="pi pi-search" />
+                  <input 
+                    pInputText 
+                    type="text" 
+                    (input)="onGlobalFilter(dt, $event)" 
+                    placeholder="Buscar en todos los campos..." 
+                    class="w-full h-12 pl-10 rounded-xl border-slate-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
+                  />
+                </p-iconfield>
+              </div>
+              
+              <!-- Filtros avanzados toggle -->
+              <p-button 
+                icon="pi pi-sliders-h" 
+                [outlined]="true"
+                severity="secondary"
+                size="large"
+                pTooltip="Filtros avanzados"
+                (click)="toggleFiltrosAvanzados()"
+                [class.p-button-info]="!filtrosPanelCollapsed"
+              />
             </div>
           </div>
         </div>
       </ng-template>
 
-      <!-- Header modernizado -->
+      <!-- Header mejorado -->
       <ng-template pTemplate="header">
-        <tr class="bg-gray-50">
-          <th style="width: 3rem" class="text-center border-b-2 border-gray-200">
+        <tr class="bg-gradient-to-r from-slate-100 to-slate-50">
+          <th style="width: 3rem" class="text-center">
             <p-tableHeaderCheckbox />
           </th>
-          <th style="width:8rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th style="width:6rem" class="text-center">
+            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
               <i class="pi pi-image text-blue-600"></i>
-              Imagen
+              <span>Imagen</span>
             </div>
           </th>
-          <th pSortableColumn="codigo" style="min-width:10rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-tag text-indigo-600"></i>
-              Código
+          <th pSortableColumn="codigo" style="min-width:10rem">
+            <div class="flex items-center gap-2 font-bold text-slate-700">
+              <i class="pi pi-barcode text-indigo-600"></i>
+              <span>Código</span>
               <p-sortIcon field="codigo" />
             </div>
           </th>
-          <th pSortableColumn="nombre" style="min-width:15rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-shopping-bag text-green-600"></i>
-              Producto
+          <th pSortableColumn="nombre" style="min-width:20rem">
+            <div class="flex items-center gap-2 font-bold text-slate-700">
+              <i class="pi pi-shopping-bag text-emerald-600"></i>
+              <span>Producto</span>
               <p-sortIcon field="nombre" />
             </div>
           </th>
-          <th pSortableColumn="marca" style="min-width:10rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
+          <th pSortableColumn="marca" style="min-width:12rem">
+            <div class="flex items-center gap-2 font-bold text-slate-700">
               <i class="pi pi-building text-orange-600"></i>
-              Marca
+              <span>Marca</span>
               <p-sortIcon field="marca" />
             </div>
           </th>
-          <th pSortableColumn="precioVenta" style="min-width:12rem" class="text-right border-b-2 border-gray-200">
-            <div class="flex items-center justify-end gap-2 font-bold text-gray-700">
+          <th pSortableColumn="precioVenta" style="min-width:15rem" class="text-right">
+            <div class="flex items-center justify-end gap-2 font-bold text-slate-700">
               <i class="pi pi-dollar text-emerald-600"></i>
-              Precios
+              <span>Precios</span>
               <p-sortIcon field="precioVenta" />
             </div>
           </th>
-          <th style="min-width:8rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-percentage text-purple-600"></i>
-              Margen
+          <th style="min-width:10rem" class="text-center">
+            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
+              <i class="pi pi-chart-line text-purple-600"></i>
+              <span>Rentabilidad</span>
             </div>
           </th>
-          <th style="min-width:10rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-calendar text-pink-600"></i>
-              Fecha Creación
-            </div>
-          </th>
-          <th style="min-width:10rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-cog text-gray-600"></i>
-              Acciones
+          <th style="min-width:12rem" class="text-center">
+            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
+              <i class="pi pi-cog text-slate-600"></i>
+              <span>Acciones</span>
             </div>
           </th>
         </tr>
       </ng-template>
 
-      <!-- Body de la tabla modernizado -->
+      <!-- Body optimizado -->
       <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
-        <tr class="hover:bg-blue-50 transition-colors duration-200" [class.bg-blue-25]="rowIndex % 2 === 0">
+        <tr class="hover:bg-blue-25 transition-all duration-200 border-b border-slate-100" 
+            [class.bg-slate-25]="rowIndex % 2 === 0">
           <td class="text-center">
             <p-tableCheckbox [value]="producto" />
           </td>
           
-          <!-- Imagen con hover effect -->
+          <!-- Imagen profesional -->
           <td class="text-center">
-            <div class="w-16 h-16 rounded-xl overflow-hidden shadow-md mx-auto border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 group">
-              <img 
-                [src]="getImageUrl(producto)" 
-                [alt]="producto.nombre"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                (error)="onImageError($event)"
-              />
+            <div class="relative group">
+              <div class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-slate-200 group-hover:border-blue-400 transition-all duration-300">
+                <img 
+                  [src]="getImageUrl(producto)" 
+                  [alt]="producto.nombre"
+                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <!-- Overlay con zoom -->
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <i class="pi pi-search-plus text-white text-lg"></i>
+              </div>
             </div>
           </td>
           
-          <!-- Código modernizado -->
+          <!-- Código mejorado -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="bg-indigo-100 p-2 rounded-lg">
-                <i class="pi pi-tag text-indigo-600 text-sm"></i>
-              </div>
+              <div class="w-2 h-8 bg-gradient-to-b from-indigo-500 to-blue-600 rounded-full"></div>
               <div>
-                <p-tag [value]="producto.codigo" severity="contrast" class="font-mono font-bold" />
+                <p-tag 
+                  [value]="producto.codigo" 
+                  severity="contrast" 
+                  class="font-mono text-sm font-bold"
+                />
               </div>
             </div>
           </td>
           
-          <!-- Producto con diseño mejorado -->
+          <!-- Producto con información rica -->
           <td>
             <div class="py-2">
-              <div class="font-bold text-gray-900 text-lg mb-1">{{ producto.nombre }}</div>
-              <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                <i class="pi pi-box text-gray-400"></i>
-                <span class="font-medium">{{ producto.modelo }}</span>
+              <div class="font-bold text-slate-900 text-base mb-1 line-clamp-2">
+                {{ producto.nombre }}
               </div>
-              <div class="text-xs text-gray-500 bg-gray-50 rounded-lg p-2" *ngIf="producto.descripcion">
-                {{ producto.descripcion?.length > 60 ? (producto.descripcion | slice:0:60) + '...' : producto.descripcion }}
+              <div class="flex items-center gap-3 text-sm text-slate-600 mb-2">
+                <div class="flex items-center gap-1">
+                  <i class="pi pi-tag text-slate-400"></i>
+                  <span>{{ producto.modelo }}</span>
+                </div>
+                <div class="w-1 h-1 bg-slate-400 rounded-full"></div>
+                <div class="flex items-center gap-1" *ngIf="producto.categoria">
+                  <i class="pi pi-folder text-slate-400"></i>
+                  <span>{{ producto.categoria }}</span>
+                </div>
+              </div>
+              <div class="text-xs text-slate-500 bg-slate-50 rounded-lg p-2 line-clamp-2" *ngIf="producto.descripcion">
+                {{ producto.descripcion }}
               </div>
             </div>
           </td>
           
-          <!-- Marca con icono -->
+          <!-- Marca con logo -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="bg-orange-100 p-2 rounded-lg">
+              <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center">
                 <i class="pi pi-building text-orange-600"></i>
               </div>
-              <span class="font-semibold text-gray-800">{{ producto.marca }}</span>
+              <div>
+                <div class="font-semibold text-slate-800">{{ producto.marca }}</div>
+                <div class="text-xs text-slate-500">Marca registrada</div>
+              </div>
             </div>
           </td>
           
-          <!-- Precios con tarjeta -->
+          <!-- Precios con análisis financiero -->
           <td class="text-right">
-            <div class="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-3 space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-xs font-medium text-gray-600">Compra:</span>
-                <span class="text-green-700 font-bold">
-                  {{producto.precioCompra | currency:'S/. ':'symbol':'1.2-2'}}
-                </span>
-              </div>
-              <div class="flex justify-between items-center border-t border-gray-200 pt-2">
-                <span class="text-xs font-medium text-gray-600">Venta:</span>
-                <span class="text-blue-700 font-bold text-lg">
-                  {{producto.precioVenta | currency:'S/. ':'symbol':'1.2-2'}}
-                </span>
-              </div>
-              <div class="flex justify-between items-center text-xs border-t border-gray-200 pt-2">
-                <span class="text-gray-600">Ganancia:</span>
-                <span class="text-emerald-600 font-bold">
-                  {{(producto.precioVenta - producto.precioCompra) | currency:'S/. ':'symbol':'1.2-2'}}
-                </span>
+            <div class="bg-gradient-to-br from-slate-50 to-emerald-50 rounded-xl p-4 border border-slate-200/50">
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-slate-600 font-medium">Compra:</span>
+                  <span class="text-emerald-700 font-bold">
+                    {{ producto.precioCompra | currency:'S/. ':'symbol':'1.2-2' }}
+                  </span>
+                </div>
+                <div class="border-t border-slate-200 pt-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-slate-600 font-medium text-sm">Venta:</span>
+                    <span class="text-blue-700 font-bold text-lg">
+                      {{ producto.precioVenta | currency:'S/. ':'symbol':'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="bg-emerald-50 rounded-lg p-2 border-t border-slate-200">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-emerald-700 font-medium">Ganancia:</span>
+                    <span class="text-emerald-800 font-bold">
+                      {{ (producto.precioVenta - producto.precioCompra) | currency:'S/. ':'symbol':'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </td>
           
-          <!-- Margen con animación -->
+          <!-- Rentabilidad con indicadores -->
           <td class="text-center">
-            <div class="flex justify-center">
-              <p-tag 
-                [value]="(calcularMargenGanancia(producto) | number:'1.0-1') + '%'"
-                [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
-                [icon]="calcularMargenGanancia(producto) > 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
-                class="shadow-md hover:shadow-lg transition-shadow duration-300"
-              />
+            <div class="space-y-2">
+              <div class="flex justify-center">
+                <p-tag 
+                  [value]="(calcularMargenGanancia(producto) | number:'1.0-1') + '%'"
+                  [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
+                  class="shadow-sm font-bold"
+                />
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-2">
+                <div 
+                  class="h-2 rounded-full transition-all duration-500"
+                  [ngClass]="getMargenColorClass(calcularMargenGanancia(producto))"
+                  [style.width.%]="Math.min(calcularMargenGanancia(producto), 100)"
+                ></div>
+              </div>
+              <div class="text-xs text-slate-500">
+                {{ getRentabilidadTexto(calcularMargenGanancia(producto)) }}
+              </div>
             </div>
           </td>
           
-          <!-- Fecha con formato moderno -->
-          <td class="text-center">
-            <div *ngIf="producto.fechaCreacion; else sinFecha" class="bg-pink-50 rounded-lg p-2">
-              <div class="font-semibold text-gray-800">{{producto.fechaCreacion | date:'dd/MM/yyyy'}}</div>
-              <small class="text-gray-500">{{producto.fechaCreacion | date:'HH:mm'}}</small>
-            </div>
-            <ng-template #sinFecha>
-              <span class="text-gray-400 italic">No disponible</span>
-            </ng-template>
-          </td>
-          
-          <!-- Acciones con hover -->
+          <!-- Acciones mejoradas -->
           <td>
             <div class="flex gap-2 justify-center">
-              <!-- Botón Ver Detalles -->
               <p-button 
                 icon="pi pi-eye" 
                 [rounded]="true" 
                 [outlined]="true"
                 severity="info"
                 size="small"
-                pTooltip="Ver detalles"
-                class="hover:shadow-md transition-all duration-300"
+                pTooltip="Ver detalles completos"
+                class="hover:shadow-lg transition-all duration-300"
                 (click)="verDetallesProducto(producto)"
               />
-              <!-- Botón Editar -->
               <p-button 
                 *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}"
                 icon="pi pi-pencil" 
                 [rounded]="true" 
                 [outlined]="true"
+                severity="danger"
                 size="small"
-                pTooltip="Editar producto"
-                class="hover:shadow-md transition-all duration-300"
+                pTooltip="Editar información"
+                class="hover:shadow-lg transition-all duration-300"
                 (click)="editProducto(producto)"
               />
-              <!-- Botón Eliminar -->
+              <p-button 
+                icon="pi pi-copy" 
+                [rounded]="true" 
+                [outlined]="true"
+                severity="secondary"
+                size="small"
+                pTooltip="Duplicar producto"
+                class="hover:shadow-lg transition-all duration-300"
+                (click)="duplicarProducto(producto)"
+              />
               <p-button 
                 *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
                 icon="pi pi-trash" 
@@ -547,49 +707,10 @@
                 [rounded]="true" 
                 [outlined]="true"
                 size="small"
-                pTooltip="Eliminar producto"
-                class="hover:shadow-md transition-all duration-300"
+                pTooltip="Eliminar permanentemente"
+                class="hover:shadow-lg transition-all duration-300"
                 (click)="deleteProducto(producto)"
               />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-
-      <!-- Empty message modernizado -->
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="9" class="text-center py-12">
-            <div class="flex flex-col items-center gap-6">
-              <div class="bg-gray-100 p-8 rounded-full">
-                <i class="pi pi-shopping-bag text-6xl text-gray-400"></i>
-              </div>
-              <div class="text-center">
-                <div class="text-2xl font-bold text-gray-700 mb-2">No se encontraron productos</div>
-                <div class="text-gray-500 mb-6">No hay productos que coincidan con los filtros aplicados</div>
-                <p-button 
-                  *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}"
-                  label="Crear Primer Producto" 
-                  icon="pi pi-plus" 
-                  size="large"
-                  class="shadow-lg hover:shadow-xl transition-all duration-300" 
-                  (click)="openNew()"
-                />
-              </div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-
-      <!-- Loading template -->
-      <ng-template pTemplate="loadingbody">
-        <tr>
-          <td colspan="9">
-            <div class="flex items-center justify-center py-8">
-              <div class="flex items-center gap-3">
-                <i class="pi pi-spin pi-spinner text-blue-600 text-2xl"></i>
-                <span class="text-lg font-medium text-gray-600">Cargando productos...</span>
-              </div>
             </div>
           </td>
         </tr>
@@ -597,6 +718,8 @@
     </p-table>
   </div>
 </div>
+
+
 
 <!-- Vista de Cards Premium Mejorada -->
 <div *ngIf="currentView === 'cards'" class="mb-6">
@@ -1281,3 +1404,279 @@
     </div>
   </ng-template>
 </p-dialog>
+
+<!-- 🆕 NUEVO: Modal de Optimización de Precios con IA -->
+<p-dialog 
+  [(visible)]="optimizacionesDialog" 
+  [style]="{width: '900px'}" 
+  header="🤖 Optimización de Precios con IA" 
+  [modal]="true"
+  [resizable]="false"
+>
+  <div class="p-4">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center gap-3">
+        <i class="pi pi-info-circle text-blue-600 text-xl"></i>
+        <div>
+          <h4 class="text-blue-800 font-bold mb-1">Análisis Completado</h4>
+          <p class="text-blue-700 text-sm">
+            Nuestra IA analizó {{ optimizacionesSugeridas.length }} productos y sugiere las siguientes optimizaciones
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-auto max-h-96">
+      <p-table [value]="optimizacionesSugeridas" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width:3rem">
+              <p-checkbox 
+                [binary]="true" 
+                (onChange)="onToggleSeleccionTodas($event)"
+              />
+            </th>
+            <th>Producto</th>
+            <th class="text-right">Precio Actual</th>
+            <th class="text-right">Precio Optimizado</th>
+            <th class="text-right">Impacto</th>
+            <th class="text-center">Confianza</th>
+            <th>Razón</th>
+          </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="body" let-opt>
+          <tr>
+            <td>
+              <p-checkbox 
+                [(ngModel)]="opt.selected" 
+                [binary]="true"
+              />
+            </td>
+            <td>
+              <div class="font-semibold">
+                {{ getNombreProductoRapido(opt.productoId) }}
+              </div>
+            </td>
+            <td class="text-right">
+              <span class="text-gray-600">
+                {{ opt.precioActual | currency:'S/. ':'symbol':'1.2-2' }}
+              </span>
+            </td>
+            <td class="text-right">
+              <span class="font-bold text-blue-700">
+                {{ opt.precioOptimizado | currency:'S/. ':'symbol':'1.2-2' }}
+              </span>
+            </td>
+            <td class="text-right">
+              <p-tag 
+                [value]="'+' + (opt.impactoEstimado | currency:'S/. ':'symbol':'1.2-2')"
+                severity="success"
+                icon="pi pi-arrow-up"
+              />
+            </td>
+            <td class="text-center">
+              <div class="flex items-center justify-center gap-2">
+                <div class="w-12 bg-gray-200 rounded-full h-2">
+                  <div 
+                    class="bg-green-500 h-2 rounded-full transition-all duration-500"
+                    [style.width.%]="opt.confianza * 100"
+                  ></div>
+                </div>
+                <span class="text-sm font-medium">{{ (opt.confianza * 100) | number:'1.0-0' }}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="text-sm text-gray-600">{{ opt.razon }}</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center">
+      <div class="text-sm text-gray-600">
+        Impacto total estimado: 
+        <span class="font-bold text-green-600">
+          +{{ impactoTotalSeleccionado | currency:'S/. ':'symbol':'1.2-2' }}
+        </span>
+      </div>
+      <div class="flex gap-3">
+        <p-button 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          [outlined]="true"
+          (click)="optimizacionesDialog = false" 
+        />
+       <p-button 
+          label="Aplicar Seleccionadas" 
+          icon="pi pi-check" 
+          [disabled]="!hasSelectedOptimizations()"
+          (click)="aplicarOptimizaciones(getSelectedOptimizations())" 
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- 🆕 NUEVO: Modal de Alertas de Negocio -->
+<p-dialog 
+  [(visible)]="alertasDialog" 
+  [style]="{width: '800px'}" 
+  header="🚨 Alertas de Negocio" 
+  [modal]="true"
+>
+  <div class="p-4">
+    <div class="space-y-4" *ngIf="alertasNegocio.length > 0; else noAlertas">
+      <div 
+        *ngFor="let alerta of alertasNegocio"
+        class="border rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200"
+        [class.border-red-200]="alerta.severidad === 'HIGH'"
+        [class.border-orange-200]="alerta.severidad === 'MEDIUM'"
+        [class.border-blue-200]="alerta.severidad === 'LOW'"
+      >
+        <div class="flex items-start gap-4">
+          <div class="p-2 rounded-lg" 
+               [class.bg-red-100]="alerta.severidad === 'HIGH'"
+               [class.bg-orange-100]="alerta.severidad === 'MEDIUM'"
+               [class.bg-blue-100]="alerta.severidad === 'LOW'">
+            <i [class]="getAlertIcon(alerta.tipo)" 
+               [class.text-red-600]="alerta.severidad === 'HIGH'"
+               [class.text-orange-600]="alerta.severidad === 'MEDIUM'"
+               [class.text-blue-600]="alerta.severidad === 'LOW'">
+            </i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h4 class="font-bold text-gray-800">{{ alerta.mensaje }}</h4>
+              <p-tag 
+                [value]="alerta.severidad" 
+                [severity]="getSeveridadColor(alerta.severidad)"
+                size="small"
+              />
+            </div>
+            <p class="text-gray-600 text-sm mb-3">{{ alerta.accionRecomendada }}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-gray-500">
+                {{ alerta.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+             <p-button 
+                label="Ver Producto" 
+                size="small"
+                [outlined]="true"
+                *ngIf="alerta.productoId"
+                (click)="verDetallesProductoPorId(alerta.productoId)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <ng-template #noAlertas>
+      <div class="text-center py-8">
+        <div class="bg-green-100 p-6 rounded-full inline-block mb-4">
+          <i class="pi pi-check-circle text-4xl text-green-600"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-700 mb-2">¡Todo está en orden!</h3>
+        <p class="text-gray-500">No hay alertas de negocio en este momento</p>
+      </div>
+    </ng-template>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button 
+      label="Cerrar" 
+      icon="pi pi-times" 
+      (click)="alertasDialog = false" 
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- 🆕 NUEVO: Dashboard Ejecutivo -->
+<p-dialog 
+  [(visible)]="dashboardEjecutivoDialog" 
+  [style]="{width: '95vw', height: '90vh'}" 
+  header="📊 Dashboard Ejecutivo" 
+  [modal]="true"
+  [maximizable]="true"
+>
+  <div class="h-full p-4" *ngIf="kpiMetrics">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-full">
+      <!-- Métricas principales -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6">
+        <h3 class="text-xl font-bold text-blue-800 mb-4">💰 Rendimiento Financiero</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-blue-700">Ventas del día:</span>
+            <span class="text-2xl font-bold text-blue-900">
+              {{ kpiMetrics.ventasHoy | currency:'S/. ':'symbol':'1.0-0' }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-blue-700">Ventas del mes:</span>
+            <span class="text-xl font-bold text-blue-900">
+              {{ kpiMetrics.ventasMes | currency:'S/. ':'symbol':'1.0-0' }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-blue-700">Crecimiento mensual:</span>
+            <span class="text-xl font-bold text-green-600">
+              +{{ kpiMetrics.crecimientoMensual | number:'1.1-1' }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas críticas -->
+      <div class="bg-gradient-to-br from-red-50 to-pink-100 rounded-xl p-6">
+        <h3 class="text-xl font-bold text-red-800 mb-4">🚨 Alertas Críticas</h3>
+        <div class="space-y-3">
+          <div *ngFor="let alerta of alertasNegocio.slice(0, 3)" 
+               class="bg-white rounded-lg p-3 shadow-sm">
+            <div class="flex items-center gap-2 mb-1">
+              <i [class]="getAlertIcon(alerta.tipo)" class="text-red-600"></i>
+              <span class="font-semibold text-sm">{{ alerta.tipo.replace('_', ' ') }}</span>
+            </div>
+            <p class="text-xs text-gray-600">{{ alerta.mensaje }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos top -->
+      <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6">
+        <h3 class="text-xl font-bold text-green-800 mb-4">🏆 Top Productos</h3>
+        <div class="space-y-3">
+          <div *ngFor="let producto of productos.slice(0, 5)" 
+               class="bg-white rounded-lg p-3 shadow-sm">
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm">{{ producto.nombre | slice:0:25 }}...</span>
+              <span class="text-green-600 font-bold">
+                {{ calcularMargenGanancia(producto) | number:'1.0-1' }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button 
+      label="Cerrar" 
+      icon="pi pi-times" 
+      (click)="dashboardEjecutivoDialog = false" 
+    />
+    <p-button 
+      label="Exportar Reporte" 
+      icon="pi pi-download" 
+      severity="info"
+      (click)="exportarEstadisticas()" 
+    />
+  </ng-template>
+</p-dialog>
+
+

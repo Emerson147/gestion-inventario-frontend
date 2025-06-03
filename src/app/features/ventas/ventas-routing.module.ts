@@ -5,7 +5,6 @@ import { AuthGuard } from '../../core/guards/auth.guard';
 // Importar componentes
 import { VentasDashboardComponent } from './dashboard/ventas-dashboard.component';
 import { RealizarVentaComponent } from './realizar-venta/realizar-venta.component';
-import { UsuariosComponent } from '../admin/usuarios/usuarios.component';
 import { ClientesComponent } from './clientes/clientes.component';
 // Otros componentes...
 
