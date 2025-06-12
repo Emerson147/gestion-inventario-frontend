@@ -1,0 +1,14 @@
+{
+  "buildCommand": "ng build --configuration=production",
+  "outputDirectory": "dist/gestion-inventario-frontend",
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
