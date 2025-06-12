@@ -1,14 +1,35 @@
 {
-  "buildCommand": "ng build --configuration=production",
   "outputDirectory": "dist/gestion-inventario-frontend",
-  "routes": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "source": "/login",
+      "destination": "/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/ventas/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/unauthorized",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/not-found",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
