@@ -10,3 +10,53 @@
     <app-notifications-widget />
   </div>
 </div>
+
+  <!-- Main container con espaciado mejorado -->
+  <div class="relative px-6 py-8">
+    <!-- Header opcional para las métricas -->
+    <div class="mb-6 text-center">
+      <h3 class="text-lg font-bold text-gray-800 mb-1 flex items-center justify-center gap-2">
+        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+        <span>Métricas en Tiempo Real</span>
+        <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+      </h3>
+      <p class="text-sm text-gray-600">Dashboard de rendimiento empresarial</p>
+    </div>
+    
+    <!-- Grid de métricas con espaciado optimizado -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5
+                gap-4 lg:gap-5 xl:gap-6">
+      <app-metric-card 
+        *ngFor="let metrica of metricas; trackBy: trackByMetricaId; let i = index"
+        [metrica]="metrica"
+        [showRealTime]="true"
+        [enableAnimations]="true"
+        [attr.data-index]="i"
+        class="transform transition-all duration-500 ease-out
+               hover:scale-105 hover:-translate-y-1
+               animate-fade-in-up"
+        [style.animation-delay]="(i * 100) + 'ms'">
+      </app-metric-card>
+    </div>
+    
+    <!-- Footer con información adicional -->
+    <div class="mt-6 pt-4 border-t border-white/30">
+      <div class="flex items-center justify-between text-xs text-gray-500">
+        <div class="flex items-center gap-2">
+          <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+          <span>Actualización automática cada 30s</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span> métricas activas</span>
+          <span>•</span>
+          <span>Última actualización: </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Efecto de brillo en hover -->
+  <div class="absolute inset-0 rounded-3xl bg-gradient-to-r 
+              from-blue-500/10 via-purple-500/10 to-pink-500/10 
+              opacity-0 hover:opacity-100 transition-opacity duration-700 
+              blur-xl pointer-events-none"></div> 

@@ -81,18 +81,8 @@
   </div>
 </div>
 
-<!-- Toolbar mejorado con diseño más limpio -->
 <!-- Toolbar con diseño más empresarial -->
 <div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-8">
-  <!-- Breadcrumb corporativo -->
-  <div class="flex items-center gap-2 text-sm text-slate-500 mb-4">
-    <i class="pi pi-home"></i>
-    <span>Dashboard</span>
-    <i class="pi pi-angle-right"></i>
-    <span>Inventario</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="text-slate-700 font-semibold">Productos</span>
-  </div>
   
   <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6">
     <!-- Acciones principales con mejor agrupación -->
@@ -139,22 +129,7 @@
 
     <!-- Controles avanzados -->
     <div class="flex flex-wrap items-center gap-4">
-      <!-- Filtro rápido -->
-      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-        <i class="pi pi-filter text-slate-600"></i>
-        <span class="text-sm font-medium text-slate-700">Filtro rápido:</span>
-        <p-select 
-          [(ngModel)]="filtroRapidos" 
-          [options]="filtrosRapidos" 
-          optionLabel="label" 
-          optionValue="value"
-          placeholder="Todos"
-          class="w-40"
-          size="small"
-          (onChange)="aplicarFiltroRapido()"
-        />
-      </div>
-
+     
       <!-- Selector de vista mejorado -->
       <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
         <i class="pi pi-eye text-slate-600"></i>
@@ -381,21 +356,19 @@
 
     <!-- Controles avanzados -->
     <div class="flex flex-wrap items-center gap-4">
-      <!-- 🆕 Filtros empresariales -->
-      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-        <i class="pi pi-filter-fill text-slate-600"></i>
-        <span class="text-sm font-medium text-slate-700">Filtros IA:</span>
+       <!-- Filtro rápido -->
+       <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
+        <i class="pi pi-filter text-slate-600"></i>
+        <span class="text-sm font-medium text-slate-700">Filtro rápido:</span>
         <p-select 
-          [(ngModel)]="filtroAvanzado.soloPorductosConAlertas" 
-          [options]="[
-            {label: 'Todos', value: false},
-            {label: 'Solo con Alertas', value: true}
-          ]" 
+          [(ngModel)]="filtroRapidos" 
+          [options]="filtrosRapidos" 
           optionLabel="label" 
           optionValue="value"
+          placeholder="Todos"
           class="w-40"
           size="small"
-          (onChange)="aplicarFiltrosAvanzados()"
+          (onChange)="aplicarFiltroRapido()"
         />
       </div>
 

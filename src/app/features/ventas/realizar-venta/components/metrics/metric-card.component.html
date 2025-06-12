@@ -1,0 +1,407 @@
+<!-- Componente de los Cards -->
+<div 
+  class="group/card relative w-full"
+  [attr.data-testid]="'metric-card-' + metrica.id"
+  [attr.aria-label]="'Métrica de ' + metrica.titulo"
+  (mouseenter)="onCardHover(true)"
+  (mouseleave)="onCardHover(false)">
+
+  <!-- Cargando  -->
+  <div *ngIf="metrica.loading" 
+       class="animate-pulse"
+       role="status"
+       aria-label="Cargando métrica">
+    <p-skeleton 
+      height="240px" 
+      borderRadius="24px"
+      animation="wave">
+    </p-skeleton>
+  </div>
+
+  <!-- Main Card -->
+ <article 
+    *ngIf="!metrica.loading"
+    class="relative bg-white/90 backdrop-blur-xl border border-white/30
+           rounded-2xl shadow-lg transition-all duration-500 ease-out
+           hover:shadow-xl hover:scale-[1.01] hover:-translate-y-1
+           group-hover/card:border-white/50 overflow-hidden"
+    [class]="'hover:' + getColorClass('glow')"
+    [ngClass]="[
+      metrica.alertaCritica?.activa ? 'ring-2 ring-offset-2 animate-pulse' : '',
+      metrica.alertaCritica?.activa ? getColorClass('ring') : ''
+    ]"
+    [attr.tabindex]="metrica.accionPrincipal ? '0' : undefined"
+    [attr.role]="metrica.accionPrincipal ? 'button' : 'article'"
+    (click)="metrica.accionPrincipal ? onActionClick() : null"
+    (keydown.enter)="metrica.accionPrincipal ? onActionClick() : null"
+    (keydown.space)="metrica.accionPrincipal ? onActionClick() : null">
+
+    <!-- Background Effects -->
+    <div class="absolute inset-0 rounded-2xl opacity-5 transition-opacity duration-500
+                group-hover/card:opacity-10 pointer-events-none"
+         [class]="'bg-gradient-to-br ' + getColorClass('gradient')">
+    </div>
+
+    <!-- Critical Alert Indicator -->
+    <div *ngIf="metrica.alertaCritica?.activa"
+         class="absolute top-0 left-0 right-0 h-1 rounded-t-2xl z-10"
+         [class]="'bg-gradient-to-r ' + getColorClass('gradient')"
+         [ngClass]="{
+           'animate-pulse': getAlertSeverity() === 'high',
+           'animate-ping': getAlertSeverity() === 'medium'
+         }"
+         [attr.aria-label]="'Alerta crítica: ' + (metrica.alertaCritica?.mensaje || '')">
+    </div>
+
+    <!-- Shimmer Effect -->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
+                -skew-x-12 translate-x-[-200%] group-hover/card:translate-x-[200%]
+                transition-transform duration-700 pointer-events-none z-5">
+    </div>
+
+    <!-- Card Header -->
+    <header class="relative p-3 pb-2 z-10">
+      <div class="flex items-start justify-between mb-3">
+        
+        <!-- Icon & Category Section -->
+        <div class="relative">
+          <!-- Main Icon -->
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md
+                      transform transition-all duration-300 group-hover/card:scale-105 group-hover/card:rotate-3
+                      relative z-10"
+               [class]="'bg-gradient-to-br ' + getColorClass('gradient')"
+               [ngClass]="{
+                 'animate-bounce': metrica.alertaCritica?.activa && getAlertSeverity() === 'high',
+                 'animate-pulse': metrica.alertaCritica?.activa && getAlertSeverity() === 'medium'
+               }">
+            <i [class]="'pi ' + metrica.icono + ' text-white text-base'"
+               [attr.aria-hidden]="true">
+            </i>
+          </div>
+      
+               
+          <!-- Category Badge -->
+          <div *ngIf="metrica.categoria" 
+               class="absolute -top-1 -right-1 z-20">
+            <p-badge 
+              [value]="metrica.categoria | titlecase"
+              [severity]="metrica.color === 'warning' ? 'warn' : metrica.color"
+              styleClass="text-xs font-medium px-1 py-0.5 rounded-full
+                         bg-white/90 backdrop-blur-sm shadow-sm border">
+            </p-badge>
+          </div>
+        </div>
+
+        <!-- Trend Section -->
+        <div class="text-right space-y-1 flex-shrink-0" 
+             *ngIf="metrica.tendencia">
+          <p-tag 
+            [value]="(getTendenciaConfig()?.prefix || '') + metrica.tendencia.porcentaje + '%'"
+            [severity]="getTendenciaConfig()?.severity"
+            [icon]="getTendenciaConfig()?.icon"
+            styleClass="shadow-md font-medium text-xs px-2 py-1">
+          </p-tag>
+          
+          <div class="space-y-0.5">
+            <div class="text-xs text-gray-600 font-medium">
+              vs {{metrica.tendencia.periodo}}
+            </div>
+            <div *ngIf="metrica.tendencia.periodoAnterior" 
+                 class="text-xs text-gray-400 font-mono">
+              ({{metrica.tendencia.periodoAnterior}})
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert Badge (when no trend) -->
+        <div *ngIf="metrica.alertaCritica?.activa && !metrica.tendencia" 
+             class="flex-shrink-0">
+          <p-tag 
+            [value]="metrica.alertaCritica?.mensaje"
+            icon="pi pi-exclamation-triangle"
+            severity="danger"
+            styleClass="shadow-md font-medium text-xs max-w-24 animate-pulse">
+          </p-tag>
+        </div>
+      </div>
+
+      <!-- Last Update Info -->
+      <div *ngIf="metrica.ultimaActualizacion" 
+           class="flex items-center gap-1 text-xs text-gray-500">
+        <i class="pi pi-clock text-xs" aria-hidden="true"></i>
+        <span>{{getRelativeTime()}}</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-3 pb-3 relative z-10">
+      
+      <!-- Primary Value Display -->
+      <section class="mb-3" [attr.aria-labelledby]="'value-' + metrica.id">
+        <div [id]="'value-' + metrica.id"
+             class="text-2xl font-black mb-1 font-mono bg-clip-text text-transparent
+                    bg-gradient-to-r transition-all duration-500 leading-tight"
+             [class]="'bg-gradient-to-r ' + getColorClass('gradient')"
+             [ngClass]="{
+               'animate-pulse': metrica.alertaCritica?.activa,
+               'text-xl': formattedValue().length > 8
+             }">
+          {{formattedValue()}}
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <h2 class="text-xs font-bold text-gray-700 leading-tight">
+            {{metrica.titulo}}
+          </h2>
+          <div class="w-1.5 h-1.5 rounded-full animate-pulse"
+               [class]="'bg-gradient-to-r ' + getColorClass('gradient')"
+               [attr.aria-hidden]="true">
+          </div>
+        </div>
+      </section>
+
+      <!-- Progress Section -->
+      <section *ngIf="metrica.objetivo" 
+               class="mb-3"
+               [attr.aria-labelledby]="'progress-' + metrica.id">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-medium text-gray-600">
+            Objetivo: {{metrica.objetivo.valor | number}}
+          </span>
+          <span class="text-xs font-bold" 
+                [class]="getColorClass('text')">
+            {{metrica.objetivo.progreso}}%
+          </span>
+        </div>
+        
+        <div [id]="'progress-' + metrica.id" class="relative">
+          <p-progressBar 
+            [value]="metrica.objetivo.progreso"
+            [showValue]="false"
+            styleClass="h-2 rounded-full overflow-hidden shadow-inner"
+            [attr.aria-label]="'Progreso del objetivo: ' + metrica.objetivo.progreso + '%'">
+          </p-progressBar>
+          
+          <!-- Progress Indicator Dot -->
+          <div class="absolute top-0 bg-white border shadow-md
+                     w-2 h-2 rounded-full transition-all duration-500"
+               [class]="getColorClass('border')"
+               [style.left.%]="metrica.objetivo.progreso"
+               [attr.aria-hidden]="true">
+          </div>
+        </div>
+        
+        <div *ngIf="metrica.objetivo.fechaLimite" 
+             class="text-xs text-gray-500 mt-2 flex items-center gap-1
+                    p-1.5 rounded-md" 
+             [class]="getColorClass('bg')">
+          <i class="pi pi-calendar text-xs" aria-hidden="true"></i>
+          <span>Fecha límite: {{metrica.objetivo.fechaLimite | date:'short'}}</span>
+        </div>
+      </section>
+
+      <!-- Breakdown Section -->
+      <section *ngIf="metrica.desglose?.length" 
+               class="mb-3"
+               [attr.aria-labelledby]="'breakdown-' + metrica.id">
+        <h3 [id]="'breakdown-' + metrica.id" 
+            class="text-xs font-bold text-gray-600 mb-2 flex items-center gap-1">
+          <i class="pi pi-chart-pie text-xs text-gray-500" aria-hidden="true"></i>
+          Desglose Detallado
+        </h3>
+        
+        <div class="space-y-1.5" role="list">
+          <div *ngFor="let item of metrica.desglose; trackBy: trackByLabel"
+               class="flex items-center justify-between p-2 rounded-lg 
+                      transition-all duration-300 hover:scale-102
+                      border border-transparent hover:border-gray-200
+                      hover:shadow-sm backdrop-blur-sm"
+               [class]="getColorClass('bg')"
+               role="listitem">
+            
+            <div class="flex items-center gap-2">
+              <div class="w-2.5 h-2.5 rounded-full shadow-sm ring-1 ring-white/50
+                         flex-shrink-0"
+                   [style.background-color]="item.color"
+                   [attr.aria-hidden]="true">
+              </div>
+              <span class="text-xs font-medium text-gray-700 leading-tight">
+                {{item.label}}
+              </span>
+            </div>
+            
+            <div class="text-right flex-shrink-0">
+              <div class="text-xs font-bold leading-tight" 
+                   [style.color]="item.color">
+                {{formatNumber(item.valor)}}
+              </div>
+              <div *ngIf="item.porcentaje" 
+                   class="text-xs text-gray-500 font-medium">
+                {{item.porcentaje}}%
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mini Chart Section -->
+      <section *ngIf="metrica.miniGrafico" 
+               class="mb-3"
+               [attr.aria-labelledby]="'chart-' + metrica.id">
+        <h3 [id]="'chart-' + metrica.id" 
+            class="text-xs font-bold text-gray-600 mb-2 flex items-center gap-1">
+          <i class="pi pi-chart-line text-xs text-gray-500" aria-hidden="true"></i>
+          Tendencia Temporal
+        </h3>
+        
+        <div class="h-16 p-2 rounded-lg border border-gray-100/50 
+                   bg-gradient-to-br from-white/50 to-gray-50/30 backdrop-blur-sm"
+             [attr.aria-label]="'Gráfico de tendencia para ' + metrica.titulo">
+          <p-chart 
+            type="line"
+            [data]="getChartData()"
+            [options]="getChartOptions()"
+            width="100%"
+            height="100%">
+          </p-chart>
+        </div>
+      </section>
+
+      <!-- Performance Knob (specific case) -->
+      <section *ngIf="metrica.id === 'performance'" 
+               class="text-center mb-3"
+               [attr.aria-labelledby]="'performance-' + metrica.id">
+        <h3 [id]="'performance-' + metrica.id" class="sr-only">
+          Medidor de rendimiento
+        </h3>
+        
+        <div class="flex justify-center mb-3">
+          <div class="relative">
+            <!-- Performance Knob -->
+            <p-knob 
+              [ngModel]="performanceScore()"
+              [size]="80"
+              [strokeWidth]="8"
+              [showValue]="false"
+              [readonly]="true"
+              valueColor="#8b5cf6"
+              rangeColor="#e5e7eb"
+              [attr.aria-label]="'Puntuación de rendimiento: ' + performanceScore() + '%'">
+            </p-knob>
+            
+            <!-- Central Value Display -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-lg font-black text-purple-600 leading-none">
+                {{performanceScore()}}%
+              </span>
+              <span class="text-xs text-gray-500 font-medium mt-0.5">
+                Score
+              </span>
+            </div>
+            
+            <!-- Glow Effect -->
+            <div class="absolute inset-0 bg-purple-500/10 rounded-full blur-lg 
+                       scale-125 animate-pulse opacity-30 pointer-events-none">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Performance Metrics Grid -->
+        <div *ngIf="metrica.metricas" 
+             class="grid grid-cols-3 gap-2"
+             role="grid">
+          <div *ngFor="let metric of metrica.metricas; trackBy: trackByLabel"
+               class="text-center p-2 rounded-lg transition-all duration-300
+                      hover:scale-105 border border-gray-100/50
+                      bg-gradient-to-br from-white/50 to-gray-50/30 backdrop-blur-sm"
+               role="gridcell">
+            <div class="text-sm font-black leading-tight" 
+                 [class]="getColorClass('text')">
+              {{metric.valor}}
+            </div>
+            <div class="text-xs text-gray-500 font-medium mt-0.5 leading-tight">
+              {{metric.label}}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real-time Info Section -->
+      <section *ngIf="metrica.id === 'ingresos-hoy' && showRealTime" 
+               class="mb-3"
+               [attr.aria-labelledby]="'realtime-' + metrica.id">
+        <div [id]="'realtime-' + metrica.id"
+             class="flex items-center justify-between p-2 rounded-lg 
+                    border border-gray-100/50 backdrop-blur-sm"
+             [class]="getColorClass('bg')">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-pulse text-xs animate-pulse" 
+               [class]="getColorClass('text')"
+               aria-hidden="true">
+            </i>
+            <span class="text-xs font-medium text-gray-700">
+              Tiempo Real
+            </span>
+          </div>
+          <div class="font-mono font-bold text-xs" 
+               [class]="getColorClass('text')">
+            {{currentTime() | date:'HH:mm:ss'}}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Action Footer -->
+    <footer *ngIf="metrica.accionPrincipal" 
+            class="px-3 py-2 border-t border-gray-100/50 
+                   rounded-b-2xl backdrop-blur-sm relative z-10"
+            [class]="getColorClass('bg')">
+      
+      <div class="flex items-center justify-between">
+        <!-- Primary Action Button -->
+        <p-button 
+          [label]="metrica.accionPrincipal.label"
+          [icon]="metrica.accionPrincipal.icono"
+          [text]="true"
+          [disabled]="metrica.accionPrincipal.disabled"
+          size="small"
+          [styleClass]="'font-medium transition-all duration-300 hover:scale-105 
+                       focus:ring-2 focus:ring-offset-1 text-xs ' + getColorClass('text')"
+          [pTooltip]="metrica.accionPrincipal.disabled ? 'Acción no disponible' : 'Hacer clic para ' + metrica.accionPrincipal.label"
+          tooltipPosition="top"
+          (onClick)="onActionClick()">
+        </p-button>
+
+        <!-- Contextual Information -->
+        <div [ngSwitch]="metrica.id" 
+             class="flex items-center gap-1 text-xs">
+          
+          <!-- Performance Stars -->
+          <div *ngSwitchCase="'performance'" 
+               class="flex items-center gap-0.5"
+               [attr.aria-label]="'Calificación: 5 de 5 estrellas'">
+            <i *ngFor="let star of [1,2,3,4,5]" 
+               class="pi pi-star-fill text-yellow-400 text-xs"
+               [attr.aria-hidden]="true">
+            </i>
+          </div>
+          
+          <!-- Real-time Update Info -->
+          <div *ngSwitchCase="'ingresos-hoy'" 
+               class="text-xs font-mono font-medium" 
+               [class]="getColorClass('text')">
+            <i class="pi pi-refresh mr-1 text-xs" aria-hidden="true"></i>
+            {{currentTime() | date:'HH:mm'}}
+          </div>
+          
+          <!-- Default Info -->
+          <div *ngSwitchDefault 
+               class="text-xs text-gray-500 font-medium flex items-center gap-1">
+            <i class="pi pi-info-circle text-xs" aria-hidden="true"></i>
+            <span>Ver detalles</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </article>
+</div>

@@ -1,0 +1,305 @@
+:host {
+  display: block;
+  container-type: inline-size;
+  width: 100%;
+}
+
+// Animaciones personalizadas para la experiencia premium
+@keyframes shimmer {
+  0% { 
+    transform: translateX(-100%) skewX(-15deg); 
+    opacity: 0;
+  }
+  50% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(200%) skewX(-15deg); 
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+// Aplicar animaciones
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+// Container queries para responsividad avanzada
+@container (max-width: 320px) {
+  .text-5xl { 
+    font-size: 2.5rem !important; 
+    line-height: 1.1;
+  }
+  .w-16 { 
+    width: 3.5rem !important; 
+    height: 3.5rem !important;
+  }
+  .text-2xl { 
+    font-size: 1.5rem !important; 
+  }
+  .p-6 { 
+    padding: 1rem !important; 
+  }
+  .mb-6 { 
+    margin-bottom: 1rem !important; 
+  }
+}
+
+@container (max-width: 280px) {
+  .text-5xl { 
+    font-size: 2rem !important; 
+  }
+  .grid-cols-3 { 
+    grid-template-columns: 1fr !important; 
+    gap: 0.5rem !important;
+  }
+}
+
+@container (min-width: 400px) {
+  .text-5xl { 
+    font-size: 4rem !important; 
+  }
+}
+
+// Mejoras específicas para componentes PrimeNG
+::ng-deep {
+  // Optimizaciones para p-knob
+  .p-knob {
+    .p-knob-text {
+      font-weight: 900 !important;
+      font-family: 'Inter', system-ui, sans-serif !important;
+    }
+    
+    .p-knob-range {
+      stroke-linecap: round !important;
+    }
+    
+    .p-knob-value {
+      stroke-linecap: round !important;
+      filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+      transition: all 0.3s ease;
+    }
+  }
+
+  // Mejoras para p-progressbar
+  .p-progressbar {
+    .p-progressbar {
+      background: rgba(229, 231, 235, 0.6) !important;
+      backdrop-filter: blur(8px) !important;
+      border-radius: 9999px !important;
+      overflow: hidden !important;
+      position: relative !important;
+    }
+    
+    .p-progressbar-value {
+      background: linear-gradient(
+        90deg, 
+        var(--p-primary-color, #3b82f6), 
+        var(--p-primary-500, #3b82f6),
+        var(--p-primary-600, #2563eb)
+      ) !important;
+      position: relative !important;
+      border-radius: 9999px !important;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.4), 
+          transparent
+        );
+        animation: shimmer 2s ease-in-out infinite;
+        border-radius: inherit;
+      }
+    }
+    
+    .p-progressbar-label {
+      display: none !important;
+    }
+  }
+
+  // Mejoras para p-tag
+  .p-tag {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 0.75rem !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s ease !important;
+    
+    &:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .p-tag-icon {
+      margin-right: 0.5rem !important;
+    }
+  }
+
+  // Mejoras para p-button
+  .p-button {
+    &.p-button-text {
+      border-radius: 12px !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      
+      &:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+      }
+      
+      &:disabled {
+        opacity: 0.5 !important;
+        transform: none !important;
+        cursor: not-allowed !important;
+      }
+    }
+  }
+
+  // Mejoras para p-chart
+  .p-chart {
+    canvas {
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    &:hover canvas {
+      filter: brightness(1.05) !important;
+    }
+  }
+
+  // Mejoras para p-skeleton
+  .p-skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(229, 231, 235, 0.4),
+      rgba(156, 163, 175, 0.4),
+      rgba(229, 231, 235, 0.4)
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: skeleton-loading 1.5s ease-in-out infinite !important;
+    
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  }
+
+  // Mejoras para p-badge
+  .p-badge {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    padding: 0.25rem 0.5rem !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+// Estados focus para accesibilidad
+article[role="button"] {
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 4px;
+  }
+  
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// Mejoras para modo oscuro (si se implementa)
+@media (prefers-color-scheme: dark) {
+  :host {
+    --card-bg: rgba(17, 24, 39, 0.9);
+    --card-border: rgba(75, 85, 99, 0.3);
+    --text-primary: rgb(243, 244, 246);
+    --text-secondary: rgb(156, 163, 175);
+  }
+}
+
+// Optimizaciones para impresión
+@media print {
+  .group\/card {
+    break-inside: avoid;
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  .animate-pulse,
+  .animate-bounce,
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
+// Mejoras para motion reducido
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01s !important;
+  }
+}

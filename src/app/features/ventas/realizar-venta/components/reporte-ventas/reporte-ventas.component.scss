@@ -1,0 +1,557 @@
+// ✅ VARIABLES EMPRESARIALES MÍNIMAS
+:root {
+  --empresa-primary: #1e40af;
+  --empresa-success: #059669;
+  --empresa-warning: #d97706;
+  --empresa-danger: #dc2626;
+  --empresa-info: #0891b2;
+  --empresa-dark: #1f2937;
+  --shadow-empresa: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+// ✅ HEADER EMPRESARIAL
+.header-empresarial {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-2xl;
+  
+  .header-content {
+    @apply container mx-auto px-6 py-8;
+  }
+  
+  .empresa-info {
+    @apply flex items-center gap-6;
+    
+    .logo-empresa {
+      @apply w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center text-4xl backdrop-blur-sm;
+    }
+  }
+  
+  .estado-sistema {
+    .estado-card {
+      @apply bg-white bg-opacity-10 backdrop-blur-md border-0;
+      
+      .estado-content {
+        @apply flex items-center gap-3 text-white;
+        
+        i {
+          @apply text-green-400 text-2xl;
+        }
+      }
+    }
+  }
+}
+
+// ✅ DASHBOARD PRINCIPAL
+.dashboard-principal {
+  @apply container mx-auto px-6 py-6;
+  
+  .filtros-panel {
+    @apply h-full;
+    
+    .filtros-tiempo,
+    .filtros-datos,
+    .filtros-avanzados {
+      @apply space-y-4;
+      
+      .p-field {
+        @apply space-y-2;
+        
+        label {
+          @apply font-semibold text-gray-700 text-sm;
+        }
+      }
+    }
+    
+    .range-labels {
+      @apply flex justify-between text-sm text-gray-600 mt-2;
+    }
+    
+    .acciones-filtros {
+      @apply mt-6 space-y-3;
+    }
+  }
+}
+
+// ✅ KPIs PRINCIPALES
+.kpis-principales {
+  @apply mb-8;
+  
+  .kpi-card {
+    @apply border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+    
+    &.ventas-card {
+      @apply border-l-4 border-l-green-500;
+    }
+    
+    &.transacciones-card {
+      @apply border-l-4 border-l-blue-500;
+    }
+    
+    &.clientes-card {
+      @apply border-l-4 border-l-purple-500;
+    }
+    
+    &.ticket-card {
+      @apply border-l-4 border-l-orange-500;
+    }
+    
+    .kpi-content {
+      @apply flex items-center gap-4;
+      
+      .kpi-icon {
+        @apply w-16 h-16 rounded-full flex items-center justify-center text-2xl text-white;
+        background: linear-gradient(135deg, var(--empresa-primary), var(--empresa-info));
+      }
+      
+      .kpi-info {
+        .kpi-valor {
+          @apply text-2xl font-bold text-gray-900;
+        }
+        
+        .kpi-titulo {
+          @apply text-gray-600 font-medium;
+        }
+        
+        .kpi-porcentaje {
+          @apply flex items-center gap-1 text-sm font-semibold mt-1;
+          
+          &.positivo {
+            @apply text-green-600;
+          }
+          
+          &.negativo {
+            @apply text-red-600;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ✅ PROGRESO DE META
+.progreso-meta {
+  .meta-card {
+    @apply border-0 shadow-lg bg-gradient-to-r from-indigo-50 to-blue-50;
+    
+    .meta-content {
+      @apply flex justify-between items-center;
+      
+      .meta-info {
+        .meta-actual {
+          @apply text-3xl font-bold text-indigo-700;
+        }
+        
+        .meta-objetivo {
+          @apply text-gray-600;
+        }
+      }
+      
+      .meta-progreso {
+        @apply flex-1 ml-8;
+      }
+    }
+  }
+}
+
+// ✅ GRÁFICOS
+.grafico-card {
+  @apply border-0 shadow-lg;
+  
+  .grafico-controles {
+    @apply mt-4 flex justify-center;
+  }
+}
+
+// ✅ MÉTODOS DE PAGO
+.metodos-leyenda {
+  @apply mt-4 space-y-2;
+  
+  .metodo-item {
+    @apply flex items-center gap-3;
+    
+    .metodo-color {
+      @apply w-4 h-4 rounded-full;
+    }
+    
+    .metodo-info {
+      @apply flex-1 flex justify-between;
+      
+      .metodo-nombre {
+        @apply font-medium text-gray-700;
+      }
+      
+      .metodo-porcentaje {
+        @apply font-bold text-gray-900;
+      }
+    }
+  }
+}
+
+// ✅ TOP CARDS
+.top-card {
+  @apply border-0 shadow-lg;
+  
+  .producto-info,
+  .vendedor-info,
+  .cliente-info {
+    @apply flex items-center gap-3;
+    
+    .producto-nombre,
+    .vendedor-nombre,
+    .cliente-nombre {
+      @apply font-semibold text-gray-900;
+    }
+    
+    .producto-categoria,
+    .vendedor-sucursal,
+    .cliente-email {
+      @apply text-sm text-gray-500;
+    }
+  }
+  
+  .vendedor-ventas,
+  .cliente-compras {
+    .vendedor-meta {
+      @apply mt-2;
+      
+      small {
+        @apply text-xs text-gray-500;
+      }
+    }
+    
+    .cliente-frecuencia {
+      @apply text-sm text-gray-500;
+    }
+  }
+  
+  .quantidade-chip,
+  .comision-chip {
+    @apply bg-blue-100 text-blue-800;
+  }
+}
+
+// ✅ SEGMENTACIÓN
+.segmentos-card {
+  @apply border-0 shadow-lg;
+  
+  .segmentos-detalle {
+    @apply mt-4 space-y-3;
+    
+    .segmento-item {
+      @apply flex items-center gap-3 p-3 rounded-lg;
+      
+      &.premium {
+        @apply bg-yellow-50 text-yellow-800;
+      }
+      
+      &.frecuente {
+        @apply bg-green-50 text-green-800;
+      }
+      
+      &.ocasional {
+        @apply bg-blue-50 text-blue-800;
+      }
+    }
+  }
+}
+
+// ✅ CLIENTES
+.clientes-card {
+  .table-header {
+    @apply flex justify-between items-center mb-4;
+  }
+  
+  .cliente-acciones {
+    @apply flex gap-2;
+  }
+  
+  .ultima-compra {
+    @apply text-sm text-gray-600;
+  }
+}
+
+// ✅ CHIPS DE SEGMENTO
+.premium-chip {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.frecuente-chip {
+  @apply bg-green-100 text-green-800;
+}
+
+.ocasional-chip {
+  @apply bg-blue-100 text-blue-800;
+}
+
+// ✅ TIPOS DE REPORTES
+.tipos-reportes {
+  .reporte-card {
+    @apply border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+    
+    &.excel-card {
+      @apply border-l-4 border-l-green-500;
+    }
+    
+    &.pdf-card {
+      @apply border-l-4 border-l-red-500;
+    }
+    
+    &.ppt-card {
+      @apply border-l-4 border-l-orange-500;
+    }
+    
+    &.csv-card {
+      @apply border-l-4 border-l-blue-500;
+    }
+    
+    .reporte-content {
+      @apply space-y-4;
+      
+      .reporte-icon {
+        @apply w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl text-white bg-gradient-to-r from-gray-600 to-gray-800;
+      }
+      
+      .reporte-info {
+        @apply text-center;
+        
+        h4 {
+          @apply text-lg font-bold text-gray-900 mb-2;
+        }
+        
+        p {
+          @apply text-gray-600 text-sm;
+        }
+      }
+      
+      .reporte-progreso {
+        small {
+          @apply text-center block text-gray-600 mt-2;
+        }
+      }
+    }
+  }
+}
+
+// ✅ HISTORIAL DE REPORTES
+.historial-card {
+  @apply border-0 shadow-lg;
+  
+  .reporte-item {
+    @apply flex items-center gap-2;
+  }
+  
+  .archivo-info {
+    .archivo-nombre {
+      @apply font-medium text-gray-900;
+    }
+    
+    .archivo-tamaño {
+      @apply text-sm text-gray-500;
+    }
+  }
+  
+  .acciones-reporte {
+    @apply flex gap-2;
+  }
+  
+  .empty-state {
+    @apply text-center py-12;
+    
+    i {
+      @apply text-6xl text-gray-300 mb-4;
+    }
+    
+    p {
+      @apply text-gray-500;
+    }
+  }
+  
+  .tipo-chip {
+    @apply bg-indigo-100 text-indigo-800;
+  }
+}
+
+// ✅ INTELIGENCIA ARTIFICIAL
+.ia-card {
+  @apply border-0 shadow-lg bg-gradient-to-r from-purple-50 to-indigo-50;
+  
+  .ia-acciones {
+    @apply flex gap-3 mt-6;
+  }
+}
+
+.predicciones-card {
+  @apply border-0 shadow-lg;
+  
+  .metricas-precision {
+    @apply mt-4;
+    
+    .metrica-item {
+      @apply flex items-center gap-4;
+      
+      .metrica-label {
+        @apply font-medium text-gray-700 min-w-fit;
+      }
+    }
+  }
+}
+
+.insights-card {
+  @apply border-0 shadow-lg;
+  
+  .insights-lista {
+    @apply space-y-4;
+    
+    .insight-item {
+      @apply flex items-center gap-4 p-4 bg-gray-50 rounded-lg;
+      
+      .insight-icon {
+        @apply text-2xl;
+        
+        &.positivo {
+          @apply text-green-500;
+        }
+        
+        &.neutro {
+          @apply text-blue-500;
+        }
+        
+        &.confianza {
+          @apply text-purple-500;
+        }
+        
+        &.tendencia {
+          @apply text-orange-500;
+        }
+      }
+      
+      .insight-content {
+        .insight-titulo {
+          @apply font-semibold text-gray-900;
+        }
+        
+        .insight-valor {
+          @apply text-xl font-bold text-indigo-600;
+        }
+        
+        .insight-descripcion {
+          @apply text-sm text-gray-500;
+        }
+      }
+    }
+  }
+  
+  .recomendaciones {
+    @apply mt-6 pt-6 border-t border-gray-200;
+    
+    h5 {
+      @apply font-bold text-gray-900 mb-3;
+    }
+    
+    .recomendaciones-lista {
+      @apply space-y-2;
+      
+      li {
+        @apply text-sm text-gray-700 flex items-start gap-2;
+        
+        &::before {
+          content: "💡";
+          @apply inline-block;
+        }
+      }
+    }
+  }
+}
+
+// ✅ FLOATING ACTIONS
+.floating-actions {
+  @apply fixed bottom-6 right-6 z-50;
+}
+
+// ✅ DETALLE DIALOG
+.detalle-dialog {
+  .cliente-detalle {
+    .cliente-info-completa {
+      @apply text-center space-y-3;
+      
+      h4 {
+        @apply text-xl font-bold text-gray-900;
+      }
+      
+      p {
+        @apply text-gray-600;
+      }
+    }
+  }
+  
+  .info-card,
+  .historial-card {
+    @apply border-0 shadow-lg;
+  }
+}
+
+// ✅ TABS EMPRESARIALES
+.reportes-tabs {
+  .p-tabview-nav {
+    @apply bg-white shadow-lg rounded-t-xl;
+    
+    .p-tabview-nav-link {
+      @apply border-0 bg-transparent hover:bg-blue-50 transition-all duration-200;
+      
+      &.p-highlight {
+        @apply bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg;
+      }
+    }
+  }
+  
+  .p-tabview-panels {
+    @apply bg-white shadow-lg rounded-b-xl border-0 min-h-screen;
+  }
+}
+
+// ✅ RESPONSIVE MÍNIMO
+@media (max-width: 768px) {
+  .header-empresarial {
+    .empresa-info {
+      @apply flex-col text-center gap-4;
+    }
+  }
+  
+  .kpi-content {
+    @apply flex-col text-center;
+  }
+  
+  .meta-content {
+    @apply flex-col gap-4;
+    
+    .meta-progreso {
+      @apply ml-0;
+    }
+  }
+  
+  .floating-actions {
+    @apply bottom-4 right-4;
+  }
+}
+
+// ✅ ANIMACIONES MÍNIMAS
+@keyframes pulse-empresa {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-pulse-empresa {
+  animation: pulse-empresa 2s infinite;
+}
+
+// ✅ UTILIDADES EMPRESARIALES
+.gradient-empresa {
+  background: linear-gradient(135deg, var(--empresa-primary), var(--empresa-info));
+}
+
+.shadow-empresa {
+  box-shadow: var(--shadow-empresa);
+}
+
+.border-empresa {
+  border-color: var(--empresa-primary);
+}
