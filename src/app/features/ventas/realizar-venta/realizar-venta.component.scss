@@ -22,95 +22,7 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
-//  =========================  Pestañas ===========
 
-// Override de PrimeNG TabView
-::ng-deep .premium-tabview-custom {
-  .p-tabview-nav {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-  
-  .p-tabview-nav-link {
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    
-    &:focus {
-      box-shadow: none !important;
-    }
-    
-    &.p-highlight {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)) !important;
-      border-left: 4px solid #3b82f6 !important;
-    }
-  }
-  
-  .p-tabview-panels {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-  
-  .p-tabview-panel {
-    background: transparent !important;
-  }
-}
-
-// Estilos para los headers de pestañas
-.tab-header-premium {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  min-height: 120px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-left: 4px solid transparent;
-  
-  &:hover {
-    background: linear-gradient(to right, #eff6ff, #f5f3ff);
-  }
-  
-  .tab-icon-container {
-    position: relative;
-    width: 4rem;
-    height: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    .tab-icon-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, #3b82f6, #9333ea);
-      border-radius: 1rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-  }
-  
-  .tab-content {
-    flex: 1;
-    min-width: 0;
-    
-    .tab-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 0.25rem;
-    }
-    
-    .tab-subtitle {
-      font-size: 0.875rem;
-      color: #4b5563;
-      margin-bottom: 0.75rem;
-    }
-  }
-}
 
 //  =============== pos ventas ===================
 // Layout
@@ -2611,6 +2523,97 @@
 }
 
 // ============ PESTAÑAS ULTRA PREMIUM ============
+
+//  =========================  Pestañas ===========
+
+// Override de PrimeNG TabView
+::ng-deep .premium-tabview-custom {
+  .p-tabview-nav {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+ }
+  
+  .p-tabview-nav-link {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    
+    &:focus {
+      box-shadow: none !important;
+    }
+    
+    &.p-highlight {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)) !important;
+      border-left: 4px solid #3b82f6 !important;
+    }
+  }
+  
+  .p-tabview-panels {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  
+  .p-tabview-panel {
+    background: transparent !important;
+  }
+}
+
+// // Estilos para los headers de pestañas
+.tab-header-premium {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  min-height: 120px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-left: 4px solid transparent;
+  
+  &:hover {
+    background: linear-gradient(to right, #eff6ff, #f5f3ff);
+  }
+  
+  .tab-icon-container {
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .tab-icon-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, #3b82f6, #9333ea);
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+  }
+  
+  .tab-content {
+    flex: 1;
+    min-width: 0;
+    
+    .tab-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .tab-subtitle {
+      font-size: 0.875rem;
+      color: #4b5563;
+      margin-bottom: 0.75rem;
+    }
+  }
+}
+
 
 // Override de PrimeNG TabView
 .premium-tabview-custom {
@@ -5157,4 +5160,262 @@
     @apply backdrop-blur-xl bg-white/95 border border-white/30 shadow-2xl;
     border-radius: 20px;
   }
+}
+
+
+.scanner-overlay {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.scanner-corners {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #10b981;
+}
+
+.corner-tl {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-tr {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-bl {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-br {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+.scanner-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981, transparent);
+  animation: scanner-sweep 2s ease-in-out infinite;
+}
+
+@keyframes scanner-sweep {
+  0%, 100% { transform: translateY(-50px); }
+  50% { transform: translateY(50px); }
+}
+
+/* Estilos para el diálogo de pago moderno */
+.pago-dialog-modern {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+.pago-dialog-modern .p-dialog-header {
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
+.pago-dialog-modern .p-dialog-content {
+  padding: 0 !important;
+}
+
+/* Scrollbar personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  border-radius: 10px;
+}
+
+/* Animaciones */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.animate-fade-in { animation: fade-in 0.3s ease-out; }
+.animate-slide-down { animation: slide-down 0.4s ease-out; }
+.animate-bounce-gentle { animation: bounce-gentle 2s infinite; }
+.animate-pulse-subtle { animation: pulse-subtle 2s infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out; }
+
+/* Inputs modernos */
+.pago-input-modern input {
+  border-radius: 12px !important;
+  border: 2px solid #e2e8f0 !important;
+  padding: 12px 16px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.pago-input-modern input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.card-input input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  color: white !important;
+}
+
+/* Métodos de pago hover effects */
+.payment-method-card:hover {
+  transform: translateY(-2px);
+}
+
+.payment-method-card.active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Fix para AutoComplete en diálogos */
+.cliente-dialog-modern .p-autocomplete-panel {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+.p-autocomplete-panel {
+  z-index: 99999 !important;
+  border-radius: 12px !important;
+  border: 2px solid #e2e8f0 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+}
+
+.p-autocomplete-items {
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+
+/* Fix para el dropdown dentro del diálogo */
+.cliente-search-modern .p-autocomplete {
+  position: relative !important;
+}
+
+.cliente-search-modern .p-autocomplete-input {
+  border-radius: 16px !important;
+  border: 2px solid #e2e8f0 !important;
+  padding: 16px 20px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  background: white !important;
+  width: 100% !important;
+}
+
+.cliente-search-modern .p-autocomplete-input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+
+.cliente-search-modern .p-autocomplete-dropdown {
+  border-radius: 0 16px 16px 0 !important;
+  border: 2px solid #3b82f6 !important;
+  border-left: none !important;
+  background: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Scrollbar personalizado para la lista */
+.p-autocomplete-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.p-autocomplete-items::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.p-autocomplete-items::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 10px;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite;
+}
+
+/* Efectos de hover mejorados */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+/* Scrollbar personalizado para el header si es necesario */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
 }

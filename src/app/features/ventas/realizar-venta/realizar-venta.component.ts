@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { VentaRequest, VentaResponse, VentaDetalleRequest, VentaDetalleResponse } from '../../../core/models/venta.model';
 import { Cliente } from '../../../core/models/cliente.model';
 import { Producto } from '../../../core/models/product.model';
@@ -46,6 +46,16 @@ import { AvatarModule } from 'primeng/avatar';
 import { KnobModule } from 'primeng/knob';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageModule } from 'primeng/message';
+
+import { MetricaVenta } from './components/metrics/metric-card.interface';
+import { MetricCardComponent } from './components/metrics/metric-card.component';
+import { UserInfoCardComponent, UserInfo } from './components/user-info/user-info-card.component';
+import { HistorialVentasComponent } from "./components/historial-ventas/historial-ventas.component";
+import { ReportesComponent } from "./components/reporte-ventas/reporte-ventas.component";
+import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { environment } from '../../../../enviroments/enviroment';
+
 
 interface OpcionSelect {
   label: string;
@@ -119,8 +129,13 @@ interface FiltrosVentas {
     AvatarModule,
     KnobModule,
     ProgressBarModule,
-    MessageModule
-  ],
+    MessageModule,
+    UserInfoCardComponent,
+    HistorialVentasComponent,
+    ReportesComponent,
+    ConfiguracionComponent,
+    FloatLabelModule
+],
   templateUrl: './realizar-venta.component.html',
   styleUrls: ['./realizar-venta.component.scss'],
   providers: [MessageService, ConfirmationService]
@@ -128,6 +143,13 @@ interface FiltrosVentas {
 export class RealizarVentaComponent implements OnInit, OnDestroy {
   @ViewChild('codigoInput') codigoInput!: ElementRef;
   @ViewChild('menuAcciones') menuAcciones: any;
+
+    // Nueva propiedad para las métricas
+    metricas: MetricaVenta[] = [];
+    showDashboard: boolean = false;
+
+    // Mini gráficos de ejemplo (ya los tienes)
+    miniGraficoVentas = [65, 78, 82, 90, 75, 88, 92];
 
   // Control de permisos
   permissionTypes = PermissionType;
@@ -148,6 +170,15 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   // Vista activa
   activeTabIndex = 0;
   
+  // 
+  showKeyboardHelp = false;
+
+   // Estado del panel de atajos
+  mostrarPanelAtajos: boolean = false;
+
+    // Auto-hide del panel
+  private panelAtajosTimeout: any;
+
   // ==================== DATOS PRINCIPALES ====================
   ventas: VentaResponse[] = [];
   ventasFiltradas: VentaResponse[] = [];
@@ -260,7 +291,7 @@ productosPopulares: any[] = [];
 
 // Cliente recientemente buscado
 clienteBusqueda: any = null;
-productoBusqueda: any = null;
+productoBusqueda: Producto | null = null;
 
 // Variables para descuentos
 aplicarDescuento: boolean = false;
@@ -302,9 +333,23 @@ seriesComprobante: { label: string, value: string }[] = [
 ];
 
   // Datos para gráficos mini
-  miniGraficoVentas = [45, 62, 38, 75, 89, 56, 92, 67, 84, 71, 95, 83];
-
   ping = 12;
+
+  // ✨ NUEVAS PROPIEDADES PARA ESTADOS DE CARGA
+  processingPayment = false;
+  searchingProducts = false;
+  addingToCart = false;
+  loadingClient = false;
+  savingData = false;
+  connectingScanner = false;
+  
+  // Mensajes específicos para cada estado
+  loadingMessage = '';
+  progressPercentage = 0;
+  
+  // Estados adicionales
+  networkStatus: 'online' | 'offline' | 'slow' = 'online';
+  lastSync = new Date();
 
 
   constructor(
@@ -318,19 +363,29 @@ seriesComprobante: { label: string, value: string }[] = [
     private permissionService: PermissionService
   ) {
     this.initChartOptions();
+    this.mostrarPanelBienvenida();
+
   }
 
   ngOnInit() {
     this.loadPermissions();
     this.cargarDatosIniciales();
+      // ✅ FORZAR CARGA DE PRODUCTOS DIRECTAMENTE
+    setTimeout(() => {
+      console.log('🚨 FORZAR CARGA DE PRODUCTOS...');
+      this.cargarProductos();
+    }, 1000);
+  
     this.cargarEstadisticas();
     this.inicializarChart();
     this.startTimeUpdate();
-    this.setupKeyboardShortcuts();
     this.setupTabNavigation();
     this.calculateTabStats();
     this.cargarProductosPopulares();
     this.cargarClientesRecientes();
+    this.inicializarMetricas();
+    // this.initAudio(); // Lo agregaremos después
+    this.setupKeyboardShortcuts();
   }
   
   ngOnDestroy(): void {
@@ -341,6 +396,21 @@ seriesComprobante: { label: string, value: string }[] = [
     }
     this.cerrarScanner();
   }
+
+
+  
+    analizarIngresos(): void {
+      console.log('Analizar ingresos');
+    }
+  
+    optimizarPerformance(): void {
+      console.log('Optimizar performance');
+    }
+
+    // Método para optimizar el *ngFor
+    trackByMetricaId(index: number, metrica: MetricaVenta): string {
+      return metrica.id;
+    }
 
 // ==== PRODUCTOS ====
 
@@ -499,8 +569,41 @@ seleccionarMetodoPago(metodo: string): void {
 }
 
 cancelarPago(): void {
+  console.log('❌ Intentando cancelar pago...');
+  
+  // ✅ SI ESTÁ PROCESANDO, PEDIR CONFIRMACIÓN
+  if (this.procesandoPago) {
+    const confirmar = confirm('⚠️ Se está procesando el pago. ¿Está seguro de cancelar?');
+    
+    if (!confirmar) {
+      console.log('🛑 Cancelación abortada por el usuario');
+      return;
+    }
+    
+    console.log('🛑 Forzando cancelación durante procesamiento');
+  }
+  
+  // ✅ RESETEAR ESTADO COMPLETO
+  this.procesandoPago = false;
   this.pagoDialog = false;
   this.pasoPagoActual = 0;
+  
+  // ✅ LIMPIAR ESTADO DE PAGO
+  this.resetearEstadoPago();
+  
+  // ✅ MENSAJE APROPIADO
+  const mensaje = this.procesandoPago ? 
+    'Procesamiento de pago cancelado forzadamente' : 
+    'Pago cancelado correctamente';
+    
+  this.messageService.add({
+    severity: this.procesandoPago ? 'warn' : 'info',
+    summary: this.procesandoPago ? '🛑 Cancelación Forzada' : 'ℹ️ Pago Cancelado',
+    detail: mensaje,
+    life: 4000
+  });
+  
+  console.log('✅ Cancelación de pago completada');
 }
 
 isPagoValid(): boolean {
@@ -613,19 +716,15 @@ private iniciarCamara(): void {
 
   // ====================  HEADER ================
 
-  // Usuario actual
-currentUser = {
-  name: 'Emerson Rafael',
-  role: 'Administrador de Ventas',
-  avatar: '/assets/images/girl.jpg'
-};
+  currentUserInfo: UserInfo = {
+    name: 'Emerson147',
+    role: 'Administrador',
+    avatar: '/assets/images/avatar-default.jpg',
+    isOnline: true,
+    productividad: 92,
+    nivel: 'Pro'
+  };
 
-// Breadcrumb
-breadcrumbHome = { icon: 'pi pi-home', routerLink: '/dashboard' };
-breadcrumbItems = [
-  { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
-  { label: 'Ventas', icon: 'pi pi-shopping-cart' }
-];
 
 // Performance score para el knob
 performanceScore = 96;
@@ -642,43 +741,10 @@ private startTimeUpdate(): void {
   }, 1000);
 }
 
-// Configurar shortcuts de teclado
-private setupKeyboardShortcuts(): void {
-  document.addEventListener('keydown', (event) => {
-    if (event.ctrlKey || event.metaKey) return;
-    
-    switch(event.key) {
-      case 'F1':
-        event.preventDefault();
-        this.nuevaVentaRapida();
-        break;
-      case 'F2':
-        event.preventDefault();
-        this.busquedaRapida();
-        break;
-      case 'F3':
-        event.preventDefault();
-        this.reportesRapidos();
-        break;
-      case 'F4':
-        event.preventDefault();
-        this.exportarRapido();
-        break;
-      case 'F5':
-        event.preventDefault();
-        this.configuracionRapida();
-        break;
-      case 'F6':
-        event.preventDefault();
-        this.toggleTheme();
-        break;
-    }
-  });
-}
 
 // Funciones de acciones rápidas
 nuevaVentaRapida(): void {
-  this.activeTabIndex = 0;
+  this.activeTabIndex = 1;
   this.pasoActual = 0;
   this.limpiarFormularioVenta();
   this.mostrarExito('Nueva Venta', 'Iniciando nueva venta...');
@@ -1022,12 +1088,14 @@ verificarConfiguracionesPendientes(): void {
 
   // ==================== CARGA DE DATOS ====================
   
-  private cargarDatosIniciales(): void {
-    this.cargarClientes();
-    this.cargarProductos();
-    this.cargarVentas();
-    this.cargarInventarios();
-  }
+ private cargarDatosIniciales(): void {
+  console.log('🚨 cargarDatosIniciales() ejecutándose...');
+  
+  this.cargarClientes();
+  this.cargarProductos(); // ← Esta línea debe estar aquí
+  this.cargarVentas();
+  this.cargarInventarios();
+}
 
   private cargarClientes(): void {
     this.clienteService.listar()
@@ -1041,28 +1109,56 @@ verificarConfiguracionesPendientes(): void {
       });
   }
 
-  private cargarProductos(): void {
-    this.productoService.getProducts()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data: any) => {
-          this.productos = data;
-        },
-        error: (error: any) => this.mostrarError('Error al cargar productos', error.message)
-      });
+ private cargarProductos(): void {
+  console.log('🚨🚨🚨 EJECUTANDO cargarProductos()...');
+  
+  this.productoService.getProducts(0, 500)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: any) => {
+        console.log('🚨🚨🚨 RESPUESTA DEL SERVICIO:', response);
+        
+        // ✅ USAR 'contenido' EN LUGAR DE 'content'
+        this.productos = response?.contenido || response?.content || response?.data || [];
+        
+        console.log('🚨🚨🚨 PRODUCTOS ASIGNADOS:', this.productos);
+        console.log('🚨 CANTIDAD:', this.productos?.length);
+        
+        if (this.productos?.length > 0) {
+          console.log('🚨 PRIMER PRODUCTO:', this.productos[0]);
+          console.log('🚨 PRECIO PRIMER PRODUCTO:', this.productos[0]?.precioVenta);
+        }
+      },
+      error: (error: any) => {
+        console.error('🚨🚨🚨 ERROR:', error);
+        this.mostrarError('Error al cargar productos', error.message);
+      }
+    });
+}
+
+  obtenerPrecioProducto(productoId: number): number {
+    // ✅ VERIFICACIÓN COMPLETA
+    if (!this.productos || !Array.isArray(this.productos) || this.productos.length === 0) {
+      console.warn('⚠️ productos no disponible, cargando...', this.productos);
+      return 0;
+    }
+    
+    const producto = this.productos.find(p => p?.id === productoId);
+    console.log(`🔍 Buscando precio para ID ${productoId}:`, producto);
+    return producto?.precioVenta || 0;
   }
 
   private cargarInventarios(): void {
-    this.inventarioService.obtenerInventarios()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          // Handle both array and PagedResponse cases
-          this.inventarios = Array.isArray(response) ? response : (response.contenido || []);
-        },
-        error: (error) => this.mostrarError('Error al cargar inventario', error.message)
-      });
-  }
+  this.inventarioService.obtenerInventarios(0, 5000) // Cargar hasta 5000 items
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: any) => {
+        this.inventarios = response?.contenido || response?.content || response?.data || [];
+        console.log(`✅ Inventarios cargados: ${this.inventarios.length}`);
+      },
+      error: (error: any) => this.mostrarError('Error al cargar inventarios', error.message)
+    });
+}
 
   private cargarVentas(): void {
     this.loading = true;
@@ -1161,7 +1257,7 @@ verificarConfiguracionesPendientes(): void {
   }
 
   // ==================== POS - GESTIÓN DE PRODUCTOS ====================
-  
+
   buscarProductoPorCodigo(): void {
     if (!this.codigoBusqueda.trim()) return;
     
@@ -1180,67 +1276,158 @@ verificarConfiguracionesPendientes(): void {
   }
 
   buscarProductosAutoComplete(event: any): void {
-    const query = event.query.toLowerCase();
-    this.productosAutoComplete = this.inventarios.filter(inv => 
-      inv.producto?.nombre?.toLowerCase().includes(query) ||
-      inv.producto?.codigo?.toLowerCase().includes(query) ||
-      inv.producto?.precioVenta?.toString().includes(query) ||
-      inv.serie?.toLowerCase().includes(query)
-    ).map(inv => ({
-      ...inv,
-      displayLabel: `${inv.producto?.nombre} - ${inv.color?.nombre} - ${inv.talla?.numero} - ${inv.producto?.codigo} - ${inv.producto?.precioVenta} (${inv.serie})`
-    }));
+  const query = event.query.toLowerCase();
+  
+  console.log(`🔍 INICIANDO BÚSQUEDA: "${query}"`);
+  console.log(`🔍 TOTAL INVENTARIOS DISPONIBLES: ${this.inventarios?.length}`);
+  
+  // ✅ SI NO HAY PRODUCTOS, CARGARLOS PRIMERO
+  if (!this.productos || this.productos.length === 0) {
+    console.log('🚨 Cargando productos...');
+    this.cargarProductos();
+    setTimeout(() => this.buscarProductosAutoComplete(event), 1000);
+    return;
   }
+  
+  // ✅ INCLUIR TANTO DISPONIBLE COMO BAJO_STOCK
+  const inventariosDisponibles = this.inventarios.filter(inv => {
+    // Solo excluir si no hay stock
+    if (inv.cantidad <= 0) {
+      console.log(`❌ EXCLUIDO por stock 0: ${inv.producto?.nombre}`);
+      return false;
+    }
+    
+    // Incluir DISPONIBLE y BAJO_STOCK
+    if (inv.estado !== 'DISPONIBLE' && inv.estado !== 'BAJO_STOCK') {
+      console.log(`❌ EXCLUIDO por estado: ${inv.producto?.nombre} - Estado: ${inv.estado}`);
+      return false;
+    }
+    
+    return true;
+  });
+  
+  console.log(`🔍 INVENTARIOS VENDIBLES (DISPONIBLE + BAJO_STOCK): ${inventariosDisponibles.length}`);
+  
+  // ✅ APLICAR FILTRO DE BÚSQUEDA
+  const inventariosFiltrados = inventariosDisponibles.filter(inv => {
+    if (!query || query.length === 0) {
+      return true;
+    }
+    
+    const nombre = inv.producto?.nombre?.toLowerCase() || '';
+    const codigo = inv.producto?.codigo?.toLowerCase() || '';
+    const serie = inv.serie?.toLowerCase() || '';
+    const color = inv.color?.nombre?.toLowerCase() || '';
+    const talla = inv.talla?.numero?.toLowerCase() || '';
+    
+    return nombre.includes(query) || 
+           codigo.includes(query) || 
+           serie.includes(query) ||
+           color.includes(query) ||
+           talla.includes(query);
+  });
+  
+  console.log(`🔍 DESPUÉS DEL FILTRO: ${inventariosFiltrados.length}`);
+  
+  // ✅ MAPEAR CON PRECIOS Y INDICADOR DE STOCK
+  this.productosAutoComplete = inventariosFiltrados.map(inv => {
 
-  seleccionarProductoAutoComplete(producto: any): void {
-    this.agregarProductoAlCarrito(producto);
+    const precio = inv.producto && typeof inv.producto.id === 'number'
+      ? this.obtenerPrecioProducto(inv.producto.id)
+      : 0;
+    
+    return {
+      ...inv,
+      precioVenta: precio,
+      displayLabel: `${inv.producto?.nombre} - ${inv.color?.nombre} - ${inv.talla?.numero} - ${this.formatearMoneda(precio)} ${inv.estado === 'BAJO_STOCK' ? '⚠️' : ''}`
+    };
+  }).sort((a, b) => {
+    // Ordenar: primero DISPONIBLE, luego BAJO_STOCK
+    if (a.estado !== b.estado) {
+      if (a.estado === 'DISPONIBLE') return -1;
+      if (b.estado === 'DISPONIBLE') return 1;
+    }
+    
+    const nombreA = a.producto?.nombre || '';
+    const nombreB = b.producto?.nombre || '';
+    if (nombreA !== nombreB) {
+      return nombreA.localeCompare(nombreB);
+    }
+    return parseInt(a.talla?.numero || '0') - parseInt(b.talla?.numero || '0');
+  });
+  
+  console.log(`✅ RESULTADO FINAL: ${this.productosAutoComplete.length}`);
+}
+
+
+seleccionarProductoAutoComplete(event: any): void {
+  console.log('🔍 EVENT COMPLETO:', event);
+  
+  // ✅ EXTRAER EL PRODUCTO DEL EVENT.VALUE
+  const producto = event?.value || event;
+  
+  console.log('🔍 PRODUCTO EXTRAÍDO:', producto);
+  
+  // ✅ VERIFICAR QUE TENGA LA ESTRUCTURA CORRECTA
+  if (!producto || !producto.producto) {
+    console.error('❌ Producto inválido:', producto);
+    this.mostrarError('Error', 'Producto inválido seleccionado');
+    return;
   }
+  
+  this.agregarProductoAlCarrito(producto);
+}
 
   agregarProductoAlCarrito(inventario: any): void {
-    if (!this.clienteSeleccionado) {
-      this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente antes de agregar productos');
-      return;
-    }
-
-    if (inventario.stock < this.cantidadInput) {
-      this.mostrarError('Stock insuficiente', `Solo hay ${inventario.stock} unidades disponibles`);
-      return;
-    }
-
-    const itemExistente = this.carrito.find(item => item.inventarioId === inventario.id);
-    
-    if (itemExistente) {
-      const nuevaCantidad = itemExistente.cantidad + this.cantidadInput;
-      if (nuevaCantidad > inventario.stock) {
-        this.mostrarError('Stock insuficiente', `Solo hay ${inventario.stock} unidades disponibles`);
-        return;
-      }
-      itemExistente.cantidad = nuevaCantidad;
-      itemExistente.subtotal = itemExistente.cantidad * itemExistente.precioUnitario;
-    } else {
-      const nuevoItem: ItemCarrito = {
-        inventarioId: inventario.id,
-        producto: inventario.producto,
-        color: inventario.color,
-        talla: inventario.talla,
-        cantidad: this.cantidadInput,
-        precioUnitario: inventario.precioVenta || 0,
-        subtotal: this.cantidadInput * (inventario.precioVenta || 0),
-        stock: inventario.stock,
-        codigoCompleto: inventario.serie
-      };
-      this.carrito.push(nuevoItem);
-    }
-
-    this.calcularTotales();
-    this.mostrarExito('Producto agregado', `${inventario.producto?.nombre} añadido al carrito`);
-    
-    // Resetear entrada
-    this.cantidadInput = 1;
-    setTimeout(() => {
-      this.codigoInput?.nativeElement?.focus();
-    }, 100);
+  if (!this.clienteSeleccionado) {
+    this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente antes de agregar productos');
+    return;
   }
+
+  // ✅ CORREGIDO: Usar cantidad en lugar de stock
+  if (inventario.cantidad < this.cantidadInput) {
+    this.mostrarError('Stock insuficiente', `Solo hay ${inventario.cantidad} unidades disponibles`);
+    return;
+  }
+
+  const itemExistente = this.carrito.find(item => item.inventarioId === inventario.id);
+  
+  if (itemExistente) {
+    const nuevaCantidad = itemExistente.cantidad + this.cantidadInput;
+    // ✅ CORREGIDO: Usar cantidad en lugar de stock
+    if (nuevaCantidad > inventario.cantidad) {
+      this.mostrarError('Stock insuficiente', `Solo hay ${inventario.cantidad} unidades disponibles`);
+      return;
+    }
+    itemExistente.cantidad = nuevaCantidad;
+    itemExistente.subtotal = itemExistente.cantidad * itemExistente.precioUnitario;
+  } else {
+    const nuevoItem: ItemCarrito = {
+      inventarioId: inventario.id,
+      producto: inventario.producto,
+      color: inventario.color,
+      talla: inventario.talla,
+      cantidad: this.cantidadInput,
+      // ✅ CORREGIDO: Acceder al precio correctamente
+      precioUnitario: inventario.precioVenta || this.obtenerPrecioProducto(inventario?.producto?.id),
+      subtotal: this.cantidadInput * (inventario.precioVenta || this.obtenerPrecioProducto(inventario.producto.id)),
+      // ✅ CORREGIDO: Usar cantidad en lugar de stock
+      stock: inventario.cantidad,
+      codigoCompleto: inventario.serie
+    };
+    this.carrito.push(nuevoItem);
+  }
+
+  this.calcularTotales();
+  // ✅ CORREGIDO: Mostrar nombre correcto
+  this.mostrarExito('Producto agregado', `${inventario.producto?.nombre} añadido al carrito`);
+  
+  // Resetear entrada
+  this.cantidadInput = 1;
+  setTimeout(() => {
+    this.codigoInput?.nativeElement?.focus();
+  }, 100);
+}
 
   actualizarCantidadItem(item: ItemCarrito, nuevaCantidad: number): void {
     if (nuevaCantidad <= 0) {
@@ -1305,7 +1492,11 @@ verificarConfiguracionesPendientes(): void {
       this.mostrarError('Carrito vacío', 'Debe agregar productos antes de procesar el pago');
       return;
     }
-    
+     // ✨ Activar estado de carga
+    this.processingPayment = true;
+    this.loadingMessage = 'Iniciando proceso de pago...';
+    this.progressPercentage = 0;
+
     this.pagoActual = this.initPago();
     this.pagoActual.monto = this.totalVenta;
     this.montoPagado = this.totalVenta;
@@ -1535,12 +1726,13 @@ verificarConfiguracionesPendientes(): void {
     }
   }
 
-  formatearMoneda(monto: number): string {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN'
-    }).format(monto);
-  }
+ formatearMoneda(monto: string | number): string {
+  const valor = typeof monto === 'string' ? parseFloat(monto) : monto;
+  return new Intl.NumberFormat('es-PE', {
+    style: 'currency',
+    currency: 'PEN'
+  }).format(valor);
+}
 
   // ==================== MENSAJES ====================
   
@@ -1627,10 +1819,6 @@ mostrarMenuVenta(event: Event, venta: VentaResponse): void {
   this.menuAcciones.toggle(event);
 }
 
-// Función para obtener fecha actual
-getCurrentDate(): Date {
-  return new Date();
-}
 
 // Agregar estas funciones al componente TypeScript
 
@@ -1689,9 +1877,713 @@ getMetodoPagoIcon(tipo: string): string {
   }
 }
 
+
+
+copiarDocumento(): void {
+  if (this.clienteSeleccionado) {
+    const documento = this.clienteSeleccionado.dni || this.clienteSeleccionado.ruc || '';
+    if (documento) {
+      navigator.clipboard.writeText(documento).then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Copiado',
+          detail: 'Documento copiado al portapapeles'
+        });
+      });
+    }
+  }
+}
+
+// Función para obtener el total de items en el carrito
 getTotalItems(): number {
-  return this.carrito.reduce((sum, item) => sum + item.cantidad, 0);
+  return this.carrito.reduce((total, item) => total + item.cantidad, 0);
+}
+
+// Función para obtener el total del carrito
+getTotalCarrito(): number {
+  return this.carrito.reduce((total, item) => total + item.subtotal, 0);
+}
+
+// Función para incrementar cantidad
+incrementarCantidad(): void {
+  if (this.cantidadInput < 999) {
+    this.cantidadInput++;
+  }
+}
+
+// Función para decrementar cantidad
+decrementarCantidad(): void {
+  if (this.cantidadInput > 1) {
+    this.cantidadInput--;
+  }
+}
+
+// Función para aplicar descuentos preestablecidos
+aplicarDescuentoPreset(porcentaje: number): void {
+  this.porcentajeDescuento = porcentaje;
+  this.calcularDescuento();
 }
 
 
+
+
+// Función para manejar teclas de acceso rápido
+handleKeyboardEvent(event: KeyboardEvent) {
+  // F8 para activar scanner
+  if (event.key === 'F8') {
+    event.preventDefault();
+    this.activarScanner();
+  }
+  
+  // F9 para procesar pago
+  if (event.key === 'F9') {
+    event.preventDefault();
+    if (this.canProcessPayment()) {
+      this.iniciarPago();
+    }
+  }
+  
+  // Escape para cerrar scanner
+  if (event.key === 'Escape' && this.scannerActive) {
+    this.cerrarScanner();
+  }
+  
+  // Enter en el input de código
+  if (event.key === 'Enter' && event.target === document.getElementById('codigoInput')) {
+    this.buscarProductoPorCodigo();
+  }
+}
+
+getStockSeverity(stock: number): "success" | "info" | "warning" | "danger" {
+  if (stock === 0) return 'danger';
+  if (stock <= 5) return 'warning';
+  if (stock <= 10) return 'info';
+  return 'success';
+}
+ 
+    // NUEVAS PROPIEDADES AGREGADAS
+  showClientModal = false;
+
+openClientModal(): void {
+    this.showClientModal = true;
+  }
+
+  confirmarCliente(): void {
+    if (this.clienteSeleccionado) {
+      this.showClientModal = false;
+      // Aquí puedes agregar lógica adicional si es necesario
+      this.messageService?.add({
+        severity: 'success',
+        summary: 'Cliente Confirmado',
+        detail: `Cliente ${this.clienteSeleccionado.nombres} seleccionado correctamente`
+      });
+    }
+  }
+
+   private setupKeyboardShortcuts() {
+    // Escuchar eventos de teclado globalmente
+    document.addEventListener('keydown', (event) => this.handleGlobalKeyboard(event));
+  }
+
+  @HostListener('keydown', ['$event'])
+  handleGlobalKeyboard(event: KeyboardEvent) {
+    // No interceptar si hay un input/textarea/select activo
+    const activeElement = document.activeElement;
+    const isInputActive = activeElement?.tagName === 'INPUT' || 
+                          activeElement?.tagName === 'TEXTAREA' || 
+                          activeElement?.tagName === 'SELECT';
+    
+    // Excepciones: algunos shortcuts siempre funcionan
+    const alwaysActive = ['F1', 'F8', 'F12', 'Escape'];
+    
+    if (isInputActive && !alwaysActive.includes(event.key)) {
+      return; // Permitir tipeo normal en inputs
+    }
+
+    // Manejar shortcuts
+    switch(event.key) {
+      case 'F1': 
+        event.preventDefault();
+        this.showKeyboardHelp = true;
+        this.playBeep(800, 100);
+        break;
+        
+      case 'F2':
+        event.preventDefault();
+        this.focusProductSearch();
+        this.playBeep(600, 100);
+        break;
+        
+      case 'F3':
+        event.preventDefault();
+        this.openClientModal();
+        this.playBeep(700, 100);
+        break;
+        
+      case 'F4':
+        event.preventDefault();
+        this.toggleDiscountQuick();
+        this.playBeep(900, 100);
+        break;
+        
+      case 'F8':
+        event.preventDefault();
+        this.activarScanner();
+        this.playBeep(1000, 150);
+        break;
+        
+      case 'F9':
+        event.preventDefault();
+        this.openCashDrawer();
+        this.playBeep(500, 200);
+        break;
+        
+      case 'F12':
+        if (this.canProcessPayment()) {
+          event.preventDefault();
+          this.iniciarPago();
+          this.playSuccessSound();
+        } else {
+          this.playErrorSound();
+        }
+        break;
+        
+      case 'Escape':
+        event.preventDefault();
+        this.handleEscape();
+        this.playBeep(400, 100);
+        break;
+        
+      // Pagos rápidos con Ctrl
+      case '1':
+        if (event.ctrlKey && this.canProcessPayment()) {
+          event.preventDefault();
+          this.pagoRapido('EFECTIVO');
+          this.playSuccessSound();
+        }
+        break;
+        
+      case '2':
+        if (event.ctrlKey && this.canProcessPayment()) {
+          event.preventDefault();
+          this.pagoRapido('TARJETA_DEBITO');
+          this.playSuccessSound();
+        }
+        break;
+        
+      case '3':
+        if (event.ctrlKey && this.canProcessPayment()) {
+          event.preventDefault();
+          this.pagoRapido('YAPE');
+          this.playSuccessSound();
+        }
+        break;
+
+      // Shortcuts adicionales
+      case 'Delete':
+        if (event.ctrlKey) {
+          event.preventDefault();
+          this.limpiarCarrito();
+          this.playBeep(600, 200);
+        }
+        break;
+        
+      case '+':
+        if (event.ctrlKey) {
+          event.preventDefault();
+          this.increaseCantidadInput();
+        }
+        break;
+        
+      case '-':
+        if (event.ctrlKey) {
+          event.preventDefault();
+          this.decreaseCantidadInput();
+        }
+        break;
+    }
+  }
+
+  // NUEVOS MÉTODOS que necesitas agregar
+  
+  focusProductSearch() {
+    const searchInput = document.querySelector('input[placeholder*="código"]') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  }
+
+  toggleDiscountQuick() {
+    this.aplicarDescuento = !this.aplicarDescuento;
+    this.toggleDescuento();
+    
+    if (this.aplicarDescuento) {
+      // Auto-focus en el input de descuento si se puede
+      setTimeout(() => {
+        const discountInput = document.querySelector('input[type="number"][placeholder="%"]') as HTMLInputElement;
+        discountInput?.focus();
+      }, 100);
+    }
+  }
+
+  openCashDrawer() {
+    // Simular apertura de cajón
+    console.log('Abriendo cajón de dinero...');
+    // Aquí integrarías con hardware real
+  }
+
+  handleEscape() {
+    // Cerrar modales/acciones en orden de prioridad
+    if (this.showKeyboardHelp) {
+      this.showKeyboardHelp = false;
+    } else if (this.scannerActive) {
+      this.cerrarScanner();
+    } else if (this.showClientModal) {
+      this.showClientModal = false;
+    } else if (this.aplicarDescuento) {
+      this.aplicarDescuento = false;
+      this.toggleDescuento();
+    }
+  }
+
+  increaseCantidadInput() {
+    this.cantidadInput = Math.min(this.cantidadInput + 1, 999);
+  }
+
+  decreaseCantidadInput() {
+    this.cantidadInput = Math.max(this.cantidadInput - 1, 1);
+  }
+
+  // Audio básico (simplificado por ahora)
+  playBeep(frequency: number = 800, duration: number = 100) {
+    // Audio simple con Web Audio API
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'square';
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration / 1000);
+    } catch (error) {
+      // Fallar silenciosamente si no hay audio
+      console.log('Audio no disponible');
+    }
+  }
+
+  playSuccessSound() {
+    this.playBeep(1000, 100);
+    setTimeout(() => this.playBeep(1200, 100), 120);
+  }
+
+  playErrorSound() {
+    this.playBeep(300, 200);
+  }
+
+  getImageUrl(producto: Producto): string {
+      if (this.previewImageUrl) {
+        return this.previewImageUrl;
+      }
+      
+      if (producto?.imagen) {
+        if (producto.imagen.startsWith('http')) {
+          return producto.imagen;
+        }
+        return `${environment.apiUrl}api/files/uploads/${producto.imagen}`;
+      }
+      
+      return 'assets/images/placeholder-product.jpg';
+  }
+
+  previewImageUrl: string | null = null;
+
+
+getMetodoPagoStyle(
+  metodo: 'EFECTIVO' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'TRANSFERENCIA' | 'YAPE' | 'PLIN' | string
+): string {
+  const styles: Record<'EFECTIVO' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'TRANSFERENCIA' | 'YAPE' | 'PLIN', string> = {
+    'EFECTIVO': 'w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center',
+    'TARJETA_CREDITO': 'w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center',
+    'TARJETA_DEBITO': 'w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center',
+    'TRANSFERENCIA': 'w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center',
+    'YAPE': 'w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center',
+    'PLIN': 'w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center'
+  };
+  return styles[metodo as keyof typeof styles] || 'w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center';
+}
+
+getMetodoLabel(metodo: string): string {
+  const labels = {
+    'EFECTIVO': 'Efectivo',
+    'TARJETA_CREDITO': 'Tarjeta Crédito',
+    'TARJETA_DEBITO': 'Tarjeta Débito', 
+    'TRANSFERENCIA': 'Transferencia',
+    'YAPE': 'Yape',
+    'PLIN': 'Plin'
+  };
+  return metodo in labels ? labels[metodo as keyof typeof labels] : metodo;
+}
+
+filtrarClientesPorTipo(tipo: string): void {
+  switch(tipo) {
+    case 'frecuentes':
+      this.clientesFiltrados = this.clientes.filter(c => (c.compras || 0) >= 5);
+      break;
+    case 'nuevos':
+      this.clientesFiltrados = this.clientes.filter(c => (c.compras || 0) <= 2);
+      break;
+    case 'vip':
+      this.clientesFiltrados = this.clientes.filter(c => (c.totalCompras || 0) >= 1000);
+      break;
+    default:
+      this.clientesFiltrados = [...this.clientes];
+  }
+}
+
+verHistorialCliente(): void {
+  // Implementar lógica para ver historial
+  console.log('Ver historial de:', this.clienteSeleccionado);
+}
+
+getClienteEstado(cliente: any): string {
+  if ((cliente.totalCompras || 0) >= 1000) return 'vip';
+  if ((cliente.compras || 0) >= 5) return 'frecuente';
+  return 'activo';
+}
+
+
+getPromedioCompras(cliente: any): number {
+  if (!cliente || !cliente.compras || cliente.compras === 0) {
+    return 0;
+  }
+  
+  return (cliente.totalCompras || 0) / cliente.compras;
+}
+
+cerrarDialogoPago(): void {
+  this.procesandoPago = false;
+  this.pagoDialog = false;
+  this.resetearEstadoPago();
+}
+
+// ✅ MÉTODO CUANDO SE OCULTA EL DIÁLOGO  
+onPagoDialogHide(): void {
+  this.procesandoPago = false;
+  this.resetearEstadoPago();
+}
+
+resetearEstadoPago(): void {
+  console.log('🔄 Reseteando estado de pago...');
+  
+  // Resetear variables de pago
+  this.montoPagado = 0;
+  this.vuelto = 0;
+  this.procesandoPago = false;
+  
+  // Resetear datos del pago actual
+  this.pagoActual = {
+    ventaId: 0,
+    usuarioId: 1,
+    monto: 0,
+    metodoPago: 'EFECTIVO',
+    nombreTarjeta: '',
+    ultimos4Digitos: '',
+    numeroReferencia: '',
+    observaciones: ''
+  };
+  
+  console.log('✅ Estado de pago reseteado');
+}
+
+    // Mostrar panel de bienvenida
+  mostrarPanelBienvenida(): void {
+    setTimeout(() => {
+      this.mostrarPanelAtajos = true;
+      
+      // Auto-hide después de 10 segundos
+      this.panelAtajosTimeout = setTimeout(() => {
+        this.cerrarPanelAtajos();
+      }, 10000);
+    }, 1500);
+  }
+
+   // Toggle del panel
+  togglePanelAtajos(): void {
+    this.mostrarPanelAtajos = !this.mostrarPanelAtajos;
+    
+    if (this.mostrarPanelAtajos) {
+      // Limpiar timeout si está abierto
+      if (this.panelAtajosTimeout) {
+        clearTimeout(this.panelAtajosTimeout);
+      }
+      
+      // Auto-hide después de 15 segundos
+      this.panelAtajosTimeout = setTimeout(() => {
+        this.cerrarPanelAtajos();
+      }, 15000);
+    }
+  }
+
+    // Cerrar panel
+  cerrarPanelAtajos(): void {
+    this.mostrarPanelAtajos = false;
+    
+    if (this.panelAtajosTimeout) {
+      clearTimeout(this.panelAtajosTimeout);
+      this.panelAtajosTimeout = null;
+    }
+  }
+
+    // Variables del header empresarial (agregar estas)
+  ventasHoy: number = 2450.00;
+  transaccionesHoy: number = 23;
+  horaInicioTurno: string = '08:30';
+  numeroVentaActual: number = 1001;
+  
+  // Métodos del header (agregar estos)
+  getNumeroVenta(): string {
+    return `POS-${this.numeroVentaActual.toString().padStart(6, '0')}`;
+  }
+  
+  getCurrentDateTime(): string {
+    const now = new Date();
+    return now.toLocaleTimeString('es-PE', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+    
+  abrirReportes(): void {
+    console.log('📊 Abriendo reportes...');
+    alert('Módulo de Reportes - Próximamente'); 
+  }
+  
+  abrirConfiguracion(): void {
+    console.log('⚙️ Abriendo configuración...');
+    alert('Configuración del Sistema - Próximamente');
+  }
+  
+  cerrarSesion(): void {
+    if (confirm('¿Está seguro de cerrar la sesión?')) {
+      console.log('👋 Cerrando sesión...');
+      // Aquí implementarías el logout real
+      alert('Sesión cerrada - Redirigiendo...');
+    }
+  }
+
+  inicializarMetricas(): void {
+    this.metricas = [
+      // 💰 VENTAS DEL DÍA
+      {
+        id: 'ventas-dia',
+        titulo: 'Ventas del Día',
+        valor: 2450.00,
+        icono: 'pi-dollar',
+        color: 'success',
+        categoria: 'ventas',
+        tendencia: {
+          porcentaje: 12.5,
+          direccion: 'up',
+          periodo: 'vs ayer',
+          periodoAnterior: 2178.00
+        },
+        objetivo: {
+          valor: 3000.00,
+          progreso: 81.7,
+          fechaLimite: new Date()
+        },
+        miniGrafico: {
+          data: [1800, 2100, 1950, 2450, 2200, 2450],
+          labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Hoy'],
+          type: 'line'
+        },
+        desglose: [
+          { label: 'Efectivo', valor: 1225.00, color: '#22c55e', porcentaje: 50 },
+          { label: 'Tarjetas', valor: 857.50, color: '#3b82f6', porcentaje: 35 },
+          { label: 'Digital', valor: 367.50, color: '#8b5cf6', porcentaje: 15 }
+        ],
+        accionPrincipal: {
+          label: 'Ver Detalle',
+          icono: 'pi-chart-line',
+          callback: () => this.verDetalleVentas()
+        },
+        ultimaActualizacion: new Date()
+      },
+      
+      // 🛒 TRANSACCIONES
+      {
+        id: 'transacciones',
+        titulo: 'Transacciones',
+        valor: 23,
+        icono: 'pi-shopping-cart',
+        color: 'info',
+        categoria: 'operaciones',
+        tendencia: {
+          porcentaje: 8.3,
+          direccion: 'up',
+          periodo: 'vs ayer',
+          periodoAnterior: 21
+        },
+        objetivo: {
+          valor: 30,
+          progreso: 76.7
+        },
+        miniGrafico: {
+          data: [18, 25, 19, 23, 21, 23],
+          labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Hoy'],
+          type: 'bar'
+        },
+        metricas: [
+          { label: 'Promedio/día', valor: '28 trans', icono: 'pi-chart-bar' },
+          { label: 'Pico hora', valor: '14:00', icono: 'pi-clock' },
+          { label: 'Última venta', valor: '17:45', icono: 'pi-calendar' }
+        ],
+        ultimaActualizacion: new Date()
+      },
+      
+      // 💳 TICKET PROMEDIO
+      {
+        id: 'ticket-promedio',
+        titulo: 'Ticket Promedio',
+        valor: 106.52,
+        icono: 'pi-chart-line',
+        color: 'secondary',
+        categoria: 'financiero',
+        tendencia: {
+          porcentaje: 5.7,
+          direccion: 'up',
+          periodo: 'vs ayer',
+          periodoAnterior: 100.78
+        },
+        objetivo: {
+          valor: 120.00,
+          progreso: 88.8
+        },
+        miniGrafico: {
+          data: [98, 102, 95, 106, 104, 107],
+          labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Hoy'],
+          type: 'area'
+        },
+        accionPrincipal: {
+          label: 'Estrategias',
+          icono: 'pi-lightbulb',
+          callback: () => this.verEstrategiasTicket()
+        },
+        ultimaActualizacion: new Date()
+      },
+      
+      // 📦 PRODUCTOS VENDIDOS
+      {
+        id: 'productos-vendidos',
+        titulo: 'Productos Vendidos',
+        valor: 147,
+        icono: 'pi-box',
+        color: 'warning',
+        categoria: 'operaciones',
+        tendencia: {
+          porcentaje: 15.2,
+          direccion: 'up',
+          periodo: 'vs ayer',
+          periodoAnterior: 128
+        },
+        alertaCritica: {
+          activa: true,
+          mensaje: '8 productos con stock crítico',
+          nivel: 'media'
+        },
+        desglose: [
+          { label: 'Ropa', valor: 89, color: '#3b82f6', porcentaje: 60.5 },
+          { label: 'Calzado', valor: 35, color: '#10b981', porcentaje: 23.8 },
+          { label: 'Accesorios', valor: 23, color: '#f59e0b', porcentaje: 15.7 }
+        ],
+        accionPrincipal: {
+          label: 'Stock Crítico',
+          icono: 'pi-exclamation-triangle',
+          callback: () => this.verStockCritico()
+        },
+        ultimaActualizacion: new Date()
+      }
+    ];
+  }
+  
+  // Métodos de acción
+  verDetalleVentas(): void {
+    console.log('📊 Abriendo detalle de ventas...');
+    alert('Detalle de Ventas - Módulo en desarrollo');
+  }
+  
+  verEstrategiasTicket(): void {
+    console.log('💡 Abriendo estrategias para aumentar ticket promedio...');
+    alert('Estrategias de Ticket Promedio:\n• Cross-selling\n• Up-selling\n• Promociones combo');
+  }
+  
+  verStockCritico(): void {
+    console.log('⚠️ Abriendo alertas de stock crítico...');
+    alert('Stock Crítico:\n• Polo Blanco M (3 uds)\n• Jean Azul 32 (2 uds)\n• Camisa Negra L (1 ud)');
+  }
+  
+  abrirDashboard(): void {
+    this.showDashboard = true;
+    this.actualizarTodasLasMetricas();
+  }
+  
+  actualizarTodasLasMetricas(): void {
+    this.metricas.forEach(metrica => {
+      metrica.loading = true;
+      metrica.ultimaActualizacion = new Date();
+      
+      // Simular actualización de datos
+      setTimeout(() => {
+        metrica.loading = false;
+      }, 1000);
+    });
+  }
+  
+  private iniciarActualizacionAutomatica(): void {
+    setInterval(() => {
+      if (this.showDashboard) {
+        this.actualizarTodasLasMetricas();
+      }
+    }, 30000); // 30 segundos
+  }
+  
+  // Métodos auxiliares
+  getIconoTendencia(tendencia: any): string {
+    switch(tendencia.direccion) {
+      case 'up': return 'pi-arrow-up';
+      case 'down': return 'pi-arrow-down';
+      default: return 'pi-minus';
+    }
+  }
+  
+  getColorTendencia(tendencia: any): string {
+    switch(tendencia.direccion) {
+      case 'up': return 'text-green-500';
+      case 'down': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+  }
+  
+  getColorMetrica(color: 'success' | 'info' | 'warning' | 'danger' | 'secondary'): string {
+    const colores: Record<'success' | 'info' | 'warning' | 'danger' | 'secondary', string> = {
+      'success': 'from-green-500 to-green-600',
+      'info': 'from-blue-500 to-blue-600',
+      'warning': 'from-orange-500 to-orange-600',
+      'danger': 'from-red-500 to-red-600',
+      'secondary': 'from-purple-500 to-purple-600'
+    };
+    return colores[color] || 'from-gray-500 to-gray-600';
+  }
+
+  
 }

@@ -3,18 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../../core/guards/auth.guard';
 
 // Importar componentes
-import { VentasDashboardComponent } from './dashboard/ventas-dashboard.component';
 import { RealizarVentaComponent } from './realizar-venta/realizar-venta.component';
 import { ClientesComponent } from './clientes/clientes.component';
 // Otros componentes...
 
 const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: VentasDashboardComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS'] }
-  },
   {
     path: 'clientes',
     component: ClientesComponent,
