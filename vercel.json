@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "dist/gestion-inventario-frontend",
+  "outputDirectory": "dist/gestion-inventario-frontend/browser",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
