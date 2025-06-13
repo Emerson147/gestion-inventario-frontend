@@ -4,30 +4,6 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/login",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/dashboard",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/ventas/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/unauthorized",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/not-found",
-      "destination": "/index.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
