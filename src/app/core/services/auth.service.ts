@@ -3,7 +3,7 @@ import {Observable, tap} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {jwtDecode} from 'jwt-decode';
 import {Router} from '@angular/router';
-import {environment} from '../../../enviroments/enviroment';
+import {environment} from '../../../environments/environment';
 
 interface LoginResponse {
   token: string;

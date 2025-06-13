@@ -29,7 +29,7 @@ import { HasPermissionDirective } from '../../../shared/directives/has-permissio
 import { Producto } from '../../../core/models/product.model';
 import { ProductoService } from '../../../core/services/producto.service';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
-import { environment } from '../../../../enviroments/enviroment';
+import { environment } from '../../../../environments/environment';
 import { finalize, forkJoin, catchError, of, firstValueFrom, switchMap, tap } from 'rxjs';
 import { AlertaNegocio, AnalyticsService, KPIMetrics, OptimizacionPrecio } from '../../../core/services/analytics.service';
 import { EnterpriseIntegrationService, SincronizacionResult } from '../../../core/services/enterprise-integration.service';

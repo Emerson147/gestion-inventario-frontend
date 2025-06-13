@@ -54,7 +54,7 @@ import { HistorialVentasComponent } from "./components/historial-ventas/historia
 import { ReportesComponent } from "./components/reporte-ventas/reporte-ventas.component";
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { environment } from '../../../../enviroments/enviroment';
+import { environment } from '../../../../environments/environment';
 
 
 interface OpcionSelect {
