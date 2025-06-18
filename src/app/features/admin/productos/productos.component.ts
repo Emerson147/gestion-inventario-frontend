@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -41,11 +41,13 @@ interface ViewOption {
   icon: string;
 }
 
-// 👇 Nueva interfaz para acciones masivas
+// Interfaz para acciones masivas
 interface AccionMasiva {
   label: string;
   icon: string;
   command: () => void;
+  separator?: boolean;
+  disabled?: boolean;
 }
 
 @Component({
@@ -79,23 +81,11 @@ interface AccionMasiva {
     MenuModule,
     HasPermissionDirective
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService, ConfirmationService, CurrencyPipe],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.scss']
 })
 export class ProductosComponent implements OnInit {
-getUltimaActualizacion(): string|number|Date {
-throw new Error('Method not implemented.');
-}
-getMenuAcciones(_t1031: any) {
-throw new Error('Method not implemented.');
-}
-getMargenWidth(_t1031: any) {
-throw new Error('Method not implemented.');
-}
-getTopMarcas() {
-throw new Error('Method not implemented.');
-}
 
   // ========== DATOS Y ESTADO ==========
   productos: Producto[] = [];
@@ -134,29 +124,46 @@ throw new Error('Method not implemented.');
     { label: 'Tarjetas', value: 'cards', icon: 'pi pi-th-large' }
   ];
 
-  // 👇 Nuevas acciones masivas
-  accionesMasivas: AccionMasiva[] = [
-    {
-      label: 'Exportar Seleccionados',
-      icon: 'pi pi-download',
-      command: () => this.exportarSeleccionados()
-    },
-    {
-      label: 'Cambiar Precios en Lote',
-      icon: 'pi pi-dollar',
-      command: () => this.cambiarPreciosLote()
-    },
-    {
-      label: 'Duplicar Productos',
-      icon: 'pi pi-copy',
-      command: () => this.duplicarProductos()
-    },
-    {
-      label: 'Actualizar Códigos',
-      icon: 'pi pi-refresh',
-      command: () => this.actualizarCodigosLote()
+    // Propiedades para acciones masivas
+    accionesMasivas: AccionMasiva[] = [];
+
+    /**
+   * 🚀 Inicializa las acciones masivas disponibles
+   */
+    private inicializarAccionesMasivas(): void {
+      this.accionesMasivas = [
+        {
+          label: 'Exportar Seleccionados',
+          icon: 'pi pi-download',
+          command: () => this.exportarSeleccionados()
+        },
+        {
+          label: 'Cambiar Precios en Lote',
+          icon: 'pi pi-dollar',
+          command: () => this.cambiarPreciosLote()
+        },
+        { separator: true } as AccionMasiva,
+        {
+          label: 'Duplicar Productos',
+          icon: 'pi pi-copy',
+          command: () => this.duplicarProductos()
+        },
+        {
+          label: 'Actualizar Códigos',
+          icon: 'pi pi-refresh',
+          command: () => this.actualizarCodigosLote()
+        }
+      ];
     }
-  ];
+
+    /**
+   * 🎯 Acción principal del split button (la más común)
+   */
+    accionPrincipalMasiva(): void {
+      // La acción más común - exportar
+      this.exportarSeleccionados();
+    }
+  
 
   // ========== PERMISOS ==========
   permissionTypes = PermissionType;
@@ -181,16 +188,58 @@ throw new Error('Method not implemented.');
     soloPorductosConAlertas: false
   };
 
+  marcasCalzado = [
+    { label: 'Nike', value: 'Nike' },
+    { label: 'Adidas', value: 'Adidas' },
+    { label: 'Puma', value: 'Puma' },
+    { label: 'Reebok', value: 'Reebok' },
+    { label: 'Converse', value: 'Converse' },
+    { label: 'Vans', value: 'Vans' },
+    { label: 'New Balance', value: 'New Balance' },
+    { label: 'Asics', value: 'Asics' },
+    { label: 'Fila', value: 'Fila' },
+    { label: 'Under Armour', value: 'Under Armour' },
+    { label: 'Timberland', value: 'Timberland' },
+    { label: 'Dr. Martens', value: 'Dr. Martens' },
+    { label: 'Caterpillar', value: 'Caterpillar' },
+    { label: 'Clarks', value: 'Clarks' },
+    { label: 'Otro', value: 'Otro' }
+  ];
+
+  generosCalzado = [
+    { label: 'Hombre', value: 'hombre' },
+    { label: 'Mujer', value: 'mujer' },
+    { label: 'Niño', value: 'nino' },
+    { label: 'Niña', value: 'nina' },
+    { label: 'Unisex', value: 'unisex' }
+  ];
+
+  modeloCalzado = [
+    { label: 'Zapatillas Deportivas', value: 'zapatillas_deportivas' },
+    { label: 'Zapatillas Casual', value: 'zapatillas_casual' },
+    { label: 'Zapatos Formales', value: 'zapatos_formales' },
+    { label: 'Botines', value: 'botines' },
+    { label: 'Botas', value: 'botas' },
+    { label: 'Sandalias', value: 'sandalias' },
+    { label: 'Chinelas', value: 'chinelas' },
+    { label: 'Zapatos de Seguridad', value: 'zapatos_seguridad' },
+    { label: 'Zapatos de Vestir', value: 'zapatos_vestir' },
+    { label: 'Otros', value: 'otros' }
+  ];
+
+
   constructor(
     private readonly productoService: ProductoService,
     private readonly messageService: MessageService,
     private readonly confirmationService: ConfirmationService,
     private readonly permissionService: PermissionService,
     private readonly analyticsService: AnalyticsService,
-    private readonly enterpriseService: EnterpriseIntegrationService
+    private readonly enterpriseService: EnterpriseIntegrationService,
+    private readonly currencyPipe: CurrencyPipe
   ) {}
 
   ngOnInit(): void {
+    this.inicializarAccionesMasivas();
     this.loadProductos();
     this.cargarDatosEmpresariales(); // 🆕 Nueva función
     this.productosMap = new Map(
@@ -262,31 +311,6 @@ throw new Error('Method not implemented.');
       }
     } catch (error) {
       console.error('Error cargando datos empresariales:', error);
-    }
-  }
-
-  /**
-   * 🤖 Optimización de precios con IA
-   */
-  async optimizarPreciosIA(): Promise<void> {
-    if (!this.selectedProductos.length) {
-      this.showWarning('Selecciona productos para optimizar precios');
-      return;
-    }
-
-    this.loading = true;
-
-    try {
-      this.optimizacionesSugeridas = await firstValueFrom(
-        this.analyticsService.optimizarPrecios(this.selectedProductos)
-      );
-      
-      this.optimizacionesDialog = true;
-      this.showSuccess('Optimizaciones calculadas con IA');
-    } catch (error) {
-      this.handleError(error, 'Error al calcular optimizaciones');
-    } finally {
-      this.loading = false;
     }
   }
 
@@ -575,45 +599,109 @@ throw new Error('Method not implemented.');
    * 👇 Permite cambiar precios en lote
    */
   cambiarPreciosLote(): void {
-    if (!this.selectedProductos?.length) {
-      this.showWarning('No hay productos seleccionados');
+    if (!this.selectedProductos || this.selectedProductos.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Selecciona productos para cambiar precios'
+      });
       return;
     }
 
-    // Aquí podrías abrir un modal para cambio masivo de precios
-    this.showInfo(`Funcionalidad de cambio de precios en lote para ${this.selectedProductos.length} productos (próximamente)`);
+    // Mostrar confirmación simple
+    this.confirmationService.confirm({
+      message: `¿Deseas cambiar los precios de ${this.selectedProductos.length} productos?`,
+      header: 'Cambiar Precios en Lote',
+      icon: 'pi pi-dollar',
+      accept: () => {
+        // Por ahora, incrementar precios en 10%
+        this.selectedProductos.forEach(producto => {
+          if (producto.precioVenta) {
+            producto.precioVenta = Math.round(producto.precioVenta * 1.1 * 100) / 100;
+          }
+        });
+
+        // Aquí llamarías a tu servicio para actualizar
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Simulación',
+          detail: 'Precios incrementados en 10% (simulación)'
+        });
+      }
+    });
   }
+
 
   /**
    * 👇 Duplica productos seleccionados
    */
   duplicarProductos(): void {
-    if (!this.selectedProductos?.length) {
-      this.showWarning('No hay productos seleccionados');
+    this.confirmationService.confirm({
+      message: `¿Duplicar ${this.selectedProductos.length} productos?`,
+      header: 'Confirmar Duplicación',
+      icon: 'pi pi-copy',
+      accept: () => {
+          this.selectedProductos.forEach(producto => {
+            const productosDuplicado = {
+              ...producto,
+              id: undefined, // Nuevo ID
+              codigo: `${producto.codigo}_COPY`,
+              nombre: `${producto.nombre} (Copia)`
+            };
+            
+            this.productoService.createProduct(productosDuplicado).subscribe({
+              next: () => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Éxito',
+                  detail: 'Productos duplicados correctamente'
+                });
+                this.loadProductos();
+              },
+              error: () => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: 'Error al duplicar productos'
+                });
+              }
+            });
+          });
+        }
+      });
+    }
+
+     /**
+   * 🔄 Actualizar códigos automáticamente
+   */
+  actualizarCodigosLote(): void {
+    if (!this.selectedProductos || this.selectedProductos.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Selecciona productos para actualizar códigos'
+      });
       return;
     }
 
     this.confirmationService.confirm({
-      message: `¿Desea duplicar los ${this.selectedProductos.length} productos seleccionados?`,
-      header: 'Confirmar duplicación',
-      icon: 'pi pi-copy',
+      message: `¿Actualizar códigos de ${this.selectedProductos.length} productos?`,
+      header: 'Actualizar Códigos',
+      icon: 'pi pi-refresh',
       accept: () => {
-        // Aquí implementarías la lógica de duplicación
-        this.showInfo(`Duplicando ${this.selectedProductos.length} productos (funcionalidad próximamente)`);
+        const timestamp = Date.now();
+        
+        this.selectedProductos.forEach((producto, index) => {
+          producto.codigo = `PROD_${timestamp}_${String(index + 1).padStart(3, '0')}`;
+        });
+
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Simulación',
+          detail: 'Códigos actualizados (simulación)'
+        });
       }
     });
-  }
-
-  /**
-   * 👇 Actualiza códigos en lote
-   */
-  actualizarCodigosLote(): void {
-    if (!this.selectedProductos?.length) {
-      this.showWarning('No hay productos seleccionados');
-      return;
-    }
-
-    this.showInfo(`Actualización de códigos para ${this.selectedProductos.length} productos (próximamente)`);
   }
 
   // ========== FILTROS (Manteniendo funcionalidad original) ==========
@@ -737,13 +825,31 @@ throw new Error('Method not implemented.');
   }
   
   private createNewProduct() {
+    // 🔍 Log 1: Verificar datos antes de enviar
+    console.log('=== CREANDO PRODUCTO ===');
+    console.log('Datos del producto a enviar:', this.producto);
+    console.log('Tipo de datos:', typeof this.producto);
+    console.log('JSON stringify:', JSON.stringify(this.producto));
+    
     return this.productoService.createProduct(this.producto)
       .pipe(
         tap((response) => {
-          console.log('Producto creado exitosamente:', response);
+          // ✅ Log de éxito
+          console.log('✅ Producto creado exitosamente:', response);
+          console.log('Response completo:', JSON.stringify(response));
           this.producto.id = response.id;
         }),
         catchError((error) => {
+          // ❌ Logs detallados de error
+          console.error('❌ ERROR AL CREAR PRODUCTO:');
+          console.error('Error completo:', error);
+          console.error('Status:', error.status);
+          console.error('Status Text:', error.statusText);
+          console.error('Error message:', error.error);
+          console.error('Error details:', error.error?.message);
+          console.error('Error validation:', error.error?.errors);
+          console.error('URL:', error.url);
+          
           this.handleError(error, 'No se pudo crear el producto');
           return of(null);
         })
@@ -996,24 +1102,76 @@ throw new Error('Method not implemented.');
   Math = Math; // Para usar Math en la plantilla
 
   calcularMargenGanancia(producto: Producto): number {
-  if (!producto?.precioCompra || !producto?.precioVenta) return 0;
-  return Number((((producto.precioVenta - producto.precioCompra) / producto.precioCompra) * 100).toFixed(2));
-}
+    if (!producto.precioCompra || !producto.precioVenta || producto.precioCompra === 0) {
+      return 0;
+    }
+    
+    const ganancia = producto.precioVenta - producto.precioCompra;
+    const margen = (ganancia / producto.precioCompra) * 100;
+    
+    return Math.round(margen * 100) / 100; // Redondear a 2 decimales
+  }
 
-  getMargenSeverity(margen: number): 'success' | 'warning' | 'danger' | null {
-    if (margen >= 50) return 'success';
-    if (margen >= 20) return 'warning';
+    /**
+   * 🎨 Obtiene la severity del margen para el tag
+   **/
+  getMargenSeverity(margen: number): string {
+    if (margen >= 40) return 'success';
+    if (margen >= 25) return 'info';
+    if (margen >= 15) return 'warning';
     return 'danger';
   }
 
-  getSeverityValue(margen: number): 'success' | 'warning' | 'danger' | 'info' {
-    try {
-      return this.getMargenSeverity(margen) || 'info';
-    } catch (e) {
-      return 'info';
-    }
+   /**
+   * 🌈 Obtiene la clase de color para la barra de progreso
+   */
+   getMargenColorClass(margen: number): string {
+    if (margen >= 40) return 'bg-gradient-to-r from-emerald-500 to-green-600';
+    if (margen >= 25) return 'bg-gradient-to-r from-blue-500 to-indigo-600';
+    if (margen >= 15) return 'bg-gradient-to-r from-yellow-500 to-orange-600';
+    return 'bg-gradient-to-r from-red-500 to-red-600';
   }
 
+
+  /**
+   * 🎨 Obtiene clase de color para el margen de ganancia
+   */
+  getProfitColorClass(margen: number): string {
+    if (margen >= 40) return 'text-emerald-400';
+    if (margen >= 25) return 'text-blue-400';
+    if (margen >= 15) return 'text-yellow-400';
+    return 'text-red-400';
+  }
+
+  /**
+   * 💡 Obtiene clase CSS para el tip de rentabilidad
+   */
+  getProfitTipClass(margen: number): string {
+    if (margen >= 40) return 'tip-excellent';
+    if (margen >= 25) return 'tip-good';
+    return 'tip-warning';
+  }
+
+    /**
+   * 🏆 Obtiene título del tip de rentabilidad
+   */
+    getProfitTipTitle(margen: number): string {
+      if (margen >= 40) return '¡Excelente Rentabilidad!';
+      if (margen >= 25) return 'Buena Rentabilidad';
+      if (margen >= 15) return 'Rentabilidad Aceptable';
+      return 'Margen Bajo';
+    }
+
+    /**
+   * 💬 Obtiene mensaje del tip de rentabilidad
+   */
+  getProfitTipMessage(margen: number): string {
+    if (margen >= 40) return 'Este producto tiene un margen excelente para calzado deportivo';
+    if (margen >= 25) return 'Margen competitivo para el mercado de zapatillas';
+    if (margen >= 15) return 'Considera optimizar costos o ajustar precios';
+    return 'Revisa la estrategia de precios para mejorar rentabilidad';
+  }
+  
   // ========== EXPORTACIÓN (Manteniendo funcionalidad original) ==========
 
   async exportarExcel(): Promise<void> {
@@ -1066,6 +1224,7 @@ throw new Error('Method not implemented.');
       nombre: '',
       marca: '',
       modelo: '',
+      genero: 'No especificado',
       descripcion: '',
       precioCompra: 0,
       precioVenta: 0,
@@ -1203,6 +1362,8 @@ async exportarEstadisticas(): Promise<void> {
     this.handleError(error, 'Error al exportar estadísticas');
   }
 }
+
+
 // Funciones adicionales para el componente
 
 getCurrentTime(): Date {
@@ -1228,21 +1389,21 @@ getInventoryHealthColor(): string {
   return 'text-red-700';
 }
 
+/**
+   * 📝 Obtiene el texto descriptivo de rentabilidad
+   */
 getRentabilidadTexto(margen: number): string {
-  if (margen >= 50) return 'Excelente';
-  if (margen >= 30) return 'Bueno';
+  if (margen >= 40) return 'Excelente';
+  if (margen >= 25) return 'Bueno';
   if (margen >= 15) return 'Regular';
-  return 'Bajo';
+  if (margen > 0) return 'Bajo';
+  return 'Sin ganancia';
 }
 
-getMargenColorClass(margen: number): string {
-  if (margen >= 50) return 'bg-emerald-500';
-  if (margen >= 30) return 'bg-blue-500';
-  if (margen >= 15) return 'bg-orange-500';
-  return 'bg-red-500';
-}
 
-// Filtros rápidos
+selectedFiltro: string = 'todos'; // Variable para el modelo seleccionado
+
+// Filtros rápidos (mantener como array de opciones)
 filtrosRapidos = [
   { label: 'Todos los productos', value: 'todos' },
   { label: 'Alto margen (>50%)', value: 'alto_margen' },
@@ -1251,10 +1412,11 @@ filtrosRapidos = [
   { label: 'Productos premium', value: 'premium' },
   { label: 'Agregados hoy', value: 'nuevos' }
 ];
-  filtroRapidos: string = 'todos';
+
+  
 aplicarFiltroRapido(): void {
   // Implementar lógica de filtrado rápido
-  switch (this.filtroRapidos) {
+  switch (this.selectedFiltro) {
     case 'alto_margen':
       this.productosFiltrados = this.productos.filter(p => this.calcularMargenGanancia(p) > 50);
       break;
@@ -1308,4 +1470,182 @@ abrirConfiguracion(): void {
 toggleFiltrosAvanzados(): void {
   this.filtrosPanelCollapsed = !this.filtrosPanelCollapsed;
 }
+
+/**
+ * Obtiene el número de categorías únicas
+ */
+getCategorias(): number {
+  if (!this.productos || this.productos.length === 0) {
+    return 0;
+  }
+  
+  const categoriasUnicas = new Set(
+    this.productos
+      .filter(p => p.marca)
+      .map(p => p.marca)
+  );
+  
+  return categoriasUnicas.size;
+}
+
+/**
+ * Obtiene el precio mínimo del catálogo
+ */
+getPrecioMinimo(): number {
+  if (!this.productos || this.productos.length === 0) {
+    return 0;
+  }
+  
+  const precios = this.productos
+    .filter(p => p.precioCompra && p.precioCompra > 0)
+    .map(p => p.precioCompra);
+    
+  return precios.length > 0 ? Math.min(...precios) : 0;
+}
+
+/**
+ * Obtiene el precio máximo del catálogo
+ */
+getPrecioMaximo(): number {
+  if (!this.productos || this.productos.length === 0) {
+    return 0;
+  }
+  
+  const precios = this.productos
+    .filter(p => p.precioVenta && p.precioVenta > 0)
+    .map(p => p.precioVenta);
+    
+  return precios.length > 0 ? Math.max(...precios) : 0;
+}
+
+/**
+ * Calcula el precio promedio del catálogo
+ */
+getPrecioPromedio(): number {
+  if (!this.productos || this.productos.length === 0) {
+    return 0;
+  }
+  
+  const precios = this.productos
+    .filter(p => p.precioVenta && p.precioVenta > 0)
+    .map(p => p.precioVenta);
+    
+  if (precios.length === 0) return 0;
+  
+  const suma = precios.reduce((acc, precio) => acc + precio, 0);
+  return suma / precios.length;
+}
+
+  /**
+   * 🖼️ Mejora del manejo de imágenes con lazy loading
+   */
+  onImageLoad(event: any): void {
+    // Opcional: animación cuando la imagen carga
+    event.target.style.opacity = '1';
+  }
+
+   /**
+   * 🎨 Obtiene la clase CSS para el margen según el valor
+   */
+   getMargenIconClass(margen: number): string {
+    return margen > 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down';
+  }
+
+  /**
+   * 📊 Información adicional para tooltips en cards
+   */
+  getProductoTooltip(producto: any): string {
+    const margen = this.calcularMargenGanancia(producto);
+    const ganancia = producto.precioVenta - producto.precioCompra;
+    
+    return `
+      Margen: ${margen.toFixed(1)}%
+      Ganancia: ${this.currencyPipe.transform(ganancia, 'S/. ', 'symbol', '1.2-2')}
+      Categoría: ${producto.categoria || 'Sin categoría'}
+    `;
+  }
+
+    /**
+   * 📱 Detecta si estamos en vista móvil para optimizar cards
+   */
+    get isMobileView(): boolean {
+      return window.innerWidth < 768;
+    }
+  
+    /**
+     * 🔢 Obtiene el número de columnas según el tamaño de pantalla
+     */
+    getGridColumns(): number {
+      const width = window.innerWidth;
+      if (width < 576) return 1;      // xs
+      if (width < 768) return 2;      // sm
+      if (width < 992) return 3;      // md
+      if (width < 1200) return 4;     // lg
+      return 4;                       // xl+
+    }
+
+      /**
+   * 🏷️ Obtiene la etiqueta del género
+   */
+  getGeneroLabel(genero: string): string {
+    const generos: Record<string, string> = {
+      'hombre': 'Hombre',
+      'mujer': 'Mujer',
+      'nino': 'Niño',
+      'nina': 'Niña',
+      'unisex': 'Unisex'
+    };
+    return generos[genero] || genero;
+  }
+
+  /**
+   * 👟 Obtiene la etiqueta del tipo de calzado
+   */
+  getTipoCalzadoLabel(tipo: string): string {
+    const tipos: Record<string, string> = {
+      'zapatillas_deportivas': 'Zapatillas Deportivas',
+      'zapatillas_casual': 'Zapatillas Casual',
+      'zapatos_formales': 'Zapatos Formales',
+      'botines': 'Botines',
+      'botas': 'Botas',
+      'sandalias': 'Sandalias',
+      'chinelas': 'Chinelas',
+      'zapatos_seguridad': 'Zapatos de Seguridad',
+      'zapatos_vestir': 'Zapatos de Vestir',
+      'otros': 'Otros'
+    };
+    return tipos[tipo] || tipo;
+  }
+
+   
+  /**
+   * 🏆 Obtiene clase para badge de margen
+   */
+  getMargenBadgeClass(margen: number): string {
+    if (margen >= 40) return 'badge-excellent';
+    if (margen >= 25) return 'badge-good';
+    if (margen >= 15) return 'badge-warning';
+    return 'badge-poor';
+  }
+
+  /**
+   * 📊 Obtiene clase para progreso de margen
+   */
+  getMargenProgressClass(margen: number): string {
+    if (margen >= 40) return 'progress-excellent';
+    if (margen >= 25) return 'progress-good';
+    if (margen >= 15) return 'progress-warning';
+    return 'progress-poor';
+  }
+
+  /**
+   * 🏷️ Obtiene etiqueta del margen
+   */
+  getMargenLabel(margen: number): string {
+    if (margen >= 40) return 'Excelente';
+    if (margen >= 25) return 'Bueno';
+    if (margen >= 15) return 'Regular';
+    return 'Bajo';
+  }
+
 }

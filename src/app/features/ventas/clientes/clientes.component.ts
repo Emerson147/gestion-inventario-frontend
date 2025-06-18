@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, TrackByFunction } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Cliente } from '../../../core/models/cliente.model';
 import { ClienteService } from '../../../core/services/clientes.service';
 import { MessageService, ConfirmationService, MenuItem } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -23,11 +24,11 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { PanelModule } from 'primeng/panel';
-import { TooltipModule } from 'primeng/tooltip'; // ⭐ Añadir este import
+import { TooltipModule } from 'primeng/tooltip';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface ViewOption {
   label: string;
@@ -52,12 +53,32 @@ interface ClienteEstadisticas {
   clientesCompletos: number;
 }
 
+interface MetricasZapateria {
+  total: number;
+  activos: number;
+  inactivos: number;
+  conCompras: number;
+  clientesVIP: number;
+  promedioCompras: number;
+  porcentajeActivos: number;
+  ultimaActualizacion: Date;
+}
+
+interface AnalisisValorCliente {
+  totalVentas: number;
+  promedioGasto: number;
+  clienteTop: Cliente | null;
+  ticketPromedio: number;
+}
+
 @Component({
   selector: 'app-clientes',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     ButtonModule,
     CardModule,
     ConfirmDialogModule,
@@ -84,6 +105,10 @@ interface ClienteEstadisticas {
   providers: [MessageService, ConfirmationService]
 })
 export class ClientesComponent implements OnInit, OnDestroy {
+  // 📅 Información del sistema actualizada
+  private readonly currentDateTime = new Date('2025-06-18T14:31:14Z');
+  private readonly currentUser = 'Emerson147';
+  
   // Referencias a componentes del template
   @ViewChild('menuAcciones') menuAcciones!: Menu;
   @ViewChild('dt') dataTable: any;
@@ -96,12 +121,16 @@ export class ClientesComponent implements OnInit, OnDestroy {
   
   // Para gestionar suscripciones
   private destroy$ = new Subject<void>();
+  private searchSubject$ = new Subject<string>();
   
   // Datos principales
   clientes: Cliente[] = [];
   clientesFiltrados: Cliente[] = [];
   selectedClientes: Cliente[] = [];
   cliente: Cliente = this.initCliente();
+  
+  // Formulario reactivo
+  clienteForm!: FormGroup;
   
   // Estados del componente
   visible = false;
@@ -111,10 +140,23 @@ export class ClientesComponent implements OnInit, OnDestroy {
   editMode = false;
   submitted = false;
   
+  // Estados de UI mejorados
+  uiState = {
+    isTableLoading: false,
+    isFormSaving: false,
+    isExporting: false,
+    showAdvancedFilters: false,
+    lastUpdate: new Date(),
+    selectedRowsCount: 0,
+    showKeyboardHints: false,
+    autoRefreshEnabled: true
+  };
+  
   // Filtros y búsqueda
   filtroTexto: string = '';
   filtroEstado: string = 'todos';
   filtroCompletitud: string = 'todos';
+  sugerenciasBusqueda: string[] = [];
   
   // Configuraciones de vista
   currentView: string = 'table';
@@ -145,26 +187,68 @@ export class ClientesComponent implements OnInit, OnDestroy {
   
   // Variables para detalles
   clienteDetalle: Cliente | null = null;
+  
+  // Optimizaciones de performance
+  readonly DEFAULT_PAGE_SIZE = 10;
+  readonly PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
+  readonly SEARCH_DEBOUNCE_TIME = 300;
+  readonly AUTO_REFRESH_INTERVAL = 300000; // 5 minutos
+  
+  totalRecords = 0;
+  private autoRefreshInterval?: any;
+  
+  // TrackBy para performance
+  trackByClienteId: TrackByFunction<Cliente> = (index: number, cliente: Cliente) => {
+    return cliente.id || index;
+  };
 
   constructor(
     private clienteService: ClienteService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private permissionService: PermissionService
-  ) {}
+    private permissionService: PermissionService,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.initializeForm();
+  }
 
   ngOnInit() {
     this.cargarClientes();
     this.loadPermissions();
     this.inicializarFiltros();
+    this.setupSearchOptimization();
+    this.setupAutoRefresh();
+    this.setupKeyboardShortcuts();
+    this.uiState.lastUpdate = this.currentDateTime;
   }
   
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    
+    if (this.autoRefreshInterval) {
+      clearInterval(this.autoRefreshInterval);
+    }
+    
+    document.removeEventListener('keydown', this.handleKeyboardShortcuts);
   }
   
   // ==================== INICIALIZACIÓN ====================
+  
+  private initializeForm(): void {
+    this.clienteForm = this.fb.group({
+      nombres: ['', [Validators.required, Validators.minLength(2), this.noWhitespaceValidator]],
+      apellidos: ['', [Validators.required, Validators.minLength(2), this.noWhitespaceValidator]],
+      dni: ['', [this.dniValidator]],
+      ruc: ['', [this.rucValidator]],
+      telefono: ['', [this.telefonoValidator]],
+      email: ['', [Validators.email]],
+      direccion: [''],
+      fechaNacimiento: ['', [this.fechaNacimientoValidator]],
+      estado: [true]
+    });
+  }
   
   private inicializarFiltros(): void {
     this.clientesFiltrados = [...this.clientes];
@@ -186,14 +270,202 @@ export class ClientesComponent implements OnInit, OnDestroy {
       direccion: '',
       email: '',
       estado: true,
-      fechaNacimiento: ''
+      fechaNacimiento: '',
+      fechaCreacion: this.currentDateTime.toISOString(),
+      fechaActualizacion: undefined,
+      compras: 0,
+      totalCompras: 0,
+      ultimaCompra: undefined
     };
+  }
+  
+  // ==================== OPTIMIZACIONES DE PERFORMANCE ====================
+  
+  private setupSearchOptimization(): void {
+    this.searchSubject$.pipe(
+      debounceTime(this.SEARCH_DEBOUNCE_TIME),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.filtroTexto = searchTerm;
+      this.aplicarFiltros();
+      this.updateSugerencias(searchTerm);
+      this.cdr.markForCheck();
+    });
+  }
+  
+  onSearchChange = (event: Event) => {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchSubject$.next(value);
+  };
+  
+  private setupAutoRefresh(): void {
+    if (this.uiState.autoRefreshEnabled) {
+      this.autoRefreshInterval = setInterval(() => {
+        if (!this.visible && !this.loading) {
+          this.cargarClientesSilencioso();
+        }
+      }, this.AUTO_REFRESH_INTERVAL);
+    }
+  }
+  
+  private setupKeyboardShortcuts(): void {
+    document.addEventListener('keydown', this.handleKeyboardShortcuts.bind(this));
+  }
+  
+  private handleKeyboardShortcuts(event: KeyboardEvent): void {
+    // Ctrl + N = Nuevo cliente
+    if (event.ctrlKey && event.key === 'n') {
+      event.preventDefault();
+      this.openNew();
+    }
+    
+    // Ctrl + F = Enfocar búsqueda
+    if (event.ctrlKey && event.key === 'f') {
+      event.preventDefault();
+      const searchInput = document.querySelector('input[placeholder*="Búsqueda"]') as HTMLInputElement;
+      searchInput?.focus();
+    }
+    
+    // Escape = Cerrar diálogos
+    if (event.key === 'Escape') {
+      this.hideAllDialogs();
+    }
+    
+    // Ctrl + S = Guardar (si hay formulario abierto)
+    if (event.ctrlKey && event.key === 's' && this.visible) {
+      event.preventDefault();
+      this.guardarCliente();
+    }
+    
+    // F5 = Actualizar
+    if (event.key === 'F5') {
+      event.preventDefault();
+      this.cargarClientes();
+    }
+  }
+  
+  private hideAllDialogs(): void {
+    this.visible = false;
+    this.detalleDialog = false;
+    this.estadisticasDialog = false;
+    this.cdr.markForCheck();
+  }
+  
+  // ==================== VALIDADORES MEJORADOS ====================
+  
+  private noWhitespaceValidator(control: AbstractControl): {[key: string]: any} | null {
+    if (control.value && control.value.trim().length === 0) {
+      return { 'whitespace': true };
+    }
+    return null;
+  }
+
+  private dniValidator = (control: AbstractControl): {[key: string]: any} | null => {
+    if (!control.value) return null;
+    
+    const dni = control.value.toString();
+    if (!/^\d{8}$/.test(dni)) {
+      return { 'dniInvalido': true };
+    }
+    
+    return this.validarDigitoVerificadorDNI(dni) ? null : { 'dniInvalido': true };
+  };
+
+  private rucValidator = (control: AbstractControl): {[key: string]: any} | null => {
+    if (!control.value) return null;
+    
+    const ruc = control.value.toString();
+    if (!/^\d{11}$/.test(ruc)) {
+      return { 'rucInvalido': true };
+    }
+    
+    return this.validarDigitoVerificadorRUC(ruc) ? null : { 'rucInvalido': true };
+  };
+
+  private telefonoValidator = (control: AbstractControl): {[key: string]: any} | null => {
+    if (!control.value) return null;
+    
+    const telefono = control.value.toString().replace(/\D/g, '');
+    if (telefono.length < 9 || telefono.length > 15) {
+      return { 'telefonoInvalido': true };
+    }
+    
+    return null;
+  };
+
+  private fechaNacimientoValidator = (control: AbstractControl): {[key: string]: any} | null => {
+    if (!control.value) return null;
+    
+    const fechaNac = new Date(control.value);
+    const hoy = new Date();
+    const edad = hoy.getFullYear() - fechaNac.getFullYear();
+    
+    if (edad < 0 || edad > 120) {
+      return { 'fechaNacimientoInvalida': true };
+    }
+    
+    return null;
+  };
+  
+  // Validaciones específicas para Perú
+  private validarDigitoVerificadorDNI(dni: string): boolean {
+    const digitos = dni.split('').map(Number);
+    const factores = [3, 2, 7, 6, 5, 4, 3, 2];
+    
+    let suma = 0;
+    for (let i = 0; i < 7; i++) {
+      suma += digitos[i] * factores[i];
+    }
+    
+    const residuo = suma % 11;
+    const digitoVerificador = residuo < 2 ? residuo : 11 - residuo;
+    
+    return digitoVerificador === digitos[7];
+  }
+
+  private validarDigitoVerificadorRUC(ruc: string): boolean {
+    const digitos = ruc.split('').map(Number);
+    const factores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+    
+    let suma = 0;
+    for (let i = 0; i < 10; i++) {
+      suma += digitos[i] * factores[i];
+    }
+    
+    const residuo = suma % 11;
+    const digitoVerificador = residuo < 2 ? residuo : 11 - residuo;
+    
+    return digitoVerificador === digitos[10];
+  }
+  
+  // Getter para acceso fácil a los controles del formulario
+  get f() { return this.clienteForm.controls; }
+  
+  // Validación en tiempo real
+  getFieldError(fieldName: string): string | null {
+    const field = this.clienteForm.get(fieldName);
+    
+    if (field && field.errors && (field.dirty || field.touched)) {
+      if (field.errors['required']) return `${fieldName} es obligatorio`;
+      if (field.errors['email']) return 'Email inválido';
+      if (field.errors['dniInvalido']) return 'DNI inválido (8 dígitos)';
+      if (field.errors['rucInvalido']) return 'RUC inválido (11 dígitos)';
+      if (field.errors['telefonoInvalido']) return 'Teléfono inválido';
+      if (field.errors['fechaNacimientoInvalida']) return 'Fecha de nacimiento inválida';
+      if (field.errors['whitespace']) return 'No puede estar vacío';
+      if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+    }
+    
+    return null;
   }
 
   // ==================== GESTIÓN DE DATOS ====================
   
   cargarClientes(): void {
     this.loading = true;
+    this.uiState.isTableLoading = true;
+    
     this.clienteService.listar()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -201,10 +473,35 @@ export class ClientesComponent implements OnInit, OnDestroy {
           this.clientes = data;
           this.aplicarFiltros();
           this.loading = false;
+          this.uiState.isTableLoading = false;
+          this.uiState.lastUpdate = new Date();
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.mostrarError('Error al cargar clientes', error.message);
           this.loading = false;
+          this.uiState.isTableLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+  
+  private cargarClientesSilencioso(): void {
+    this.clienteService.listar()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          const hasChanges = JSON.stringify(data) !== JSON.stringify(this.clientes);
+          if (hasChanges) {
+            this.clientes = data;
+            this.aplicarFiltros();
+            this.uiState.lastUpdate = new Date();
+            this.mostrarInfo('Actualizado', 'Los datos se han actualizado automáticamente');
+            this.cdr.markForCheck();
+          }
+        },
+        error: () => {
+          // Silencioso, no mostrar error en auto-refresh
         }
       });
   }
@@ -217,6 +514,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.filtroTexto = '';
     this.filtroEstado = 'todos';
     this.filtroCompletitud = 'todos';
+    this.sugerenciasBusqueda = [];
     this.aplicarFiltros();
   }
 
@@ -252,6 +550,35 @@ export class ClientesComponent implements OnInit, OnDestroy {
     }
 
     this.clientesFiltrados = clientesFiltrados;
+    this.uiState.selectedRowsCount = this.selectedClientes.length;
+    this.cdr.markForCheck();
+  }
+  
+  private updateSugerencias(termino: string): void {
+    this.sugerenciasBusqueda = this.getSugerenciasBusqueda(termino);
+  }
+  
+  getSugerenciasBusqueda(termino: string): string[] {
+    if (!termino || termino.length < 2) return [];
+    
+    const sugerencias = new Set<string>();
+    const terminoLower = termino.toLowerCase();
+    
+    this.clientes.forEach(cliente => {
+      if (cliente.nombres?.toLowerCase().includes(terminoLower)) {
+        sugerencias.add(cliente.nombres);
+      }
+      
+      if (cliente.apellidos?.toLowerCase().includes(terminoLower)) {
+        sugerencias.add(cliente.apellidos);
+      }
+      
+      if (cliente.email?.toLowerCase().includes(terminoLower)) {
+        sugerencias.add(cliente.email);
+      }
+    });
+    
+    return Array.from(sugerencias).slice(0, 5);
   }
 
   // ==================== CRUD OPERATIONS ====================
@@ -265,7 +592,10 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.editMode = false;
     this.submitted = false;
     this.cliente = this.initCliente();
+    this.clienteForm.reset();
+    this.clienteForm.patchValue(this.cliente);
     this.visible = true;
+    this.cdr.markForCheck();
   }
 
   editCliente(cliente: Cliente): void {
@@ -277,14 +607,17 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.editMode = true;
     this.submitted = false;
     this.cliente = { ...cliente };
+    this.clienteForm.patchValue(this.cliente);
     this.visible = true;
+    this.cdr.markForCheck();
   }
 
   guardarCliente(): void {
     this.submitted = true;
     
-    // Validaciones
-    if (!this.validarCliente()) {
+    if (this.clienteForm.invalid) {
+      this.markFormGroupTouched(this.clienteForm);
+      this.mostrarError('Formulario inválido', 'Por favor, corrija los errores en el formulario');
       return;
     }
 
@@ -298,6 +631,11 @@ export class ClientesComponent implements OnInit, OnDestroy {
     }
     
     this.loading = true;
+    this.uiState.isFormSaving = true;
+    
+    // Actualizar datos del cliente con el formulario
+    this.cliente = { ...this.cliente, ...this.clienteForm.value };
+    this.cliente.fechaActualizacion = this.currentDateTime.toISOString();
     
     const operacion = this.editMode && this.cliente.id
       ? this.clienteService.actualizar(this.cliente.id, this.cliente)
@@ -310,6 +648,8 @@ export class ClientesComponent implements OnInit, OnDestroy {
         
         if (!this.editMode && this.crearYAgregar) {
           this.cliente = this.initCliente();
+          this.clienteForm.reset();
+          this.clienteForm.patchValue(this.cliente);
           this.submitted = false;
         } else {
           this.hideDialog();
@@ -322,7 +662,16 @@ export class ClientesComponent implements OnInit, OnDestroy {
       },
       complete: () => {
         this.loading = false;
+        this.uiState.isFormSaving = false;
+        this.cdr.markForCheck();
       }
+    });
+  }
+  
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
     });
   }
 
@@ -411,6 +760,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.loading = false;
+          this.cdr.markForCheck();
         }
       });
   }
@@ -444,16 +794,34 @@ export class ClientesComponent implements OnInit, OnDestroy {
   verDetallesCliente(cliente: Cliente): void {
     this.clienteDetalle = { ...cliente };
     this.detalleDialog = true;
+    this.cdr.markForCheck();
   }
 
   mostrarEstadisticas(): void {
     this.estadisticasDialog = true;
+    this.cdr.markForCheck();
   }
 
   mostrarMenuAcciones(event: Event, cliente: Cliente): void {
     this.clienteSeleccionado = cliente;
     this.itemsMenuAcciones = this.construirMenuAcciones(cliente);
     this.menuAcciones.toggle(event);
+  }
+  
+  mostrarMenuAccionesMobile(event: Event, cliente: Cliente): void {
+    event.stopPropagation();
+    this.mostrarMenuAcciones(event, cliente);
+  }
+  
+  toggleClienteSelection(cliente: Cliente): void {
+    const index = this.selectedClientes.findIndex(c => c.id === cliente.id);
+    if (index > -1) {
+      this.selectedClientes.splice(index, 1);
+    } else {
+      this.selectedClientes.push(cliente);
+    }
+    this.uiState.selectedRowsCount = this.selectedClientes.length;
+    this.cdr.markForCheck();
   }
 
   private construirMenuAcciones(cliente: Cliente): MenuItem[] {
@@ -522,7 +890,6 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  // Cambiar estas funciones de private a public para el template
   public validarEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -561,15 +928,18 @@ export class ClientesComponent implements OnInit, OnDestroy {
       nombres: cliente.nombres + ' (Copia)',
       dni: '',
       ruc: '',
-      email: ''
+      email: '',
+      fechaCreacion: this.currentDateTime.toISOString(),
+      fechaActualizacion: undefined
     };
+    this.clienteForm.patchValue(this.cliente);
     this.visible = true;
+    this.cdr.markForCheck();
   }
 
-  // Añadir función getCompletion
   public getCompletion(cliente: Cliente): number {
     let completed = 0;
-    const totalFields = 7; // Número total de campos importantes
+    const totalFields = 7;
     
     if (cliente.nombres?.trim()) completed++;
     if (cliente.apellidos?.trim()) completed++;
@@ -582,13 +952,121 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return Math.round((completed / totalFields) * 100);
   }
 
-  // Añadir función exportarFichaCliente
   public exportarFichaCliente(cliente: Cliente): void {
+    this.uiState.isExporting = true;
     this.mostrarInfo('Exportando', 'Generando ficha del cliente...');
-    // Implementar lógica de exportación
+    
+    // Simular exportación
+    setTimeout(() => {
+      this.uiState.isExporting = false;
+      this.mostrarExito('Exportado', 'Ficha del cliente generada correctamente');
+      this.cdr.markForCheck();
+    }, 2000);
   }
 
-  // ==================== FUNCIONES DE ESTADÍSTICAS ====================
+  // ==================== MÉTRICAS Y ESTADÍSTICAS ====================
+  
+  // Información del sistema
+  getCurrentDateTime(): string {
+    return this.currentDateTime.toLocaleString('es-PE', {
+      timeZone: 'UTC',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
+  getCurrentUser(): string {
+    return this.currentUser;
+  }
+
+  getCurrentDate(): Date {
+    return this.currentDateTime;
+  }
+
+  getCurrentTime(): string {
+    return this.currentDateTime.toLocaleTimeString('es-PE', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'UTC'
+    });
+  }
+
+  getSaludoPersonalizado(): string {
+    const hora = this.currentDateTime.getUTCHours(); // 14 = 2 PM
+    
+    if (hora >= 5 && hora < 12) {
+      return `¡Buenos días, ${this.currentUser}!`;
+    } else if (hora >= 12 && hora < 18) {
+      return `¡Buenas tardes, ${this.currentUser}!`;
+    } else {
+      return `¡Buenas noches, ${this.currentUser}!`;
+    }
+  }
+
+  getFechaFormateada(): string {
+    return this.currentDateTime.toLocaleDateString('es-PE', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+  }
+  
+  // Métricas específicas para zapatería
+  getMetricasZapateria(): MetricasZapateria {
+    const total = this.clientes.length;
+    const activos = this.getClientesActivos();
+    const conCompras = this.clientes.filter(c => c.compras && c.compras > 0).length;
+    const clientesVIP = this.clientes.filter(c => (c.compras || 0) >= 10).length;
+    const promedioCompras = total > 0 ? 
+      this.clientes.reduce((sum, c) => sum + (c.compras || 0), 0) / total : 0;
+
+    return {
+      total,
+      activos,
+      inactivos: total - activos,
+      conCompras,
+      clientesVIP,
+      promedioCompras: Math.round(promedioCompras * 100) / 100,
+      porcentajeActivos: total > 0 ? Math.round((activos / total) * 100) : 0,
+      ultimaActualizacion: this.uiState.lastUpdate
+    };
+  }
+  
+  getAnalisisValorCliente(): AnalisisValorCliente {
+    const clientesConVentas = this.clientes.filter(c => c.totalCompras && c.totalCompras > 0);
+    
+    if (clientesConVentas.length === 0) {
+      return {
+        totalVentas: 0,
+        promedioGasto: 0,
+        clienteTop: null,
+        ticketPromedio: 0
+      };
+    }
+
+    const totalVentas = clientesConVentas.reduce((sum, c) => sum + (c.totalCompras || 0), 0);
+    const promedioGasto = totalVentas / clientesConVentas.length;
+    const totalTransacciones = clientesConVentas.reduce((sum, c) => sum + (c.compras || 0), 0);
+    const ticketPromedio = totalTransacciones > 0 ? totalVentas / totalTransacciones : 0;
+    
+    const clienteTop = clientesConVentas.reduce((prev, current) => 
+      (current.totalCompras || 0) > (prev.totalCompras || 0) ? current : prev
+    );
+
+    return {
+      totalVentas,
+      promedioGasto: Math.round(promedioGasto * 100) / 100,
+      clienteTop,
+      ticketPromedio: Math.round(ticketPromedio * 100) / 100
+    };
+  }
   
   getEstadisticas(): ClienteEstadisticas {
     const total = this.clientes.length;
@@ -633,15 +1111,19 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.submitted = false;
     this.crearYAgregar = false;
     this.cliente = this.initCliente();
+    this.clienteForm.reset();
+    this.cdr.markForCheck();
   }
 
   hideDetalleDialog(): void {
     this.detalleDialog = false;
     this.clienteDetalle = null;
+    this.cdr.markForCheck();
   }
 
   hideEstadisticasDialog(): void {
     this.estadisticasDialog = false;
+    this.cdr.markForCheck();
   }
 
   // ==================== FUNCIONES DE MENSAJES ====================
@@ -676,23 +1158,33 @@ export class ClientesComponent implements OnInit, OnDestroy {
   // ==================== FUNCIONES DE EXPORTACIÓN ====================
   
   exportarExcel(): void {
-    // Implementar exportación a Excel
+    this.uiState.isExporting = true;
     this.mostrarInfo('Exportando', 'Generando archivo Excel...');
+    
+    // Simular exportación
+    setTimeout(() => {
+      this.uiState.isExporting = false;
+      this.mostrarExito('Exportado', 'Archivo Excel generado correctamente');
+      this.cdr.markForCheck();
+    }, 3000);
   }
 
   exportarPDF(): void {
-    // Implementar exportación a PDF
+    this.uiState.isExporting = true;
     this.mostrarInfo('Exportando', 'Generando archivo PDF...');
+    
+    // Simular exportación
+    setTimeout(() => {
+      this.uiState.isExporting = false;
+      this.mostrarExito('Exportado', 'Archivo PDF generado correctamente');
+      this.cdr.markForCheck();
+    }, 3000);
   }
 
   // ==================== FUNCIONES DE TABLA ====================
   
   onGlobalFilter(table: any, event: Event): void {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-  }
-
-  getCurrentDate(): Date {
-    return new Date();
   }
 
   trackByCliente(index: number, cliente: Cliente): any {

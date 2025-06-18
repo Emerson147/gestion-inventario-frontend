@@ -6,7 +6,8 @@ export interface ProductoRequest {
   modelo: string;
   precioCompra: number;
   precioVenta: number;
-  imagen?: string;  
+  imagen?: string;
+  genero?: string;
 }
 
 export interface Producto {
@@ -16,9 +17,10 @@ export interface Producto {
   descripcion?: string;
   marca: string;
   modelo: string;
-  precioCompra: number;
+  precioCompra: number;   
   precioVenta: number;
   imagen?: string;
+  genero?: string;
   fechaCreacion?: string;
   fechaActualizacion?: string;
 }

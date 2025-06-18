@@ -1,60 +1,265 @@
 <p-toast></p-toast>
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-<!-- Header con estadísticas rápidas -->
-<div class="mb-4">
-  <div class="flex justify-between items-center">
-    <div>
-      <h2 class="text-2xl font-bold m-0">Gestión de Movimientos de Inventario</h2>
-      <p class="mt-1 mb-0 text-sm">Administra tu catálogo de Movimientos de Inventario</p>
-    </div>
-    <div class="flex gap-4">
-      <div class="text-center" *ngIf="selectedMovimientos?.length">
-        <div class="text-xl font-bold text-orange-600">{{ selectedMovimientos.length }}</div>
-        <div class="text-sm">Seleccionados</div>
+<!-- Header premium con dashboard metrics -->
+<div class="mb-6">
+  <!-- Header principal con gradiente y métricas -->
+  <div class="bg-gradient-to-r from-white via-green-50 to-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+      <!-- Título principal -->
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-green-600 p-3 rounded-lg shadow-lg">
+            <i class="pi pi-arrows-alt text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 m-0">Gestión de Movimientos</h1>
+            <p class="text-gray-600 mt-1 mb-0">Control inteligente de movimientos de inventario</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dashboard metrics avanzado -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Total movimientos -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[140px] inventory-entrance">
+          <div class="flex items-center gap-3">
+            <div class="bg-blue-100 p-2 rounded-lg">
+              <i class="pi pi-list text-blue-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-blue-600">{{movimientos.length || 0}}</div>
+              <div class="text-sm text-gray-600 font-medium">Total Movimientos</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Entradas del día -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
+          <div class="flex items-center gap-3">
+            <div class="bg-green-100 p-2 rounded-lg">
+              <i class="pi pi-arrow-down text-green-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-green-600">{{getEntradasHoy()}}</div>
+              <div class="text-sm text-gray-600 font-medium">Entradas Hoy</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Salidas del día -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
+          <div class="flex items-center gap-3">
+            <div class="bg-orange-100 p-2 rounded-lg">
+              <i class="pi pi-arrow-up text-orange-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-orange-600">{{getSalidasHoy()}}</div>
+              <div class="text-sm text-gray-600 font-medium">Salidas Hoy</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Valor total movido -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[140px] inventory-entrance">
+          <div class="flex items-center gap-3">
+            <div class="bg-purple-100 p-2 rounded-lg">
+              <i class="pi pi-dollar text-purple-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-purple-600">S/{{getValorTotalMovimientos() | number:'1.0-0'}}</div>
+              <div class="text-sm text-gray-600 font-medium">Valor Total</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stock crítico afectado -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance"
+             [class.pulse-value]="getProductosStockCritico() > 0">
+          <div class="flex items-center gap-3">
+            <div class="bg-red-100 p-2 rounded-lg">
+              <i class="pi pi-exclamation-triangle text-red-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-red-600">{{getProductosStockCritico()}}</div>
+              <div class="text-sm text-gray-600 font-medium">Stock Crítico</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Eficiencia del día -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
+          <div class="flex items-center gap-3">
+            <div class="bg-teal-100 p-2 rounded-lg">
+              <i class="pi pi-chart-line text-teal-600"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-teal-600">{{getEficienciaMovimientos() | number:'1.0-0'}}%</div>
+              <div class="text-sm text-gray-600 font-medium">Eficiencia</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<p-toolbar styleClass="mb-6">
-  <ng-template pTemplate="start">
-    <p-button 
-      *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
-      label="Nuevo Movimiento" 
-      icon="pi pi-plus" 
-      class="mr-2" 
-      (click)="openNew()" 
-    />
-    <p-button 
-      *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
-      severity="secondary" 
-      label="Eliminar Seleccionados" 
-      icon="pi pi-trash" 
-      outlined 
-      (click)="deleteSelectedMovimientos()" 
-      [disabled]="!selectedMovimientos || !selectedMovimientos.length || !inventarioSeleccionadoFiltro" 
-    />
-  </ng-template>
-  <ng-template pTemplate="end">
-    <p-button 
-      label="Limpiar Filtros" 
-      icon="pi pi-filter-slash" 
-      severity="secondary" 
-      outlined
-      class="mr-2"
-      (click)="limpiarFiltros()"
-      [disabled]="!inventarioSeleccionadoFiltro"
-    />
-    <p-button 
-      label="Exportar" 
-      icon="pi pi-upload" 
-      severity="secondary" 
-      (click)="exportarExcel()"
-      [disabled]="movimientosFiltrados.length === 0"
-    />
-  </ng-template>
-</p-toolbar>
+<!-- Toolbar premium con acciones inteligentes -->
+<div class="mb-6">
+  <div class="bg-gradient-to-r from-white via-blue-50 to-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      
+      <!-- Sección izquierda - Acciones principales -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Nuevo movimiento (principal) -->
+        <button 
+          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
+          class="action-btn primary-btn"
+          (click)="openNew()">
+          <div class="btn-icon bg-blue-600">
+            <i class="pi pi-plus text-white"></i>
+          </div>
+          <div class="btn-content">
+            <div class="btn-title">Nuevo</div>
+            <div class="btn-subtitle">Movimiento</div>
+          </div>
+        </button>
+        
+        <!-- Acciones rápidas -->
+        <div class="flex items-center gap-2 ml-2">
+          <!-- Entrada rápida -->
+          <button 
+            class="quick-action-btn success-btn"
+            (click)="entradaRapida()"
+            title="Nueva Entrada">
+            <div class="quick-icon bg-green-100">
+              <i class="pi pi-arrow-down text-green-600"></i>
+            </div>
+            <span class="quick-label">Entrada</span>
+          </button>
+          
+          <!-- Salida rápida -->
+          <button 
+            class="quick-action-btn warning-btn"
+            (click)="salidaRapida()"
+            title="Nueva Salida">
+            <div class="quick-icon bg-orange-100">
+              <i class="pi pi-arrow-up text-orange-600"></i>
+            </div>
+            <span class="quick-label">Salida</span>
+          </button>
+          
+          <!-- Ajuste -->
+          <button 
+            class="quick-action-btn secondary-btn"
+            (click)="ajusteInventario()"
+            title="Ajuste de Inventario">
+            <div class="quick-icon bg-purple-100">
+              <i class="pi pi-sliders-h text-purple-600"></i>
+            </div>
+            <span class="quick-label">Ajuste</span>
+          </button>
+        </div>
+        
+        <!-- Separador visual -->
+        <div class="separator"></div>
+        
+        <!-- Eliminar seleccionados -->
+        <button 
+          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
+          class="action-btn danger-btn"
+          (click)="deleteSelectedMovimientos()"
+          [disabled]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro"
+          [class.disabled]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro">
+          <div class="btn-icon bg-red-600" [class.bg-gray-400]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro">
+            <i class="pi pi-trash text-white"></i>
+          </div>
+          <span class="btn-text">
+            Eliminar ({{selectedMovimientos.length || 0}})
+          </span>
+        </button>
+      </div>
+      
+      <!-- Sección derecha - Filtros y exportación -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Info de filtros activos -->
+        <div class="filter-info" *ngIf="inventarioSeleccionadoFiltro">
+          <div class="info-badge active">
+            <i class="pi pi-filter"></i>
+            <span>Filtros aplicados</span>
+            <div class="badge-count">{{getActiveFiltrosCount()}}</div>
+          </div>
+        </div>
+        
+        <!-- Contador de resultados -->
+        <div class="results-counter">
+          <div class="counter-badge">
+            <i class="pi pi-list"></i>
+            <span>{{movimientosFiltrados.length}} resultados</span>
+          </div>
+        </div>
+        
+        <!-- Acciones secundarias -->
+        <div class="flex items-center gap-2">
+          <!-- Limpiar filtros -->
+          <button 
+            class="secondary-action-btn"
+            (click)="limpiarFiltros()"
+            [disabled]="!inventarioSeleccionadoFiltro"
+            [class.disabled]="!inventarioSeleccionadoFiltro"
+            title="Limpiar todos los filtros">
+            <div class="secondary-icon">
+              <i class="pi pi-filter-slash"></i>
+            </div>
+          </button>
+          
+          <!-- Actualizar -->
+          <button 
+            class="secondary-action-btn"
+            (click)="refresh()"
+            title="Actualizar datos">
+            <div class="secondary-icon">
+              <i class="pi pi-refresh"></i>
+            </div>
+          </button>
+          
+          <!-- Exportar -->
+          <button 
+            class="export-btn"
+            (click)="exportarExcel()"
+            [disabled]="movimientosFiltrados.length === 0"
+            [class.disabled]="movimientosFiltrados.length === 0"
+            title="Exportar a Excel">
+            <div class="export-icon bg-emerald-100">
+              <i class="pi pi-download text-emerald-600"></i>
+            </div>
+            <span class="export-text">Exportar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Barra de progreso/estado (opcional) -->
+    <div class="status-bar" *ngIf="loading || hasActiveFilters()">
+      <div class="status-content">
+        <!-- Loading -->
+        <div class="flex items-center gap-2" *ngIf="loading">
+          <i class="pi pi-spin pi-spinner text-blue-600"></i>
+          <span class="text-sm text-gray-600">Cargando movimientos...</span>
+        </div>
+        
+        <!-- Filtros activos -->
+        <div class="flex items-center gap-2" *ngIf="loading && hasActiveFilters()">
+          <i class="pi pi-info-circle text-blue-600"></i>
+          <span class="text-sm text-gray-700">
+            Mostrando {{movimientosFiltrados.length}} de {{movimientos.length}} movimientos
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Filtro por inventario origen -->
 <div class="mb-4">
@@ -66,7 +271,7 @@
     placeholder="Seleccione un inventario para filtrar movimientos"
     [filter]="true"
     filterBy="serie"
-    [style]="{'width':'100%', 'max-width': '400px'}"
+    [style]="{'width':'100%', 'max-width': '400px'}"22
     (onChange)="filtrarMovimientosPorInventario()"
     [showClear]="true">
     <ng-template pTemplate="selectedItem">
@@ -297,14 +502,14 @@
         >
           <ng-template pTemplate="selectedItem">
             <div *ngIf="inventarioSeleccionado">
-              <div class="font-medium">{{inventarioSeleccionado.serie}}</div>
-              <small class="text-gray-500">{{inventarioSeleccionado.producto?.nombre}} - {{inventarioSeleccionado.color?.nombre}} - Talla {{inventarioSeleccionado.talla?.numero}}</small>
+              <div class="font-medium">{{inventarioSeleccionado.serie}} - {{inventarioSeleccionado.producto?.nombre}}</div>
+              <small class="text-gray-500">{{inventarioSeleccionado.color?.nombre}} - Talla {{inventarioSeleccionado.talla?.numero}}</small>
             </div>
           </ng-template>
           <ng-template let-item pTemplate="item">
             <div>
-              <div class="font-medium">{{item.serie}}</div>
-              <small class="text-gray-500">{{item.producto?.nombre}} - {{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
+              <div class="font-medium">{{item.serie}} - {{item.producto?.nombre}}</div>
+              <small class="text-gray-500">{{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
               <div class="text-xs text-blue-600 mt-1">Stock disponible: {{item.cantidad}}</div>
             </div>
           </ng-template>
@@ -334,14 +539,14 @@
         >
           <ng-template pTemplate="selectedItem">
             <div *ngIf="inventarioDestinoSeleccionado">
-              <div class="font-medium">{{inventarioDestinoSeleccionado.serie}}</div>
-              <small class="text-gray-500">{{inventarioDestinoSeleccionado.producto?.nombre}} - {{inventarioDestinoSeleccionado.color?.nombre}} - Talla {{inventarioDestinoSeleccionado.talla?.numero}}</small>
+              <div class="font-medium">{{inventarioDestinoSeleccionado.serie}} - {{inventarioDestinoSeleccionado.producto?.nombre}}</div>
+              <small class="text-gray-500">{{inventarioDestinoSeleccionado.color?.nombre}} - Talla {{inventarioDestinoSeleccionado.talla?.numero}}</small>
             </div>
           </ng-template>
           <ng-template let-item pTemplate="item">
             <div>
-              <div class="font-medium">{{item.serie}}</div>
-              <small class="text-gray-500">{{item.producto?.nombre}} - {{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
+              <div class="font-medium">{{item.serie}} - {{item.producto?.nombre}}</div>
+              <small class="text-gray-500">{{item.color?.nombre}} - Talla {{item.talla?.numero}}</small>
             </div>
           </ng-template>
         </p-select>

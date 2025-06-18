@@ -277,6 +277,8 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
     { icon: 'pi pi-chart-bar', label: 'Reportes' },
     { icon: 'pi pi-cog', label: 'Config' }
   ];
+
+  
   
   // Estados de pestañas
   ventasPendientesCount = 0;

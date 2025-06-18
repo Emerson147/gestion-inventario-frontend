@@ -57,10 +57,10 @@ interface TipoMovimientoOption {
     HasPermissionDirective
   ],
   providers: [MessageService, ConfirmationService],
-  templateUrl: './movimientos-inventario.component.html'
+  templateUrl: './movimientos-inventario.component.html',
+  styleUrls: ['./movimientos-inventario.component.scss']
 })
 export class MovimientosInventarioComponent implements OnInit {
-
   // Estado de datos
   movimientos: MovimientoInventario[] = [];
   movimientosFiltrados: MovimientoInventario[] = [];
@@ -72,6 +72,10 @@ export class MovimientosInventarioComponent implements OnInit {
   // Estado de filtros
   inventarioSeleccionadoFiltro: Inventario | null = null;
   tipoMovimientoFiltro: TipoMovimiento | null = null;
+  filtroTipo: string | null = null;
+  fechaMovimientoFiltro: Date | null = null;
+  productoFiltro: any = null;
+  tipoMovimientoSeleccionado: TipoMovimiento | null = null;
 
   // Estado del formulario
   movimiento: MovimientoInventario = this.createEmptyMovimiento();
@@ -79,6 +83,7 @@ export class MovimientosInventarioComponent implements OnInit {
   // Estado de UI
   movimientoDialog = false;
   loading = false;
+  isLoading = false;
   submitted = false;
   editMode = false;
 
@@ -162,20 +167,6 @@ export class MovimientosInventarioComponent implements OnInit {
   }
 
   // ========== MÉTODOS DE CRUD ==========
-  
-  openNew(): void {
-    if (!this.permissionService.canCreate('movimientosInventario')) {
-      this.showError('No tiene permisos para crear movimientos');
-      return;
-    }
-    
-    this.editMode = false;
-    this.inventarioSeleccionado = this.inventarioSeleccionadoFiltro;
-    this.movimiento = this.createEmptyMovimiento();
-    this.inventarioDestinoSeleccionado = null;
-    this.submitted = false;
-    this.movimientoDialog = true;
-  }
 
   editMovimiento(movimiento: MovimientoInventario): void {
     if (!this.permissionService.canEdit('movimientosInventario')) {
@@ -187,6 +178,20 @@ export class MovimientosInventarioComponent implements OnInit {
     this.movimiento = { ...movimiento };
     this.inventarioSeleccionado = movimiento.inventario;
     this.inventarioDestinoSeleccionado = movimiento.inventarioDestino;
+    this.submitted = false;
+    this.movimientoDialog = true;
+  }
+
+  openNew(): void {
+    if (!this.permissionService.canCreate('movimientosInventario')) {
+      this.showError('No tiene permisos para crear movimientos');
+      return;
+    }
+    
+    this.editMode = false;
+    this.inventarioSeleccionado = this.inventarioSeleccionadoFiltro;
+    this.movimiento = this.createEmptyMovimiento();
+    this.inventarioDestinoSeleccionado = null;
     this.submitted = false;
     this.movimientoDialog = true;
   }
@@ -517,5 +522,211 @@ export class MovimientosInventarioComponent implements OnInit {
       detail: error.error?.message || defaultMessage
     });
     this.loading = false;
+  }
+
+   // 📅 Variables para fechas y usuario
+   private readonly currentDateTime = new Date('2025-06-18T20:40:18Z');
+   private readonly currentUser = 'Emerson147';
+
+  /**
+   * 🕒 Obtiene la hora actual formateada
+   */
+  getCurrentTime(): string {
+    return this.currentDateTime.toLocaleTimeString('es-PE', {
+      timeZone: 'UTC',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+  
+  /**
+   * 👤 Obtiene el usuario actual
+   */
+  getCurrentUser(): string {
+    return this.currentUser;
+  }
+  
+  /**
+   * 📅 Obtiene la fecha y hora actual
+   */
+  getCurrentDateTime(): string {
+    return this.currentDateTime.toLocaleString('es-PE', {
+      timeZone: 'UTC',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+  
+  // ==================== MÉTODOS DE MÉTRICAS ====================
+  
+  /**
+   * Obtiene el número de entradas del día actual
+   */
+  getEntradasHoy(): number {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    return this.movimientos.filter(m => {
+      const fechaMovimiento = new Date(m.fechaMovimiento || '');
+      fechaMovimiento.setHours(0, 0, 0, 0);
+      return fechaMovimiento.getTime() === hoy.getTime() && m.tipo === 'ENTRADA';
+    }).length;
+  }
+
+  /**
+   * Obtiene el número de salidas del día actual
+   */
+  getSalidasHoy(): number {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    return this.movimientos.filter(m => {
+      const fechaMovimiento = new Date(m.fechaMovimiento || '');
+      fechaMovimiento.setHours(0, 0, 0, 0);
+      return fechaMovimiento.getTime() === hoy.getTime() && m.tipo === 'SALIDA';
+    }).length;
+  }
+
+  /**
+   * Calcula el valor total de los movimientos del mes actual
+   */
+  getValorTotalMovimientos(): number {
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    
+    return this.movimientos
+      .filter(m => new Date(m.fechaMovimiento || '') >= inicioMes)
+      .reduce((total, m) => total + (m.cantidad * (m.inventario?.producto?.precioVenta || 0)), 0);
+  }
+
+  /**
+   * Obtiene el número de productos con stock crítico
+   */
+  getProductosStockCritico(): number {
+    // Esto requeriría acceso a los productos o un endpoint específico
+    // Por ahora retornamos un valor calculado
+    return this.movimientos
+      .map(m => m.inventario)
+      .filter((producto, index, array) => 
+        producto && array.findIndex(p => p?.id === producto.id) === index
+      )
+      .filter(producto => (producto?.cantidad || 0) < 5) // Asumiendo stock crítico < 5
+      .length;
+  }
+
+  /**
+   * Calcula la eficiencia de los movimientos
+   */
+  getEficienciaMovimientos(): number {
+    const totalMovimientos = this.movimientos.length;
+    const movimientosExitosos = this.movimientos.filter(m => m.tipo === 'ENTRADA').length;
+    
+    return totalMovimientos > 0 ? (movimientosExitosos / totalMovimientos) * 100 : 100;
+  }
+
+  // ==================== MÉTODOS DE LA TOOLBAR ====================
+  
+  /**
+   * Cuenta el número de filtros activos
+   */
+  getActiveFiltrosCount(): number {
+    let count = 0;
+    if (this.tipoMovimientoFiltro) count++;
+    if (this.fechaMovimientoFiltro) count++;
+    if (this.productoFiltro) count++;
+    return count;
+  }
+  
+  /**
+   * Verifica si hay filtros activos
+   */
+  hasActiveFilters(): boolean {
+    return !!(this.inventarioSeleccionadoFiltro || this.filtroTipo || this.fechaMovimientoFiltro || this.productoFiltro);
+  }
+  
+  /**
+   * Elimina un filtro específico
+   */
+  removeFilter(filterType: string): void {
+    switch (filterType) {
+      case 'tipo':
+        this.filtroTipo = null;
+        this.tipoMovimientoFiltro = null;
+        break;
+      // Add other filter types as needed
+    }
+    // Optionally, re-apply filters or reset the view
+    this.filtrarMovimientosPorInventario();
+  }
+  
+  /**
+   * Aplica los filtros a la lista de movimientos
+   */
+  aplicarFiltros(): void {
+    this.movimientosFiltrados = [...this.movimientos];
+    
+    if (this.tipoMovimientoFiltro) {
+      this.movimientosFiltrados = this.movimientosFiltrados.filter(m => 
+        m.tipo === this.tipoMovimientoFiltro
+      );
+    }
+    
+    if (this.fechaMovimientoFiltro) {
+      const fechaFiltro = new Date(this.fechaMovimientoFiltro);
+      this.movimientosFiltrados = this.movimientosFiltrados.filter(m => {
+        const fechaMovimiento = new Date(m.fechaMovimiento || '');
+        return fechaMovimiento.toDateString() === fechaFiltro.toDateString();
+      });
+    }
+    
+    if (this.productoFiltro) {
+      this.movimientosFiltrados = this.movimientosFiltrados.filter(m => 
+        m.inventario?.producto?.nombre?.toLowerCase().includes(this.productoFiltro?.toLowerCase() || '')
+      );
+    }
+  }
+  
+  // ==================== MÉTODOS DE ACCIÓN RÁPIDA ====================
+  
+
+  
+  /**
+   * Abre el diálogo para nueva entrada rápida
+   */
+  entradaRapida(): void {
+    this.tipoMovimientoSeleccionado = TipoMovimiento.ENTRADA;
+    this.openNew();
+  }
+
+  /**
+   * Abre el diálogo para nueva salida rápida
+   */
+  salidaRapida(): void {
+    this.tipoMovimientoSeleccionado = TipoMovimiento.SALIDA;
+    this.openNew();
+  }
+
+  /**
+   * Abre el diálogo para ajuste de inventario
+   */
+  ajusteInventario(): void {
+    this.tipoMovimientoSeleccionado = TipoMovimiento.AJUSTE;
+    this.openNew();
+  }
+
+  /**
+   * Actualiza la lista de movimientos
+   */
+  refresh(): void {
+    this.loading = true;
+    this.isLoading = true;
+    // Implementar lógica para cargar movimientos
+    this.loading = false;
+    this.isLoading = false;
   }
 }
