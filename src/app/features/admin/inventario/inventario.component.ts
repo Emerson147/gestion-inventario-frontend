@@ -475,12 +475,14 @@ interface InventarioExtendido extends Inventario {
     .slide-in-right {
       animation: slide-in-right 0.5s ease-out;
     }
+
   `]
 })
 export class InventarioComponent implements OnInit, AfterViewInit {
   // Make Math available in template
   Math = Math;
-new: string|string[]|Set<string>|{ [klass: string]: any; }|null|undefined;
+  isLoadingProductos = false;
+  new: string|string[]|Set<string>|{ [klass: string]: any; }|null|undefined;
   
   // Helper method for calculating width percentage
   calculateWidthPercentage(current: number, max: number): number {
@@ -503,6 +505,8 @@ new: string|string[]|Set<string>|{ [klass: string]: any; }|null|undefined;
   colores: Color[] = [];
   tallas: Talla[] = [];
   almacenes: Almacen[] = [];
+
+  inventariosTotales: any[] = [];
 
   // ========== FILTROS ==========
   productoSeleccionadoFiltro: Producto | null = null;
@@ -1090,9 +1094,16 @@ new: string|string[]|Set<string>|{ [klass: string]: any; }|null|undefined;
   // ========== MÉTODOS DE CARGA (Manteniendo funcionalidad original) ==========
 
   loadProductos(): void {
+    this.isLoadingProductos = true;
     this.productoService.getProducts(0, 1000).subscribe({
-      next: (response) => this.productos = response.contenido || [],
-      error: (error) => this.handleError(error, 'No se pudo cargar los productos')
+      next: (response) => {
+        this.productos = response.contenido || [];
+        this.isLoadingProductos = false;
+      },
+      error: (error) => {
+        this.handleError(error, 'No se pudo cargar los productos');
+        this.isLoadingProductos = false;
+      }
     });
   }
 
