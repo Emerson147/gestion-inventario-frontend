@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,12 +21,10 @@ export class AppTopbar {
 
     items!: MenuItem[];
 
-    constructor(
-        public layoutService: LayoutService,
-        private messageService: MessageService,
-        private authService: AuthService,
-        private router: Router
-    ) {}
+    layoutService = inject(LayoutService);
+    private messageService = inject(MessageService);
+    private authService = inject(AuthService);
+    private router = inject(Router);
 
   get userRole(): string {
     const role = this.authService.getUserRoles() ? this.authService.getUserRoles()[0] : '';

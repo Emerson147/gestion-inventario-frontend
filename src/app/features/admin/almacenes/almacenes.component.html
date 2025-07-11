@@ -105,6 +105,11 @@
         size="large"
         class="shadow-sm hover:shadow-md transition-all duration-300" 
         (click)="openNew()"
+        (keyup.enter)="openNew()"
+        (keyup.space)="openNew()"
+        tabindex="0"
+        role="button"
+        aria-label="Abrir formulario de nuevo almacén"
         pTooltip="Crear nuevo almacén"
       />
       <p-button 
@@ -115,7 +120,12 @@
         [outlined]="true"
         size="large"
         class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="deleteSelectedAlmacenes()" 
+        (click)="deleteSelectedAlmacenes()"
+        (keyup.enter)="deleteSelectedAlmacenes()"
+        (keyup.space)="deleteSelectedAlmacenes()"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Eliminar ' + selectedAlmacenes.length + ' almacenes seleccionados'"
         [disabled]="!selectedAlmacenes.length"
         pTooltip="Eliminar almacenes seleccionados"
       />
@@ -127,6 +137,11 @@
         size="large"
         class="shadow-sm hover:shadow-md transition-all duration-300" 
         (click)="mostrarZonas()"
+        (keyup.enter)="mostrarZonas()"
+        (keyup.space)="mostrarZonas()"
+        tabindex="0"
+        role="button"
+        aria-label="Mostrar zonas de almacenamiento"
         pTooltip="Gestionar zonas de almacenes"
       />
       <p-button 
@@ -137,6 +152,11 @@
         size="large"
         class="shadow-sm hover:shadow-md transition-all duration-300" 
         (click)="mostrarMapa()"
+        (keyup.enter)="mostrarMapa()"
+        (keyup.space)="mostrarMapa()"
+        tabindex="0"
+        role="button"
+        aria-label="Mostrar mapa de almacenes"
         pTooltip="Vista de mapa de almacenes"
       />
     </div>
@@ -172,6 +192,11 @@
           pTooltip="Ver estadísticas"
           class="shadow-sm hover:shadow-md transition-all duration-300"
           (click)="mostrarEstadisticas()"
+          (keyup.enter)="mostrarEstadisticas()"
+          (keyup.space)="mostrarEstadisticas()"
+          tabindex="0"
+          role="button"
+          aria-label="Mostrar estadísticas"
         />
         <p-button 
           icon="pi pi-filter" 
@@ -182,6 +207,12 @@
           pTooltip="Filtros avanzados"
           class="shadow-sm hover:shadow-md transition-all duration-300"
           (click)="mostrarFiltros()"
+          (keyup.enter)="mostrarFiltros()"
+          (keyup.space)="mostrarFiltros()"
+          tabindex="0"
+          role="button"
+          [attr.aria-expanded]="filtrosVisibles"
+          [attr.aria-label]="filtrosVisibles ? 'Ocultar filtros' : 'Mostrar filtros'"
         />
         <p-button 
           icon="pi pi-download" 
@@ -192,6 +223,11 @@
           pTooltip="Exportar a Excel"
           class="shadow-sm hover:shadow-md transition-all duration-300"
           (click)="exportarExcel()"
+          (keyup.enter)="exportarExcel()"
+          (keyup.space)="exportarExcel()"
+          tabindex="0"
+          role="button"
+          aria-label="Exportar a Excel"
           [disabled]="!almacenes.length"
         />
         <p-button 
@@ -202,7 +238,12 @@
           size="large"
           pTooltip="Actualizar datos"
           class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="loadAlmacenes()" 
+          (click)="loadAlmacenes()"
+          (keyup.enter)="loadAlmacenes()"
+          (keyup.space)="loadAlmacenes()"
+          tabindex="0"
+          role="button"
+          aria-label="Recargar almacenes"
         />
       </div>
     </div>
@@ -361,6 +402,11 @@
               [outlined]="true"
               class="flex-1"
               (click)="mostrarDetalle(almacen)"
+              (keyup.enter)="mostrarDetalle(almacen)"
+              (keyup.space)="mostrarDetalle(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Ver detalles de ' + almacen.nombre"
             />
             <p-button 
               icon="pi pi-sitemap" 
@@ -376,6 +422,11 @@
               size="small"
               pTooltip="Editar"
               (click)="editAlmacen(almacen)"
+              (keyup.enter)="editAlmacen(almacen)"
+              (keyup.space)="editAlmacen(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Editar ' + almacen.nombre"
             />
             <p-button 
               *appHasPermission="{module: 'almacenes', permission: permissionTypes.DELETE}"
@@ -385,6 +436,11 @@
               [outlined]="true"
               pTooltip="Eliminar"
               (click)="deleteAlmacen(almacen)"
+              (keyup.enter)="deleteAlmacen(almacen)"
+              (keyup.space)="deleteAlmacen(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Eliminar ' + almacen.nombre"
             />
           </div>
         </div>
@@ -408,6 +464,11 @@
         size="large"
         class="shadow-lg hover:shadow-xl transition-all duration-300" 
         (click)="openNew()"
+        (keyup.enter)="openNew()"
+        (keyup.space)="openNew()"
+        tabindex="0"
+        role="button"
+        aria-label="Abrir formulario de nuevo almacén"
       />
     </div>
   </ng-template>
@@ -680,6 +741,11 @@
                 pTooltip="Ver detalles"
                 class="hover:shadow-md transition-all duration-300"
                 (click)="mostrarDetalle(almacen)"
+              (keyup.enter)="mostrarDetalle(almacen)"
+              (keyup.space)="mostrarDetalle(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Ver detalles de ' + almacen.nombre"
               />
               <!-- Botón Zonas -->
               <p-button 
@@ -702,6 +768,11 @@
                 pTooltip="Editar"
                 class="hover:shadow-md transition-all duration-300"
                 (click)="editAlmacen(almacen)"
+              (keyup.enter)="editAlmacen(almacen)"
+              (keyup.space)="editAlmacen(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Editar ' + almacen.nombre"
               />
               <!-- Botón Eliminar -->
               <p-button 
@@ -714,6 +785,11 @@
                 pTooltip="Eliminar"
                 class="hover:shadow-md transition-all duration-300"
                 (click)="deleteAlmacen(almacen)"
+              (keyup.enter)="deleteAlmacen(almacen)"
+              (keyup.space)="deleteAlmacen(almacen)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Eliminar ' + almacen.nombre"
               />
             </div>
           </td>
@@ -737,6 +813,11 @@
                 size="large"
                 class="shadow-lg hover:shadow-xl transition-all duration-300" 
                 (click)="openNew()"
+        (keyup.enter)="openNew()"
+        (keyup.space)="openNew()"
+        tabindex="0"
+        role="button"
+        aria-label="Abrir formulario de nuevo almacén"
               />
             </div>
           </td>
@@ -1028,6 +1109,11 @@
           label="Configurar Zonas" 
           icon="pi pi-plus" 
           (click)="mostrarZonas()"
+        (keyup.enter)="mostrarZonas()"
+        (keyup.space)="mostrarZonas()"
+        tabindex="0"
+        role="button"
+        aria-label="Mostrar zonas de almacenamiento"
         />
       </div>
     </div>
@@ -1240,7 +1326,7 @@
                   [(ngModel)]="almacen.nombre" 
                   class="w-full h-12"
                   placeholder="Ej: Almacén Principal, Bodega Norte..."
-                  autofocus 
+                  
                   [ngClass]="{'ng-invalid': submitted && !almacen.nombre.trim()}" 
                 />
                 <small class="text-red-500 block mt-1" *ngIf="submitted && !almacen.nombre?.trim()">
@@ -1276,11 +1362,12 @@
               
               <!-- Tipo de almacén -->
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="tipoAlmacen" class="block font-bold mb-3">
                   <i class="pi pi-tag mr-2 text-purple-600"></i>
                   Tipo de Almacén
                 </label>
                 <p-select 
+                  id="tipoAlmacen"
                   [options]="tiposAlmacen" 
                   [(ngModel)]="almacen.tipoAlmacen" 
                   optionLabel="label"
@@ -1300,11 +1387,11 @@
               
               <!-- Estado -->
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="estadoAlmacen" class="block font-bold mb-3">
                   <i class="pi pi-bookmark mr-2 text-indigo-600"></i>
                   Estado
                 </label>
-                <p-select 
+                <p-select id="estadoAlmacen" 
                   [options]="estadosAlmacen" 
                   [(ngModel)]="almacen.estado" 
                   optionLabel="label"
@@ -1339,7 +1426,8 @@
                   [max]="999999"
                   suffix=" unidades"
                   class="w-full"
-                />
+                  aria-label="Capacidad máxima">
+                </p-inputNumber>
                 <small class="text-gray-500 block mt-1">
                   Capacidad total de almacenamiento
                 </small>
@@ -1425,11 +1513,11 @@
             <!-- Dirección física -->
             <div>
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="direccionCompleta" class="block font-bold mb-3">
                   <i class="pi pi-home mr-2 text-green-600"></i>
                   Dirección Completa
                 </label>
-                <input 
+                <input id="direccionCompleta" 
                   type="text" 
                   pInputText 
                   [ngModel]="getDireccion()" 
@@ -1440,11 +1528,11 @@
               </div>
               
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="ciudad" class="block font-bold mb-3">
                   <i class="pi pi-building mr-2 text-blue-600"></i>
                   Ciudad
                 </label>
-                <input 
+                <input id="ciudad" 
                   type="text" 
                   pInputText 
                   [ngModel]="getCiudad()" 
@@ -1455,11 +1543,11 @@
               </div>
               
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="pais" class="block font-bold mb-3">
                   <i class="pi pi-flag mr-2 text-red-600"></i>
                   País
                 </label>
-                <input 
+                <input id="pais" 
                   type="text" 
                   pInputText 
                   [ngModel]="almacen.ubicacionGeografica?.pais || ''" 
@@ -1470,11 +1558,11 @@
               </div>
               
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="codigoPostal" class="block font-bold mb-3">
                   <i class="pi pi-envelope mr-2 text-purple-600"></i>
                   Código Postal
                 </label>
-                <input 
+                <input id="codigoPostal" 
                   type="text" 
                   pInputText 
                   [ngModel]="almacen.ubicacionGeografica?.codigoPostal || ''" 
@@ -1488,11 +1576,11 @@
             <!-- Coordenadas -->
             <div>
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="latitud" class="block font-bold mb-3">
                   <i class="pi pi-compass mr-2 text-indigo-600"></i>
                   Latitud
                 </label>
-                <p-inputNumber
+                <p-inputNumber id="latitud"
                   [ngModel]="almacen.ubicacionGeografica?.latitud || 0"
                   (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.latitud = $event"
                   [minFractionDigits]="6"
@@ -1505,11 +1593,11 @@
               </div>
               
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="longitud" class="block font-bold mb-3">
                   <i class="pi pi-compass mr-2 text-indigo-600"></i>
                   Longitud
                 </label>
-                <p-inputNumber
+                <p-inputNumber id="longitud"
                   [ngModel]="almacen.ubicacionGeografica?.longitud || 0"
                   (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.longitud = $event"
                   [minFractionDigits]="6"
@@ -1539,11 +1627,11 @@
             <!-- Horarios y operación -->
             <div>
               <div class="mb-5">
-                <label class="block font-bold mb-3">
+                <label for="horarioOperacion" class="block font-bold mb-3">
                   <i class="pi pi-clock mr-2 text-blue-600"></i>
                   Horario de Operación
                 </label>
-                <input 
+                <input id="horarioOperacion" 
                   type="text" 
                   pInputText 
                   [(ngModel)]="almacen.horarioOperacion" 
@@ -1554,135 +1642,151 @@
               
               <!-- Controles ambientales -->
               <div class="mb-5">
-                <label class="block font-bold mb-3">
-                  <i class="pi pi-sun mr-2 text-orange-600"></i>
-                  Control de Temperatura
-                </label>
-                <div class="grid grid-cols-3 gap-3">
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Mín °C</label>
-                    <p-inputNumber
-                      [ngModel]="getTemperaturaMin()"
-                      (ngModelChange)="setTemperaturaMin($event)"
-                      [min]="-50"
-                      [max]="50"
-                      class="w-full"
-                    />
+                <div class="mb-5">
+                  <h4 class="block font-bold mb-3 text-gray-800">
+                    <i class="pi pi-sun mr-2 text-orange-600"></i>
+                    Control de Temperatura
+                  </h4>
+                  <div class="grid grid-cols-3 gap-3">
+                    <div>
+                      <label for="temperaturaMin" class="text-sm text-gray-600 mb-1 block">Mín °C</label>
+                      <p-inputNumber id="temperaturaMin"
+                        [ngModel]="getTemperaturaMin()"
+                        (ngModelChange)="setTemperaturaMin($event)"
+                        [min]="-50"
+                        [max]="50"
+                        class="w-full"
+                        aria-label="Temperatura mínima">
+                      </p-inputNumber>
+                    </div>
+                    <div>
+                      <label for="temperaturaMax" class="text-sm text-gray-600 mb-1 block">Máx °C</label>
+                      <p-inputNumber
+                        id="temperaturaMax"
+                        [ngModel]="getTemperaturaMax()"
+                        (ngModelChange)="setTemperaturaMax($event)"
+                        [min]="-50"
+                        [max]="100"
+                        suffix="°C"
+                        class="w-full"
+                      />
+                    </div>
+                    <div>
+                      <label for="temperaturaActual" class="text-sm text-gray-600 mb-1 block">Actual °C</label>
+                      <p-inputNumber
+                        id="temperaturaActual"
+                        [ngModel]="getTemperaturaActual()"
+                        (ngModelChange)="setTemperaturaActual($event)"
+                        [min]="-50"
+                        [max]="100"
+                        suffix="°C"
+                        class="w-full"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Máx °C</label>
-                    <p-inputNumber
-                      [ngModel]="getTemperaturaMax()"
-                      (ngModelChange)="setTemperaturaMax($event)"
-                      [min]="-50"
-                      [max]="50"
-                      class="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Actual °C</label>
-                    <p-inputNumber 
-                      [ngModel]="getTemperaturaActual()" 
-                      (ngModelChange)="setTemperaturaActual($event)"
-                      [min]="getTemperaturaMin()" 
-                      [max]="getTemperaturaMax()" 
-                      [showButtons]="true" 
-                      buttonLayout="horizontal"
-                      class="w-full"
-                    />
+                </div>
+                
+                <div class="mb-5">
+                  <h4 class="block font-bold mb-3 text-gray-800">
+                    <i class="pi pi-cloud mr-2 text-cyan-600"></i>
+                    Control de Humedad
+                  </h4>
+                  <div class="grid grid-cols-3 gap-3">
+                    <div>
+                      <label for="humedadMin" class="text-sm text-gray-600 mb-1 block">Mín %</label>
+                      <p-inputNumber
+                        id="humedadMin"
+                        [ngModel]="almacen.humedad?.min ?? 40"
+                        (ngModelChange)="initHumedad(); almacen.humedad!.min = $event"
+                        [min]="0"
+                        [max]="100"
+                        suffix="%"
+                        class="w-full"
+                        aria-label="Humedad mínima"
+                      />
+                    </div>
+                    <div>
+                      <label for="humedadMax" class="text-sm text-gray-600 mb-1 block">Máx %</label>
+                      <p-inputNumber
+                        id="humedadMax"
+                        [ngModel]="almacen.humedad?.max ?? 60"
+                        (ngModelChange)="initHumedad(); almacen.humedad!.max = $event"
+                        [min]="0"
+                        [max]="100"
+                        suffix="%"
+                        class="w-full"
+                        aria-label="Humedad máxima"
+                      />
+                    </div>
+                    <div>
+                      <label for="humedadActual" class="text-sm text-gray-600 mb-1 block">Actual %</label>
+                      <p-inputNumber 
+                        id="humedadActual"
+                        [ngModel]="getHumedadActual()" 
+                        (ngModelChange)="setHumedadActual($event)"
+                        [min]="getHumedadMin()" 
+                        [max]="getHumedadMax()" 
+                        suffix="%"
+                        class="w-full"
+                        aria-label="Humedad actual"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <div class="mb-5">
-                <label class="block font-bold mb-3">
-                  <i class="pi pi-cloud mr-2 text-cyan-600"></i>
-                  Control de Humedad
-                </label>
-                <div class="grid grid-cols-3 gap-3">
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Mín %</label>
-                    <p-inputNumber
-                      [ngModel]="almacen.humedad?.min ?? 40"
-                      (ngModelChange)="initHumedad(); almacen.humedad!.min = $event"
-                      [min]="0"
-                      [max]="100"
-                      suffix="%"
-                      class="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Máx %</label>
-                    <p-inputNumber
-                      [ngModel]="almacen.humedad?.max ?? 60"
-                      (ngModelChange)="initHumedad(); almacen.humedad!.max = $event"
-                      [min]="0"
-                      [max]="100"
-                      suffix="%"
-                      class="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Actual %</label>
-                    <p-inputNumber 
-                      [ngModel]="getHumedadActual()" 
-                      (ngModelChange)="setHumedadActual($event)"
-                      [min]="getHumedadMin()" 
-                      [max]="getHumedadMax()" 
-                      [showButtons]="true" 
-                      buttonLayout="horizontal"
-                      class="w-full"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Sistemas de seguridad -->
-            <div>
-              <div class="bg-gray-50 rounded-xl p-4">
-                <h5 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <i class="pi pi-shield text-red-600"></i>
-                  Sistemas de Seguridad
-                </h5>
-                
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-700">Sistema contra incendios</span>
-                    <p-checkbox
-                      [(ngModel)]="almacen.seguridad!.sistemasIncendio"
-                      [binary]="true"
-                    />
-                  </div>
+              <!-- Sistemas de seguridad -->
+              <div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                  <h5 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="pi pi-shield text-red-600"></i>
+                    Sistemas de Seguridad
+                  </h5>
                   
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-700">Sistema de alarmas</span>
-                    <p-checkbox
-                      [(ngModel)]="almacen.seguridad!.alarmas"
-                      [binary]="true"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label class="block text-gray-700 mb-2">Número de cámaras</label>
-                    <p-inputNumber
-                      [(ngModel)]="almacen.seguridad!.camaras"
-                      [showButtons]="true"
-                      [min]="0"
-                      [max]="100"
-                      class="w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label class="block text-gray-700 mb-2">Accesos controlados</label>
-                    <p-inputNumber
-                      [(ngModel)]="almacen.seguridad!.accesosControlados"
-                      [showButtons]="true"
-                      [min]="0"
-                      [max]="50"
-                      class="w-full"
-                    />
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-700">Sistema contra incendios</span>
+                      <p-checkbox
+                        [(ngModel)]="almacen.seguridad!.sistemasIncendio"
+                        [binary]="true"
+                        aria-label="Sistema contra incendios">
+                      </p-checkbox>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-700">Sistema de alarmas</span>
+                      <p-checkbox
+                        [(ngModel)]="almacen.seguridad!.alarmas"
+                        [binary]="true"
+                        aria-label="Sistema de alarmas">
+                      </p-checkbox>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="camaras" class="block text-gray-700 mb-2">Número de cámaras</label>
+                      <p-inputNumber
+                        inputId="camaras"
+                        [(ngModel)]="almacen.seguridad!.camaras"
+                        [showButtons]="true"
+                        [min]="0"
+                        [max]="100"
+                        class="w-full"
+                        aria-label="Número de cámaras">
+                      </p-inputNumber>
+                    </div>
+                    
+                    <div>
+                      <label for="accesosControlados" class="block text-gray-700 mb-2">Accesos controlados</label>
+                      <p-inputNumber
+                        id="accesosControlados"
+                        [(ngModel)]="almacen.seguridad!.accesosControlados"
+                        [showButtons]="true"
+                        [min]="0"
+                        [max]="50"
+                        class="w-full"
+                        aria-label="Número de accesos controlados">
+                      </p-inputNumber>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1701,15 +1805,15 @@
               </h5>
               <div class="space-y-3">
                 <div *ngIf="almacen.fechaCreacion">
-                  <label class="text-sm font-medium text-gray-600">Fecha de Creación</label>
+                  <span class="text-sm font-medium text-gray-600">Fecha de Creación</span>
                   <div class="text-gray-800">{{almacen.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss'}}</div>
                 </div>
                 <div *ngIf="almacen.fechaActualizacion">
-                  <label class="text-sm font-medium text-gray-600">Última Actualización</label>
+                  <span class="text-sm font-medium text-gray-600">Última Actualización</span>
                   <div class="text-gray-800">{{almacen.fechaActualizacion | date:'dd/MM/yyyy HH:mm:ss'}}</div>
                 </div>
                 <div *ngIf="almacen.fechaUltimaInspeccion">
-                  <label class="text-sm font-medium text-gray-600">Última Inspección</label>
+                  <span class="text-sm font-medium text-gray-600">Última Inspección</span>
                   <div class="text-gray-800">{{almacen.fechaUltimaInspeccion | date:'dd/MM/yyyy'}}</div>
                 </div>
               </div>
@@ -1761,13 +1865,23 @@
           label="Cancelar" 
           icon="pi pi-times" 
           class="p-button-text" 
-          (click)="hideDialog()" 
+          (click)="hideDialog()"
+          (keyup.enter)="hideDialog()"
+          (keyup.space)="hideDialog()"
+          tabindex="0"
+          role="button"
+          aria-label="Cancelar"
           [disabled]="loading"
         />
         <p-button 
           [label]="editMode ? 'Actualizar Almacén' : 'Crear Almacén'" 
           icon="pi pi-check" 
-          (click)="saveAlmacen()" 
+          (click)="saveAlmacen()"
+          (keyup.enter)="saveAlmacen()"
+          (keyup.space)="saveAlmacen()"
+          tabindex="0"
+          role="button"
+          aria-label="Guardar cambios"
           [loading]="loading"
           class="shadow-lg"
         />
@@ -2286,13 +2400,23 @@
           label="Cerrar" 
           icon="pi pi-times" 
           class="p-button-text" 
-          (click)="hideEstadisticasDialog()" 
+          (click)="hideEstadisticasDialog()"
+          (keyup.enter)="hideEstadisticasDialog()"
+          (keyup.space)="hideEstadisticasDialog()"
+          tabindex="0"
+          role="button"
+          aria-label="Cerrar estadísticas"
         />
         <p-button 
           label="Exportar Reporte" 
           icon="pi pi-download" 
           severity="info"
-          (click)="exportarEstadisticas()" 
+          (click)="exportarEstadisticas()"
+          (keyup.enter)="exportarEstadisticas()"
+          (keyup.space)="exportarEstadisticas()"
+          tabindex="0"
+          role="button"
+          aria-label="Exportar estadísticas"
         />
         <p-button 
           label="Actualizar Datos" 
@@ -2437,27 +2561,27 @@
               Ubicación Geográfica
             </h4>
             <div class="space-y-3">
-              <div>
-                <label class="text-sm font-medium text-gray-600">Dirección Completa</label>
-                <div class="text-gray-800">{{almacen.ubicacionGeografica.direccion || 'No especificada'}}</div>
+              <div class="form-group">
+                <label for="direccion" class="text-sm font-medium text-gray-600">Dirección Completa</label>
+                <div id="direccion" class="text-gray-800">{{almacen.ubicacionGeografica.direccion || 'No especificada'}}</div>
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="text-sm font-medium text-gray-600">Ciudad</label>
+                  <span class="text-sm font-medium text-gray-600">Ciudad</span>
                   <div class="text-gray-800">{{almacen.ubicacionGeografica.ciudad || 'No especificada'}}</div>
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-600">País</label>
-                  <div class="text-gray-800">{{almacen.ubicacionGeografica.pais || 'No especificado'}}</div>
+                  <span class="text-sm font-medium text-gray-600">Código Postal</span>
+                  <div class="text-gray-800">{{almacen.ubicacionGeografica.codigoPostal || 'No especificado'}}</div>
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-3" *ngIf="almacen.ubicacionGeografica.latitud && almacen.ubicacionGeografica.longitud">
                 <div>
-                  <label class="text-sm font-medium text-gray-600">Latitud</label>
+                  <span class="text-sm font-medium text-gray-600">Latitud</span>
                   <div class="text-gray-800 font-mono text-sm">{{almacen.ubicacionGeografica.latitud | number:'1.6-6'}}</div>
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-600">Longitud</label>
+                  <span class="text-sm font-medium text-gray-600">Longitud</span>
                   <div class="text-gray-800 font-mono text-sm">{{almacen.ubicacionGeografica.longitud | number:'1.6-6'}}</div>
                 </div>
               </div>
@@ -2473,7 +2597,7 @@
             <div class="space-y-4">
               <!-- Temperatura -->
               <div *ngIf="almacen.temperatura">
-                <label class="text-sm font-medium text-gray-600 mb-2 block">Temperatura (°C)</label>
+                <span class="text-sm font-medium text-gray-600 mb-2 block">Temperatura (°C)</span>
                 <div class="grid grid-cols-3 gap-3 text-center">
                   <div class="bg-blue-50 rounded-lg p-3">
                     <div class="text-lg font-bold text-blue-600">{{almacen.temperatura.min}}°</div>
@@ -2492,7 +2616,7 @@
               
               <!-- Humedad -->
               <div *ngIf="almacen.humedad">
-                <label class="text-sm font-medium text-gray-600 mb-2 block">Humedad (%)</label>
+                <span class="text-sm font-medium text-gray-600 mb-2 block">Humedad (%)</span>
                 <div class="grid grid-cols-3 gap-3 text-center">
                   <div class="bg-cyan-50 rounded-lg p-3">
                     <div class="text-lg font-bold text-cyan-600">{{almacen.humedad.min}}%</div>
@@ -2829,7 +2953,12 @@
           label="Cerrar" 
           icon="pi pi-times" 
           class="p-button-text" 
-          (click)="hideDetalleDialog()" 
+          (click)="hideDetalleDialog()"
+          (keyup.enter)="hideDetalleDialog()"
+          (keyup.space)="hideDetalleDialog()"
+          tabindex="0"
+          role="button"
+          aria-label="Cerrar detalles"
         />
         <p-button 
           label="Gestionar Zonas" 
@@ -2876,6 +3005,11 @@
             icon="pi pi-plus" 
             size="small"
             (click)="crearNuevaZona()"
+            (keyup.enter)="crearNuevaZona()"
+            (keyup.space)="crearNuevaZona()"
+            tabindex="0"
+            role="button"
+            aria-label="Crear nueva zona"
           />
           <p-button 
             label="Layout Automático" 
@@ -2884,6 +3018,11 @@
             [outlined]="true"
             size="small"
             (click)="generarLayoutAutomatico()"
+            (keyup.enter)="generarLayoutAutomatico()"
+            (keyup.space)="generarLayoutAutomatico()"
+            tabindex="0"
+            role="button"
+            aria-label="Generar diseño automático"
           />
         </div>
       </div>
@@ -2963,6 +3102,11 @@
               [style.border-color]="getTipoZonaColor(zona.tipo)"
               [title]="zona.nombre + ' - ' + zona.descripcion"
               (click)="seleccionarZona(zona)"
+              (keyup.enter)="seleccionarZona(zona)"
+              (keyup.space)="seleccionarZona(zona)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Seleccionar zona ' + zona.nombre"
             >
               <!-- Contenido de la zona -->
               <div class="p-2 h-full flex flex-col justify-center text-center relative">
@@ -3002,7 +3146,14 @@
               </div>
               
               <!-- Handles de redimensionamiento -->
-              <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-white border border-gray-400 rounded cursor-se-resize"></div>
+              <div 
+                class="absolute -bottom-1 -right-1 w-3 h-3 bg-white border border-gray-400 rounded cursor-se-resize"
+                tabindex="0"
+                role="button"
+                aria-label="Redimensionar zona"
+                (keydown.enter)="iniciarRedimension($event, zona)"
+                (keydown.space)="iniciarRedimension($event, zona)">
+              </div>
             </div>
             
             <!-- Indicadores de coordenadas -->
@@ -3044,6 +3195,11 @@
               [class.ring-2]="zonaSeleccionada?.id === zona.id"
               [class.ring-indigo-500]="zonaSeleccionada?.id === zona.id"
               (click)="seleccionarZona(zona)"
+              (keyup.enter)="seleccionarZona(zona)"
+              (keyup.space)="seleccionarZona(zona)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Seleccionar zona ' + zona.nombre"
             >
               <!-- Header de la zona -->
               <div class="flex items-center justify-between mb-2">
@@ -3070,6 +3226,11 @@
                     severity="info"
                     pTooltip="Editar"
                     (click)="editarZona(zona); $event.stopPropagation()"
+                    (keyup.enter)="editarZona(zona); $event.stopPropagation()"
+                    (keyup.space)="editarZona(zona); $event.stopPropagation()"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Editar zona ' + zona.nombre"
                   />
                   <p-button 
                     icon="pi pi-trash" 
@@ -3078,6 +3239,11 @@
                     severity="danger"
                     pTooltip="Eliminar"
                     (click)="eliminarZona(zona); $event.stopPropagation()"
+                    (keyup.enter)="eliminarZona(zona); $event.stopPropagation()"
+                    (keyup.space)="eliminarZona(zona); $event.stopPropagation()"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Eliminar zona ' + zona.nombre"
                   />
                 </div>
               </div>
@@ -3133,6 +3299,11 @@
                 icon="pi pi-plus" 
                 size="small"
                 (click)="crearNuevaZona()"
+            (keyup.enter)="crearNuevaZona()"
+            (keyup.space)="crearNuevaZona()"
+            tabindex="0"
+            role="button"
+            aria-label="Crear nueva zona"
               />
             </div>
           </ng-template>
@@ -3145,8 +3316,9 @@
             </h5>
             <div class="bg-gray-50 rounded-lg p-4 space-y-3">
               <div>
-                <label class="text-sm font-medium text-gray-700">Código</label>
+                <label for="codigoZona" class="text-sm font-medium text-gray-700">Código</label>
                 <input 
+                  id="codigoZona"
                   type="text" 
                   pInputText 
                   [(ngModel)]="zonaSeleccionada.codigo" 
@@ -3155,8 +3327,9 @@
                 />
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-700">Nombre</label>
+                <label for="nombreZona" class="text-sm font-medium text-gray-700">Nombre</label>
                 <input 
+                  id="nombreZona"
                   type="text" 
                   pInputText 
                   [(ngModel)]="zonaSeleccionada.nombre" 
@@ -3165,8 +3338,9 @@
                 />
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-700">Tipo</label>
+                <label for="tipoZona" class="text-sm font-medium text-gray-700">Tipo</label>
                 <p-select 
+                  inputId="tipoZona"
                   [options]="tiposZona" 
                   [(ngModel)]="zonaSeleccionada.tipo" 
                   optionLabel="label"
@@ -3177,8 +3351,9 @@
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="text-sm font-medium text-gray-700">Capacidad</label>
+                  <label for="capacidadZona" class="text-sm font-medium text-gray-700">Capacidad</label>
                   <p-inputNumber
+                    inputId="capacidadZona"
                     [(ngModel)]="zonaSeleccionada.capacidad"
                     [min]="1"
                     [showButtons]="true"
@@ -3186,8 +3361,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700">Ocupación</label>
+                  <label for="ocupacionZona" class="text-sm font-medium text-gray-700">Ocupación</label>
                   <p-inputNumber
+                    inputId="ocupacionZona"
                     [(ngModel)]="zonaSeleccionada.ocupacion"
                     [min]="0"
                     [max]="zonaSeleccionada.capacidad"
@@ -3197,8 +3373,9 @@
                 </div>
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-700">Estado</label>
+                <label for="estadoZona" class="text-sm font-medium text-gray-700">Estado</label>
                 <p-select 
+                  inputId="estadoZona"
                   [options]="estadosZona" 
                   [(ngModel)]="zonaSeleccionada.estado" 
                   optionLabel="label"
@@ -3214,6 +3391,11 @@
                   size="small"
                   class="flex-1"
                   (click)="guardarZona()"
+                  (keyup.enter)="guardarZona()"
+                  (keyup.space)="guardarZona()"
+                  tabindex="0"
+                  role="button"
+                  aria-label="Guardar zona"
                 />
                 <p-button 
                   label="Cancelar" 
@@ -3222,6 +3404,11 @@
                   [outlined]="true"
                   size="small"
                   (click)="cancelarEdicionZona()"
+                  (keyup.enter)="cancelarEdicionZona()"
+                  (keyup.space)="cancelarEdicionZona()"
+                  tabindex="0"
+                  role="button"
+                  aria-label="Cancelar edición"
                 />
               </div>
             </div>
@@ -3248,12 +3435,22 @@
           label="Guardar Layout" 
           icon="pi pi-save" 
           severity="info"
-          (click)="guardarLayoutZonas()" 
+          (click)="guardarLayoutZonas()"
+          (keyup.enter)="guardarLayoutZonas()"
+          (keyup.space)="guardarLayoutZonas()"
+          tabindex="0"
+          role="button"
+          aria-label="Guardar diseño de zonas"
         />
         <p-button 
           label="Aplicar Cambios" 
           icon="pi pi-check" 
-          (click)="aplicarCambiosZonas()" 
+          (click)="aplicarCambiosZonas()"
+          (keyup.enter)="aplicarCambiosZonas()"
+          (keyup.space)="aplicarCambiosZonas()"
+          tabindex="0"
+          role="button"
+          aria-label="Aplicar cambios"
         />
       </div>
     </div>
@@ -3295,6 +3492,11 @@
             size="small"
             pTooltip="Zoom in"
             (click)="zoomIn()"
+            (keyup.enter)="zoomIn()"
+            (keyup.space)="zoomIn()"
+            tabindex="0"
+            role="button"
+            aria-label="Acercar mapa"
           />
           <p-button 
             icon="pi pi-search-minus" 
@@ -3302,6 +3504,11 @@
             size="small"
             pTooltip="Zoom out"
             (click)="zoomOut()"
+            (keyup.enter)="zoomOut()"
+            (keyup.space)="zoomOut()"
+            tabindex="0"
+            role="button"
+            aria-label="Alejar mapa"
           />
           <p-button 
             icon="pi pi-compass" 
@@ -3309,6 +3516,11 @@
             size="small"
             pTooltip="Centrar mapa"
             (click)="centrarMapa()"
+            (keyup.enter)="centrarMapa()"
+            (keyup.space)="centrarMapa()"
+            tabindex="0"
+            role="button"
+            aria-label="Centrar mapa"
           />
           <p-button 
             icon="pi pi-map-marker" 
@@ -3317,6 +3529,11 @@
             size="small"
             pTooltip="Mostrar todos"
             (click)="mostrarTodosAlmacenes()"
+            (keyup.enter)="mostrarTodosAlmacenes()"
+            (keyup.space)="mostrarTodosAlmacenes()"
+            tabindex="0"
+            role="button"
+            aria-label="Mostrar todos los almacenes"
           />
         </div>
       </div>
@@ -3343,6 +3560,11 @@
                 *ngFor="let almacen of almacenes.slice(0, 4)" 
                 class="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                 (click)="centrarEnAlmacen(almacen)"
+                (keyup.enter)="centrarEnAlmacen(almacen)"
+                (keyup.space)="centrarEnAlmacen(almacen)"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Centrar en ' + almacen.nombre"
               >
                 <div class="flex items-center gap-2 mb-2">
                   <div class="map-marker w-3 h-3 rounded-full"
@@ -3380,8 +3602,9 @@
             </h4>
             <div class="space-y-3">
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Estado</label>
-                <p-multiSelect 
+                <label for="filtroEstado" class="text-sm font-medium text-gray-700 mb-1 block">Estado</label>
+                <p-multiSelect
+                  inputId="filtroEstado" 
                   [options]="estadosAlmacenConTodos" 
                   [(ngModel)]="filtroEstadoMapa" 
                   optionLabel="label"
@@ -3393,8 +3616,9 @@
               />
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Tipo</label>
+                <label for="filtroTipo" class="text-sm font-medium text-gray-700 mb-1 block">Tipo</label>
                 <p-multiSelect 
+                  inputId="filtroTipo"
                   [options]="tiposAlmacenConTodos" 
                   [(ngModel)]="filtroTipoMapa" 
                   optionLabel="label"
@@ -3435,6 +3659,11 @@
                 *ngFor="let almacen of almacenes" 
                 class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-300"
                 (click)="centrarEnAlmacen(almacen)"
+                (keyup.enter)="centrarEnAlmacen(almacen)"
+                (keyup.space)="centrarEnAlmacen(almacen)"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Centrar en ' + almacen.nombre"
               >
                 <div class="map-marker w-3 h-3 rounded-full"
                      [ngClass]="{
@@ -3519,20 +3748,35 @@
           label="Cerrar" 
           icon="pi pi-times" 
           class="p-button-text" 
-          (click)="hideMapaDialog()" 
+          (click)="hideMapaDialog()"
+          (keyup.enter)="hideMapaDialog()"
+          (keyup.space)="hideMapaDialog()"
+          tabindex="0"
+          role="button"
+          aria-label="Cerrar mapa"
         />
         <p-button 
           label="Exportar Mapa" 
           icon="pi pi-download" 
           severity="info"
           [outlined]="true"
-          (click)="exportarMapa()" 
+          (click)="exportarMapa()"
+          (keyup.enter)="exportarMapa()"
+          (keyup.space)="exportarMapa()"
+          tabindex="0"
+          role="button"
+          aria-label="Exportar mapa"
         />
         <p-button 
           label="Configurar GPS" 
           icon="pi pi-cog" 
           severity="secondary"
-          (click)="configurarGPS()" 
+          (click)="configurarGPS()"
+          (keyup.enter)="configurarGPS()"
+          (keyup.space)="configurarGPS()"
+          tabindex="0"
+          role="button"
+          aria-label="Configurar GPS"
         />
       </div>
     </div>
@@ -3581,11 +3825,12 @@
         
         <!-- Filtro por nombre -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroNombre" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-building mr-1 text-blue-600"></i>
-            Nombre del Almacén
+            <span>Nombre del Almacén</span>
           </label>
           <input 
+            id="filtroNombre"
             type="text" 
             pInputText 
             [(ngModel)]="filtrosAlmacenes.nombre" 
@@ -3596,11 +3841,12 @@
         
         <!-- Filtro por ubicación -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroUbicacion" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-map-marker mr-1 text-green-600"></i>
             Ubicación
           </label>
           <input 
+            id="filtroUbicacion"
             type="text" 
             pInputText 
             [(ngModel)]="filtrosAlmacenes.ubicacion" 
@@ -3611,11 +3857,12 @@
         
         <!-- Filtro por estado -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroEstado" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-bookmark mr-1 text-indigo-600"></i>
             Estado
           </label>
           <p-select 
+            inputId="filtroEstado"
             [options]="estadosAlmacen" 
             [(ngModel)]="filtrosAlmacenes.estado" 
             optionLabel="label"
@@ -3628,11 +3875,12 @@
         
         <!-- Filtro por tipo -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroTipoAlmacen" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-tag mr-1 text-purple-600"></i>
             Tipo de Almacén
           </label>
           <p-select 
+            inputId="filtroTipoAlmacen"
             [options]="tiposAlmacen" 
             [(ngModel)]="filtrosAlmacenes.tipoAlmacen" 
             optionLabel="label"
@@ -3645,11 +3893,12 @@
         
         <!-- Filtro por responsable -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroResponsable" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-user mr-1 text-orange-600"></i>
             Responsable
           </label>
           <input 
+            id="filtroResponsable"
             type="text" 
             pInputText 
             [(ngModel)]="filtrosAlmacenes.responsable" 
@@ -3668,14 +3917,15 @@
         
         <!-- Rango de capacidad -->
         <div class="mb-6">
-          <label class="block font-semibold mb-3 text-gray-700">
+          <div class="block font-semibold mb-3 text-gray-700">
             <i class="pi pi-database mr-1 text-blue-600"></i>
             Rango de Capacidad
-          </label>
+          </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-sm text-gray-600 mb-1 block">Capacidad Mínima</label>
+              <label for="capacidadMin" class="text-sm text-gray-600 mb-1 block">Capacidad Mínima</label>
               <p-inputNumber
+                inputId="capacidadMin"
                 [(ngModel)]="filtrosAlmacenes.capacidadMin"
                 [showButtons]="true"
                 [min]="0"
@@ -3684,8 +3934,9 @@
               />
             </div>
             <div>
-              <label class="text-sm text-gray-600 mb-1 block">Capacidad Máxima</label>
+              <label for="capacidadMax" class="text-sm text-gray-600 mb-1 block">Capacidad Máxima</label>
               <p-inputNumber
+                inputId="capacidadMax"
                 [(ngModel)]="filtrosAlmacenes.capacidadMax"
                 [showButtons]="true"
                 [min]="0"
@@ -3698,14 +3949,15 @@
         
         <!-- Rango de ocupación -->
         <div class="mb-6">
-          <label class="block font-semibold mb-3 text-gray-700">
+          <div class="block font-semibold mb-3 text-gray-700">
             <i class="pi pi-chart-pie mr-1 text-green-600"></i>
             Rango de Ocupación (%)
-          </label>
+          </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-sm text-gray-600 mb-1 block">Ocupación Mínima</label>
+              <label for="ocupacionMin" class="text-sm text-gray-600 mb-1 block">Ocupación Mínima</label>
               <p-inputNumber
+                inputId="ocupacionMin"
                 [(ngModel)]="filtrosAlmacenes.ocupacionMin"
                 [showButtons]="true"
                 [min]="0"
@@ -3716,8 +3968,9 @@
               />
             </div>
             <div>
-              <label class="text-sm text-gray-600 mb-1 block">Ocupación Máxima</label>
+              <label for="ocupacionMax" class="text-sm text-gray-600 mb-1 block">Ocupación Máxima</label>
               <p-inputNumber
+                inputId="ocupacionMax"
                 [(ngModel)]="filtrosAlmacenes.ocupacionMax"
                 [showButtons]="true"
                 [min]="0"
@@ -3742,11 +3995,12 @@
         
         <!-- Filtro por ciudad -->
         <div class="mb-4">
-          <label class="block font-semibold mb-2 text-gray-700">
+          <label for="filtroCiudad" class="block font-semibold mb-2 text-gray-700">
             <i class="pi pi-building mr-1 text-indigo-600"></i>
             Ciudad
           </label>
           <input 
+            id="filtroCiudad"
             type="text" 
             pInputText 
             [(ngModel)]="filtrosAlmacenes.ciudad" 
@@ -3757,10 +4011,10 @@
         
         <!-- Filtros rápidos predefinidos -->
         <div class="mb-4">
-          <label class="block font-semibold mb-3 text-gray-700">
+          <div class="block font-semibold mb-3 text-gray-700">
             <i class="pi pi-bolt mr-1 text-yellow-600"></i>
             Filtros Rápidos
-          </label>
+          </div>
           <div class="grid grid-cols-2 gap-2">
             <p-button 
               label="Alta Capacidad" 

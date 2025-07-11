@@ -1,7 +1,6 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import {provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling} from '@angular/router';
 import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
-import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { routes } from './app.routes';
 import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeng/themes/aura';

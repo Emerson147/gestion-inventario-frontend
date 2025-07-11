@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { VentaRequest, VentaResponse, VentaDetalleRequest, VentaDetalleResponse } from '../../../core/models/venta.model';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
+import { VentaRequest, VentaResponse } from '../../../core/models/venta.model';
 import { Cliente } from '../../../core/models/cliente.model';
 import { Producto } from '../../../core/models/product.model';
 import { VentasService } from '../../../core/services/ventas.service';
@@ -36,9 +36,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { StepsModule } from 'primeng/steps';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
-import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { PagoRequest, PagoResponse } from '../../../core/models/pago.model';
 import { Inventario } from '../../../core/models/inventario.model';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
@@ -48,13 +47,14 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageModule } from 'primeng/message';
 
 import { MetricaVenta } from './components/metrics/metric-card.interface';
-import { MetricCardComponent } from './components/metrics/metric-card.component';
 import { UserInfoCardComponent, UserInfo } from './components/user-info/user-info-card.component';
 import { HistorialVentasComponent } from "./components/historial-ventas/historial-ventas.component";
 import { ReportesComponent } from "./components/reporte-ventas/reporte-ventas.component";
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { environment } from '../../../../environments/environment';
+import { Color, Talla } from '../../../core/models/colors.model';
+import { ChartData, ChartOptions } from 'chart.js';
 
 
 interface OpcionSelect {
@@ -64,14 +64,20 @@ interface OpcionSelect {
 
 interface ItemCarrito {
   inventarioId: number;
-  producto: any;
-  color: any;
-  talla: any;
+  producto: Producto;
+  color: Color;
+  talla: Talla;
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
   stock: number;
   codigoCompleto: string;
+}
+
+// Agregar esta interfaz después de ItemCarrito
+interface ItemDevolucion extends ItemCarrito {
+  cantidadDevolver: number;
+  seleccionado: boolean;
 }
 
 interface EstadisticasVentas {
@@ -93,6 +99,13 @@ interface FiltrosVentas {
   estado: string;
   tipoComprobante: string;
   metodoPago: string;
+}
+
+// Agregar interfaz Tendencia
+interface Tendencia {
+  direccion: 'up' | 'down' | 'neutral';
+  porcentaje: number;
+  periodo: string;
 }
 
 @Component({
@@ -142,11 +155,11 @@ interface FiltrosVentas {
 })
 export class RealizarVentaComponent implements OnInit, OnDestroy {
   @ViewChild('codigoInput') codigoInput!: ElementRef;
-  @ViewChild('menuAcciones') menuAcciones: any;
+  @ViewChild('menuAcciones') menuAcciones!: ElementRef;
 
     // Nueva propiedad para las métricas
     metricas: MetricaVenta[] = [];
-    showDashboard: boolean = false;
+    showDashboard = false;
 
     // Mini gráficos de ejemplo (ya los tienes)
     miniGraficoVentas = [65, 78, 82, 90, 75, 88, 92];
@@ -162,7 +175,7 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   clientesRecientes: Cliente[] = [];
 
   // Timer para actualizar la hora
-  private timeInterval: any;
+  private timeInterval: ReturnType<typeof setInterval> | undefined;
   
   // Para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -174,10 +187,10 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   showKeyboardHelp = false;
 
    // Estado del panel de atajos
-  mostrarPanelAtajos: boolean = false;
+  mostrarPanelAtajos = false;
 
     // Auto-hide del panel
-  private panelAtajosTimeout: any;
+  private panelAtajosTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // ==================== DATOS PRINCIPALES ====================
   ventas: VentaResponse[] = [];
@@ -194,25 +207,25 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   nuevaVenta: VentaRequest = this.initNuevaVenta();
   clienteSeleccionado: Cliente | null = null;
   clientesFiltrados: Cliente[] = [];
-  productosAutoComplete: any[] = [];
+  productosAutoComplete: Inventario[] = [];
   carrito: ItemCarrito[] = [];
   
   // Variables de entrada
-  codigoBusqueda: string = '';
-  cantidadInput: number = 1;
+  codigoBusqueda = '';
+  cantidadInput = 1;
   
   // Cálculos
-  subtotalVenta: number = 0;
-  igvVenta: number = 0;
-  totalVenta: number = 0;
-  igvPorcentaje: number = 0.18; // 18% IGV
+  subtotalVenta = 0;
+  igvVenta = 0;
+  totalVenta = 0;
+  igvPorcentaje = 0.18; // 18% IGV
   
   // ==================== PAGO ====================
   procesandoPago = false;
   pagoDialog = false;
   pagoActual: PagoRequest = this.initPago();
-  montoPagado: number = 0;
-  vuelto: number = 0;
+  montoPagado = 0;
+  vuelto = 0;
   pagosPendientes: PagoResponse[] = [];
   
   // ==================== COMPROBANTES ====================
@@ -226,15 +239,21 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   
   // ==================== REPORTES ====================
   estadisticas: EstadisticasVentas = this.initEstadisticas();
-  chartVentas: any;
-  chartOptions: any;
+  chartVentas: ChartData = {
+    labels: [],
+    datasets: []
+  };
+  chartOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
   reportesDialog = false;
   
   // ==================== DEVOLUCIONES ====================
   devolucionDialog = false;
   ventaDevolucion: VentaResponse | null = null;
-  itemsDevolucion: any[] = [];
-  motivoDevolucion: string = '';
+  itemsDevolucion: ItemDevolucion[] = [];
+  motivoDevolucion = '';
   
   // ==================== CONFIGURACIONES ====================
   metodosPago: OpcionSelect[] = [
@@ -269,7 +288,7 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
     { label: 'Pago', icon: 'pi pi-credit-card' },
     { label: 'Comprobante', icon: 'pi pi-file' }
   ];
-  pasoActual: number = 0;
+  pasoActual = 0;
 
   tabsInfo = [
     { icon: 'pi pi-shopping-cart', label: 'POS' },
@@ -289,28 +308,28 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   isFullscreen = false;
 
   // Lista de productos populares / recientes
-productosPopulares: any[] = [];
+productosPopulares: Inventario[] = [];
 
 // Cliente recientemente buscado
-clienteBusqueda: any = null;
+clienteBusqueda: Cliente | null = null;
 productoBusqueda: Producto | null = null;
 
 // Variables para descuentos
-aplicarDescuento: boolean = false;
-porcentajeDescuento: number = 0;
-descuentoVenta: number = 0;
+aplicarDescuento = false;
+porcentajeDescuento = 0;
+descuentoVenta = 0;
 tipoDescuento: 'porcentaje' | 'monto' = 'porcentaje';
 
 // Variables para el scanner
-scannerActive: boolean = false;
+scannerActive = false;
 videoElement!: ElementRef;
 stream: MediaStream | null = null;
 
 // Variables para el pago
 minFechaCredito = new Date();
 fechaVencimientoCredito = new Date(this.minFechaCredito.getTime() + 30*24*60*60*1000); // +30 días
-cuotasCredito: number = 1;
-esVentaCredito: boolean = false;
+cuotasCredito = 1;
+esVentaCredito = false;
 opcionesCuotas = [
   { label: '1 cuota', value: 1 },
   { label: '2 cuotas', value: 2 },
@@ -318,7 +337,7 @@ opcionesCuotas = [
   { label: '6 cuotas', value: 6 },
   { label: '12 cuotas', value: 12 }
 ];
-pasoPagoActual: number = 0;
+pasoPagoActual = 0;
 pasosPago = [
   { label: 'Verificar', icon: 'pi pi-check-circle' },
   { label: 'Cobrar', icon: 'pi pi-credit-card' },
@@ -353,16 +372,17 @@ seriesComprobante: { label: string, value: string }[] = [
   networkStatus: 'online' | 'offline' | 'slow' = 'online';
   lastSync = new Date();
 
+  private ventasService: VentasService = inject(VentasService);
+  private pagosService: PagosService = inject(PagosService);
+  private clienteService: ClienteService = inject(ClienteService);
+  private productoService: ProductoService = inject(ProductoService);
+  private inventarioService: InventarioService = inject(InventarioService);
+  private messageService: MessageService = inject(MessageService);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private permissionService: PermissionService = inject(PermissionService);
 
   constructor(
-    private ventasService: VentasService,
-    private pagosService: PagosService,
-    private clienteService: ClienteService,
-    private productoService: ProductoService,
-    private inventarioService: InventarioService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private permissionService: PermissionService
+   
   ) {
     this.initChartOptions();
     this.mostrarPanelBienvenida();
@@ -426,17 +446,17 @@ private cargarProductosPopulares(): void {
     
   // Agregar imagen aleatoria para demostración
   this.productosPopulares.forEach((producto, index) => {
-    producto.imagen = `/assets/images/product-${(index % 4) + 1}.jpg`;
+    producto.producto!.imagen = `/assets/images/product-${(index % 4) + 1}.jpg`;
   });
 }
 
-seleccionarProductoPopular(producto: any): void {
+  seleccionarProductoPopular(inventario: Inventario): void {
   if (!this.clienteSeleccionado) {
     this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente primero');
     return;
   }
   
-  this.agregarProductoAlCarrito(producto);
+  this.agregarProductoAlCarrito(inventario);
 }
 
 getStockClass(stock: number): string {
@@ -466,8 +486,8 @@ private cargarClientesRecientes(): void {
   }
 }
 
-onClienteSelect(event: any): void {
-  if (event && event.value) {
+onClienteSelect(event: { value: Cliente }): void {
+  if (event && event.value && event.value.id) {
     this.seleccionarCliente(event.value);
   }
 }
@@ -669,8 +689,13 @@ cerrarComprobante(): void {
 }
 
 
-descargarComprobantePDF(venta: any): void {
-  this.mostrarInfo('Descargando', 'Generando archivo PDF del comprobante...');
+descargarComprobantePDF(venta: VentaResponse): void {
+  // Usar el parámetro venta para generar el PDF
+  const nombreArchivo = `comprobante-${venta.numeroVenta}.pdf`;
+  this.mostrarInfo('Descargando', `Generando archivo PDF: ${nombreArchivo}`);
+  
+  // TODO: Implementar lógica real de descarga
+  // this.ventasService.descargarComprobantePDF(venta.id);
 }
 
 
@@ -797,7 +822,7 @@ verPendientes(): void {
 
   // ============ pestanias ============
   // Navegación de pestañas
-onTabChange(event: any): void {
+onTabChange(event: { index: number }): void {
   const tabIndex = event.index;
   this.activeTabIndex = tabIndex;
   
@@ -1117,22 +1142,10 @@ verificarConfiguracionesPendientes(): void {
   this.productoService.getProducts(0, 500)
     .pipe(takeUntil(this.destroy$))
     .subscribe({
-      next: (response: any) => {
-        console.log('🚨🚨🚨 RESPUESTA DEL SERVICIO:', response);
-        
-        // ✅ USAR 'contenido' EN LUGAR DE 'content'
+      next: (response: { contenido?: Producto[], content?: Producto[], data?: Producto[] }) => {
         this.productos = response?.contenido || response?.content || response?.data || [];
-        
-        console.log('🚨🚨🚨 PRODUCTOS ASIGNADOS:', this.productos);
-        console.log('🚨 CANTIDAD:', this.productos?.length);
-        
-        if (this.productos?.length > 0) {
-          console.log('🚨 PRIMER PRODUCTO:', this.productos[0]);
-          console.log('🚨 PRECIO PRIMER PRODUCTO:', this.productos[0]?.precioVenta);
-        }
       },
-      error: (error: any) => {
-        console.error('🚨🚨🚨 ERROR:', error);
+      error: (error: Error) => {
         this.mostrarError('Error al cargar productos', error.message);
       }
     });
@@ -1154,11 +1167,10 @@ verificarConfiguracionesPendientes(): void {
   this.inventarioService.obtenerInventarios(0, 5000) // Cargar hasta 5000 items
     .pipe(takeUntil(this.destroy$))
     .subscribe({
-      next: (response: any) => {
+      next: (response: { contenido?: Inventario[], content?: Inventario[], data?: Inventario[] }) => {
         this.inventarios = response?.contenido || response?.content || response?.data || [];
-        console.log(`✅ Inventarios cargados: ${this.inventarios.length}`);
       },
-      error: (error: any) => this.mostrarError('Error al cargar inventarios', error.message)
+      error: (error: Error) => this.mostrarError('Error al cargar inventarios', error.message)
     });
 }
 
@@ -1229,7 +1241,7 @@ verificarConfiguracionesPendientes(): void {
 
   // ==================== POS - GESTIÓN DE CLIENTES ====================
   
-  buscarClientes(event: any): void {
+  buscarClientes(event: { query: string }): void {
     const query = event.query.toLowerCase();
     this.clientesFiltrados = this.clientes.filter(cliente => 
       cliente.nombres?.toLowerCase().includes(query) ||
@@ -1239,9 +1251,10 @@ verificarConfiguracionesPendientes(): void {
     );
   }
 
-  seleccionarCliente(event: any): void {
-    // Extraer el cliente del evento
-    const cliente = event.value || event;
+  seleccionarCliente(event: { value?: Cliente } | Cliente): void {
+    const cliente = 'value' in event ? event.value : event;
+    if (!cliente || !('nombres' in cliente)) return;
+    
     this.clienteSeleccionado = cliente;
     this.nuevaVenta.clienteId = cliente.id!;
     this.pasoActual = 1;
@@ -1277,7 +1290,7 @@ verificarConfiguracionesPendientes(): void {
     }
   }
 
-  buscarProductosAutoComplete(event: any): void {
+  buscarProductosAutoComplete(event: { query: string }): void {
   const query = event.query.toLowerCase();
   
   console.log(`🔍 INICIANDO BÚSQUEDA: "${query}"`);
@@ -1362,31 +1375,24 @@ verificarConfiguracionesPendientes(): void {
 }
 
 
-seleccionarProductoAutoComplete(event: any): void {
-  console.log('🔍 EVENT COMPLETO:', event);
-  
-  // ✅ EXTRAER EL PRODUCTO DEL EVENT.VALUE
-  const producto = event?.value || event;
-  
-  console.log('🔍 PRODUCTO EXTRAÍDO:', producto);
-  
-  // ✅ VERIFICAR QUE TENGA LA ESTRUCTURA CORRECTA
-  if (!producto || !producto.producto) {
-    console.error('❌ Producto inválido:', producto);
-    this.mostrarError('Error', 'Producto inválido seleccionado');
-    return;
-  }
+seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): void {
+  const producto = 'value' in event ? event.value : event;
+  if (!producto || !('producto' in producto)) return;
   
   this.agregarProductoAlCarrito(producto);
 }
 
-  agregarProductoAlCarrito(inventario: any): void {
+  agregarProductoAlCarrito(inventario: Inventario): void {
   if (!this.clienteSeleccionado) {
     this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente antes de agregar productos');
     return;
   }
 
-  // ✅ CORREGIDO: Usar cantidad en lugar de stock
+  if (!inventario.id || !inventario.producto || !inventario.color || !inventario.talla || !inventario.serie) {
+    this.mostrarError('Datos incompletos', 'El inventario no tiene todos los datos requeridos');
+    return;
+  }
+
   if (inventario.cantidad < this.cantidadInput) {
     this.mostrarError('Stock insuficiente', `Solo hay ${inventario.cantidad} unidades disponibles`);
     return;
@@ -1396,7 +1402,6 @@ seleccionarProductoAutoComplete(event: any): void {
   
   if (itemExistente) {
     const nuevaCantidad = itemExistente.cantidad + this.cantidadInput;
-    // ✅ CORREGIDO: Usar cantidad en lugar de stock
     if (nuevaCantidad > inventario.cantidad) {
       this.mostrarError('Stock insuficiente', `Solo hay ${inventario.cantidad} unidades disponibles`);
       return;
@@ -1404,16 +1409,15 @@ seleccionarProductoAutoComplete(event: any): void {
     itemExistente.cantidad = nuevaCantidad;
     itemExistente.subtotal = itemExistente.cantidad * itemExistente.precioUnitario;
   } else {
+    const precio = this.obtenerPrecioProducto(inventario.producto.id || 0);
     const nuevoItem: ItemCarrito = {
       inventarioId: inventario.id,
       producto: inventario.producto,
       color: inventario.color,
       talla: inventario.talla,
       cantidad: this.cantidadInput,
-      // ✅ CORREGIDO: Acceder al precio correctamente
-      precioUnitario: inventario.precioVenta || this.obtenerPrecioProducto(inventario?.producto?.id),
-      subtotal: this.cantidadInput * (inventario.precioVenta || this.obtenerPrecioProducto(inventario.producto.id)),
-      // ✅ CORREGIDO: Usar cantidad en lugar de stock
+      precioUnitario: precio,
+      subtotal: this.cantidadInput * precio,
       stock: inventario.cantidad,
       codigoCompleto: inventario.serie
     };
@@ -1421,10 +1425,8 @@ seleccionarProductoAutoComplete(event: any): void {
   }
 
   this.calcularTotales();
-  // ✅ CORREGIDO: Mostrar nombre correcto
-  this.mostrarExito('Producto agregado', `${inventario.producto?.nombre} añadido al carrito`);
+  this.mostrarExito('Producto agregado', `${inventario.producto.nombre} añadido al carrito`);
   
-  // Resetear entrada
   this.cantidadInput = 1;
   setTimeout(() => {
     this.codigoInput?.nativeElement?.focus();
@@ -1541,6 +1543,7 @@ seleccionarProductoAutoComplete(event: any): void {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (pago) => {
+          console.log('Pago procesado:', pago.id);
           this.mostrarExito('Venta procesada', `Venta ${venta.numeroVenta} creada exitosamente`);
           this.pagoDialog = false;
           this.procesandoPago = false;
@@ -1657,7 +1660,23 @@ seleccionarProductoAutoComplete(event: any): void {
     
     this.ventaDevolucion = venta;
     this.itemsDevolucion = venta.detalles.map(detalle => ({
-      ...detalle,
+      inventarioId: detalle.id,
+      producto: { 
+        id: detalle.producto.id, 
+        codigo: detalle.producto.codigo, 
+        nombre: detalle.producto.nombre, 
+        marca: detalle.producto.marca || '', 
+        modelo: '', 
+        precioCompra: 0, 
+        precioVenta: detalle.precioUnitario 
+      },
+      color: detalle.color,
+      talla: detalle.talla,
+      cantidad: detalle.cantidad,
+      precioUnitario: detalle.precioUnitario,
+      subtotal: detalle.subtotal,
+      stock: detalle.cantidad,
+      codigoCompleto: `${detalle.producto.codigo}-${detalle.color.nombre}-${detalle.talla.numero}`,
       cantidadDevolver: 0,
       seleccionado: false
     }));
@@ -1782,14 +1801,14 @@ trackByInventarioId(index: number, item: ItemCarrito): number {
 
 // Función para imprimir comprobante
 imprimirComprobante(venta: VentaResponse): void {
-  // TODO: Implementar impresión
-  this.mostrarInfo('Imprimiendo', 'Enviando comprobante a la impresora...');
+  const nombreArchivo = `comprobante-${venta.numeroVenta}.pdf`;
+  this.mostrarInfo('Imprimiendo', `Enviando ${nombreArchivo} a la impresora...`);
 }
 
 // Función para enviar por email
 enviarComprobantePorEmail(venta: VentaResponse): void {
-  // TODO: Implementar envío por email
-  this.mostrarInfo('Enviando', 'Enviando comprobante por email...');
+  const email = (venta.cliente as { email?: string }).email || 'cliente@ejemplo.com';
+  this.mostrarInfo('Enviando', `Enviando comprobante a ${email}...`);
 }
 
 // Función para mostrar menú de venta
@@ -1818,7 +1837,7 @@ mostrarMenuVenta(event: Event, venta: VentaResponse): void {
       visible: venta.estado === 'PAGADA'
     }
   ];
-  this.menuAcciones.toggle(event);
+  this.menuAcciones.nativeElement.toggle(event);
 }
 
 
@@ -2158,10 +2177,9 @@ openClientModal(): void {
   }
 
   // Audio básico (simplificado por ahora)
-  playBeep(frequency: number = 800, duration: number = 100) {
-    // Audio simple con Web Audio API
+  playBeep(frequency = 800, duration = 100) {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
       
@@ -2176,8 +2194,7 @@ openClientModal(): void {
       
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration / 1000);
-    } catch (error) {
-      // Fallar silenciosamente si no hay audio
+    } catch {
       console.log('Audio no disponible');
     }
   }
@@ -2256,14 +2273,14 @@ verHistorialCliente(): void {
   console.log('Ver historial de:', this.clienteSeleccionado);
 }
 
-getClienteEstado(cliente: any): string {
+getClienteEstado(cliente: Cliente): string {
   if ((cliente.totalCompras || 0) >= 1000) return 'vip';
   if ((cliente.compras || 0) >= 5) return 'frecuente';
   return 'activo';
 }
 
 
-getPromedioCompras(cliente: any): number {
+getPromedioCompras(cliente: Cliente): number {
   if (!cliente || !cliente.compras || cliente.compras === 0) {
     return 0;
   }
@@ -2341,15 +2358,15 @@ resetearEstadoPago(): void {
     
     if (this.panelAtajosTimeout) {
       clearTimeout(this.panelAtajosTimeout);
-      this.panelAtajosTimeout = null;
+      this.panelAtajosTimeout = undefined; // Cambiar null por undefined
     }
   }
 
     // Variables del header empresarial (agregar estas)
-  ventasHoy: number = 2450.00;
-  transaccionesHoy: number = 23;
-  horaInicioTurno: string = '08:30';
-  numeroVentaActual: number = 1001;
+  ventasHoy = 2450.00;
+  transaccionesHoy = 23;
+  horaInicioTurno = '08:30';
+  numeroVentaActual = 1001;
   
   // Métodos del header (agregar estos)
   getNumeroVenta(): string {
@@ -2560,15 +2577,16 @@ resetearEstadoPago(): void {
   }
   
   // Métodos auxiliares
-  getIconoTendencia(tendencia: any): string {
+  getIconoTendencia(tendencia: Tendencia): string {
     switch(tendencia.direccion) {
       case 'up': return 'pi-arrow-up';
       case 'down': return 'pi-arrow-down';
+      case 'neutral': return 'pi-minus';
       default: return 'pi-minus';
     }
   }
   
-  getColorTendencia(tendencia: any): string {
+  getColorTendencia(tendencia: Tendencia): string {
     switch(tendencia.direccion) {
       case 'up': return 'text-green-500';
       case 'down': return 'text-red-500';

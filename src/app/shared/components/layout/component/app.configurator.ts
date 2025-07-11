@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
@@ -18,23 +18,28 @@ const presets = {
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 
-declare type SurfacesType = {
-    name?: string;
-    palette?: {
-        0?: string;
-        50?: string;
-        100?: string;
-        200?: string;
-        300?: string;
-        400?: string;
-        500?: string;
-        600?: string;
-        700?: string;
-        800?: string;
-        900?: string;
-        950?: string;
-    };
-};
+type ColorShade = 0 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950;
+
+declare interface ColorPalette {
+    [key: number]: string;
+    0: string;
+    50: string;
+    100: string;
+    200: string;
+    300: string;
+    400: string;
+    500: string;
+    600: string;
+    700: string;
+    800: string;
+    900: string;
+    950: string;
+}
+
+declare interface SurfacesType {
+    name: string;
+    palette: ColorPalette;
+}
 
 @Component({
     selector: 'app-configurator',
@@ -53,7 +58,7 @@ declare type SurfacesType = {
                             [ngClass]="{ 'outline-primary': primaryColor.name === selectedPrimaryColor() }"
                             class="border-none w-5 h-5 rounded-full p-0 cursor-pointer outline-none outline-offset-1"
                             [style]="{
-                                'background-color': primaryColor?.name === 'noir' ? 'var(--text-color)' : primaryColor?.palette?.['500']
+                                'background-color': primaryColor.name === 'noir' ? 'var(--text-color)' : primaryColor.palette[500]
                             }"
                         ></button>
                     }
@@ -70,7 +75,7 @@ declare type SurfacesType = {
                             [ngClass]="{ 'outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'slate' }"
                             class="border-none w-5 h-5 rounded-full p-0 cursor-pointer outline-none outline-offset-1"
                             [style]="{
-                                'background-color': surface?.name === 'noir' ? 'var(--text-color)' : surface?.palette?.['500']
+                                'background-color': surface.name === 'noir' ? 'var(--text-color)' : surface.palette[500]
                             }"
                         ></button>
                     }
@@ -90,7 +95,7 @@ declare type SurfacesType = {
         class: 'hidden absolute top-[3.25rem] right-0 w-72 p-4 bg-surface-0 dark:bg-surface-900 border border-surface rounded-border origin-top shadow-[0px_3px_5px_rgba(0,0,0,0.02),0px_0px_2px_rgba(0,0,0,0.05),0px_1px_4px_rgba(0,0,0,0.08)]'
     }
 })
-export class AppConfigurator {
+export class AppConfigurator implements OnInit {
     router = inject(Router);
 
     config: PrimeNG = inject(PrimeNG);
@@ -112,7 +117,10 @@ export class AppConfigurator {
 
     ngOnInit() {
         if (isPlatformBrowser(this.platformId)) {
-            this.onPresetChange(this.layoutService.layoutConfig().preset);
+            const preset = this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>;
+            if (preset) {
+                this.onPresetChange(preset);
+            }
         }
     }
 
@@ -266,22 +274,65 @@ export class AppConfigurator {
     menuMode = computed(() => this.layoutService.layoutConfig().menuMode);
 
     primaryColors = computed<SurfacesType[]>(() => {
-        const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
-        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-        const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
+        const presetKey = this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>;
+        const preset = presets[presetKey];
+        if (!preset) return [];
+        
+        const presetPalette = preset.primitive as Record<string, Record<ColorShade, string>>;
+        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'] as const;
+        const palettes: SurfacesType[] = [];
+
+        // Add default noir palette
+        const noirPalette: SurfacesType = {
+            name: 'noir',
+            palette: {
+                0: '#000000', 50: '#0a0a0a', 100: '#141414', 200: '#1e1e1e', 300: '#282828',
+                400: '#323232', 500: '#3c3c3c', 600: '#505050', 700: '#646464',
+                800: '#787878', 900: '#8c8c8c', 950: '#a0a0a0'
+            }
+        };
+        palettes.push(noirPalette);
 
         colors.forEach((color) => {
-            palettes.push({
-                name: color,
-                palette: presetPalette?.[color as KeyOfType<typeof presetPalette>] as SurfacesType['palette']
-            });
+            const palette = presetPalette?.[color];
+            if (palette) {
+                const colorPalette: SurfacesType = {
+                    name: color,
+                    palette: {
+                        0: palette[0] || '#ffffff',
+                        50: palette[50] || '#f9fafb',
+                        100: palette[100] || '#f3f4f6',
+                        200: palette[200] || '#e5e7eb',
+                        300: palette[300] || '#d1d5db',
+                        400: palette[400] || '#9ca3af',
+                        500: palette[500] || '#6b7280',
+                        600: palette[600] || '#4b5563',
+                        700: palette[700] || '#374151',
+                        800: palette[800] || '#1f2937',
+                        900: palette[900] || '#111827',
+                        950: palette[950] || '#030712'
+                    }
+                };
+                palettes.push(colorPalette);
+            }
         });
 
         return palettes;
-    });
+    });;
 
     getPresetExt() {
-        const color: SurfacesType = this.primaryColors().find((c) => c.name === this.selectedPrimaryColor()) || {};
+        const defaultPalette: ColorPalette = {
+            0: '#000000', 50: '#0a0a0a', 100: '#141414', 200: '#1e1e1e', 300: '#282828',
+            400: '#323232', 500: '#3c3c3c', 600: '#505050', 700: '#646464',
+            800: '#787878', 900: '#8c8c8c', 950: '#a0a0a0'
+        };
+        
+        const defaultColor: SurfacesType = {
+            name: 'noir',
+            palette: defaultPalette
+        };
+        
+        const color = this.primaryColors().find((c) => c.name === this.selectedPrimaryColor()) || defaultColor;
         const preset = this.layoutService.layoutConfig().preset;
 
         if (color.name === 'noir') {
@@ -409,7 +460,7 @@ export class AppConfigurator {
         }
     }
 
-    updateColors(event: any, type: string, color: any) {
+    updateColors(event: MouseEvent, type: 'primary' | 'surface', color: SurfacesType) {
         if (type === 'primary') {
             this.layoutService.layoutConfig.update((state) => ({ ...state, primary: color.name }));
         } else if (type === 'surface') {
@@ -420,7 +471,7 @@ export class AppConfigurator {
         event.stopPropagation();
     }
 
-    applyTheme(type: string, color: any) {
+    applyTheme(type: 'primary' | 'surface', color: SurfacesType) {
         if (type === 'primary') {
             updatePreset(this.getPresetExt());
         } else if (type === 'surface') {
@@ -428,7 +479,7 @@ export class AppConfigurator {
         }
     }
 
-    onPresetChange(event: any) {
+    onPresetChange(event: KeyOfType<typeof presets>) {
         this.layoutService.layoutConfig.update((state) => ({ ...state, preset: event }));
         const preset = presets[event as KeyOfType<typeof presets>];
         const surfacePalette = this.surfaces.find((s) => s.name === this.selectedSurfaceColor())?.palette;

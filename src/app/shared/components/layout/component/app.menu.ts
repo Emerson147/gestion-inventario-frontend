@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -21,8 +21,7 @@ export class AppMenu implements OnInit{
     filteredModel: MenuItem[] = [];
     userRoles: string[] = [];
 
-    constructor(private authService: AuthService) {
-    }
+    private authService = inject(AuthService);
 
     ngOnInit() {
         // Obtener roles del usuario
@@ -60,7 +59,7 @@ export class AppMenu implements OnInit{
     }
 
     // Verificar si el usuario tiene uno de los roles especificados
-    hasRole(requiredRoles: String[]): boolean {
+    hasRole(requiredRoles: string[]): boolean {
       if (!requiredRoles || requiredRoles.length === 0) {
         return true;
       }

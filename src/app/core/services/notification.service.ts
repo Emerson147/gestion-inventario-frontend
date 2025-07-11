@@ -1,6 +1,31 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+// Tipos específicos para los datos de notificación
+export interface UserNotificationData {
+  userId: number;
+  userName?: string;
+  email?: string;
+}
+
+export interface SecurityNotificationData {
+  ipAddress?: string;
+  location?: string;
+  deviceInfo?: string;
+}
+
+export interface SystemNotificationData {
+  component?: string;
+  status?: string;
+  details?: Record<string, unknown>;
+}
+
+export type NotificationData = 
+  | UserNotificationData 
+  | SecurityNotificationData 
+  | SystemNotificationData 
+  | Record<string, unknown>; // Para tipos genéricos
+
 export interface Notification {
   id: string;
   title: string;
@@ -9,7 +34,7 @@ export interface Notification {
   timestamp: Date;
   read: boolean;
   priority: 'low' | 'medium' | 'high' | 'critical';
-  data?: any;
+  data?: NotificationData;
 }
 
 @Injectable({
@@ -37,7 +62,11 @@ export class NotificationService {
         timestamp: new Date(),
         read: false,
         priority: 'medium',
-        data: { userId: 123 }
+        data: { 
+          userId: 123,
+          userName: 'Juan Pérez',
+          email: 'juan.perez@example.com'
+        } as UserNotificationData
       },
       {
         id: '2',
@@ -46,7 +75,12 @@ export class NotificationService {
         type: 'security',
         timestamp: new Date(Date.now() - 3600000),
         read: false,
-        priority: 'high'
+        priority: 'high',
+        data: {
+          ipAddress: '192.168.1.100',
+          location: 'Nueva York, EE. UU.',
+          deviceInfo: 'Chrome 120.0.0 / Windows 10'
+        } as SecurityNotificationData
       }
     ];
     

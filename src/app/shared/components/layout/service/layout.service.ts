@@ -48,7 +48,7 @@ export class LayoutService {
 
     private configUpdate = new Subject<layoutConfig>();
 
-    private overlayOpen = new Subject<any>();
+    private overlayOpen = new Subject<void>();
 
     private menuSource = new Subject<MenuChangeEvent>();
 
@@ -99,7 +99,7 @@ export class LayoutService {
     }
 
     private handleDarkModeTransition(config: layoutConfig): void {
-        if ((document as any).startViewTransition) {
+        if ((document as Document).startViewTransition) {
             this.startViewTransition(config);
         } else {
             this.toggleDarkMode(config);
@@ -108,7 +108,7 @@ export class LayoutService {
     }
 
     private startViewTransition(config: layoutConfig): void {
-        const transition = (document as any).startViewTransition(() => {
+        const transition = (document as Document).startViewTransition(() => {
             this.toggleDarkMode(config);
         });
 
@@ -116,7 +116,9 @@ export class LayoutService {
             .then(() => {
                 this.onTransitionEnd();
             })
-            .catch(() => {});
+            .catch(() => {
+                // Manejo de errores opcional
+            });
     }
 
     toggleDarkMode(config?: layoutConfig): void {
@@ -140,7 +142,7 @@ export class LayoutService {
             this.layoutState.update((prev) => ({ ...prev, overlayMenuActive: !this.layoutState().overlayMenuActive }));
 
             if (this.layoutState().overlayMenuActive) {
-                this.overlayOpen.next(null);
+                this.overlayOpen.next();
             }
         }
 
@@ -150,7 +152,7 @@ export class LayoutService {
             this.layoutState.update((prev) => ({ ...prev, staticMenuMobileActive: !this.layoutState().staticMenuMobileActive }));
 
             if (this.layoutState().staticMenuMobileActive) {
-                this.overlayOpen.next(null);
+                this.overlayOpen.next();
             }
         }
     }

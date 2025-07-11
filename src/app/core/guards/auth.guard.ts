@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   CanActivate,
   ActivatedRouteSnapshot,
@@ -14,7 +14,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -28,7 +29,7 @@ export class AuthGuard implements CanActivate {
     }
 
     // Verificar roles requeridos para la ruta
-    const requiredRoles = route.data['roles'] as Array<string>;
+    const requiredRoles = route.data['roles'] as string[];
 
     // Si no hay roles requeridos, permitir acceso a cualquier usuario autenticado
     if (!requiredRoles || requiredRoles.length === 0) {

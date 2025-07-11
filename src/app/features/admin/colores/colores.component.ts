@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -267,7 +267,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   color: Color = this.initColor();
   productoSeleccionado: Producto | null = null;
   tallas: Talla[] = [];
-  nuevaTalla: string = '';
+  nuevaTalla = '';
 
   // ========== ESTADO UI ==========
   visible = false;
@@ -346,14 +346,13 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     { nombre: 'Índigo', hex: '#4f46e5', popular: false }
   ];
 
-  constructor(
-    private readonly colorService: ColorService,
-    private readonly productoService: ProductoService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    private readonly permissionService: PermissionService
-  ) {}
+  private readonly colorService: ColorService = inject(ColorService);
+  private readonly productoService: ProductoService = inject(ProductoService);
+  private readonly messageService: MessageService = inject(MessageService);
+  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly permissionService: PermissionService = inject(PermissionService);
 
+  
   ngOnInit(): void {
     this.loadProductos();
   }
@@ -454,7 +453,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   /**
    * 👇 Tracking para mejor performance en ngFor
    */
-  trackByColor(index: number, color: any): any {
+  trackByColor(index: number, color: Color): number | undefined {
     return color.id || index;
   }
 
@@ -476,7 +475,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   /**
    * �343 Aplica color preset seleccionado
    */
-  aplicarColorPreset(colorPreset: any): void {
+  aplicarColorPreset(colorPreset: { hex: string; nombre: string }): void {
     this.color.codigoHex = colorPreset.hex;
     if (!this.color.nombre.trim()) {
       this.color.nombre = colorPreset.nombre;
@@ -925,12 +924,12 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     this.nuevaTalla = '';
   }
 
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: { filterGlobal: (value: string, filterType: string) => void }, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
 
-  trackByTalla(index: number, talla: Talla): any {
+  trackByTalla(index: number, talla: Talla): number | undefined {
     return talla.id || index;
   }
 
@@ -1015,7 +1014,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -1063,12 +1062,15 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 
+                       typeof error === 'string' ? error : 
+                       defaultMessage;
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage,
+      detail: errorMessage,
       life: 5000
     });
   }

@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Producto } from '../models/product.model';
 
 export interface KPIMetrics {
   ventasHoy: number;
@@ -38,7 +39,7 @@ export interface OptimizacionPrecio {
 export class AnalyticsService {
   private readonly apiUrl = `${environment.apiUrl}api/analytics`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   // Método real que puedes usar
   getKPIMetrics(): Observable<KPIMetrics> {
@@ -75,16 +76,19 @@ export class AnalyticsService {
     ]);
   }
 
-  optimizarPrecios(productos: any[]): Observable<OptimizacionPrecio[]> {
+  optimizarPrecios(productos: Producto[]): Observable<OptimizacionPrecio[]> {
     // Simulación de IA - aquí integrarías tu servicio de ML real
-    const optimizaciones = productos.map(producto => ({
-      productoId: producto.id,
-      precioActual: producto.precioVenta,
-      precioOptimizado: producto.precioVenta * 1.05, // Ejemplo: +5%
-      razon: 'Margen competitivo detectado',
-      impactoEstimado: (producto.precioVenta * 0.05),
-      confianza: 0.85
-    }));
+    const optimizaciones = productos
+      .filter(producto => producto.id !== undefined) // Asegurarse de que el id existe
+      .map(producto => ({
+        productoId: producto.id as number, // Ahora TypeScript sabe que id es number
+        precioActual: producto.precioVenta,
+        precioOptimizado: producto.precioVenta * 1.05, // Ejemplo: +5%
+        razon: 'Margen competitivo detectado',
+        impactoEstimado: (producto.precioVenta * 0.05),
+        confianza: 0.85,
+        selected: false // Valor por defecto para la propiedad opcional
+      }));
 
     return of(optimizaciones);
   }

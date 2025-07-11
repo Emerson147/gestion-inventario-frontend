@@ -47,7 +47,7 @@ export interface ScrollAnimationOptions extends BaseAnimationOptions {
   markers?: boolean;
   pin?: boolean;
   distance?: number;
-  stagger?: number;
+  stagger?: number; // Optional property for API compatibility
 }
 
 
@@ -69,7 +69,7 @@ export class AnimationService {
    * @param element Elemento a verificar
    * @returns Booleano que indica si el elemento es válido
    */
-  private ensureElement(element: any): boolean {
+  private ensureElement(element: HTMLElement | Element | null | undefined): boolean {
     return element !== null && element !== undefined;
   }
 
@@ -421,10 +421,10 @@ export class AnimationService {
    * @param options Opciones de animación
    */
   setupScrollReveal(elements: HTMLElement[] | NodeListOf<Element> | string, options: ScrollAnimationOptions = {}): gsap.core.Timeline | null {
+    // Destructure only the properties we need
     const {
       duration = 0.8,
       ease = 'power2.out',
-      stagger = 0.2,
       distance = 50,
       start = 'top 80%'
     } = options;
@@ -468,7 +468,7 @@ export class AnimationService {
    * @param element Elemento de fondo
    * @param speed Velocidad del efecto (1 = normal, <1 más lento, >1 más rápido)
    */
-  setupParallaxEffect(element: HTMLElement, speed: number = 0.5) {
+  setupParallaxEffect(element: HTMLElement, speed = 0.5) {
     if (!this.ensureElement(element)) return null;
 
     return gsap.to(element, {
@@ -508,7 +508,7 @@ export class AnimationService {
       elements = selector;
     }
 
-    elements.forEach((link: any) => {
+    elements.forEach((link: Element) => {
       const originalColor = window.getComputedStyle(link).color;
 
       link.addEventListener('mouseenter', () => {
@@ -570,7 +570,7 @@ export class AnimationService {
 /**
  * Anima la entrada de un diálogo sin modificar el fondo
  */
-dialogEntrance(dialogElement: HTMLElement, options: any = {}) {
+dialogEntrance(dialogElement: HTMLElement, options: BaseAnimationOptions & { delay?: number } = {}) {
   const {
     duration = 0.5,
     ease = 'back.out(1.7)',
@@ -598,7 +598,7 @@ dialogEntrance(dialogElement: HTMLElement, options: any = {}) {
 /**
  * Anima la salida de un diálogo sin modificar el fondo
  */
-dialogExit(dialogElement: HTMLElement, options: any = {}, onComplete?: () => void) {
+dialogExit(dialogElement: HTMLElement, options: BaseAnimationOptions & { delay?: number } = {}, onComplete?: () => void) {
   const {
     duration = 0.3,
     ease = 'power2.in',
@@ -661,7 +661,7 @@ dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: En
    * @param hideDelay Tiempo en segundos antes de ocultar
    * @returns Timeline de GSAP
    */
-  toastNotification(element: HTMLElement, options: EntranceAnimationOptions = {}, autoHide: boolean = true, hideDelay: number = 3) {
+  toastNotification(element: HTMLElement, options: EntranceAnimationOptions = {}, autoHide = true, hideDelay = 3) {
     if (!this.ensureElement(element)) return null;
 
     const {
@@ -1150,7 +1150,7 @@ dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: En
    * @param options Opciones de animación
    * @returns Instancia de la animación GSAP
    */
-  glowEffect(element: HTMLElement, color: string = 'rgba(0, 123, 255, 0.6)', options: BaseAnimationOptions = {}) {
+  glowEffect(element: HTMLElement, color = 'rgba(0, 123, 255, 0.6)', options: BaseAnimationOptions = {}) {
     if (!this.ensureElement(element)) return null;
 
     const {
@@ -1158,8 +1158,8 @@ dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: En
       ease = 'power2.inOut'
     } = options;
 
-    // Guardar el box-shadow original
-    const originalShadow = window.getComputedStyle(element).boxShadow;
+    // Store original shadow (commented out as it's not used)
+    // const originalShadow = window.getComputedStyle(element).boxShadow;
 
     return gsap.timeline({ repeat: -1, yoyo: true })
       .to(element, {
@@ -1240,7 +1240,7 @@ dialogContentEntrance(elements: HTMLElement[] | NodeListOf<Element>, options: En
    * @param duration Duración de la animación
    * @returns Timeline de GSAP
    */
-  confettiAnimation(container: HTMLElement, particleCount: number = 50, duration: number = 2) {
+  confettiAnimation(container: HTMLElement, particleCount = 50, duration = 2) {
     if (!this.ensureElement(container)) return null;
 
     const particles: HTMLElement[] = [];

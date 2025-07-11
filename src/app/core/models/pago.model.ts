@@ -1,3 +1,7 @@
+// Importar las interfaces necesarias
+import { VentaResponse } from './venta.model';
+import { User } from './user.model';
+
 export interface PagoRequest {
   ventaId: number;
   usuarioId: number;
@@ -12,8 +16,8 @@ export interface PagoRequest {
 export interface PagoResponse {
   id: number;
   numeroPago: string;
-  venta: any;
-  usuario: any;
+  venta: VentaResponse;
+  usuario: User;
   monto: number;
   metodoPago: string;
   estado: string;

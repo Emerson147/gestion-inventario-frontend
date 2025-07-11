@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -48,6 +48,34 @@ interface AccionMasiva {
   command: () => void;
   separator?: boolean;
   disabled?: boolean;
+}
+
+//  Extender la interfaz OptimizacionPrecio para incluir selected
+interface OptimizacionPrecioSeleccionable extends OptimizacionPrecio {
+  selected?: boolean;
+}
+
+// 🆕 Interfaz para el evento de toggle
+interface ToggleEvent {
+  checked: boolean;
+}
+
+// 🆕 Interfaz para el evento de panel
+interface PanelToggleEvent {
+  collapsed: boolean;
+}
+
+// 🆕 Interfaz para datos de análisis por marca
+interface MarcaAnalisis {
+  cantidad: number;
+  valorTotal: number;
+  margenPromedio: number;
+  margenes: number[];
+}
+
+// 🆕 Interfaz para el filtro global
+interface TableFilter {
+  filterGlobal(value: string, matchMode: string): void;
 }
 
 @Component({
@@ -172,8 +200,8 @@ export class ProductosComponent implements OnInit {
   kpiMetrics: KPIMetrics | null = null;
   alertasNegocio: AlertaNegocio[] = [];
   optimizacionesDialog = false;
-  optimizacionesSugeridas: OptimizacionPrecio[] = [];
-  productosMap: Map<number, Producto> = new Map();
+  optimizacionesSugeridas: OptimizacionPrecioSeleccionable[] = [];
+  productosMap = new Map<number, Producto>();
   dashboardEjecutivoDialog = false;
   alertasDialog = false;
   sincronizandoERP = false;
@@ -227,17 +255,14 @@ export class ProductosComponent implements OnInit {
     { label: 'Otros', value: 'otros' }
   ];
 
-
-  constructor(
-    private readonly productoService: ProductoService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    private readonly permissionService: PermissionService,
-    private readonly analyticsService: AnalyticsService,
-    private readonly enterpriseService: EnterpriseIntegrationService,
-    private readonly currencyPipe: CurrencyPipe
-  ) {}
-
+  private readonly productoService: ProductoService = inject(ProductoService);
+  private readonly messageService: MessageService = inject(MessageService);
+  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly permissionService: PermissionService = inject(PermissionService);
+  private readonly analyticsService: AnalyticsService = inject(AnalyticsService);
+  private readonly enterpriseService: EnterpriseIntegrationService = inject(EnterpriseIntegrationService);
+  private readonly currencyPipe: CurrencyPipe = inject(CurrencyPipe);
+  
   ngOnInit(): void {
     this.inicializarAccionesMasivas();
     this.loadProductos();
@@ -253,11 +278,10 @@ export class ProductosComponent implements OnInit {
     return this.alertasNegocio.filter(a => a.severidad === 'HIGH').length;
   }
 
-  onToggleSeleccionTodas(event: any): void {
+  onToggleSeleccionTodas(event: ToggleEvent): void {
     const checked = event.checked;
     this.optimizacionesSugeridas.forEach(optimizacion => {
-      // Agregamos la propiedad selected dinámicamente
-      (optimizacion as any).selected = checked;
+      optimizacion.selected = checked;
     });
   }
 
@@ -270,8 +294,7 @@ export class ProductosComponent implements OnInit {
    */
   get impactoTotalSeleccionado(): number {
     return this.optimizacionesSugeridas.reduce((sum, optimizacion) => {
-      const selected = (optimizacion as any).selected;
-      return sum + (selected ? optimizacion.impactoEstimado : 0);
+      return sum + (optimizacion.selected ? optimizacion.impactoEstimado : 0);
     }, 0);
   }
 
@@ -279,11 +302,11 @@ export class ProductosComponent implements OnInit {
    * Verifica si hay al menos una optimización seleccionada
    */
   get hayOptimizacionesSeleccionadas(): boolean {
-    return this.optimizacionesSugeridas.some(o => (o as any).selected);
+    return this.optimizacionesSugeridas.some(o => o.selected);
   }
 
-  getSelectedOptimizations(): OptimizacionPrecio[] {
-    return this.optimizacionesSugeridas.filter(o => o['selected']);
+  getSelectedOptimizations(): OptimizacionPrecioSeleccionable[] {
+    return this.optimizacionesSugeridas.filter(o => o.selected);
   }
 
   hasSelectedOptimizations(): boolean {
@@ -337,9 +360,8 @@ export class ProductosComponent implements OnInit {
     try {
       const resultado = await firstValueFrom(
         this.enterpriseService.sincronizarConERP({
-          productos: this.productos,
-          incluirPrecios: true,
-          incluirStock: true
+          productos: this.productos
+          // 🆕 Remover incluirPrecios e incluirStock si no existen en DatosSincronizacion
         })
       );
 
@@ -354,7 +376,7 @@ export class ProductosComponent implements OnInit {
   /**
    * 📈 Aplicar optimizaciones seleccionadas
    */
-  async aplicarOptimizaciones(optimizaciones: OptimizacionPrecio[]): Promise<void> {
+  async aplicarOptimizaciones(optimizaciones: OptimizacionPrecioSeleccionable[]): Promise<void> {
     this.loading = true;
 
     try {
@@ -491,14 +513,14 @@ export class ProductosComponent implements OnInit {
   /**
    * 👇 Tracking para mejor performance en ngFor
    */
-  trackByProducto(index: number, producto: any): any {
+  trackByProducto(index: number, producto: Producto): number | undefined {
     return producto.id || index;
   }
 
   /**
    * 👇 Maneja el toggle del panel de filtros
    */
-  onFiltrosPanelToggle(event: any): void {
+  onFiltrosPanelToggle(event: PanelToggleEvent): void {
     this.filtrosPanelCollapsed = event.collapsed;
   }
 
@@ -934,8 +956,9 @@ export class ProductosComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (response) => {
-          if (response?.imagen) {
-            this.producto.imagen = response.imagen;
+          // 🆕 Type guard para verificar la estructura de la respuesta
+          if (response && typeof response === 'object' && 'imagen' in response) {
+            this.producto.imagen = (response as { imagen: string }).imagen;
             this.showSuccess('Imagen subida correctamente');
             this.resetImageState();
             this.loadProductos();
@@ -954,11 +977,12 @@ export class ProductosComponent implements OnInit {
     return this.productoService.uploadImage(productoId, formData)
       .pipe(
         tap((response) => {
-          if (response?.imagen) {
-            this.producto.imagen = response.imagen;
+          // 🆕 Type guard para verificar la estructura de la respuesta
+          if (response && typeof response === 'object' && 'imagen' in response) {
+            this.producto.imagen = (response as { imagen: string }).imagen;
           }
         }),
-        catchError((error) => {
+        catchError(() => {
           this.showWarning('El producto se guardó pero hubo un error al subir la imagen');
           return of(null);
         })
@@ -980,9 +1004,15 @@ export class ProductosComponent implements OnInit {
     return 'assets/images/placeholder-product.jpg';
   }
 
-  onImageError(event: any): void {
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25ibGU8L3RleHQ+PC9zdmc+';
+  /**
+ * ️ Maneja errores de carga de imágenes
+ */
+onImageError(event: ErrorEvent): void {
+  const target = event.target as HTMLImageElement;
+  if (target) {
+    target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25ibGU8L3RleHQ+PC9zdmc+';
   }
+}
 
   // ========== VALIDACIONES (Manteniendo funcionalidad original) ==========
 
@@ -1094,7 +1124,7 @@ export class ProductosComponent implements OnInit {
     this.previewImageUrl = null;
   }
 
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: TableFilter, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -1207,7 +1237,7 @@ export class ProductosComponent implements OnInit {
     }
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -1272,12 +1302,16 @@ export class ProductosComponent implements OnInit {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 
+                        typeof error === 'object' && error !== null && 'message' in error ? 
+                        (error as { message: string }).message : defaultMessage;
+    
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage,
+      detail: errorMessage,
       life: 5000
     });
   }
@@ -1328,16 +1362,16 @@ async exportarEstadisticas(): Promise<void> {
       const margen = this.calcularMargenGanancia(producto);
       acc[marca].margenes.push(margen);
       return acc;
-    }, {} as any);
+    }, {} as Record<string, MarcaAnalisis>);
 
     const marcasData = [
       ['ANÁLISIS POR MARCA', '', '', ''],
       ['Marca', 'Cantidad', 'Valor Total', 'Margen Promedio (%)'],
-      ...Object.entries(marcasAnalisis).map(([marca, data]: [string, any]) => [
+      ...Object.entries(marcasAnalisis).map(([marca, data]) => [
         marca,
         data.cantidad,
         data.valorTotal,
-        (data.margenes.reduce((sum: number, m: number) => sum + m, 0) / data.margenes.length).toFixed(2)
+        (data.margenes.reduce((sum, m) => sum + m, 0) / data.margenes.length).toFixed(2)
       ])
     ];
 
@@ -1401,7 +1435,7 @@ getRentabilidadTexto(margen: number): string {
 }
 
 
-selectedFiltro: string = 'todos'; // Variable para el modelo seleccionado
+selectedFiltro = 'todos'; // Variable para el modelo seleccionado
 
 // Filtros rápidos (mantener como array de opciones)
 filtrosRapidos = [
@@ -1435,14 +1469,14 @@ aplicarFiltroRapido(): void {
   }
 }
 
-duplicarProducto(producto: any): void {
+duplicarProducto(producto: Producto): void {
   const productoDuplicado = {
     ...producto,
     id: undefined,
     codigo: `${producto.codigo}-COPY`,
     nombre: `${producto.nombre} (Copia)`,
-    fechaCreacion: new Date(),
-    fechaActualizacion: new Date()
+    fechaCreacion: new Date().toISOString(), //  Convertir a string
+    fechaActualizacion: new Date().toISOString() //  Convertir a string
   };
   this.producto = productoDuplicado;
   this.editMode = false;
@@ -1539,9 +1573,11 @@ getPrecioPromedio(): number {
   /**
    * 🖼️ Mejora del manejo de imágenes con lazy loading
    */
-  onImageLoad(event: any): void {
-    // Opcional: animación cuando la imagen carga
-    event.target.style.opacity = '1';
+  onImageLoad(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.style.opacity = '1';
+    }
   }
 
    /**
@@ -1554,14 +1590,14 @@ getPrecioPromedio(): number {
   /**
    * 📊 Información adicional para tooltips en cards
    */
-  getProductoTooltip(producto: any): string {
+  getProductoTooltip(producto: Producto): string {
     const margen = this.calcularMargenGanancia(producto);
     const ganancia = producto.precioVenta - producto.precioCompra;
     
     return `
       Margen: ${margen.toFixed(1)}%
       Ganancia: ${this.currencyPipe.transform(ganancia, 'S/. ', 'symbol', '1.2-2')}
-      Categoría: ${producto.categoria || 'Sin categoría'}
+      Marca: ${producto.marca || 'Sin marca'}
     `;
   }
 

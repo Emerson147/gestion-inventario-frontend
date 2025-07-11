@@ -201,11 +201,12 @@
                 <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-6">
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="nombreEmpresa" class="form-label">
                       <i class="pi pi-building text-blue-500"></i>
                       <span>Nombre de la Empresa</span>
                     </label>
                     <input 
+                      id="nombreEmpresa"
                       type="text"
                       pInputText
                       [(ngModel)]="configNegocio.nombre"
@@ -214,11 +215,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="rucEmpresa" class="form-label">
                       <i class="pi pi-id-card text-green-500"></i>
                       <span>RUC</span>
                     </label>
                     <input 
+                      id="rucEmpresa"
                       type="text"
                       pInputText
                       [(ngModel)]="configNegocio.ruc"
@@ -228,11 +230,12 @@
                   </div>
                   
                   <div class="form-group md:col-span-2">
-                    <label class="form-label">
+                    <label for="direccionEmpresa" class="form-label">
                       <i class="pi pi-map-marker text-purple-500"></i>
                       <span>Dirección</span>
                     </label>
                     <textarea 
+                      id="direccionEmpresa"
                       pInputTextarea
                       [(ngModel)]="configNegocio.direccion"
                       placeholder="Dirección completa de la empresa"
@@ -242,11 +245,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="telefonoEmpresa" class="form-label">
                       <i class="pi pi-phone text-orange-500"></i>
                       <span>Teléfono</span>
                     </label>
                     <input 
+                      id="telefonoEmpresa"
                       type="text"
                       pInputText
                       [(ngModel)]="configNegocio.telefono"
@@ -255,11 +259,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="emailEmpresa" class="form-label">
                       <i class="pi pi-envelope text-red-500"></i>
                       <span>Email</span>
                     </label>
                     <input 
+                      id="emailEmpresa"
                       type="email"
                       pInputText
                       [(ngModel)]="configNegocio.email"
@@ -268,11 +273,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="websiteEmpresa" class="form-label">
                       <i class="pi pi-globe text-blue-500"></i>
                       <span>Sitio Web</span>
                     </label>
                     <input 
+                      id="websiteEmpresa"
                       type="url"
                       pInputText
                       [(ngModel)]="configNegocio.website"
@@ -281,11 +287,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="sloganEmpresa" class="form-label">
                       <i class="pi pi-comment text-pink-500"></i>
                       <span>Slogan</span>
                     </label>
                     <input 
+                      id="sloganEmpresa"
                       type="text"
                       pInputText
                       [(ngModel)]="configNegocio.slogan"
@@ -300,7 +307,7 @@
                 <div class="form-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="horarioApertura" class="form-label">
                       <i class="pi pi-clock text-green-500"></i>
                       <span>Hora de Apertura</span>
                     </label>
@@ -312,7 +319,7 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="horarioCierre" class="form-label">
                       <i class="pi pi-clock text-red-500"></i>
                       <span>Hora de Cierre</span>
                     </label>
@@ -324,11 +331,12 @@
                   </div>
                   
                   <div class="form-group">
-                    <label class="form-label">
+                    <label for="monedaPrincipal" class="form-label">
                       <i class="pi pi-money-bill text-yellow-500"></i>
                       <span>Moneda Principal</span>
                     </label>
                     <p-dropdown 
+                      id="monedaPrincipal"
                       [(ngModel)]="configNegocio.moneda"
                       [options]="opcionesMoneda"
                       optionLabel="label"
@@ -340,18 +348,19 @@
                   
                   <!-- Días laborales -->
                   <div class="form-group md:col-span-2 lg:col-span-3">
-                    <label class="form-label">
+                    <label for="diasLaborales" class="form-label">
                       <i class="pi pi-calendar text-indigo-500"></i>
                       <span>Días Laborales</span>
                     </label>
                     <div class="dias-laborales">
-                      <div *ngFor="let dia of diasSemana" class="dia-checkbox">
+                      <div *ngFor="let dia of diasSemana; let i = index" class="dia-checkbox">
                         <p-checkbox 
+                          [inputId]="'dia-' + i"
                           [binary]="true"
                           [ngModel]="configNegocio.diasLaborales.includes(dia.value)"
                           (onChange)="onDiaLaboralChange(dia, $event)">
                         </p-checkbox>
-                        <label>{{dia.label}}</label>
+                        <label [for]="'dia-' + i">{{dia.label}}</label>
                       </div>
                     </div>
                   </div>
@@ -570,7 +579,7 @@
                 <h4 class="subsection-title">Configuración SUNAT</h4>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="entornoSunat" class="form-label">
                     <i class="pi pi-globe text-blue-500"></i>
                     <span>Entorno SUNAT</span>
                   </label>
@@ -594,7 +603,7 @@
                 </div>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="usuarioSol" class="form-label">
                     <i class="pi pi-user text-green-500"></i>
                     <span>Usuario SOL</span>
                   </label>
@@ -607,7 +616,7 @@
                 </div>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="claveSol" class="form-label">
                     <i class="pi pi-lock text-red-500"></i>
                     <span>Clave SOL</span>
                   </label>
@@ -622,9 +631,10 @@
                 <div class="form-group">
                   <div class="switch-group">
                     <p-inputSwitch 
+                      inputId="emisorElectronico"
                       [(ngModel)]="configFiscal.emisorElectronico">
                     </p-inputSwitch>
-                    <label class="switch-label">
+                    <label for="emisorElectronico" class="switch-label">
                       <span>Emisor Electrónico</span>
                       <small>Habilitar facturación electrónica</small>
                     </label>
@@ -637,7 +647,7 @@
                 <h4 class="subsection-title">Series de Comprobantes</h4>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="serieFactura" class="form-label">
                     <i class="pi pi-file text-blue-500"></i>
                     <span>Serie Facturas</span>
                   </label>
@@ -651,7 +661,7 @@
                 </div>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="serieBoleta" class="form-label">
                     <i class="pi pi-receipt text-green-500"></i>
                     <span>Serie Boletas</span>
                   </label>
@@ -665,7 +675,7 @@
                 </div>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="serieNota" class="form-label">
                     <i class="pi pi-bookmark text-purple-500"></i>
                     <span>Serie Notas</span>
                   </label>
@@ -679,7 +689,7 @@
                 </div>
                 
                 <div class="form-group">
-                  <label class="form-label">
+                  <label for="igv" class="form-label">
                     <i class="pi pi-percentage text-orange-500"></i>
                     <span>IGV (%)</span>
                   </label>
@@ -771,13 +781,15 @@
                 
                 <div class="color-groups">
                   <div class="color-group">
-                    <label class="color-label">Color Primario</label>
+                    <label for="colorPrimario" class="color-label">Color Primario</label>
                     <div class="color-input-group">
                       <p-colorPicker 
+                        inputId="colorPrimario"
                         [(ngModel)]="temaActual.colorPrimario"
                         format="hex">
                       </p-colorPicker>
                       <input 
+                        id="colorPrimarioHex"
                         type="text"
                         pInputText
                         [(ngModel)]="temaActual.colorPrimario"
@@ -786,7 +798,7 @@
                   </div>
                   
                   <div class="color-group">
-                    <label class="color-label">Color Secundario</label>
+                    <label for="colorSecundario" class="color-label">Color Secundario</label>
                     <div class="color-input-group">
                       <p-colorPicker 
                         [(ngModel)]="temaActual.colorSecundario"
@@ -801,7 +813,7 @@
                   </div>
                   
                   <div class="color-group">
-                    <label class="color-label">Color de Acento</label>
+                    <label for="colorAcento" class="color-label">Color de Acento</label>
                     <div class="color-input-group">
                       <p-colorPicker 
                         [(ngModel)]="temaActual.colorAcento"
@@ -816,7 +828,7 @@
                   </div>
                   
                   <div class="color-group">
-                    <label class="color-label">Color de Fondo</label>
+                    <label for="colorFondo" class="color-label">Color de Fondo</label>
                     <div class="color-input-group">
                       <p-colorPicker 
                         [(ngModel)]="temaActual.colorFondo"
@@ -837,7 +849,7 @@
                     <p-inputSwitch 
                       [(ngModel)]="temaActual.esOscuro">
                     </p-inputSwitch>
-                    <label class="switch-label">
+                    <label for="esOscuro" class="switch-label">
                       <span>Modo Oscuro</span>
                       <small>Activar tema oscuro del sistema</small>
                     </label>
@@ -934,7 +946,7 @@
                     <p-inputSwitch 
                       [(ngModel)]="configBackup.backupAutomatico">
                     </p-inputSwitch>
-                    <label class="switch-label">
+                    <label for="backupAutomatico" class="switch-label">
                       <span>Backup Automático</span>
                       <small>Realizar respaldos automáticos</small>
                     </label>
@@ -942,7 +954,7 @@
                 </div>
                 
                 <div class="form-group mb-4" *ngIf="configBackup.backupAutomatico">
-                  <label class="form-label">
+                  <label for="frecuenciaBackup" class="form-label">
                     <i class="pi pi-clock text-blue-500"></i>
                     <span>Frecuencia</span>
                   </label>
@@ -957,7 +969,7 @@
                 </div>
                 
                 <div class="form-group mb-4" *ngIf="configBackup.backupAutomatico">
-                  <label class="form-label">
+                  <label for="retencionDias" class="form-label">
                     <i class="pi pi-calendar-times text-green-500"></i>
                     <span>Hora de Backup</span>
                   </label>
@@ -969,7 +981,7 @@
                 </div>
                 
                 <div class="form-group mb-4">
-                  <label class="form-label">
+                  <label for="ubicacionBackup" class="form-label">
                     <i class="pi pi-folder text-orange-500"></i>
                     <span>Ubicación de Backup</span>
                   </label>
@@ -982,7 +994,7 @@
                 </div>
                 
                 <div class="form-group">
-                  <label class="form-label">
+                  <label for="retencionDias" class="form-label">
                     <i class="pi pi-history text-purple-500"></i>
                     <span>Retención (días)</span>
                   </label>
@@ -1118,7 +1130,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       
       <div class="form-group">
-        <label class="form-label">Nombre Completo</label>
+        <label for="nombre" class="form-label">Nombre Completo</label>
         <input 
           type="text"
           pInputText
@@ -1128,7 +1140,7 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Username</label>
+        <label for="username" class="form-label">Username</label>
         <input 
           type="text"
           pInputText
@@ -1138,7 +1150,7 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Email</label>
+        <label for="email" class="form-label">Email</label>
         <input 
           type="email"
           pInputText
@@ -1148,7 +1160,7 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Teléfono</label>
+        <label for="telefono" class="form-label">Teléfono</label>
         <input 
           type="text"
           pInputText
@@ -1158,7 +1170,7 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Rol</label>
+        <label for="rol" class="form-label">Rol</label>
         <p-dropdown 
           [(ngModel)]="nuevoUsuario.rol"
           [options]="opcionesRol"
@@ -1170,7 +1182,7 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Estado</label>
+        <label for="estado" class="form-label">Estado</label>
         <p-dropdown 
           [(ngModel)]="nuevoUsuario.estado"
           [options]="opcionesEstado"
@@ -1182,7 +1194,7 @@
       </div>
       
       <div class="form-group md:col-span-2">
-        <label class="form-label">Sucursal</label>
+        <label for="sucursal" class="form-label">Sucursal</label>
         <input 
           type="text"
           pInputText

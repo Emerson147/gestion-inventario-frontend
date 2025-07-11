@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -28,7 +28,7 @@ import { InputSwitchModule } from 'primeng/inputswitch'; // 👈 Nuevo import
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { User } from '../../../core/models/user.model';
-import { UsuarioService } from '../../../core/services/usuario.service';
+import { UsuarioService, PagedUserResponse } from '../../../core/services/usuario.service';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { AnimationService } from '../../../core/animations/animation.service';
 import { Subject, firstValueFrom, finalize } from 'rxjs';
@@ -253,13 +253,11 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   permissionTypes = PermissionType;
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly userService: UsuarioService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    private readonly animationService: AnimationService,
-    private readonly permissionService: PermissionService
-  ) {}
+  private readonly userService: UsuarioService = inject(UsuarioService);
+  private readonly messageService: MessageService = inject(MessageService);
+  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly animationService: AnimationService = inject(AnimationService);
+  private readonly permissionService: PermissionService = inject(PermissionService);
 
   ngOnInit(): void {
     this.loadUsers();
@@ -323,15 +321,17 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 👇 Tracking para mejor performance en ngFor
    */
-  trackByUsuario(index: number, usuario: any): any {
+  trackByUsuario(index: number, usuario: User): number {
     return usuario.id || index;
   }
 
   /**
    * 👇 Maneja el toggle del panel de filtros
    */
-  onFiltrosPanelToggle(event: any): void {
-    this.filtrosPanelCollapsed = event.collapsed;
+  onFiltrosPanelToggle(event: { collapsed: boolean } | Event): void {
+    if ('collapsed' in event) {
+      this.filtrosPanelCollapsed = event.collapsed;
+    }
   }
 
   /**
@@ -475,15 +475,8 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loading = true;
     
     this.userService.getUsers().subscribe({
-      next: (response: any) => {
-        if (response?.contenido && Array.isArray(response.contenido)) {
-          this.users = response.contenido;
-        } else if (Array.isArray(response)) {
-          this.users = response;
-        } else {
-          this.users = [];
-        }
-        
+      next: (response: PagedUserResponse) => {
+        this.users = response.contenido || [];  
         this.usersFiltrados = [...this.users];
         this.extractRoles();
       },
@@ -495,7 +488,6 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-
   private extractRoles(): void {
     const rolesSet = new Set<string>();
     this.users.forEach(user => {
@@ -781,7 +773,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.passwordStrength = 0;
   }
 
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: { filterGlobal: (value: string, matchMode: string) => void }, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -865,7 +857,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -955,12 +947,26 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
+    let errorMessage = defaultMessage;
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'object' && error !== null) {
+      const errorObj = error as Record<string, unknown>;
+      if (errorObj['error'] && typeof errorObj['error'] === 'object') {
+        const nestedError = errorObj['error'] as Record<string, unknown>;
+        if (nestedError['message'] && typeof nestedError['message'] === 'string') {
+          errorMessage = nestedError['message'] as string;
+        }
+      }
+    }
+    
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage,
+      detail: errorMessage,
       life: 5000
     });
   }
@@ -1027,9 +1033,11 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Maneja errores de imagen en avatares
    */
-  onImageError(event: any): void {
-    // Fallback a avatar con iniciales en caso de error
-    event.target.style.display = 'none';
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.style.display = 'none';
+    }
   }
   
   /**
@@ -1073,7 +1081,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Valida si un usuario puede ser eliminado
    */
-  canDeleteUser(usuario: User): boolean {
+  canDeleteUser(): boolean {
     // No permitir eliminar al usuario actual (puedes agregar lógica adicional)
     // return usuario.username !== 'admin'; // Ejemplo: no eliminar admin
     return true; // Por ahora permitir eliminar todos
@@ -1150,7 +1158,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       await navigator.clipboard.writeText(email);
       this.showSuccess('Email copiado al portapapeles');
-    } catch (error) {
+    } catch {
       this.showError('Error al copiar email');
     }
   }
@@ -1184,7 +1192,6 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     const usuarios = this.users || [];
     const hoy = new Date();
     const hace7Dias = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000);
     
     return {
       ...this.getEstadisticas(),

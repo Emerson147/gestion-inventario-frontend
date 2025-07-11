@@ -1,9 +1,17 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { RouterModule } from "@angular/router";
 // import { DashboardService } from "../../service/dashboard.service";
+
+interface DashboardData {
+  category: number;
+  product: number;
+  bill: number;
+  warehouse: number;
+  users: number;
+}
 
 @Component({
   standalone: true,
@@ -13,10 +21,12 @@ import { RouterModule } from "@angular/router";
 })
 
 export class DashboardWidget {
-  data: any = {
+  data: DashboardData = {
     category: 0,
     product: 0,
-    bill: 0
+    bill: 0,
+    warehouse: 0,
+    users: 0
   };
 
   // constructor(private dashboardService: DashboardService) { }

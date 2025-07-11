@@ -1,24 +1,23 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import { Inventario, MovimientoInventario, PagedResponse, InventarioRequest } from '../models/inventario.model';
+import { Inventario, MovimientoInventario, PagedResponse, InventarioRequest, EstadoInventario } from '../models/inventario.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventarioService {
 
-  private apiUrl = `${environment.apiUrl}api/inventarios`
-
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}api/inventarios`;
+  private http = inject(HttpClient);
 
   obtenerInventarios(
-    page: number = 0,
-    size: number = 10,
-    sortBy: string = 'id',
-    sortDir: string = 'asc'
+    page = 0,
+    size = 10,
+    sortBy = 'id',
+    sortDir = 'asc'
   ): Observable<PagedResponse<Inventario>> {
     const params = new HttpParams()
       .set('page', page.toString())
@@ -48,16 +47,26 @@ export class InventarioService {
     return this.http.delete<void>(`${this.apiUrl}/eliminar/${id}`);
   }
 
-  registrarMovimiento(movimiento: MovimientoInventario): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/movimiento`, movimiento);
+  registrarMovimiento(movimiento: MovimientoInventario): Observable<{ mensaje: string; movimiento: MovimientoInventario }> {
+    return this.http.post<{ mensaje: string; movimiento: MovimientoInventario }>(
+      `${this.apiUrl}/movimiento`, 
+      movimiento
+    );
   }
 
-  obtenerMovimientos(inventarioId: number, page: number = 0, size: number = 10): Observable<any> {
+  obtenerMovimientos(
+    inventarioId: number, 
+    page = 0, 
+    size = 10
+  ): Observable<PagedResponse<MovimientoInventario & { estadoAnterior: EstadoInventario; estadoNuevo: EstadoInventario }>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
       
-   return this.http.get<any>(`${this.apiUrl}/${inventarioId}/movimientos`, { params });
+    return this.http.get<PagedResponse<MovimientoInventario & { estadoAnterior: EstadoInventario; estadoNuevo: EstadoInventario }>>(
+      `${this.apiUrl}/${inventarioId}/movimientos`, 
+      { params }
+    );
   }
 
 }

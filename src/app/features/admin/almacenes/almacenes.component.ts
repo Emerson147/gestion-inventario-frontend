@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { PagedResponse } from '../../../core/models/paged-response.model';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -450,6 +451,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   activeTab = 0; // 0: Info, 1: Zonas, 2: KPIs, 3: Histórico
 
   // Filtros y búsqueda
+  filtrosVisibles = false;
   filtros: FiltrosAlmacenes = {
     nombre: '',
     ubicacion: '',
@@ -466,12 +468,12 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   // Gráficos y estadísticas
   chartData: {
     labels: string[];
-    datasets: Array<{
+    datasets: {
       data: number[];
       backgroundColor: string[];
       borderWidth: number;
       borderColor: string;
-    }>;
+    }[];
   } = {
     labels: [],
     datasets: [{
@@ -481,7 +483,44 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
       borderColor: '#ffffff'
     }]
   };
-  chartOptions: any = {};
+  // Chart options with proper typing
+  // Using type assertion to bypass TypeScript errors for Chart.js options
+  // since the type definitions might be stricter than the actual library
+  chartOptions: Record<string, unknown> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#495057',
+          usePointStyle: true
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#6c757d'
+        },
+        grid: {
+          color: '#e9ecef',
+          drawBorder: false,
+          display: true
+        }
+      },
+      y: {
+        ticks: {
+          color: '#6c757d'
+        },
+        grid: {
+          color: '#e9ecef',
+          drawBorder: false,
+          display: true
+        }
+      }
+    }
+  };
   
   // Configuración de mapas (simulado)
   mapaConfig = {
@@ -547,11 +586,13 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
 
   currentDate: Date = new Date();
 
+  private readonly almacenService: AlmacenService = inject(AlmacenService);
+  private readonly messageService: MessageService = inject(MessageService);
+  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly permissionService: PermissionService = inject(PermissionService);
+
   constructor(
-    private readonly almacenService: AlmacenService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    private readonly permissionService: PermissionService
+   
   ) {
     this.initChartOptions();
   }
@@ -593,15 +634,17 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
    * 👇 Inicializa opciones de gráficos
    */
   initChartOptions(): void {
+    // Initialize chart options with proper typing
+    // Using Record<string, unknown> to handle complex Chart.js options
     this.chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'bottom',
+          position: 'top',
           labels: {
             usePointStyle: true,
-            padding: 20
+            color: '#495057'
           }
         }
       },
@@ -609,12 +652,22 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         y: {
           beginAtZero: true,
           grid: {
-            color: 'rgba(0,0,0,0.1)'
+            color: 'rgba(0,0,0,0.1)',
+            drawBorder: false,
+            display: true
+          },
+          ticks: {
+            color: '#6c757d'
           }
         },
         x: {
           grid: {
-            display: false
+            color: 'rgba(0,0,0,0.05)',
+            drawBorder: false,
+            display: true
+          },
+          ticks: {
+            color: '#6c757d'
           }
         }
       }
@@ -630,11 +683,11 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
       ...almacen,
       capacidadMaxima: 1000 + (index * 500),
       capacidadUtilizada: Math.floor(Math.random() * 800) + 200,
-      estado: ['ACTIVO', 'ACTIVO', 'MANTENIMIENTO', 'ACTIVO'][index % 4] as any,
+      estado: (['ACTIVO', 'ACTIVO', 'MANTENIMIENTO', 'ACTIVO'] as const)[index % 4],
       responsable: ['Carlos Mendoza', 'Ana García', 'Luis Rodríguez', 'María Fernández'][index % 4],
       telefono: [`+51 ${900000000 + index}`, `+51 ${900000001 + index}`][index % 2],
       email: [`almacen${index + 1}@empresa.com`],
-      tipoAlmacen: ['PRINCIPAL', 'SUCURSAL', 'TEMPORAL', 'DEPOSITO'][index % 4] as any,
+      tipoAlmacen: (['PRINCIPAL', 'SUCURSAL', 'TEMPORAL', 'DEPOSITO'] as const)[index % 4],
       horarioOperacion: '24/7',
       ubicacionGeografica: {
         latitud: -12.0464 + (Math.random() - 0.5) * 0.1,
@@ -852,11 +905,11 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   /**
    * 👇 Tracking para mejor performance
    */
-  trackByAlmacen(index: number, almacen: any): any {
+  trackByAlmacen(index: number, almacen: AlmacenExtendido): number {
     return almacen.id || index;
   }
 
-  trackByZona(index: number, zona: any): any {
+  trackByZona(index: number, zona: ZonaAlmacen): number {
     return zona.id || index;
   }
 
@@ -982,11 +1035,19 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
     this.loading = true;
     
     this.almacenService.getAlmacenes().subscribe({
-      next: (response) => {
-        this.almacenes = response || [];
+      next: (response: PagedResponse<Almacen>) => {
+        // Map the response content to AlmacenExtendido array
+        this.almacenes = (response?.content || []).map((item: Almacen) => ({
+          ...item,
+          // Add any additional properties needed for AlmacenExtendido
+          estado: 'ACTIVO', // Default value, adjust as needed
+          capacidadMaxima: 0, // Default value, adjust as needed
+          capacidadUtilizada: 0, // Default value, adjust as needed
+          porcentajeOcupacion: 0
+        } as AlmacenExtendido));
         this.generarDatosSimulados(); // Enriquecer con datos simulados
       },
-      error: (error) => {
+      error: (error: Error) => {
         this.handleError(error, 'No se pudo cargar los almacenes');
       },
       complete: () => {
@@ -1173,7 +1234,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
     this.almacen = this.initAlmacen();
   }
 
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: { filterGlobal: (value: string, filterMatchMode: string) => void }, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -1212,7 +1273,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -1421,12 +1482,12 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage,
+      detail: (error as { error?: { message?: string } })?.error?.message || defaultMessage,
       life: 5000
     });
   }
@@ -1578,7 +1639,7 @@ getTipoZonaLabel(tipo: string): string {
   // 👇 Obtiene la capacidad total de todos los almacenes
   getCapacidadTotal(): number {
     if (!this.almacenes) return 0;
-    return this.almacenes.reduce((total, almacen) => total + ((almacen as any).capacidad || 0), 0);
+    return this.almacenes.reduce((total, almacen) => total + (almacen.capacidadMaxima || 0), 0);
   }
 
   // 👇 Calcula las estadísticas de los almacenes
@@ -1728,6 +1789,39 @@ aplicarCambiosZonas(): void {
   this.showSuccess('Cambios aplicados correctamente');
   this.hideZonasDialog();
 }
+
+  /**
+   * Inicia el proceso de redimensionamiento de una zona
+   * @param event Evento del teclado o ratón
+   * @param zona Zona que se va a redimensionar
+   */
+  iniciarRedimension(event: Event, zona: ZonaAlmacen): void {
+    // Prevenir el comportamiento por defecto del evento
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Si es un evento de teclado, solo procesar Enter o Espacio
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    // Establecer la zona seleccionada si no lo está
+    if (this.zonaSeleccionada?.id !== zona.id) {
+      this.zonaSeleccionada = zona;
+    }
+
+    // Mostrar mensaje al usuario
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Redimensionar Zona',
+      detail: 'Mantén presionado y arrastra para redimensionar la zona',
+      life: 3000
+    });
+
+    // Aquí iría la lógica para iniciar el arrastre del controlador de redimensionamiento
+    // Esto es un marcador de posición para la implementación real
+    console.log('Iniciando redimensión de la zona:', zona.nombre);
+  }
 
 /**
  * Métodos para el mapa

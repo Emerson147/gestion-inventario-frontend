@@ -573,6 +573,11 @@
                 class="cliente-card-mobile"
                 [class.selected]="selectedClientes.includes(cliente)"
                 (click)="toggleClienteSelection(cliente)"
+                (keyup.enter)="toggleClienteSelection(cliente)"
+                (keyup.space)="toggleClienteSelection(cliente)"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Seleccionar cliente ' + cliente.nombres + ' ' + cliente.apellidos"
               >
                 <!-- Avatar y estado -->
                 <div class="flex items-start justify-between mb-3">
@@ -599,6 +604,9 @@
                     <button 
                       class="cliente-menu-btn"
                       (click)="mostrarMenuAccionesMobile($event, cliente)"
+                      (keyup.enter)="mostrarMenuAccionesMobile($event, cliente)"
+                      (keyup.space)="mostrarMenuAccionesMobile($event, cliente)"
+                      aria-label="Mostrar opciones del cliente"
                     >
                       <i class="pi pi-ellipsis-v"></i>
                     </button>

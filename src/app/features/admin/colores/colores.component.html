@@ -205,11 +205,12 @@
       <div class="grid gap-4 pt-4">
         <!-- Selector de producto principal -->
         <div class="col-12 md:col-5">
-          <label class="block font-semibold mb-3 text-gray-700">
+          <label for="productoSelect" class="block font-semibold mb-3 text-gray-700">
             <i class="pi pi-box mr-2 text-blue-600"></i>
             Producto
           </label>
           <p-select 
+            inputId="productoSelect"
             [options]="productos" 
             [(ngModel)]="productoSeleccionadoFiltro" 
             optionLabel="codigo"
@@ -219,6 +220,7 @@
             [showClear]="true"
             class="w-full"
             styleClass="h-12"
+            ariaLabel="Seleccionar producto"
             (onChange)="cargarColoresPorProducto()"
           >
             <ng-template pTemplate="selectedItem">
@@ -248,34 +250,40 @@
         
         <!-- Filtro por texto -->
         <div class="col-12 md:col-3">
-          <label class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-search mr-2 text-purple-600"></i>
+          <label for="buscarColorInput" class="block font-semibold mb-3 text-gray-700">
+            <i class="pi pi-search mr-2 text-purple-600" aria-hidden="true"></i>
             Buscar Color
           </label>
           <p-iconfield class="w-full">
             <p-inputicon styleClass="pi pi-search" />
             <input 
+              id="buscarColorInput"
               pInputText 
               [(ngModel)]="filtroTexto" 
               (input)="aplicarFiltrosTexto()"
+              (keyup.enter)="aplicarFiltrosTexto()"
               placeholder="Nombre del color..."
               class="w-full h-12 text-base rounded-lg"
+              aria-label="Buscar por nombre de color"
             />
           </p-iconfield>
         </div>
         
         <!-- Filtro por talla -->
         <div class="col-12 md:col-2">
-          <label class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-tags mr-2 text-green-600"></i>
+          <label for="filtroTallaInput" class="block font-semibold mb-3 text-gray-700">
+            <i class="pi pi-tags mr-2 text-green-600" aria-hidden="true"></i>
             Talla
           </label>
           <input 
+            id="filtroTallaInput"
             pInputText 
             [(ngModel)]="filtroTalla" 
             (input)="aplicarFiltrosTexto()"
+            (keyup.enter)="aplicarFiltrosTexto()"
             placeholder="Ej: XL, 42..."
             class="w-full h-12 text-base rounded-lg"
+            aria-label="Filtrar por talla"
           />
         </div>
         
@@ -433,17 +441,20 @@
         </div>
         
         <!-- Card para agregar nuevo color -->
-        <div 
+        <button 
           *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
-          class="border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300 cursor-pointer group min-h-[300px]"
+          class="w-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300 cursor-pointer group min-h-[300px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           (click)="openNew()"
+          (keyup.enter)="openNew()"
+          (keyup.space)="openNew()"
+          aria-label="Agregar nuevo color"
         >
           <div class="bg-purple-100 p-6 rounded-full mb-4 group-hover:bg-purple-200 transition-colors duration-300">
             <i class="pi pi-plus text-3xl text-purple-600"></i>
           </div>
           <span class="text-xl font-semibold text-gray-700 mb-2">Agregar Color</span>
-          <span class="text-sm text-gray-500 text-center">Clic para crear un nuevo color con tallas</span>
-        </div>
+          <span class="text-sm text-gray-500 text-center">Presione Enter o haga clic para crear un nuevo color con tallas</span>
+        </button>
       </div>
     </div>
     
@@ -586,12 +597,15 @@
           <td class="text-center">
             <div class="flex justify-center">
               <div class="relative group">
-                <div 
-                  class="color-preview shadow-lg cursor-pointer"
+                <button 
+                  class="color-preview shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   [style.background-color]="color.codigoHex || '#cccccc'"
                   pTooltip="{{color.codigoHex || 'Sin código definido'}}"
                   (click)="verDetallesColor(color)"
-                ></div>
+                  (keyup.enter)="verDetallesColor(color)"
+                  (keyup.space)="verDetallesColor(color)"
+                  [attr.aria-label]="'Ver detalles del color ' + (color.nombre || 'sin nombre')"
+                ></button>
                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <i class="pi pi-eye text-white text-lg"></i>
                 </div>
@@ -894,13 +908,16 @@
             <div class="mt-4" *ngIf="!editMode">
               <h5 class="text-sm font-semibold text-gray-700 mb-2">Colores Populares</h5>
               <div class="grid grid-cols-4 gap-2">
-                <div 
+                <button 
                   *ngFor="let preset of coloresPreset.slice(0, 8)"
-                  class="w-8 h-8 rounded-lg border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
+                  class="w-8 h-8 rounded-lg border-2 border-white shadow-sm hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   [style.background-color]="preset.hex"
                   [title]="preset.nombre"
                   (click)="aplicarColorPreset(preset)"
-                ></div>
+                  (keyup.enter)="aplicarColorPreset(preset)"
+                  (keyup.space)="aplicarColorPreset(preset)"
+                  [attr.aria-label]="'Aplicar color ' + preset.nombre"
+                ></button>
               </div>
             </div>
           </div>
@@ -956,10 +973,10 @@
 
           <!-- Producto preseleccionado -->
           <div class="mb-5" *ngIf="!editMode && productoSeleccionadoFiltro">
-            <label class="block font-bold mb-3">
-              <i class="pi pi-box mr-2 text-blue-600"></i>
+            <h3 class="block font-bold mb-3">
+              <i class="pi pi-box mr-2 text-blue-600" aria-hidden="true"></i>
               Producto Seleccionado
-            </label>
+            </h3>
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div class="flex items-center gap-3">
                 <div class="bg-blue-600 p-2 rounded-lg">
@@ -1022,30 +1039,37 @@
                     pattern="^#[0-9A-Fa-f]{6}$"
                   />
                 </div>
-                <p-button 
+                <button 
+                  pButton 
                   icon="pi pi-refresh" 
                   [outlined]="true"
                   size="small"
                   pTooltip="Generar color aleatorio"
                   (click)="generarColorAleatorio()"
-                />
+                  (keyup.enter)="generarColorAleatorio()"
+                  (keyup.space)="generarColorAleatorio()"
+                  aria-label="Generar color aleatorio"
+                ></button>
               </div>
               
               <!-- Paleta de colores populares -->
               <div class="mb-4">
                 <small class="text-gray-600 block mb-2">Colores populares (clic para seleccionar):</small>
                 <div class="grid grid-cols-6 gap-2">
-                  <div 
+                  <button 
                     *ngFor="let preset of coloresPreset"
-                    class="w-10 h-10 rounded-lg border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-all duration-300 relative group"
+                    class="w-10 h-10 rounded-lg border-2 border-white shadow-md hover:scale-110 transition-all duration-300 relative group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     [style.background-color]="preset.hex"
                     [title]="preset.nombre + ' - ' + preset.hex"
                     (click)="aplicarColorPreset(preset)"
+                    (keyup.enter)="aplicarColorPreset(preset)"
+                    (keyup.space)="aplicarColorPreset(preset)"
+                    [attr.aria-label]="'Seleccionar color ' + (preset.nombre || 'sin nombre') + ' con código ' + preset.hex"
                   >
                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-300 flex items-center justify-center">
-                      <i class="pi pi-check text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></i>
+                      <i class="pi pi-check text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true"></i>
                     </div>
-                  </div>
+                  </button>
                 </div>
               </div>
               
@@ -1068,32 +1092,35 @@
 
           <!-- Gestión de tallas mejorada -->
           <div class="mb-5">
-            <label class="block font-bold mb-3">
-              <i class="pi pi-tags mr-2 text-orange-600"></i>
+            <h4 class="block font-bold mb-3">
+              <i class="pi pi-tags mr-2 text-orange-600" aria-hidden="true"></i>
               Tallas Disponibles*
-            </label>
+            </h4>
             
             <!-- Categorías de tallas -->
             <div class="mb-4">
               <small class="text-gray-600 block mb-3">Agregar por categorías:</small>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div 
+                <button 
                   *ngFor="let categoria of tallaCategories" 
-                  class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors duration-300 cursor-pointer"
+                  class="w-full text-left border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   (click)="agregarTallasCategoria(categoria)"
+                  (keyup.enter)="agregarTallasCategoria(categoria)"
+                  (keyup.space)="agregarTallasCategoria(categoria)"
+                  [attr.aria-label]="'Agregar tallas de la categoría ' + categoria.label"
                 >
                   <div class="flex items-center gap-3">
                     <div [ngClass]="'bg-' + categoria.color + '-100 p-2 rounded-lg'">
-                      <i [class]="categoria.icon" [ngClass]="'text-' + categoria.color + '-600'"></i>
+                      <i [class]="categoria.icon" [ngClass]="'text-' + categoria.color + '-600'" aria-hidden="true"></i>
                     </div>
                     <div class="flex-1">
                       <div class="font-semibold text-gray-800">{{categoria.label}}</div>
                       <div class="text-xs text-gray-500">{{categoria.sizes.length}} tallas disponibles</div>
                       <div class="text-xs text-gray-400 mt-1">{{categoria.sizes.slice(0, 5).join(', ')}}...</div>
                     </div>
-                    <div class="text-xs text-gray-500">Clic para agregar</div>
+                    <div class="text-xs text-gray-500">Presionar para agregar</div>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -1101,27 +1128,33 @@
             <div class="mb-4">
               <small class="text-gray-600 block mb-2">Tallas comunes (clic individual):</small>
               <div class="flex flex-wrap gap-2">
-                <span 
+                <button 
+                  type="button"
                   *ngFor="let tallaComun of ['XS', 'S', 'M', 'L', 'XL', 'XXL', '32', '34', '36', '38', '40', '42']"
-                  class="px-3 py-2 border border-gray-300 rounded-lg cursor-pointer transition-all duration-300 text-sm font-medium hover:bg-gray-100"
+                  class="px-3 py-2 border border-gray-300 rounded-lg transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                   [ngClass]="{
                     'bg-gray-200 text-gray-500 cursor-not-allowed': isTallaAdded(tallaComun),
                     'bg-white text-gray-700 hover:bg-blue-50 hover:border-blue-300': !isTallaAdded(tallaComun)
                   }"
                   (click)="!isTallaAdded(tallaComun) && agregarTallaComun(tallaComun)"
-                  [title]="isTallaAdded(tallaComun) ? 'Talla ya agregada' : 'Clic para agregar'"
+                  (keyup.enter)="!isTallaAdded(tallaComun) && agregarTallaComun(tallaComun)"
+                  (keyup.space)="!isTallaAdded(tallaComun) && agregarTallaComun(tallaComun)"
+                  [attr.aria-label]="isTallaAdded(tallaComun) ? 'Talla ' + tallaComun + ' ya agregada' : 'Agregar talla ' + tallaComun"
+                  [disabled]="isTallaAdded(tallaComun)"
+                  [title]="isTallaAdded(tallaComun) ? 'Talla ya agregada' : 'Agregar talla ' + tallaComun"
                 >
                   {{tallaComun}}
-                  <i class="pi pi-check ml-1 text-green-600" *ngIf="isTallaAdded(tallaComun)"></i>
-                </span>
+                  <i class="pi pi-check ml-1 text-green-600" *ngIf="isTallaAdded(tallaComun)" aria-hidden="true"></i>
+                </button>
               </div>
             </div>
 
             <!-- Input para talla personalizada -->
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Talla personalizada:</label>
+              <label for="tallaPersonalizadaInput" class="block text-sm font-medium text-gray-700 mb-2">Talla personalizada:</label>
               <div class="flex gap-2">
                 <input 
+                  id="tallaPersonalizadaInput"
                   type="text" 
                   pInputText 
                   [(ngModel)]="nuevaTalla" 
@@ -1129,24 +1162,30 @@
                   placeholder="Ingrese talla personalizada (ej: 36.5, XS-P, 2XL...)" 
                   (keyup.enter)="agregarTalla()"
                   style="text-transform: uppercase"
+                  aria-label="Ingrese talla personalizada"
                 />
-                <p-button 
+                <button 
+                  pButton 
+                  pRipple 
                   type="button" 
-                  label="Agregar" 
                   icon="pi pi-plus" 
-                  size="large"
+                  class="p-button-rounded p-button-text p-button-success shadow-sm"
                   (click)="agregarTalla()"
+                  (keyup.enter)="agregarTalla()"
+                  (keyup.space)="agregarTalla()"
                   [disabled]="!nuevaTalla.trim()"
-                  class="shadow-sm"
-                />
+                  aria-label="Agregar talla personalizada"
+                >
+                  <span class="sr-only">Agregar talla personalizada</span>
+                </button>
               </div>
             </div>
             
             <!-- Lista de tallas agregadas -->
             <div class="mb-3" *ngIf="tallas.length > 0">
-              <label class="block text-sm font-medium text-gray-700 mb-3">
+              <h5 class="block text-sm font-medium text-gray-700 mb-3">
                 Tallas configuradas ({{tallas.length}}):
-              </label>
+              </h5>
               <div class="bg-gray-50 rounded-lg p-4 max-h-32 overflow-y-auto">
                 <div class="flex flex-wrap gap-2">
                   <div 

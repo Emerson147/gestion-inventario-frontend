@@ -417,6 +417,11 @@
         *ngFor="let inventario of inventariosFiltrados; trackBy: trackByInventario" 
         class="inventory-card bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 inventory-entrance"
         (click)="mostrarDetalle(inventario)"
+        (keyup.enter)="mostrarDetalle(inventario)"
+        (keyup.space)="mostrarDetalle(inventario)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Ver detalles del inventario ' + inventario.serie"
       >
         <!-- Header del inventario -->
         <div 
@@ -1541,8 +1546,11 @@
             </h5>
             <div class="space-y-3">
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Tipo de Movimiento</label>
+                <label for="tipo-movimiento" class="text-sm font-medium text-gray-700 mb-1 block">
+                  Tipo de Movimiento
+                </label>
                 <p-select 
+                  id="tipo-movimiento"
                   [options]="tiposMovimiento" 
                   optionLabel="label"
                   optionValue="value"
@@ -1554,8 +1562,9 @@
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Rango de Fechas</label>
+                <label for="fecha-movimiento" class="text-sm font-medium text-gray-700 mb-1 block">Rango de Fechas</label>
                 <p-calendar 
+                  id="fecha-movimiento"
                   selectionMode="range" 
                   [readonlyInput]="true"
                   placeholder="Seleccionar fechas"
@@ -1566,10 +1575,11 @@
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+                <label for="usuario-movimiento" class="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
                 <input 
                   type="text" 
                   pInputText 
+                  id="usuario-movimiento"
                   placeholder="Filtrar por usuario"
                   class="w-full h-10"
                 />
@@ -1938,7 +1948,7 @@
       <!-- Lista de alertas -->
       <div class="space-y-4">
         <div 
-          *ngFor="let alerta of calcularEstadisticas().alertasCriticas; trackBy: trackByInventario" 
+          *ngFor="let alerta of calcularEstadisticas().alertasCriticas; trackBy: trackByAlerta" 
           class="alert-card rounded-xl p-4 border hover:shadow-md transition-all duration-300"
           [ngClass]="'alert-' + alerta.severidad"
         >
@@ -2131,7 +2141,7 @@
           <div class="mb-6" *ngIf="editMode && productoSeleccionado">
             <div class="flex items-center gap-2 mb-3">
               <i class="pi pi-tag text-blue-600"></i>
-              <label class="font-bold text-gray-700">Producto</label>
+              <label for="producto" class="font-bold text-gray-700">Producto</label>
             </div>
             <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
               <div class="flex items-center gap-3">
@@ -2414,8 +2424,9 @@
               </h4>
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Costo Unitario</label>
+                  <label for="costo" class="text-sm font-medium text-gray-700 mb-2 block">Costo Unitario</label>
                   <p-inputNumber
+                    id="costo"
                     [(ngModel)]="inventario.costo"
                     mode="currency"
                     currency="USD"
@@ -2426,8 +2437,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Valor Unitario</label>
+                  <label for="valorUnitario" class="text-sm font-medium text-gray-700 mb-2 block">Valor Unitario</label>
                   <p-inputNumber
+                    id="valorUnitario"
                     [(ngModel)]="inventario.valorUnitario"
                     mode="currency"
                     currency="USD"
@@ -2438,8 +2450,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Margen (%)</label>
+                  <label for="margen" class="text-sm font-medium text-gray-700 mb-2 block">Margen (%)</label>
                   <p-inputNumber
+                    id="margen"
                     [(ngModel)]="inventario.margen"
                     suffix="%"
                     [min]="0"
@@ -2459,8 +2472,9 @@
               </h4>
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Stock Mínimo</label>
+                  <label for="stockMinimo" class="text-sm font-medium text-gray-700 mb-2 block">Stock Mínimo</label>
                   <p-inputNumber
+                    id="stockMinimo"
                     [(ngModel)]="inventario.stockMinimo"
                     [showButtons]="true"
                     [min]="0"
@@ -2469,8 +2483,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Stock Máximo</label>
+                  <label for="stockMaximo" class="text-sm font-medium text-gray-700 mb-2 block">Stock Máximo</label>
                   <p-inputNumber
+                    id="stockMaximo"
                     [(ngModel)]="inventario.stockMaximo"
                     [showButtons]="true"
                     [min]="0"
@@ -2479,8 +2494,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Punto de Reorden</label>
+                  <label for="puntoReorden" class="text-sm font-medium text-gray-700 mb-2 block">Punto de Reorden</label>
                   <p-inputNumber
+                    id="puntoReorden"
                     [(ngModel)]="inventario.puntoReorden"
                     [showButtons]="true"
                     [min]="0"
@@ -2502,7 +2518,7 @@
               </h4>
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Ubicación en Almacén</label>
+                  <label for="ubicacionAlmacen" class="text-sm font-medium text-gray-700 mb-2 block">Ubicación en Almacén</label>
                   <input 
                     type="text" 
                     pInputText 
@@ -2512,7 +2528,7 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Número de Lote</label>
+                  <label for="lote" class="text-sm font-medium text-gray-700 mb-2 block">Número de Lote</label>
                   <input 
                     type="text" 
                     pInputText 
@@ -2522,8 +2538,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Fecha de Vencimiento</label>
+                  <label for="fechaVencimiento" class="text-sm font-medium text-gray-700 mb-2 block">Fecha de Vencimiento</label>
                   <p-calendar 
+                    id="fechaVencimiento"
                     [(ngModel)]="inventario.fechaVencimiento"
                     [showIcon]="true"
                     [style]="{'width':'100%'}"
@@ -2541,8 +2558,9 @@
               </h4>
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Categoría ABC</label>
+                  <label for="categoriaABC" class="text-sm font-medium text-gray-700 mb-2 block">Categoría ABC</label>
                   <p-select 
+                    id="categoriaABC"
                     [options]="categoriasABC" 
                     [(ngModel)]="inventario.categoriaABC" 
                     optionLabel="label"
@@ -2553,8 +2571,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Rotación Anual (estimada)</label>
+                  <label for="rotacion" class="text-sm font-medium text-gray-700 mb-2 block">Rotación Anual (estimada)</label>
                   <p-inputNumber
+                    id="rotacion"
                     [(ngModel)]="inventario.rotacion"
                     suffix="x/año"
                     [min]="0"
@@ -2563,8 +2582,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Proveedor Principal</label>
+                  <label for="proveedorPrincipal" class="text-sm font-medium text-gray-700 mb-2 block">Proveedor Principal</label>
                   <input 
+                    id="proveedorPrincipal"
                     type="text" 
                     pInputText 
                     [(ngModel)]="inventario.proveedorPrincipal"
@@ -3301,8 +3321,9 @@
             </h5>
             <div class="space-y-3">
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Tipo de Movimiento</label>
+                <label for="tipoMovimiento" class="text-sm font-medium text-gray-700 mb-1 block">Tipo de Movimiento</label>
                 <p-select 
+                  id="tipoMovimiento"
                   [options]="tiposMovimiento" 
                   optionLabel="label"
                   optionValue="value"
@@ -3314,8 +3335,9 @@
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Rango de Fechas</label>
+                <label for="fechaMovimiento" class="text-sm font-medium text-gray-700 mb-1 block">Rango de Fechas</label>
                 <p-calendar 
+                  id="fechaMovimiento"
                   selectionMode="range" 
                   [readonlyInput]="true"
                   placeholder="Seleccionar fechas"
@@ -3326,19 +3348,21 @@
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+                <label for="usuario" class="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
                 <input 
                   type="text" 
                   pInputText 
+                  id="usuario"
                   placeholder="Filtrar por usuario"
                   class="w-full h-10"
                 />
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-1 block">Rango de Cantidad</label>
+                <label for="rangoCantidad" class="text-sm font-medium text-gray-700 mb-1 block">Rango de Cantidad</label>
                 <div class="grid grid-cols-2 gap-2">
                   <p-inputNumber
+                    id="rangoCantidad"
                     placeholder="Min"
                     [showButtons]="false"
                     class="w-full"
@@ -3910,8 +3934,9 @@
             <div class="space-y-4">
               <!-- Tipo de reporte -->
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Tipo de Reporte</label>
+                <label for="tipoReporte" class="text-sm font-medium text-gray-700 mb-2 block">Tipo de Reporte</label>
                 <p-select 
+                  id="tipoReporte"
                   [options]="[
                     {label: 'Resumen Ejecutivo', value: 'executive'},
                     {label: 'Análisis ABC Detallado', value: 'abc'},
@@ -3931,8 +3956,9 @@
               <!-- Período del reporte -->
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Fecha Inicio</label>
+                  <label for="fechaInicio" class="text-sm font-medium text-gray-700 mb-2 block">Fecha Inicio</label>
                   <p-calendar 
+                    id="fechaInicio"
                     [showIcon]="true"
                     placeholder="Fecha inicio"
                     class="w-full"
@@ -3940,8 +3966,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium text-gray-700 mb-2 block">Fecha Fin</label>
+                  <label for="fechaFin" class="text-sm font-medium text-gray-700 mb-2 block">Fecha Fin</label>
                   <p-calendar 
+                    id="fechaFin"
                     [showIcon]="true"
                     placeholder="Fecha fin"
                     class="w-full"
@@ -3952,9 +3979,10 @@
               
               <!-- Filtros adicionales -->
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Filtros Adicionales</label>
+                <label for="filtros-adicionales" class="text-sm font-medium text-gray-700 mb-2 block">Filtros Adicionales</label>
                 <div class="grid grid-cols-2 gap-4">
-                  <p-select 
+                  <p-select
+                    id="filtros-adicionales"
                     [options]="almacenes" 
                     optionLabel="nombre"
                     optionValue="id"
@@ -3977,7 +4005,7 @@
               
               <!-- Opciones de formato -->
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Formato de Salida</label>
+                <label for="formato-salida" class="text-sm font-medium text-gray-700 mb-2 block">Formato de Salida</label>
                 <div class="flex gap-4">
                   <div class="flex items-center gap-2">
                     <p-checkbox 
@@ -4190,8 +4218,9 @@
     <div class="bg-white rounded-xl p-4 mb-6 border border-gray-200">
       <div class="flex flex-wrap items-center gap-4">
         <div class="flex items-center gap-2">
-          <label class="text-sm font-medium text-gray-700">Severidad:</label>
+          <label for="severidad" class="text-sm font-medium text-gray-700">Severidad:</label>
           <p-selectButton 
+            id="severidad"
             [options]="[
               {label: 'Todas', value: 'all'},
               {label: 'Críticas', value: 'high'},
@@ -4206,8 +4235,9 @@
         </div>
         
         <div class="flex items-center gap-2">
-          <label class="text-sm font-medium text-gray-700">Tipo:</label>
+          <label for="tipo" class="text-sm font-medium text-gray-700">Tipo:</label>
           <p-select 
+            id="tipo"
             [options]="[
               {label: 'Todos los tipos', value: 'all'},
               {label: 'Stock Crítico', value: 'STOCK_CRITICO'},
@@ -4247,7 +4277,7 @@
     <!-- Lista de alertas con diseño premium -->
     <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
       <div 
-        *ngFor="let alerta of calcularEstadisticas().alertasCriticas; trackBy: trackByInventario; let i = index" 
+        *ngFor="let alerta of calcularEstadisticas().alertasCriticas; trackBy: trackByAlerta; let i = index" 
         class="alert-card rounded-xl p-5 border transition-all duration-300 hover:shadow-lg"
         [ngClass]="'alert-' + alerta.severidad"
         [class.animate-pulse]="alerta.urgente"
@@ -4470,8 +4500,9 @@
           <!-- Producto y almacén -->
           <div class="space-y-4">
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Producto</label>
+              <label for="producto" class="text-sm font-medium text-gray-700 mb-2 block">Producto</label>
               <p-select 
+                id="producto"
                 [options]="productos" 
                 [(ngModel)]="filtrosInventario.producto" 
                 optionLabel="nombre"
@@ -4485,8 +4516,9 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Almacén</label>
+              <label for="almacen" class="text-sm font-medium text-gray-700 mb-2 block">Almacén</label>
               <p-select 
+                id="almacen"
                 [options]="almacenes" 
                 [(ngModel)]="filtrosInventario.almacen" 
                 optionLabel="nombre"
@@ -4500,8 +4532,9 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Estado del Inventario</label>
+              <label for="estado" class="text-sm font-medium text-gray-700 mb-2 block">Estado del Inventario</label>
               <p-select 
+                id="estado"
                 [options]="estadosInventario" 
                 [(ngModel)]="filtrosInventario.estado" 
                 optionLabel="label"
@@ -4514,8 +4547,9 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Color</label>
+              <label for="color" class="text-sm font-medium text-gray-700 mb-2 block">Color</label>
               <input 
+                id="color"
                 type="text" 
                 pInputText 
                 [(ngModel)]="filtrosInventario.color"
@@ -4528,9 +4562,10 @@
           <!-- Rangos numéricos -->
           <div class="space-y-4">
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Rango de Stock</label>
+              <label for="stockMin" class="text-sm font-medium text-gray-700 mb-2 block">Rango de Stock</label>
               <div class="grid grid-cols-2 gap-3">
                 <p-inputNumber
+                  id="stockMin"
                   [(ngModel)]="filtrosInventario.stockMin"
                   placeholder="Stock mínimo"
                   [showButtons]="false"
@@ -4550,9 +4585,10 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Rango de Valor</label>
+              <label for="valorMin" class="text-sm font-medium text-gray-700 mb-2 block">Rango de Valor</label>
               <div class="grid grid-cols-2 gap-3">
                 <p-inputNumber
+                  id="valorMin"
                   [(ngModel)]="filtrosInventario.valorMin"
                   mode="currency"
                   currency="USD"
@@ -4578,8 +4614,9 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Talla</label>
+              <label for="talla" class="text-sm font-medium text-gray-700 mb-2 block">Talla</label>
               <input 
+                id="talla"
                 type="text" 
                 pInputText 
                 [(ngModel)]="filtrosInventario.talla"
@@ -4589,9 +4626,10 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Rango de Fechas</label>
+              <label for="fechaDesde" class="text-sm font-medium text-gray-700 mb-2 block">Rango de Fechas</label>
               <div class="grid grid-cols-2 gap-3">
                 <p-calendar 
+                  id="fechaDesde"
                   [(ngModel)]="filtrosInventario.fechaDesde"
                   [showIcon]="true"
                   placeholder="Fecha desde"
@@ -4599,6 +4637,7 @@
                   styleClass="h-10"
                 />
                 <p-calendar 
+                  id="fechaHasta"
                   [(ngModel)]="filtrosInventario.fechaHasta"
                   [showIcon]="true"
                   placeholder="Fecha hasta"
@@ -4691,7 +4730,7 @@
             
             <!-- Filtro de rotación -->
             <div class="mt-6">
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Rotación Anual</label>
+              <label for="rotacionAnual" class="text-sm font-medium text-gray-700 mb-2 block">Rotación Anual</label>
               <div class="space-y-2">
                 <div class="flex justify-between text-sm text-gray-600">
                   <span>0x/año</span>
@@ -4720,30 +4759,33 @@
             </h4>
             <div class="space-y-4">
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Ubicación Específica</label>
+                <label for="ubicacionEspecifica" class="text-sm font-medium text-gray-700 mb-2 block">Ubicación Específica</label>
                 <input 
                   type="text" 
                   pInputText 
+                  id="ubicacionEspecifica"
                   placeholder="Ej: Pasillo A, Estante 3"
                   class="w-full h-10"
                 />
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Número de Lote</label>
+                <label for="numeroLote" class="text-sm font-medium text-gray-700 mb-2 block">Número de Lote</label>
                 <input 
                   type="text" 
                   pInputText 
+                  id="numeroLote"
                   placeholder="Buscar por lote"
                   class="w-full h-10"
                 />
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Proveedor</label>
+                <label for="proveedor" class="text-sm font-medium text-gray-700 mb-2 block">Proveedor</label>
                 <input 
                   type="text" 
                   pInputText 
+                  id="proveedor"
                   placeholder="Filtrar por proveedor"
                   class="w-full h-10"
                 />
@@ -4759,9 +4801,10 @@
             </h4>
             <div class="space-y-4">
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Margen de Ganancia (%)</label>
+                <label for="margenGanancia" class="text-sm font-medium text-gray-700 mb-2 block">Margen de Ganancia (%)</label>
                 <div class="grid grid-cols-2 gap-3">
                   <p-inputNumber
+                    id="margenGanancia"
                     placeholder="Margen mín"
                     suffix="%"
                     [showButtons]="false"
@@ -4771,20 +4814,22 @@
                     styleClass="h-10"
                   />
                   <p-inputNumber
+                    id="margenGananciaMax"
                     placeholder="Margen máx"
                     suffix="%"
                     [showButtons]="false"
                     [min]="0"
                     [max]="100"
-                    class="w-full"
+                    class="w-full"  
                     styleClass="h-10"
                   />
                 </div>
               </div>
               
               <div>
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Tendencia de Demanda</label>
+                <label for="tendenciaDemanda" class="text-sm font-medium text-gray-700 mb-2 block">Tendencia de Demanda</label>
                 <p-select 
+                  id="tendenciaDemanda"
                   [options]="[
                     {label: 'Todas las tendencias', value: 'all'},
                     {label: 'Subiendo', value: 'SUBIENDO'},

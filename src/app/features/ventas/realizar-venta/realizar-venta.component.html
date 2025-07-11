@@ -433,7 +433,7 @@
                   <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
                     <!-- Búsqueda por código -->
                     <div class="lg:col-span-2">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                      <label for="codigoInput" class="block text-sm font-medium text-gray-700 mb-2">
                         📦 Código de Producto
                       </label>
                       <div class="flex gap-2">
@@ -443,7 +443,7 @@
                               placeholder="Escanear o escribir código..." 
                               (keyup.enter)="buscarProductoPorCodigo()"
                               class="flex-1 text-lg font-mono"
-                              autofocus />
+                              />
                         <p-button icon="pi pi-search" 
                                 (click)="buscarProductoPorCodigo()"></p-button>
                       </div>
@@ -451,7 +451,7 @@
                     
                     <!-- Cantidad -->
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                      <label for="cantidadInput" class="block text-sm font-medium text-gray-700 mb-2">
                         🔢 Cantidad
                       </label>
                       <p-inputNumber [(ngModel)]="cantidadInput" 
@@ -463,7 +463,7 @@
                     
                     <!-- Scanner -->
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                      <label for="scannerButton" class="block text-sm font-medium text-gray-700 mb-2">
                         📷 Escáner
                       </label>
                       <p-button icon="pi pi-camera"
@@ -477,7 +477,7 @@
                   
                   <!-- Búsqueda avanzada -->
                     <div class="mt-4">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                      <label for="autoComplete" class="block text-sm font-medium text-gray-700 mb-2">
                         🔍 Búsqueda Avanzada
                       </label>
                       <p-autoComplete [(ngModel)]="productoBusqueda"
@@ -511,7 +511,7 @@
         <div class="text-sm text-gray-500">
           {{producto.color?.nombre}} • {{producto.talla?.numero}} • {{producto.serie}}
         </div>
-        <div class="text-lg font-bold text-blue-600">{{formatearMoneda(producto.precioVenta || 0)}}</div>
+        <div class="text-lg font-bold text-blue-600">{{formatearMoneda(obtenerPrecioProducto(producto.producto?.id || 0))}}</div>
       </div>
       <div class="text-right">
         <div [class]="getStockClass(producto.cantidad)">Stock: {{producto.cantidad}}</div>
@@ -555,22 +555,27 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 flex-1">
                       <div *ngFor="let producto of productosPopulares" 
                           class="bg-slate-50 hover:bg-slate-100 border-2 border-transparent hover:border-blue-300 rounded-lg p-3 cursor-pointer transition-all"
-                          (click)="seleccionarProductoPopular(producto)">
+                          (click)="seleccionarProductoPopular(producto)"
+                          (keydown.enter)="seleccionarProductoPopular(producto)"
+                          (keydown.space)="seleccionarProductoPopular(producto)"
+                          tabindex="0"
+                          role="button"
+                          [attr.aria-label]="'Seleccionar ' + producto.producto?.nombre">
                         <div class="text-center">
                           <div class="relative mb-2">
-                            <img [src]="producto.imagen || '/assets/images/product-placeholder.jpg'"
+                            <img [src]="producto.producto?.imagen || '/assets/images/product-placeholder.jpg'"
                                 [alt]="producto.producto?.nombre"
                                 class="w-full h-16 object-cover rounded-lg"
                                 onerror="this.src='/assets/images/product-placeholder.jpg'" />
                             <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1 rounded-full">
-                              {{producto.stock}}
+                              {{producto.cantidad}}
                             </span>
                           </div>
                           <div class="text-xs font-medium text-gray-700 truncate mb-1">
                             {{producto.producto?.nombre}}
                           </div>
                           <div class="text-sm font-bold text-blue-600">
-                            {{formatearMoneda(producto.precioVenta)}}
+                            {{formatearMoneda(obtenerPrecioProducto(producto.producto?.id || 0))}}
                           </div>
                         </div>
                       </div>
@@ -641,10 +646,10 @@
                           <div class="relative">
                             <img *ngIf="item.producto?.imagen"
                                   [src]="item.producto.imagen"
-                                  alt="{{item.producto?.nombre}}"
+                                  [alt]="item.producto.nombre"
                                   class="w-16 h-16 object-cover rounded-lg"
                                   onerror="this.src='/assets/images/product-placeholder.jpg'" />
-                            <span *ngIf="!item.producto?.imagenUrl"
+                            <span *ngIf="!item.producto?.imagen"
                                   class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg">
                               <i class="pi pi-image text-gray-400"></i>
                             </span>                           
@@ -656,11 +661,11 @@
                           <!-- Info del producto -->
                           <div class="flex-1 min-w-0">
                             <div class="font-medium text-sm text-gray-800 truncate">
-                              {{item.producto?.nombre}}
+                              {{item.producto.nombre}}
                             </div>
                             <div class="flex gap-1 flex-wrap mt-1">
-                              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{{item.color?.nombre}}</span>
-                              <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{{item.talla?.numero}}</span>
+                              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{{item.color.nombre}}</span>
+                              <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{{item.talla.numero}}</span>
                             </div>
                             <div class="text-xs text-gray-500 mt-1">{{item.codigoCompleto}}</div>
                             
@@ -733,7 +738,7 @@
                           [(ngModel)]="aplicarDescuento" 
                           (change)="toggleDescuento()"
                           class="rounded">
-                    <label class="text-sm font-medium">Descuento</label>
+                    <label for="descuentoCheckbox" class="text-sm font-medium">Descuento</label>
                     <input *ngIf="aplicarDescuento"
                           type="number" 
                           [(ngModel)]="porcentajeDescuento"
@@ -804,7 +809,7 @@
                     <input type="checkbox" 
                           [(ngModel)]="esVentaCredito"
                           class="rounded">
-                    <label>Venta a crédito</label>
+                    <label for="esVentaCredito">Venta a crédito</label>
                     <select *ngIf="esVentaCredito" 
                             [(ngModel)]="cuotasCredito"
                             class="ml-auto px-2 py-1 text-xs border rounded">
@@ -1783,12 +1788,15 @@
       
       <!-- BOTONES DE MÉTODOS MODERNOS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div 
-          *ngFor="let metodo of metodosPago"
-          class="payment-method-card group cursor-pointer transition-all duration-300 transform hover:scale-105"
-          [class.active]="pagoActual.metodoPago === metodo.value"
-          (click)="seleccionarMetodoPago(metodo.value)"
-        >
+        <div *ngFor="let metodo of metodosPago"
+             class="payment-method-card group cursor-pointer transition-all duration-300 transform hover:scale-105"
+             [class.active]="pagoActual.metodoPago === metodo.value"
+             (click)="seleccionarMetodoPago(metodo.value)"
+             (keydown.enter)="seleccionarMetodoPago(metodo.value)"
+             (keydown.space)="seleccionarMetodoPago(metodo.value)"
+             tabindex="0"
+             role="button"
+             [attr.aria-label]="'Seleccionar método de pago: ' + metodo.label">
           <div class="p-4 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg"
                [class]="pagoActual.metodoPago === metodo.value ? 
                        'border-blue-500 bg-blue-50 shadow-lg shadow-blue-200/50' : 
@@ -1814,7 +1822,7 @@
       
       <!-- MONTO A PAGAR - SIEMPRE VISIBLE -->
       <div class="relative">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+        <label for="montoPagado" class="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
           <i class="pi pi-dollar text-green-500"></i>
           Monto Recibido
         </label>
@@ -1861,7 +1869,7 @@
             
             <div class="space-y-4">
               <div>
-                <label class="text-sm text-gray-300 mb-1 block">Nombre del Titular</label>
+                <label for="nombreTarjeta" class="text-sm text-gray-300 mb-1 block">Nombre del Titular</label>
                 <input 
                   pInputText 
                   [(ngModel)]="pagoActual.nombreTarjeta" 
@@ -1872,7 +1880,7 @@
               
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="text-sm text-gray-300 mb-1 block">Últimos 4 dígitos</label>
+                  <label for="ultimos4Digitos" class="text-sm text-gray-300 mb-1 block">Últimos 4 dígitos</label>
                   <p-inputMask 
                     [(ngModel)]="pagoActual.ultimos4Digitos" 
                     mask="9999" 
@@ -1882,7 +1890,7 @@
                 </div>
                 
                 <div>
-                  <label class="text-sm text-gray-300 mb-1 block">N° Operación</label>
+                  <label for="numeroReferencia" class="text-sm text-gray-300 mb-1 block">N° Operación</label>
                   <input 
                     pInputText 
                     [(ngModel)]="pagoActual.numeroReferencia" 
@@ -1910,7 +1918,7 @@
             </div>
             
             <div>
-              <label class="text-sm font-medium text-gray-700 mb-2 block">Número de Operación</label>
+              <label for="numeroReferencia" class="text-sm font-medium text-gray-700 mb-2 block">Número de Operación</label>
               <input 
                 pInputText 
                 [(ngModel)]="pagoActual.numeroReferencia" 
@@ -1944,7 +1952,7 @@
       
       <!-- OBSERVACIONES MEJORADAS -->
       <div class="space-y-2">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <label for="observacionesPago" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
           <i class="pi pi-comment text-blue-500"></i>
           Observaciones del Pago
         </label>
@@ -2380,7 +2388,7 @@
             <div class="flex-1">
               <div class="font-semibold">{{item.producto.nombre}}</div>
               <div class="text-sm text-neutral-600">
-                {{item.color?.nombre}} - {{item.talla?.numero}} - {{item.producto.codigo}}
+                {{item.color.nombre}} - {{item.talla.numero}} - {{item.producto.codigo}}
               </div>
               <div class="text-sm">
                 <span class="text-neutral-500">Cantidad vendida:</span> 
@@ -2390,7 +2398,7 @@
             
             <!-- Cantidad a devolver -->
             <div class="w-32">
-              <label class="text-xs text-neutral-600 block mb-1">Cant. a devolver</label>
+              <label for="cantidadDevolver" class="text-xs text-neutral-600 block mb-1">Cant. a devolver</label>
               <p-inputNumber 
                 [(ngModel)]="item.cantidadDevolver" 
                 [min]="0" 
@@ -2414,7 +2422,7 @@
     
     <!-- Motivo de devolución -->
     <div class="mb-4">
-      <label class="flex text-sm font-medium text-neutral-700 mb-2">
+      <label for="motivoDevolucion" class="flex text-sm font-medium text-neutral-700 mb-2">
         <i class="pi pi-comment text-orange-600 mr-2"></i>
         Motivo de la Devolución
       </label>

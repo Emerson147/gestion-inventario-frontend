@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import {LoginComponent} from './app/features/auth/login.component';
 import {UnauthorizedComponent} from './app/shared/components/unauthorized/unauthorized.component';
 import {AuthGuard} from './app/core/guards/auth.guard';
-import {RedirectComponent} from './app/shared/components/redirect/redirect.component';
 import {AppLayout} from './app/shared/components/layout/component/app.layout';
 import {NotFoundComponent} from './app/shared/components/not-found/not-found.component';
 import { AdminDashboardComponent } from './app/features/admin/dashboard/admin-dashboard.component';

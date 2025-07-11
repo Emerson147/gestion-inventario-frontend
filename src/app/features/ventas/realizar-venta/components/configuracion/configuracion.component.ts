@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 // PrimeNG Imports
 import { TabViewModule } from 'primeng/tabview';
@@ -108,6 +108,17 @@ export interface ConfiguracionBackup {
   servicioNube: 'GOOGLE_DRIVE' | 'DROPBOX' | 'AWS_S3';
 }
 
+// Agregar interfaces para los eventos de archivo
+interface FileUploadEvent {
+  files: File[];
+}
+
+interface FileReaderEvent {
+  target: {
+    result: string | ArrayBuffer | null;
+  } | null;
+}
+
 @Component({
   selector: 'app-configuracion',
   standalone: true,
@@ -145,18 +156,18 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   // Variables principales
-  loading: boolean = false;
-  guardando: boolean = false;
-  currentUser: string = 'Emerson147';
-  currentDateTime: string = '03/06/2025 07:40:10';
+  loading = false;
+  guardando = false;
+  currentUser = 'Emerson147';
+  currentDateTime = '03/06/2025 07:40:10';
   
   // Sección activa
-  seccionActiva: number = 0;
+  seccionActiva = 0;
   
   // Usuarios del sistema
   usuarios: UsuarioSistema[] = [];
   usuarioSeleccionado: UsuarioSistema | null = null;
-  mostrarFormularioUsuario: boolean = false;
+  mostrarFormularioUsuario = false;
   nuevoUsuario: UsuarioSistema = this.inicializarUsuario();
   
   // Configuración del negocio
@@ -180,7 +191,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   // Impresoras
   impresoras: ConfiguracionImpresora[] = [];
   impresoraSeleccionada: ConfiguracionImpresora | null = null;
-  mostrarFormularioImpresora: boolean = false;
+  mostrarFormularioImpresora = false;
   
   // Configuración fiscal
   configFiscal: ConfiguracionFiscal = {
@@ -218,9 +229,9 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   };
   
   // Variables de estado
-  testConexionImpresora: boolean = false;
-  backupEnProgreso: boolean = false;
-  progresBackup: number = 0;
+  testConexionImpresora = false;
+  backupEnProgreso = false;
+  progresBackup = 0;
   
   // Opciones para dropdowns
   opcionesRol = [
@@ -276,10 +287,8 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     { label: 'Domingo', value: 'Domingo' }
   ];
 
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private messageService: MessageService = inject(MessageService);
 
   ngOnInit() {
     console.log(`🛡️ Panel de Configuración iniciado por ${this.currentUser} - ${this.currentDateTime}`);
@@ -636,38 +645,48 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     return `Hace ${dias} días`;
   }
 
-  onDiaLaboralChange(_t218: { label: string; value: string; },$event: CheckboxChangeEvent) {
-    throw new Error('Method not implemented.');
- }
+  onDiaLaboralChange(option: { label: string; value: string; },$event: CheckboxChangeEvent) {
+    if ($event.checked) {
+      if (!this.configNegocio.diasLaborales.includes(option.value)) {
+        this.configNegocio.diasLaborales.push(option.value);
+      }
+    } else {
+      this.configNegocio.diasLaborales = this.configNegocio.diasLaborales.filter(day => day !== option.value);
+    }
+  }
 
   // ✅ EVENTOS DE ARCHIVO
-  onUploadLogo(event: any): void {
+  onUploadLogo(event: FileUploadEvent): void {
     const file = event.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.configNegocio.logo = e.target.result;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Logo Subido',
-          detail: 'Logo de empresa actualizado correctamente'
-        });
+      reader.onload = (e: FileReaderEvent) => {
+        if (e.target?.result) {
+          this.configNegocio.logo = e.target.result as string;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Logo Subido',
+            detail: 'Logo de empresa actualizado correctamente'
+          });
+        }
       };
       reader.readAsDataURL(file);
     }
   }
 
-  onUploadFavicon(event: any): void {
+  onUploadFavicon(event: FileUploadEvent): void {
     const file = event.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.temaActual.faviconUrl = e.target.result;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Favicon Subido',
-          detail: 'Icono del sistema actualizado correctamente'
-        });
+      reader.onload = (e: FileReaderEvent) => {
+        if (e.target?.result) {
+          this.temaActual.faviconUrl = e.target.result as string;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Favicon Subido',
+            detail: 'Icono del sistema actualizado correctamente'
+          });
+        }
       };
       reader.readAsDataURL(file);
     }

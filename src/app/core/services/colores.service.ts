@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Color, ColorRequest, ColorResponse, PagedResponse } from '../models/colors.model';
+import { ColorRequest, ColorResponse, PagedResponse } from '../models/colors.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { Color, ColorRequest, ColorResponse, PagedResponse } from '../models/col
 export class ColorService {
   private apiUrl = `${environment.apiUrl}api/colores`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /**
    * Crea un nuevo color para un producto específico
@@ -25,10 +25,10 @@ export class ColorService {
    * Método para traer todos los colores
    */
   getColores(
-    page: number = 0, 
-    size: number = 10, 
-    sortBy: string = 'nombre', 
-    sortDir: string = 'asc'
+    page = 0, 
+    size = 10, 
+    sortBy = 'nombre', 
+    sortDir = 'asc'
   ): Observable<PagedResponse<ColorResponse>> {
     const params = new HttpParams()
       .set('page', page.toString())
@@ -69,12 +69,20 @@ export class ColorService {
    * Elimina un color por su ID
    * @param id ID del color a eliminar
    */
-  eliminarColor(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  /**
+   * Elimina un color por su ID
+   * @param id ID del color a eliminar
+   */
+  eliminarColor(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
- // En tu ColorService
-  eliminarTalla(colorId: number, tallaId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${colorId}/tallas/${tallaId}`);
+  /**
+   * Elimina una talla específica de un color
+   * @param colorId ID del color
+   * @param tallaId ID de la talla a eliminar
+   */
+  eliminarTalla(colorId: number, tallaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${colorId}/tallas/${tallaId}`);
   }
 }

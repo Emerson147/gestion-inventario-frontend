@@ -30,7 +30,7 @@ export class ToolbarComponent {
   @Input() secondaryActions: ToolbarAction[] = [];
   @Output() actionExecuted = new EventEmitter<string>();
 
-  showAction(action: ToolbarAction): boolean {
+  showAction(): boolean {
     // Aquí puedes agregar lógica de permisos si es necesario
     return true;
   }

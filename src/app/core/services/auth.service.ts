@@ -1,19 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {Observable, tap} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {jwtDecode} from 'jwt-decode';
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 
-interface LoginResponse {
-  token: string;
-  tokenType: string;
-  refreshToken: string;
-  id: number;
-  username: string;
-  email: string;
-  roles: string[];
-}
 
 interface JwtResponse {
   token: string;
@@ -59,10 +50,8 @@ export class AuthService {
 
   private apiUrl = `${environment.apiUrl}api/auth`;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
   login(loginRequest: LoginRequest): Observable<JwtResponse> {
     return this.http.post<JwtResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
@@ -170,7 +159,9 @@ export class AuthService {
     try {
       const decoded: DecodedToken = jwtDecode(token);
       return decoded.exp * 1000 < Date.now();
-    } catch (error) {
+    } catch (error: unknown) {
+      // Si hay un error al decodificar el token, lo consideramos expirado
+      console.error('Error al decodificar el token:', error);
       return true;
     }
   }

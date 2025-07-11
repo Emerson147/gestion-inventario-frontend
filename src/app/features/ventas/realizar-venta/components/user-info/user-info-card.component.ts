@@ -22,7 +22,7 @@ export interface UserInfo {
 })
 export class UserInfoCardComponent {
   @Input() user!: UserInfo;
-  @Input() ping: number = 0;
+  @Input() ping = 0;
 
   getCurrentTime(): Date {
     return new Date();

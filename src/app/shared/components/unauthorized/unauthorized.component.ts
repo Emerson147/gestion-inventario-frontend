@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import {CommonModule} from '@angular/common';
 
@@ -10,8 +10,9 @@ import {CommonModule} from '@angular/common';
 })
 export class UnauthorizedComponent {
   userRole: string | null;
+  private authService = inject(AuthService);
 
-  constructor(private authService: AuthService) {
+  constructor() {
     this.userRole = this.authService.getUserRole();
   }
 

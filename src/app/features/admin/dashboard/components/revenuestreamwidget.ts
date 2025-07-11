@@ -1,7 +1,62 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../../shared/components/layout/service/layout.service';
+
+interface ChartDataset {
+    type: string;
+    label: string;
+    backgroundColor: string;
+    data: number[];
+    barThickness?: number;
+    borderRadius?: {
+        topLeft: number;
+        topRight: number;
+        bottomLeft: number;
+        bottomRight: number;
+    };
+    borderSkipped?: boolean;
+}
+
+interface ChartData {
+    labels: string[];
+    datasets: ChartDataset[];
+}
+
+interface ChartOptions {
+    maintainAspectRatio: boolean;
+    aspectRatio: number;
+    plugins: {
+        legend: {
+            labels: {
+                color: string;
+            };
+        };
+    };
+    scales: {
+        x: {
+            stacked: boolean;
+            ticks: {
+                color: string;
+            };
+            grid: {
+                color: string;
+                borderColor: string;
+            };
+        };
+        y: {
+            stacked: boolean;
+            ticks: {
+                color: string;
+            };
+            grid: {
+                color: string;
+                borderColor: string;
+                drawTicks: boolean;
+            };
+        };
+    };
+}
 
 @Component({
     standalone: true,
@@ -12,14 +67,14 @@ import { LayoutService } from '../../../../shared/components/layout/service/layo
         <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
     </div>`
 })
-export class RevenueStreamWidget {
-    chartData: any;
-
-    chartOptions: any;
-
+export class RevenueStreamWidget implements OnInit, OnDestroy {
+    chartData!: ChartData;
+    chartOptions!: ChartOptions;
     subscription!: Subscription;
+    
+    private layoutService = inject(LayoutService);
 
-    constructor(public layoutService: LayoutService) {
+    constructor() {
         this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
             this.initChart();
         });

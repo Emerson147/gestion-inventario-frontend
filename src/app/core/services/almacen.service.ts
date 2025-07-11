@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Almacen } from '../models/almacen.model';
-import { AlmacenRequest } from '../models/almacen.model';
+import { Almacen, AlmacenRequest } from '../models/almacen.model';
+import { PagedResponse } from '../models/paged-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +12,10 @@ export class AlmacenService {
 
   private apiUrl = `${environment.apiUrl}api/almacenes`;
   
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
-  getAlmacenes(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  getAlmacenes(): Observable<PagedResponse<Almacen>> {
+    return this.http.get<PagedResponse<Almacen>>(this.apiUrl);
   }
 
   getAlmacenesById(id: number): Observable<Almacen> {

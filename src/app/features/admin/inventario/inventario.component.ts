@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -482,7 +482,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   // Make Math available in template
   Math = Math;
   isLoadingProductos = false;
-  new: string|string[]|Set<string>|{ [klass: string]: any; }|null|undefined;
+  new: string|string[]|Set<string>|Record<string, unknown>|null|undefined;
   
   // Helper method for calculating width percentage
   calculateWidthPercentage(current: number, max: number): number {
@@ -506,7 +506,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   tallas: Talla[] = [];
   almacenes: Almacen[] = [];
 
-  inventariosTotales: any[] = [];
+  inventariosTotales: InventarioExtendido[] = [];
 
   // ========== FILTROS ==========
   productoSeleccionadoFiltro: Producto | null = null;
@@ -552,10 +552,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   };
 
   // Datos para gráficos y estadísticas
-  chartData: any = {};
-  chartOptions: any = {};
-  trendData: any = {};
-  abcData: any = {};
+  chartData: Record<string, unknown> = {};
+  chartOptions: Record<string, unknown> = {};
+  trendData: Record<string, unknown> = {};
+  abcData: Record<string, unknown> = {};
 
   // ========== PERMISOS ==========
   permissionTypes = PermissionType;
@@ -614,7 +614,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  getRandomFloat(min: number, max: number, decimals: number = 1): string {
+  getRandomFloat(min: number, max: number, decimals = 1): string {
     return (Math.random() * (max - min) + min).toFixed(decimals);
   }
 
@@ -622,10 +622,18 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return this.inventariosFiltrados.filter(inv => inv.categoriaABC === categoria);
   }
   
-  // Nuevo método para el template
-  getInventariosPorCategoria(categoria: any): InventarioExtendido[] {
-    const cat = categoria.categoria as 'A' | 'B' | 'C';
-    return this.getInventariosByCategoria(cat);
+  // Método mejorado para el template
+  getInventariosPorCategoria(categoriaInput: { categoria: 'A' | 'B' | 'C' } | 'A' | 'B' | 'C' | { categoria: string; label: string; descripcion: string; color: string }): InventarioExtendido[] {
+    // Extraer y validar la categoría
+    const cat = typeof categoriaInput === 'object' ? categoriaInput.categoria : categoriaInput;
+    
+    // Validar que sea una categoría válida
+    if (!['A', 'B', 'C'].includes(cat)) {
+      console.warn('Categoría inválida en getInventariosPorCategoria:', cat);
+      return []; // Retornar array vacío si la categoría no es válida
+    }
+  
+    return this.getInventariosByCategoria(cat as 'A' | 'B' | 'C');
   }
 
   // Get ABC analysis data for a specific category
@@ -645,14 +653,16 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   // ... (rest of the code remains the same)
 
+    private readonly inventarioService: InventarioService = inject(InventarioService);
+    private readonly productoService: ProductoService = inject(ProductoService);
+    private readonly colorService: ColorService = inject(ColorService);
+    private readonly almacenService: AlmacenService = inject(AlmacenService);
+    private readonly messageService: MessageService = inject(MessageService);
+    private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+    public permissionService: PermissionService = inject(PermissionService);
+
   constructor(
-    private readonly inventarioService: InventarioService,
-    private readonly productoService: ProductoService,
-    private readonly colorService: ColorService,
-    private readonly almacenService: AlmacenService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    public permissionService: PermissionService
+    
   ) {
     this.initChartOptions();
   }
@@ -721,7 +731,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       stockMaximo: Math.floor(inventario.cantidad * 2),
       puntoReorden: Math.floor(inventario.cantidad * 0.3),
       categoriaABC: ['A', 'B', 'C'][index % 3] as 'A' | 'B' | 'C',
-      tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as any,
+      tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as 'SUBIENDO' | 'BAJANDO' | 'ESTABLE',
       prediccionDemanda: Math.floor(Math.random() * 50) + 10,
       fechaUltimoMovimiento: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
       proveedorPrincipal: ['Proveedor A', 'Proveedor B', 'Proveedor C'][index % 3],
@@ -762,7 +772,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
     for (let i = 0; i < 5; i++) {
       const fecha = new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000);
-      const tipo = tiposMovimiento[Math.floor(Math.random() * tiposMovimiento.length)] as any;
+      const tipo = tiposMovimiento[Math.floor(Math.random() * tiposMovimiento.length)] as 'ENTRADA' | 'SALIDA' | 'AJUSTE' | 'TRANSFERENCIA';
       const cantidad = Math.floor(Math.random() * 20) + 1;
       
       movimientos.push({
@@ -1009,11 +1019,15 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   /**
    * 👇 Tracking para mejor performance
    */
-  trackByInventario(index: number, inventario: any): any {
+  trackByInventario(index: number, inventario: InventarioExtendido): number | undefined {
     return inventario.id || index;
   }
 
-  trackByMovimiento(index: number, movimiento: any): any {
+  trackByAlerta(index: number, alerta: InventarioAlerta): number | undefined {
+    return alerta.id || index;
+  }
+
+  trackByMovimiento(index: number, movimiento: MovimientoInventario): number | undefined {
     return movimiento.id || index;
   }
 
@@ -1109,8 +1123,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   loadAlmacenes(): void {
     this.almacenService.getAlmacenes().subscribe({
-      next: (response) => this.almacenes = response || [],
-      error: (error) => this.handleError(error, 'No se pudieron cargar los almacenes')
+      next: (response) => this.almacenes = response.content || [],
+      error: (error: unknown) => this.handleError(error, 'No se pudieron cargar los almacenes')
     });
   }
 
@@ -1410,7 +1424,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     this.tallas = [];
   }
 
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: { filterGlobal: (value: string, filterMatchMode: string) => void }, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -1464,7 +1478,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -1529,22 +1543,37 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage,
+      detail: (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error) 
+        ? String(error.error.message) 
+        : defaultMessage,
       life: 5000
     });
   }
 
-
-  getDatosCategoria(categoria: any) {
+  getDatosCategoria(categoriaInput: unknown) {
+    let cat: string;
+    
+    if (typeof categoriaInput === 'object' && categoriaInput !== null && 'categoria' in categoriaInput) {
+      cat = (categoriaInput as { categoria: string }).categoria;
+    } else if (typeof categoriaInput === 'string') {
+      cat = categoriaInput;
+    } else {
+      console.warn('Input inválido:', categoriaInput);
+      return { productos: 0, valor: 0, porcentaje: 0 };
+    }
+    
+    if (!['A', 'B', 'C'].includes(cat)) {
+      console.warn('Categoría inválida:', cat);
+      return { productos: 0, valor: 0, porcentaje: 0 };
+    }
+  
     const estadisticas = this.calcularEstadisticas();
-    const analisis = estadisticas.analisisABC.find(a => 
-      a.categoria === categoria.categoria
-    );
+    const analisis = estadisticas.analisisABC.find(a => a.categoria === cat);
     
     return {
       productos: analisis?.productos || 0,
@@ -1557,7 +1586,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return this.estadosInventario?.find(e => e.value === estado)?.label || '';
   }
 
-  getStockPercentage(inventario: any): number {
+  getStockPercentage(inventario: { cantidad: number; stockMaximo?: number }): number {
     return this.calculateWidthPercentage(inventario.cantidad, inventario.stockMaximo || 100);
   }
 
@@ -1570,19 +1599,67 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return color + '10'; // Agregar transparencia
   }
 
-  getProductosPorCategoria(categoria: any): number {
+  getProductosPorCategoria(categoriaInput: unknown): number {
+    let cat: string;
+    
+    if (typeof categoriaInput === 'string') {
+      cat = categoriaInput;
+    } else if (typeof categoriaInput === 'object' && categoriaInput !== null && 'categoria' in categoriaInput) {
+      cat = (categoriaInput as { categoria: string }).categoria;
+    } else {
+      console.warn('Input inválido en getProductosPorCategoria:', categoriaInput);
+      return 0;
+    }
+    
+    if (!['A', 'B', 'C'].includes(cat)) {
+      console.warn('Categoría inválida en getProductosPorCategoria:', cat);
+      return 0;
+    }
+  
     const estadisticas = this.calcularEstadisticas();
-    return estadisticas.analisisABC.find(a => a.categoria === categoria.categoria)?.productos || 0;
+    return estadisticas.analisisABC.find(a => a.categoria === cat)?.productos || 0;
   }
 
-  getValorPorCategoria(categoria: any): number {
+  getValorPorCategoria(categoriaInput: unknown): number {
+    let cat: string;
+    
+    if (typeof categoriaInput === 'string') {
+      cat = categoriaInput;
+    } else if (typeof categoriaInput === 'object' && categoriaInput !== null && 'categoria' in categoriaInput) {
+      cat = (categoriaInput as { categoria: string }).categoria;
+    } else {
+      console.warn('Input inválido en getValorPorCategoria:', categoriaInput);
+      return 0;
+    }
+    
+    if (!['A', 'B', 'C'].includes(cat)) {
+      console.warn('Categoría inválida en getValorPorCategoria:', cat);
+      return 0;
+    }
+  
     const estadisticas = this.calcularEstadisticas();
-    return estadisticas.analisisABC.find(a => a.categoria === categoria.categoria)?.valor || 0 ;
+    return estadisticas.analisisABC.find(a => a.categoria === cat)?.valor || 0 ;
   }
 
-  getPorcentajePorCategoria(categoria: any): number {
+  getPorcentajePorCategoria(categoriaInput: unknown): number {
+    let cat: string;
+    
+    if (typeof categoriaInput === 'string') {
+      cat = categoriaInput;
+    } else if (typeof categoriaInput === 'object' && categoriaInput !== null && 'categoria' in categoriaInput) {
+      cat = (categoriaInput as { categoria: string }).categoria;
+    } else {
+      console.warn('Input inválido en getPorcentajePorCategoria:', categoriaInput);
+      return 0;
+    }
+    
+    if (!['A', 'B', 'C'].includes(cat)) {
+      console.warn('Categoría inválida en getPorcentajePorCategoria:', cat);
+      return 0;
+    }
+  
     const estadisticas = this.calcularEstadisticas();
-    return estadisticas.analisisABC.find(a => a.categoria === categoria.categoria)?.porcentaje || 0;
+    return estadisticas.analisisABC.find(a => a.categoria === cat)?.porcentaje || 0;
   }
 
   
@@ -1911,7 +1988,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  selectedFilter: string = 'all';
+  selectedFilter = 'all';
   rangeValues: number[] = [2, 15];
 
   /**

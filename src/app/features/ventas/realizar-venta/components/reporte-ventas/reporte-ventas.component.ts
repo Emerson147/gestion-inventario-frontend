@@ -1,12 +1,13 @@
 // ✅ IMPORTS DE ANGULAR CORE
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Subject, takeUntil, interval, BehaviorSubject, Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, inject, ElementRef } from '@angular/core';
+import { Subject, takeUntil, interval } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // ✅ IMPORTS DE PRIMENG UI
-import { MessageService, ConfirmationService, LazyLoadEvent } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/api';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 // ✅ IMPORTS DE PRIMENG COMPONENTS
 import { TableModule } from 'primeng/table';
@@ -34,7 +35,6 @@ import { SpeedDialModule } from 'primeng/speeddial';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { TableLazyLoadEvent } from 'primeng/table';
 
 // ✅ IMPORTS DE SERVICIOS (crear estos servicios)
 // import { ReportesService } from '../services/reportes.service';
@@ -172,6 +172,47 @@ interface MetodoPago {
   color: string;
 }
 
+// ✅ INTERFACES PARA GRÁFICOS
+interface ChartData {
+  labels: string[];
+  datasets: ChartDataset[];
+}
+
+interface ChartDataset {
+  label?: string;
+  data: number[];
+  fill?: boolean;
+  borderColor?: string;
+  backgroundColor?: string | string[];
+  tension?: number;
+  borderWidth?: number;
+  borderDash?: number[];
+  hoverBackgroundColor?: string[];
+}
+
+interface ChartOptions {
+  responsive: boolean;
+  maintainAspectRatio: boolean;
+  plugins?: {
+    legend?: {
+      position?: string;
+      display?: boolean;
+    };
+    title?: {
+      display: boolean;
+      text: string;
+    };
+  };
+  scales?: {
+    y?: {
+      beginAtZero: boolean;
+      ticks?: {
+        callback?: (value: number) => string;
+      };
+    };
+  };
+}
+
 // ✅ CONFIGURACIÓN DEL COMPONENTE
 @Component({
   selector: 'app-reporte-ventas',
@@ -219,28 +260,28 @@ interface MetodoPago {
 export class ReportesComponent implements OnInit, OnDestroy {
 
   // ✅ VIEW CHILD REFERENCES
-  @ViewChild('tablaUsuarios') tablaUsuarios: any;
-  @ViewChild('graficoVentas') graficoVentas: any;
+  @ViewChild('tablaUsuarios') tablaUsuarios!: ElementRef;
+  @ViewChild('graficoVentas') graficoVentas!: ElementRef;
 
   // ✅ DATOS DEL SISTEMA
-  currentUser: string = 'Emerson147';
-  currentDateTime: string = '2025-06-06 04:07:19';
-  tabActivo: number = 0;
+  currentUser = 'Emerson147';
+  currentDateTime = '2025-06-06 04:07:19';
+  tabActivo = 0;
 
   // ✅ ESTADOS DE CARGA
-  aplicandoFiltros: boolean = false;
-  cargandoHistorial: boolean = false;
-  entrenandoModelo: boolean = false;
-  generandoPrediccion: boolean = false;
+  aplicandoFiltros = false;
+  cargandoHistorial = false;
+  entrenandoModelo = false;
+  generandoPrediccion = false;
 
   // ✅ FILTROS Y CONFIGURACIÓN
-  periodoSeleccionado: string = 'mes_actual';
+  periodoSeleccionado = 'mes_actual';
   rangoFechas: Date[] = [];
   sucursalesSeleccionadas: number[] = [];
   vendedoresSeleccionados: number[] = [];
   categoriasSeleccionadas: number[] = [];
   rangoMontos: number[] = [0, 50000];
-  minimoTransacciones: number = 1;
+  minimoTransacciones = 1;
 
   // ✅ DATOS PARA DROPDOWNS
   periodos: Periodo[] = [
@@ -292,40 +333,64 @@ export class ReportesComponent implements OnInit, OnDestroy {
     metaMensual: 500000
   };
 
-  progresoMeta: number = 91.75;
+  progresoMeta = 91.75;
 
-  // ✅ GRÁFICOS DE VENTAS
-  tipoGraficoVentas: string = 'line';
+  // ✅ GRÁFICOS DE VENTAS - CON TIPOS ESPECÍFICOS
+  tipoGraficoVentas = 'line';
   tiposGrafico: TipoGrafico[] = [
     { label: 'Línea', value: 'line' },
     { label: 'Barras', value: 'bar' },
     { label: 'Área', value: 'area' }
   ];
 
-  datosGraficoVentas: any = {};
-  opcionesGraficoVentas: any = {};
-  datosGraficoMetodosPago: any = {};
+  datosGraficoVentas: ChartData = {
+    labels: [],
+    datasets: []
+  };
+  opcionesGraficoVentas: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
+  datosGraficoMetodosPago: ChartData = {
+    labels: [],
+    datasets: []
+  };
   resumenMetodosPago: MetodoPago[] = [];
-  opcionesGraficoCircular: any = {};
+  opcionesGraficoCircular: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
 
   // ✅ TOP DATA
   topProductos: TopProducto[] = [];
   topVendedores: TopVendedor[] = [];
   topClientes: TopCliente[] = [];
 
-  // ✅ GRÁFICOS ADICIONALES
-  datosGraficoVendedores: any = {};
-  opcionesGraficoBarras: any = {};
-  datosSegmentosClientes: any = {};
-  datosFrecuenciaCompras: any = {};
+  // ✅ GRÁFICOS ADICIONALES - CON TIPOS ESPECÍFICOS
+  datosGraficoVendedores: ChartData = {
+    labels: [],
+    datasets: []
+  };
+  opcionesGraficoBarras: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
+  datosSegmentosClientes: ChartData = {
+    labels: [],
+    datasets: []
+  };
+  datosFrecuenciaCompras: ChartData = {
+    labels: [],
+    datasets: []
+  };
 
   // ✅ TIPOS DE REPORTES
   tiposReportes: TipoReporte[] = [];
   historialReportes: HistorialReporte[] = [];
 
   // ✅ INTELIGENCIA ARTIFICIAL
-  algoritmoIA: string = 'random_forest';
-  ventanaTiempo: string = '30_dias';
+  algoritmoIA = 'random_forest';
+  ventanaTiempo = '30_dias';
   variablesPredictivas: string[] = ['ventas', 'clientes', 'estacionalidad'];
 
   algoritmosIA: AlgoritmoIA[] = [
@@ -359,16 +424,22 @@ export class ReportesComponent implements OnInit, OnDestroy {
     tendencia: 'ascendente'
   };
 
-  datosPredicciones: any = {};
-  opcionesGraficoPredicciones: any = {};
+  datosPredicciones: ChartData = {
+    labels: [],
+    datasets: []
+  };
+  opcionesGraficoPredicciones: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
 
   // ✅ MENÚ FLOTANTE
   menuFlotante: MenuItem[] = [];
 
   // ✅ ESTADOS DE DIÁLOGOS
-  mostrarDetalles: boolean = false;
-  tituloDetalle: string = '';
-  tipoDetalle: string = '';
+  mostrarDetalles = false;
+  tituloDetalle = '';
+  tipoDetalle = '';
   clienteSeleccionado: TopCliente | null = null;
   historialComprasCliente: CompraCliente[] = [];
 
@@ -376,14 +447,14 @@ export class ReportesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // ✅ CONSTRUCTOR CON SERVICIOS
-  constructor(
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    // private reportesService: ReportesService,
-    private clientesService: ClienteService,
-    private ventasService: VentasService,
-    // private iaService: IAService
-  ) {
+  private messageService: MessageService = inject(MessageService);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  // private reportesService: ReportesService,
+  private clientesService: ClienteService = inject(ClienteService);
+  private ventasService: VentasService = inject(VentasService);
+  // private iaService: IAService
+
+  constructor() {
     console.log('🚀 Construyendo ReportesEmpresarialComponent...');
     console.log('👤 Usuario actual:', this.currentUser);
     console.log('📅 Fecha/Hora UTC:', this.currentDateTime);
@@ -731,7 +802,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         y: {
           beginAtZero: true,
           ticks: {
-            callback: function(value: any) {
+            callback: function(value: number) {
               return 'S/ ' + value.toLocaleString();
             }
           }
@@ -828,14 +899,14 @@ export class ReportesComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: 'Ventas Reales',
-          data: [85000, 92000, 88000, 95000, 105000, 112000, null, null],
+          data: [85000, 92000, 88000, 95000, 105000, 112000, 0, 0],
           borderColor: '#42A5F5',
           backgroundColor: '#42A5F5',
           fill: false
         },
         {
           label: 'Predicción IA',
-          data: [null, null, null, null, null, 112000, 118000, 125000],
+          data: [0, 0, 0, 0, 0, 112000, 118000, 125000],
           borderColor: '#FF6384',
           backgroundColor: '#FF6384',
           borderDash: [5, 5],
@@ -860,7 +931,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         y: {
           beginAtZero: true,
           ticks: {
-            callback: function(value: any) {
+            callback: function(value: number) {
               return 'S/ ' + value.toLocaleString();
             }
           }
@@ -890,7 +961,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         y: {
           beginAtZero: true,
           ticks: {
-            callback: function(value: any) {
+            callback: function(value: number) {
               return 'S/ ' + value.toLocaleString();
             }
           }
@@ -1042,13 +1113,13 @@ getRankSeverity(rowIndex: number): 'info' | 'success' | 'warn' | 'danger' | 'sec
     return clases[segmento as keyof typeof clases] || 'ocasional-chip';
   }
 
-  getEstadoReporteSeverity(estado: string): any {
+  getEstadoReporteSeverity(estado: string): 'success' | 'info' | 'danger' | 'warning' | 'secondary' {
     const severities = {
       'COMPLETADO': 'success',
       'GENERANDO': 'info',
       'ERROR': 'danger',
       'CANCELADO': 'warning'
-    };
+    } as const;
     return severities[estado as keyof typeof severities] || 'secondary';
   }
 
@@ -1165,7 +1236,7 @@ cargarHistorialReportes(event: TableLazyLoadEvent): void {
     });
   }
 
-  filtrarClientes(event: any): void {
+  filtrarClientes(event: Event): void {
     const valor = (event.target as HTMLInputElement).value;
     console.log('🔍 Filtrando clientes:', valor);
   }

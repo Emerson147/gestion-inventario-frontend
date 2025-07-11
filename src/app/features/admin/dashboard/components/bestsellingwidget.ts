@@ -11,7 +11,9 @@ import { MenuModule } from 'primeng/menu';
         <div class="flex justify-between items-center mb-6">
             <div class="font-semibold text-xl">Best Selling Products</div>
             <div>
-                <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)"></button>
+                <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)">
+                    <span class="sr-only">Mostrar opciones</span>
+                </button>
                 <p-menu #menu [popup]="true" [model]="items"></p-menu>
             </div>
         </div>

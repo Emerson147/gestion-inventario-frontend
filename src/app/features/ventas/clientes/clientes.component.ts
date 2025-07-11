@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, TrackByFunction } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, TrackByFunction, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Cliente } from '../../../core/models/cliente.model';
 import { ClienteService } from '../../../core/services/clientes.service';
@@ -13,7 +13,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { TableModule } from 'primeng/table';
+import { TableModule, Table } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -111,7 +111,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
   
   // Referencias a componentes del template
   @ViewChild('menuAcciones') menuAcciones!: Menu;
-  @ViewChild('dt') dataTable: any;
+  @ViewChild('dt') dataTable!: Table;
 
   // Control de permisos
   permissionTypes = PermissionType;
@@ -153,13 +153,13 @@ export class ClientesComponent implements OnInit, OnDestroy {
   };
   
   // Filtros y búsqueda
-  filtroTexto: string = '';
-  filtroEstado: string = 'todos';
-  filtroCompletitud: string = 'todos';
+  filtroTexto = '';
+  filtroEstado = 'todos';
+  filtroCompletitud = 'todos';
   sugerenciasBusqueda: string[] = [];
   
   // Configuraciones de vista
-  currentView: string = 'table';
+  currentView = 'table';
   viewOptions: ViewOption[] = [
     { label: 'Tabla', value: 'table', icon: 'pi pi-table' },
     { label: 'Tarjetas', value: 'cards', icon: 'pi pi-th-large' }
@@ -195,21 +195,21 @@ export class ClientesComponent implements OnInit, OnDestroy {
   readonly AUTO_REFRESH_INTERVAL = 300000; // 5 minutos
   
   totalRecords = 0;
-  private autoRefreshInterval?: any;
+  private autoRefreshInterval?: ReturnType<typeof setInterval>;
   
   // TrackBy para performance
   trackByClienteId: TrackByFunction<Cliente> = (index: number, cliente: Cliente) => {
     return cliente.id || index;
   };
 
-  constructor(
-    private clienteService: ClienteService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private permissionService: PermissionService,
-    private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {
+  private clienteService: ClienteService = inject(ClienteService);
+  private messageService: MessageService = inject(MessageService);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private permissionService: PermissionService = inject(PermissionService);
+  private fb: FormBuilder = inject(FormBuilder);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
+  constructor() {
     this.initializeForm();
   }
 
@@ -354,14 +354,14 @@ export class ClientesComponent implements OnInit, OnDestroy {
   
   // ==================== VALIDADORES MEJORADOS ====================
   
-  private noWhitespaceValidator(control: AbstractControl): {[key: string]: any} | null {
+  private noWhitespaceValidator(control: AbstractControl): Record<string, boolean> | null {
     if (control.value && control.value.trim().length === 0) {
       return { 'whitespace': true };
     }
     return null;
   }
 
-  private dniValidator = (control: AbstractControl): {[key: string]: any} | null => {
+  private dniValidator = (control: AbstractControl): Record<string, boolean> | null => {
     if (!control.value) return null;
     
     const dni = control.value.toString();
@@ -372,7 +372,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return this.validarDigitoVerificadorDNI(dni) ? null : { 'dniInvalido': true };
   };
 
-  private rucValidator = (control: AbstractControl): {[key: string]: any} | null => {
+  private rucValidator = (control: AbstractControl): Record<string, boolean> | null => {
     if (!control.value) return null;
     
     const ruc = control.value.toString();
@@ -383,7 +383,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return this.validarDigitoVerificadorRUC(ruc) ? null : { 'rucInvalido': true };
   };
 
-  private telefonoValidator = (control: AbstractControl): {[key: string]: any} | null => {
+  private telefonoValidator = (control: AbstractControl): Record<string, boolean> | null => {
     if (!control.value) return null;
     
     const telefono = control.value.toString().replace(/\D/g, '');
@@ -394,7 +394,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return null;
   };
 
-  private fechaNacimientoValidator = (control: AbstractControl): {[key: string]: any} | null => {
+  private fechaNacimientoValidator = (control: AbstractControl): Record<string, boolean> | null => {
     if (!control.value) return null;
     
     const fechaNac = new Date(control.value);
@@ -954,12 +954,12 @@ export class ClientesComponent implements OnInit, OnDestroy {
 
   public exportarFichaCliente(cliente: Cliente): void {
     this.uiState.isExporting = true;
-    this.mostrarInfo('Exportando', 'Generando ficha del cliente...');
+    this.mostrarInfo('Exportando', `Generando ficha del cliente ${cliente.nombres} ${cliente.apellidos}...`);
     
     // Simular exportación
     setTimeout(() => {
       this.uiState.isExporting = false;
-      this.mostrarExito('Exportado', 'Ficha del cliente generada correctamente');
+      this.mostrarExito('Exportado', `Ficha del cliente ${cliente.nombres} ${cliente.apellidos} generada correctamente`);
       this.cdr.markForCheck();
     }, 2000);
   }
@@ -1112,6 +1112,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.crearYAgregar = false;
     this.cliente = this.initCliente();
     this.clienteForm.reset();
+    this.clienteForm.patchValue(this.cliente);
     this.cdr.markForCheck();
   }
 
@@ -1183,11 +1184,11 @@ export class ClientesComponent implements OnInit, OnDestroy {
 
   // ==================== FUNCIONES DE TABLA ====================
   
-  onGlobalFilter(table: any, event: Event): void {
+  onGlobalFilter(table: Table, event: Event): void {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
-  trackByCliente(index: number, cliente: Cliente): any {
-    return cliente ? cliente.id : null;
+  trackByCliente(index: number, cliente: Cliente): number | null {
+    return cliente ? cliente.id || index : null;
   }
 }

@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { Subject, Observable, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener, inject } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // PrimeNG Imports
 import { MessageService, ConfirmationService, MenuItem, LazyLoadEvent } from 'primeng/api';
-import { TableModule, Table } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
@@ -12,7 +12,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { CalendarModule } from 'primeng/calendar';
 import { SliderModule } from 'primeng/slider';
 import { ChipsModule } from 'primeng/chips';
-import { AutoCompleteModule } from 'primeng/autocomplete';
+import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { AccordionModule } from 'primeng/accordion';
 import { DataViewModule } from 'primeng/dataview';
 import { CardModule } from 'primeng/card';
@@ -91,9 +91,16 @@ interface PagoVenta {
   numeroReferencia?: string;
 }
 
+interface Producto {
+  id: number;
+  nombre: string;
+  codigo?: string;
+  precio?: number;
+}
+
 interface DetalleVenta {
   id: number;
-  producto?: any;
+  producto?: Producto;
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
@@ -126,6 +133,70 @@ interface EstadisticasVenta {
   promedioVenta: number;
   metaDiaria: number;
 }
+
+interface SugerenciaBusqueda {
+  label: string;
+  tipo: string;
+  icon: string;
+}
+
+interface OpcionSelect {
+  label: string;
+  value: string | number;
+  icon?: string;
+}
+
+interface DatosGrafico {
+  labels: string[];
+  datasets: {
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+    tension: number;
+    fill: boolean;
+  }[];
+}
+
+interface OpcionesGrafico {
+  responsive: boolean;
+  maintainAspectRatio: boolean;
+  plugins: {
+    legend: {
+      display: boolean;
+    };
+  };
+  scales: {
+    x: {
+      display: boolean;
+    };
+    y: {
+      display: boolean;
+    };
+  };
+}
+
+interface DistribucionPago {
+  nombre: string;
+  cantidad: number;
+  porcentaje: number;
+}
+
+interface ActividadReciente {
+  titulo: string;
+  descripcion: string;
+  tiempo: string;
+}
+
+interface TopProducto {
+  nombre: string;
+  cantidad: number;
+}
+
+interface EventoAutoComplete {
+  query: string;
+}
+
+// No necesitamos esta interfaz, usaremos AutoCompleteSelectEvent de PrimeNG
 
 @Component({
   selector: 'app-historial-ventas',
@@ -186,20 +257,20 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   ventasFiltradas: Venta[] = [];
   ventasPaginadas: Venta[] = [];
   ventaSeleccionada: Venta | null = null;
-  totalVentas: number = 0;
+  totalVentas = 0;
 
   // ✅ ESTADOS DE LA INTERFAZ
-  cargandoVentas: boolean = false;
-  mostrarDetalleDialog: boolean = false;
+  cargandoVentas = false;
+  mostrarDetalleDialog = false;
   tipoVista: TipoVista = 'list';
-  paginaActual: number = 1;
-  ventasPorPagina: number = 25;
-  totalPaginas: number = 0;
+  paginaActual = 1;
+  ventasPorPagina = 25;
+  totalPaginas = 0;
 
   // ✅ FILTROS Y BÚSQUEDA
   filtros: FiltrosVenta = {};
-  busquedaRapida: string = '';
-  sugerenciasBusqueda: any[] = [];
+  busquedaRapida = '';
+  sugerenciasBusqueda: SugerenciaBusqueda[] = [];
   filtrosRapidos: string[] = [];
   rangoFechas: Date[] = [];
   rangoMonto: number[] = [0, 10000];
@@ -209,23 +280,23 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   metodosSeleccionados: MetodoPago[] = [];
   usuariosSeleccionados: number[] = [];
   metodoPagoSeleccionado: MetodoPago | null = null;
-  calificacionMinima: number = 0;
+  calificacionMinima = 0;
 
   // ✅ ORDENAMIENTO
-  ordenarPor: string = 'fecha_desc';
-  campoOrden: string = 'fechaVenta';
+  ordenarPor = 'fecha_desc';
+  campoOrden = 'fechaVenta';
   direccionOrden: 'asc' | 'desc' = 'desc';
 
     // Agregar estas propiedades si faltan:
-  ventasHoy: number = 0;
-  totalVentasHoy: number = 0;
-  clientesUnicos: number = 0;
-  clientesNuevos: number = 0;
-  productosVendidos: number = 0;
-  tiposProductos: number = 0;
-  porcentajeCrecimiento: number = 0;
-  promedioVenta: number = 0;
-  metaDiaria: number = 10000;
+  ventasHoy = 0;
+  totalVentasHoy = 0;
+  clientesUnicos = 0;
+  clientesNuevos = 0;
+  productosVendidos = 0;
+  tiposProductos = 0;
+  porcentajeCrecimiento = 0;
+  promedioVenta = 0;
+  metaDiaria = 10000;
 
   // Propiedades para fechas
   fechaDesde?: Date;
@@ -233,6 +304,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
   // Math para templates
   Math = Math;
+
+  // ✅ AUTO REFRESH INTERVAL
+  private autoRefreshInterval?: number;
 
   getProgresoFromDetail(detail: string): number {
   const match = detail.match(/(\d+)%/);
@@ -252,27 +326,46 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   };
 
   // ✅ DATOS PARA GRÁFICOS Y PROGRESO
-  progresoMeta: number = 0;
-  datosGraficoTendencia: any = {};
-  opcionesGrafico: any = {};
-  distribucionPagos: any[] = [];
-  actividadReciente: any[] = [];
-  topMetodosPago: any[] = [];
-  topProductos: any[] = [];
+  progresoMeta = 0;
+  datosGraficoTendencia: DatosGrafico = {
+    labels: [],
+    datasets: []
+  };
+  opcionesGrafico: OpcionesGrafico = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      x: {
+        display: false
+      },
+      y: {
+        display: false
+      }
+    }
+  };
+  distribucionPagos: DistribucionPago[] = [];
+  actividadReciente: ActividadReciente[] = [];
+  topMetodosPago: DistribucionPago[] = [];
+  topProductos: TopProducto[] = [];
 
   // ✅ FECHAS Y TIEMPO
   fechaActual: Date = new Date();
-  horaActual: string = '';
+  horaActual = '';
 
   // ✅ OPCIONES PARA COMPONENTES
-  estadosVenta: any[] = [
+  estadosVenta: OpcionSelect[] = [
     { label: 'Pendiente', value: 'PENDIENTE' },
     { label: 'Completada', value: 'COMPLETADA' },
     { label: 'Anulada', value: 'ANULADA' },
     { label: 'Procesando', value: 'PROCESANDO' }
   ];
 
-  metodosPago: any[] = [
+  metodosPago: OpcionSelect[] = [
     { label: '💵 Efectivo', value: 'EFECTIVO' },
     { label: '💳 Tarjeta Débito', value: 'TARJETA_DEBITO' },
     { label: '💳 Tarjeta Crédito', value: 'TARJETA_CREDITO' },
@@ -281,18 +374,18 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     { label: '🏦 Transferencia', value: 'TRANSFERENCIA' }
   ];
 
-  usuarios: any[] = [
+  usuarios: OpcionSelect[] = [
     { label: 'Juan Pérez', value: 1 },
     { label: 'María García', value: 2 },
     { label: 'Carlos López', value: 3 }
   ];
 
-  opcionesVista: any[] = [
+  opcionesVista: OpcionSelect[] = [
     { label: 'Lista', value: 'list', icon: 'pi pi-list' },
     { label: 'Tarjetas', value: 'grid', icon: 'pi pi-th-large' }
   ];
 
-  opcionesOrdenamiento: any[] = [
+  opcionesOrdenamiento: OpcionSelect[] = [
     { label: 'Fecha (Más reciente)', value: 'fecha_desc', icon: 'pi pi-calendar' },
     { label: 'Fecha (Más antigua)', value: 'fecha_asc', icon: 'pi pi-calendar' },
     { label: 'Monto (Mayor)', value: 'monto_desc', icon: 'pi pi-dollar' },
@@ -310,12 +403,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   // ✅ OBSERVABLE PARA CLEANUP
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private ventasService: VentasService, // Reemplazar con tu servicio real
+  private messageService: MessageService = inject(MessageService);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private ventasService: VentasService = inject(VentasService); // Reemplazar con tu servicio real
     // private exportService: any   // Reemplazar con tu servicio de exportación
-  ) {
+
+  constructor() {
     this.inicializarConfiguraciones();
   }
 
@@ -330,6 +423,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    
+    if (this.autoRefreshInterval) {
+      clearInterval(this.autoRefreshInterval);
+    }
+    
+    document.removeEventListener('keydown', this.handleKeyboardShortcuts);
   }
 
   // ✅ INICIALIZACIÓN
@@ -623,7 +722,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       }
 
       // Filtro por métodos de pago
-      if (this.metodosSeleccionados.length > 0 && !this.metodosSeleccionados.includes(venta.pago?.metodoPago!)) {
+      if (this.metodosSeleccionados.length > 0 && venta.pago?.metodoPago && !this.metodosSeleccionados.includes(venta.pago.metodoPago)) {
         return false;
       }
 
@@ -639,7 +738,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.actualizarPaginacion();
   }
 
-  buscarSugerencias(evento: any): void {
+  buscarSugerencias(evento: EventoAutoComplete): void {
     const query = evento.query.toLowerCase();
     
     // TODO: Implementar búsqueda real en el backend
@@ -650,8 +749,8 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     ].filter(item => item.label.toLowerCase().includes(query));
   }
 
-  seleccionarSugerencia(evento: any): void {
-    this.busquedaRapida = evento.label;
+  seleccionarSugerencia(evento: AutoCompleteSelectEvent): void {
+    this.busquedaRapida = evento.value?.label || '';
     this.filtrarVentas();
   }
 
@@ -667,15 +766,17 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       case 'ayer':
         this.rangoFechas = [ayer, ayer];
         break;
-      case 'semana':
+      case 'semana': {
         const inicioSemana = new Date(hoy);
         inicioSemana.setDate(hoy.getDate() - hoy.getDay());
         this.rangoFechas = [inicioSemana, hoy];
         break;
-      case 'mes':
+      }
+      case 'mes': {
         const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
         this.rangoFechas = [inicioMes, hoy];
         break;
+      }
     }
 
     this.filtros.fechaDesde = this.rangoFechas[0];
@@ -737,7 +838,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   // ✅ ORDENAMIENTO
   ordenarVentas(): void {
     this.ventasFiltradas.sort((a, b) => {
-      let valorA: any, valorB: any;
+      let valorA: string | number | Date, valorB: string | number | Date;
 
       switch (this.ordenarPor) {
         case 'fecha_desc':
@@ -929,9 +1030,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     return clases[estado] || 'bg-gray-100 text-gray-800';
   }
 
-getEstadoSeverity(estado: EstadoVenta): any {  // ✅ Cambiar el tipo de retorno
-  const severities = {
-    'PENDIENTE': 'warning',
+getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' | 'secondary' {
+  const severities: Record<EstadoVenta, 'warn' | 'success' | 'danger' | 'info' | 'secondary'> = {
+    'PENDIENTE': 'warn',
     'COMPLETADA': 'success',
     'ANULADA': 'danger',
     'PROCESANDO': 'info'
@@ -1065,7 +1166,7 @@ getEstadoSeverity(estado: EstadoVenta): any {  // ✅ Cambiar el tipo de retorno
         detalles: [
           {
             id: i,
-            producto: { nombre: `Producto ${i}` },
+            producto: { id: i, nombre: `Producto ${i}` },
             cantidad: Math.floor(Math.random() * 5) + 1,
             precioUnitario: Math.random() * 100 + 10,
             subtotal: Math.random() * 200 + 50

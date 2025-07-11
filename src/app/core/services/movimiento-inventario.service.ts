@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { MovimientoInventario, PagedResponse } from '../../core/models/movimientos-inventario.model';
 import { environment } from '../../../environments/environment';
-import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +11,14 @@ export class MovimientoInventarioService {
 
   private apiUrl = `${environment.apiUrl}api/movimientos`;
 
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
   // Obtener todos los movimientos con búsqueda (sin filtros devuelve todos)
   getMovimientos(
-    page: number = 0, 
-    size: number = 100, 
-    sortBy: string = 'nombre', 
-    sortDir: string = 'asc'): Observable<PagedResponse<MovimientoInventario>> {
+    page = 0, 
+    size = 100, 
+    sortBy = 'nombre', 
+    sortDir = 'asc'): Observable<PagedResponse<MovimientoInventario>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
@@ -34,8 +33,8 @@ export class MovimientoInventarioService {
     return this.http.get<MovimientoInventario>(`${this.apiUrl}/${id}`);
   }
 
-  createMovimiento(movimientoData: any): Observable<MovimientoInventario> {
-    // El backend espera una estructura más simple que la interfaz MovimientoInventario
+  createMovimiento(movimientoData: Omit<MovimientoInventario, 'id' | 'fechaMovimiento' | 'usuario'>): Observable<MovimientoInventario> {
+    // Usamos Omit para indicar que no se espera id, fechaMovimiento ni usuario al crear
     return this.http.post<MovimientoInventario>(`${this.apiUrl}/registrar`, movimientoData);
   }
 
@@ -68,10 +67,10 @@ export class MovimientoInventarioService {
     tipo?: string,
     fechaInicio?: Date,
     fechaFin?: Date,
-    page: number = 0,
-    size: number = 100,
-    sortBy: string = 'fechaMovimiento',
-    sortDir: string = 'desc'
+    page = 0,
+    size = 100,
+    sortBy = 'fechaMovimiento',
+    sortDir = 'desc'
   ): Observable<PagedResponse<MovimientoInventario>> {
     let params = new HttpParams()
       .set('page', page.toString())

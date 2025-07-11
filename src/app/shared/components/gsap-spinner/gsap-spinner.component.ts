@@ -65,7 +65,7 @@ export class GsapSpinnerComponent implements OnInit, OnDestroy {
   @ViewChild('circle2') circle2!: ElementRef;
   @ViewChild('circle3') circle3!: ElementRef;
 
-  message: string = 'Cargando...';
+  message = 'Cargando...';
   private timeline: gsap.core.Timeline | null = null;
 
   ngOnInit() {

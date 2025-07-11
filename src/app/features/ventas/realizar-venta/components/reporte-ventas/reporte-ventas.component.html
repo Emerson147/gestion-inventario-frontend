@@ -48,7 +48,7 @@
             <p-accordionTab header="📅 Filtros de Tiempo">
               <div class="filtros-tiempo">
                 <div class="p-field">
-                  <label>Período:</label>
+                  <label for="periodoSeleccionado">Período:</label>
                   <p-dropdown 
                     [(ngModel)]="periodoSeleccionado"
                     [options]="periodos"
@@ -60,7 +60,7 @@
                 </div>
                 
                 <div class="p-field">
-                  <label>Rango de Fechas:</label>
+                  <label for="rangoFechas">Rango de Fechas:</label>
                   <p-calendar 
                     [(ngModel)]="rangoFechas"
                     selectionMode="range"
@@ -78,7 +78,7 @@
             <p-accordionTab header="🏢 Filtros de Datos">
               <div class="filtros-datos">
                 <div class="p-field">
-                  <label>Sucursales:</label>
+                  <label for="sucursalesSeleccionadas">Sucursales:</label>
                   <p-multiSelect 
                     [(ngModel)]="sucursalesSeleccionadas"
                     [options]="sucursales"
@@ -90,7 +90,7 @@
                 </div>
                 
                 <div class="p-field">
-                  <label>Vendedores:</label>
+                  <label for="vendedoresSeleccionados">Vendedores:</label>
                   <p-multiSelect 
                     [(ngModel)]="vendedoresSeleccionados"
                     [options]="vendedores"
@@ -102,7 +102,7 @@
                 </div>
                 
                 <div class="p-field">
-                  <label>Categorías:</label>
+                  <label for="categoriasSeleccionadas">Categorías:</label>
                   <p-multiSelect 
                     [(ngModel)]="categoriasSeleccionadas"
                     [options]="categorias"
@@ -119,7 +119,7 @@
             <p-accordionTab header="⚙️ Filtros Avanzados">
               <div class="filtros-avanzados">
                 <div class="p-field">
-                  <label>Rango de Montos:</label>
+                  <label for="rangoMontos">Rango de Montos:</label>
                   <p-slider 
                     [(ngModel)]="rangoMontos"
                     [range]="true"
@@ -135,7 +135,7 @@
                 </div>
                 
                 <div class="p-field">
-                  <label>Mínimo de Transacciones:</label>
+                  <label for="minimoTransacciones" >Mínimo de Transacciones:</label>
                   <p-inputNumber 
                     [(ngModel)]="minimoTransacciones"
                     [min]="1"
@@ -762,7 +762,7 @@
                   <div class="grid">
                     <div class="col-12 lg:col-4">
                       <div class="p-field">
-                        <label>Algoritmo de IA:</label>
+                        <label for="algoritmoIA">Algoritmo de IA:</label>
                         <p-dropdown 
                           [(ngModel)]="algoritmoIA"
                           [options]="algoritmosIA"
@@ -776,7 +776,7 @@
                     
                     <div class="col-12 lg:col-4">
                       <div class="p-field">
-                        <label>Ventana de Tiempo:</label>
+                        <label for="ventanaTiempo">Ventana de Tiempo:</label>
                         <p-dropdown 
                           [(ngModel)]="ventanaTiempo"
                           [options]="ventanasTiempo"
@@ -790,7 +790,7 @@
                     
                     <div class="col-12 lg:col-4">
                       <div class="p-field">
-                        <label>Variables Predictivas:</label>
+                        <label for="variablesPredictivas">Variables Predictivas:</label>
                         <p-multiSelect 
                           [(ngModel)]="variablesPredictivas"
                           [options]="variablesDisponibles"

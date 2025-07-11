@@ -47,8 +47,8 @@ import { MetricaVenta } from './metric-card.interface';
 })
 export class MetricCardComponent implements OnInit, OnDestroy {
   @Input() metrica!: MetricaVenta;
-  @Input() showRealTime: boolean = true;
-  @Input() enableAnimations: boolean = true;
+  @Input() showRealTime = true;
+  @Input() enableAnimations = true;
 
   private cdr = inject(ChangeDetectorRef);
   private timeInterval?: number;
@@ -303,8 +303,8 @@ export class MetricCardComponent implements OnInit, OnDestroy {
     return index;
   }
 
-  trackByLabel(index: number, item: any): string {
-    return item.label || index;
+  trackByLabel(index: number, item: { label?: string }): string {
+    return item.label || index.toString();
   }
 
   getRelativeTime(): string {

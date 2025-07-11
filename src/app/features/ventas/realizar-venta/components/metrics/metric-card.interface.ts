@@ -21,12 +21,12 @@ export interface MetricaVenta {
     labels?: string[];
     type: 'line' | 'bar' | 'area';
   };
-  desglose?: Array<{
+  desglose?: {
     label: string;
     valor: number;
     color: string;
     porcentaje?: number;
-  }>;
+  }[];
   alertaCritica?: {
     activa: boolean;
     mensaje: string;
@@ -38,12 +38,12 @@ export interface MetricaVenta {
     callback: () => void;
     disabled?: boolean;
   };
-  metricas?: Array<{
+  metricas?: {
     label: string;
     valor: string | number;
     icono?: string;
     color?: string;
-  }>;
+  }[];
   loading?: boolean;
   ultimaActualizacion?: Date;
 }

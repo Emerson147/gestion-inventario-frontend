@@ -569,9 +569,11 @@
       class="card-item"
       *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}"
     >
-      <div 
-        class="h-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 transition-all duration-300 cursor-pointer group min-h-[400px]"
+      <button 
+        type="button"
+        class="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
         (click)="openNew()"
+        aria-label="Agregar nuevo producto al catálogo"
       >
         <div class="bg-indigo-100 p-4 lg:p-6 rounded-full mb-3 lg:mb-4 group-hover:bg-indigo-200 transition-colors duration-300">
           <i class="pi pi-plus text-2xl lg:text-3xl text-indigo-600"></i>
@@ -580,7 +582,7 @@
         <span class="text-sm text-gray-500 text-center px-2">
           Clic para crear un nuevo producto en tu catálogo
         </span>
-      </div>
+      </button>
     </div>
 
     <!-- Cards de productos -->

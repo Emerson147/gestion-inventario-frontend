@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PagoRequest, PagoResponse } from '../models/pago.model';
 import { Observable } from 'rxjs';
@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 export class PagosService {
   private apiUrl = `${environment.apiUrl}api/pagos`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   registrarPago(pago: PagoRequest): Observable<PagoResponse> {
     return this.http.post<PagoResponse>(`${this.apiUrl}/registrar`, pago);

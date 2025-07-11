@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { AuthService } from './auth.service';
 
 // Definición de los tipos de permisos
@@ -10,7 +10,7 @@ export enum PermissionType {
 }
 
 // Mapa de permisos por módulo y rol
-const ROLE_PERMISSIONS: {[key: string]: {[key: string]: PermissionType[]}} = {
+const ROLE_PERMISSIONS: Record<string, Record<string, PermissionType[]>> = {
   'ROLE_ADMIN': {
     'productos': [PermissionType.VIEW, PermissionType.CREATE, PermissionType.EDIT, PermissionType.DELETE],
     'inventario': [PermissionType.VIEW, PermissionType.CREATE, PermissionType.EDIT, PermissionType.DELETE],
@@ -40,7 +40,7 @@ export class PermissionService {
   // Signals para reactividad en Angular 19+
   private permissionsLoaded = signal(false);
 
-  constructor(private authService: AuthService) {}
+  private authService = inject(AuthService);
 
   /**
    * Verifica si el usuario tiene el permiso especificado para un módulo específico

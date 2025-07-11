@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild, AfterViewInit, OnInit} from '@angular/core';
+import {Component, ElementRef, ViewChild, AfterViewInit, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -12,7 +12,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { MessageService } from 'primeng/api';
 import { AnimationService } from '../../core/animations/animation.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import {GsapSpinnerComponent} from '../../shared/components/gsap-spinner/gsap-spinner.component';
+// import {GsapSpinnerComponent} from '../../shared/components/gsap-spinner/gsap-spinner.component';
 import {NgxSpinnerModule, NgxSpinnerService} from 'ngx-spinner';
 
 interface LoginResponse {
@@ -36,10 +36,10 @@ interface LoginResponse {
 
 })
 export class LoginComponent implements OnInit, AfterViewInit {
-  username: string = '';
-  password: string = '';
-  loading: boolean = false;
-  forgotVisible: boolean = false;
+  username = '';
+  password = '';
+  loading = false;
+  forgotVisible = false;
 
   @ViewChild('loginForm') loginForm!: ElementRef;
   @ViewChild('forgotDialog') forgotDialog!: ElementRef;
@@ -50,13 +50,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
   private loginResponse: LoginResponse | undefined;
   private animationsEnabled = true;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private messageService: MessageService,
-    private animService: AnimationService,
-    private spinner: NgxSpinnerService
-  ) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private messageService = inject(MessageService);
+  private animService = inject(AnimationService);
+  private spinner = inject(NgxSpinnerService);
 
   ngOnInit() {
     // Desactivar animaciones en entornos problemáticos o modo de depuración

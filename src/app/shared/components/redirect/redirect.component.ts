@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -31,10 +31,8 @@ import { AuthService } from '../../../core/services/auth.service';
   `]
 })
 export class RedirectComponent implements OnInit {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit(): void {
     // Redireccionar según el rol

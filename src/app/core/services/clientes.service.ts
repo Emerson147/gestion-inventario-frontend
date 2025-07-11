@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Cliente } from '../models/cliente.model';
 import { Observable } from 'rxjs';
@@ -9,7 +9,7 @@ export class ClienteService {
   
   private apiUrl = `${environment.apiUrl}api/clientes`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   listar(): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(this.apiUrl);

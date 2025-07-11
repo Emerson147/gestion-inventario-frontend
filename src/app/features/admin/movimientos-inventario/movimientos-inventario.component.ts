@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -74,7 +74,7 @@ export class MovimientosInventarioComponent implements OnInit {
   tipoMovimientoFiltro: TipoMovimiento | null = null;
   filtroTipo: string | null = null;
   fechaMovimientoFiltro: Date | null = null;
-  productoFiltro: any = null;
+  productoFiltro: { id?: number; nombre?: string; } | null = null;
   tipoMovimientoSeleccionado: TipoMovimiento | null = null;
 
   // Estado del formulario
@@ -118,14 +118,12 @@ export class MovimientosInventarioComponent implements OnInit {
     }
   ];
 
-  constructor(
-    private readonly movimientoService: MovimientoInventarioService,
-    private readonly inventarioService: InventarioService,
-    private readonly messageService: MessageService,
-    private readonly confirmationService: ConfirmationService,
-    private readonly permissionService: PermissionService,
-    private readonly authService: AuthService
-  ) {}
+  private readonly movimientoService: MovimientoInventarioService = inject(MovimientoInventarioService);
+  private readonly inventarioService: InventarioService = inject(InventarioService);
+  private readonly messageService: MessageService = inject(MessageService);
+  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly permissionService: PermissionService = inject(PermissionService);
+  private readonly authService: AuthService = inject(AuthService);
 
   ngOnInit(): void {
     this.loadInventarios();
@@ -204,18 +202,15 @@ export class MovimientosInventarioComponent implements OnInit {
     }
   
     this.loading = true;
-    const username = this.getCurrentUsername();
   
-    const movimientoData = {
-      inventarioId: this.inventarioSeleccionado?.id,
+    const movimientoData: Omit<MovimientoInventario, 'id' | 'fechaMovimiento' | 'usuario'> = {
+      inventario: this.inventarioSeleccionado,
+      inventarioDestino: this.movimiento.tipo === 'TRASLADO' ? this.inventarioDestinoSeleccionado : null,
       tipo: this.movimiento.tipo,
       cantidad: this.movimiento.cantidad,
       descripcion: this.movimiento.descripcion,
       referencia: this.movimiento.referencia,
-      usuario: username,
-      ...(this.movimiento.tipo === 'TRASLADO' && this.inventarioDestinoSeleccionado && {
-        inventarioDestinoId: this.inventarioDestinoSeleccionado.id
-      })
+      // El usuario se maneja en el backend basado en el token de autenticación
     };
   
     if (this.editMode && this.movimiento.id) {
@@ -232,7 +227,7 @@ export class MovimientosInventarioComponent implements OnInit {
             this.showSuccess('Movimiento creado exitosamente');
             this.hideDialog();
           },
-          error: (error) => {
+          error: (error: unknown) => {
             this.handleError(error, 'Error creando movimiento');
           }
         });
@@ -412,7 +407,7 @@ export class MovimientosInventarioComponent implements OnInit {
 
   // ========== EVENTOS Y FILTROS ==========
   
-  onGlobalFilter(dt: any, event: Event): void {
+  onGlobalFilter(dt: { filterGlobal: (value: string, matchMode: string) => void }, event: Event): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -477,7 +472,7 @@ export class MovimientosInventarioComponent implements OnInit {
     });
   }
 
-  private guardarArchivo(buffer: any, fileName: string): void {
+  private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
     const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
@@ -514,12 +509,23 @@ export class MovimientosInventarioComponent implements OnInit {
     });
   }
 
-  private handleError(error: any, defaultMessage: string): void {
+  private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
+    let errorMessage = defaultMessage;
+    
+    if (error && typeof error === 'object' && 'error' in error) {
+      const errorObj = (error as { error?: unknown }).error;
+      if (errorObj && typeof errorObj === 'object' && 'message' in errorObj) {
+        errorMessage = String((errorObj as { message: unknown }).message);
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: error.error?.message || defaultMessage
+      detail: errorMessage
     });
     this.loading = false;
   }
@@ -686,7 +692,7 @@ export class MovimientosInventarioComponent implements OnInit {
     
     if (this.productoFiltro) {
       this.movimientosFiltrados = this.movimientosFiltrados.filter(m => 
-        m.inventario?.producto?.nombre?.toLowerCase().includes(this.productoFiltro?.toLowerCase() || '')
+        m.inventario?.producto?.nombre?.toLowerCase().includes(this.productoFiltro?.nombre?.toLowerCase() || '')
       );
     }
   }

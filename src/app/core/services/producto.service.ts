@@ -1,56 +1,100 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Producto, ProductoRequest, PagedResponse } from '../models/product.model';
 
+// Interfaz para la respuesta de carga de imagen
+interface ImageUploadResponse {
+  message: string;
+  imageUrl: string;
+  fileName: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
+  private apiUrl = `${environment.apiUrl}api/productos`;
+  private http = inject(HttpClient);
 
-  private apiUrl = `${environment.apiUrl}api/productos`
-  constructor(private http: HttpClient) {}
-
- getProducts(
-  page: number = 0, 
-  size: number = 10,
-  sortBy: string = 'nombre',
-  sortDir: string = 'asc'
- ): Observable<PagedResponse<Producto>> {
-
+  /**
+   * Obtiene una lista paginada de productos
+   * @param page Número de página (0-based)
+   * @param size Tamaño de la página
+   * @param sortBy Campo por el que ordenar
+   * @param sortDir Dirección de ordenación (asc/desc)
+   */
+  getProducts(
+    page = 0, 
+    size = 10,
+    sortBy = 'nombre',
+    sortDir = 'asc'
+  ): Observable<PagedResponse<Producto>> {
     const params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString())
-    .set('sortBy', sortBy)
-    .set('sortDir', sortDir);
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
+      
     return this.http.get<PagedResponse<Producto>>(this.apiUrl, { params });
-   }
+  }
 
-   getProductById(id: number): Observable<Producto> {
+  /**
+   * Obtiene un producto por su ID
+   * @param id ID del producto
+   */
+  getProductById(id: number): Observable<Producto> {
     return this.http.get<Producto>(`${this.apiUrl}/${id}`);
-   }
+  }
 
-   createProduct(producto: ProductoRequest): Observable<Producto> {
+  /**
+   * Crea un nuevo producto
+   * @param producto Datos del producto a crear
+   */
+  createProduct(producto: ProductoRequest): Observable<Producto> {
     return this.http.post<Producto>(`${this.apiUrl}/crear`, producto);
-   }
+  }
 
-   updateProduct(id: number, producto: ProductoRequest): Observable<Producto> {
+  /**
+   * Actualiza un producto existente
+   * @param id ID del producto a actualizar
+   * @param producto Datos actualizados del producto
+   */
+  updateProduct(id: number, producto: ProductoRequest): Observable<Producto> {
     return this.http.put<Producto>(`${this.apiUrl}/actualizar/${id}`, producto);
-   }
+  }
 
-   deleteProduct(id: number): Observable<void> {
+  /**
+   * Elimina un producto
+   * @param id ID del producto a eliminar
+   */
+  deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/eliminar/${id}`);
-   }
+  }
 
-   uploadImage(id: number, formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${id}/imagen`, formData);
-   }
+  /**
+   * Sube una imagen para un producto
+   * @param id ID del producto
+   * @param formData Datos del formulario que contiene la imagen
+   * @returns Respuesta con la URL de la imagen subida
+   */
+  uploadImage(id: number, formData: FormData): Observable<ImageUploadResponse> {
+    return this.http.post<ImageUploadResponse>(
+      `${this.apiUrl}/${id}/imagen`, 
+      formData
+    );
+  }
 
-   getImageUrl(producto: Producto): string {
+  /**
+   * Obtiene la URL completa de la imagen de un producto
+   * @param producto Producto del que se quiere obtener la URL de la imagen
+   * @returns URL completa de la imagen o una imagen por defecto si no hay imagen
+   */
+  getImageUrl(producto: Producto): string {
     if (!producto || !producto.imagen) {
-        return 'assets/images/girl.jpg'; // Imagen predeterminada
+      return 'assets/images/girl.jpg'; // Imagen predeterminada
     }
     return `${environment.apiUrl}/api/files/${producto.imagen}`;
-}
+  }
 }
