@@ -25,10 +25,10 @@
         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[140px] inventory-entrance">
           <div class="flex items-center gap-3">
             <div class="bg-green-100 p-2 rounded-lg">
-              <i class="pi pi-dollar text-green-600"></i>
+              <i class="pi pi-money-bill text-green-600"></i>
             </div>
             <div>
-              <div class="text-2xl font-bold text-green-600">${{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
+              <div class="text-2xl font-bold text-green-600">S/. {{calcularEstadisticas().valorTotalInventario | number:'1.2-2'}}</div>
               <div class="text-sm text-gray-600 font-medium">Valor Total</div>
             </div>
           </div>
@@ -129,16 +129,6 @@
         pTooltip="Análisis ABC de inventarios"
       />
       <p-button 
-        label="Movimientos" 
-        icon="pi pi-history" 
-        severity="secondary"
-        [outlined]="true"
-        size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="mostrarMovimientos()"
-        pTooltip="Historial de movimientos"
-      />
-      <p-button 
         label="Alertas" 
         icon="pi pi-bell" 
         severity="danger"
@@ -222,6 +212,7 @@
 
 <!-- Vista Dashboard (Principal) -->
 <div *ngIf="currentView === 'dashboard'" class="mb-6">
+
   <!-- Filtro por producto mejorado -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <div class="flex items-center gap-3 mb-4">
@@ -514,11 +505,11 @@
           <!-- Métricas adicionales -->
           <div class="grid grid-cols-2 gap-3 mb-4" *ngIf="inventario.valorUnitario">
             <div class="text-center bg-gray-50 rounded-lg p-2">
-              <div class="font-bold text-blue-600">${{inventario.valorUnitario | number:'1.0-0'}}</div>
+              <div class="font-bold text-blue-600">S/. {{inventario.valorUnitario | number:'1.0-0'}}</div>
               <div class="text-xs text-gray-600">Valor Unit.</div>
             </div>
             <div class="text-center bg-gray-50 rounded-lg p-2">
-              <div class="font-bold text-green-600">${{inventario.valorTotal | number:'1.0-0'}}</div>
+              <div class="font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
               <div class="text-xs text-gray-600">Valor Total</div>
             </div>
           </div>
@@ -822,7 +813,7 @@
           </th>
           <th style="min-width:10rem" class="text-center border-b-2 border-gray-200">
             <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
-              <i class="pi pi-dollar text-green-600"></i>
+              <i class="pi pi-gift text-green-600"></i>
               Valor
             </div>
           </th>
@@ -863,11 +854,11 @@
           </td>
           
           <!-- Color -->
-          <td>
+          <td class="text-center">
             <div class="flex items-center gap-2">
               <div 
                 class="w-6 h-6 rounded-full border-2 border-white shadow-sm" 
-                [style.background-color]="inventario.color?.codigoHex || '#ccc'"
+                [style.background-color]="inventario.color.codigoHex || '#ccc'"
                 [title]="inventario.color?.nombre"
               ></div>
               <span class="font-medium text-gray-800">{{inventario.color?.nombre}}</span>
@@ -938,8 +929,8 @@
           <!-- Valor -->
           <td class="text-center">
             <div *ngIf="inventario.valorUnitario; else sinValor">
-              <div class="font-bold text-green-600">${{inventario.valorTotal | number:'1.0-0'}}</div>
-              <div class="text-xs text-gray-500">${{inventario.valorUnitario | number:'1.0-0'}} c/u</div>
+              <div class="font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
+              <div class="text-xs text-gray-500">S/. {{inventario.valorUnitario | number:'1.0-0'}} c/u</div>
             </div>
             <ng-template #sinValor>
               <span class="text-gray-400 italic">Sin valor</span>
@@ -1103,11 +1094,11 @@
           </h4>
           <div class="grid grid-cols-2 gap-4">
             <div class="text-center">
-              <div class="text-3xl font-bold text-green-600 mb-2">${{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
+              <div class="text-3xl font-bold text-green-600 mb-2">S/. {{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
               <div class="text-sm text-gray-600">Valor Total</div>
             </div>
             <div class="text-center">
-              <div class="text-3xl font-bold text-blue-600 mb-2">${{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</div>
+              <div class="text-3xl font-bold text-blue-600 mb-2">S/. {{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</div>
               <div class="text-sm text-gray-600">Valor en Riesgo</div>
             </div>
           </div>
@@ -1274,7 +1265,7 @@
                 </div>
               </div>
               <div class="text-right">
-                <div class="font-bold text-green-600">${{inventario.valorTotal | number:'1.0-0'}}</div>
+                <div class="font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
                 <div class="text-xs text-gray-500">{{inventario.cantidad}} uds</div>
               </div>
             </div>
@@ -1399,7 +1390,7 @@
             label="Nuevo Movimiento" 
             icon="pi pi-plus" 
             severity="info"
-            (click)="mostrarMovimientos()"
+            (click)="abrirNuevoMovimiento()"
           />
           <p-button 
             label="Filtrar por Fechas" 
@@ -2429,8 +2420,8 @@
                     id="costo"
                     [(ngModel)]="inventario.costo"
                     mode="currency"
-                    currency="USD"
-                    locale="en-US"
+                    currency="PEN"
+                    locale="es-PE"
                     [min]="0"
                     [style]="{'width':'100%'}"
                     styleClass="h-10"
@@ -2442,8 +2433,8 @@
                     id="valorUnitario"
                     [(ngModel)]="inventario.valorUnitario"
                     mode="currency"
-                    currency="USD"
-                    locale="en-US"
+                    currency="PEN"
+                    locale="es-PE"
                     [min]="0"
                     [style]="{'width':'100%'}"
                     styleClass="h-10"
@@ -2634,6 +2625,269 @@
   </ng-template>
 </p-dialog>
 
+<!-- Modal de Crear/Editar Movimientos Inventario -->
+<p-dialog 
+  [(visible)]="newMovimientosDialog" 
+  [style]="{'width': '700px', 'height': 'auto'}" 
+  [header]="editMode ? 'Editar Movimiento' : 'Nuevo Movimiento'" 
+  [modal]="true" 
+  (onHide)="hideDialog()"
+  [contentStyle]="{'padding':'0'}"
+>
+  <ng-template pTemplate="content">
+    <div class="bg-white">
+      <!-- Header Section con icono -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center">
+          <div class="bg-blue-100 rounded-full p-2 mr-3">
+            <i class="pi pi-arrow-right-arrow-left text-blue-600 text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-1">
+              {{editMode ? 'Modificar Movimiento de Inventario' : 'Registrar Nuevo Movimiento'}}
+            </h3>
+            <p class="text-sm text-gray-600">Complete los campos para procesar el movimiento</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="px-6 py-6 space-y-6">
+        <!-- Tipo de Movimiento -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <label for="tipo" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+            <i class="pi pi-tag mr-2 text-blue-500"></i>
+            Tipo de Movimiento*
+          </label>
+          <p-selectButton 
+            [options]="tiposMovimiento" 
+            [(ngModel)]="movimiento.tipo" 
+            optionLabel="label"
+            optionValue="value"
+            [disabled]="editMode"
+            [ngClass]="{'ng-invalid border-red-300': submitted && !movimiento.tipo}"
+            class="w-full"
+          >
+            <ng-template let-item>
+              <div class="flex items-center px-3 py-2">
+                <i [class]="item.icon + ' mr-2'"></i>
+                <span class="font-medium">{{item.label}}</span>
+              </div>
+            </ng-template>
+          </p-selectButton>
+          <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && !movimiento.tipo">
+            <i class="pi pi-exclamation-triangle mr-1"></i>
+            El tipo de movimiento es obligatorio.
+          </small>
+        </div>
+        
+        <!-- Inventarios Section -->
+        <div class="grid grid-cols-1 gap-6" [ngClass]="{'lg:grid-cols-2': movimiento.tipo === 'TRASLADO'}">
+          <!-- Inventario Origen -->
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <label for="inventario" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+              <i class="pi pi-box mr-2 text-green-500"></i>
+              Inventario Origen*
+            </label>
+            <p-select 
+              id="inventario" 
+              [options]="inventarios" 
+              [(ngModel)]="movimiento.inventarioId"
+              optionLabel="serie"
+              placeholder="Selecciona el inventario de origen"
+              [filter]="true"
+              filterBy="serie"
+              [showClear]="true"
+              [disabled]="editMode"
+              [ngClass]="{'ng-invalid border-red-300': submitted && !inventarioSeleccionado}"
+              [style]="{'width':'100%'}"
+              panelStyleClass="shadow-lg"
+            >
+              <ng-template pTemplate="selectedItem">
+                <div *ngIf="inventarioSeleccionado" class="py-1">
+                  <div class="font-medium text-gray-800">{{inventarioSeleccionado.serie}} - {{inventarioSeleccionado.producto?.nombre}}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{inventarioSeleccionado.color?.nombre}} • Talla {{inventarioSeleccionado.talla?.numero}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="py-2 px-1">
+                  <div class="font-medium text-gray-800">{{item.serie}} - {{item.producto?.nombre}}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{item.color?.nombre}} • Talla {{item.talla?.numero}}</div>
+                  <div class="inline-flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs mt-2">
+                    <i class="pi pi-check-circle mr-1"></i>
+                    Stock: {{item.cantidad}}
+                  </div>
+                </div>
+              </ng-template>
+            </p-select>
+            <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && !inventarioSeleccionado">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El inventario de origen es obligatorio.
+            </small>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mt-3 rounded-r" *ngIf="inventarioSeleccionado">
+              <div class="flex items-center">
+                <i class="pi pi-info-circle text-blue-500 mr-2"></i>
+                <span class="text-sm text-blue-700">
+                  Stock disponible: <strong>{{inventarioSeleccionado.cantidad}}</strong> unidades
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Inventario Destino (solo para traslados) -->
+          <div class="bg-white border border-gray-200 rounded-lg p-4" *ngIf="movimiento.tipo === 'TRASLADO'">
+            <label for="inventarioDestino" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+              <i class="pi pi-arrow-right mr-2 text-purple-500"></i>
+              Inventario Destino*
+            </label>
+            <p-select 
+              id="inventarioDestino" 
+              [options]="inventarios" 
+              [(ngModel)]="inventarioDestinoSeleccionado"
+              optionLabel="serie"
+              placeholder="Selecciona el inventario de destino"
+              [filter]="true"
+              filterBy="serie"
+              [showClear]="true"
+              [ngClass]="{'ng-invalid border-red-300': submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado}"
+              [style]="{'width':'100%'}"
+              panelStyleClass="shadow-lg"
+            >
+              <ng-template pTemplate="selectedItem">
+                <div *ngIf="inventarioDestinoSeleccionado" class="py-1">
+                  <div class="font-medium text-gray-800">{{inventarioDestinoSeleccionado.serie}} - {{inventarioDestinoSeleccionado.producto?.nombre}}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{inventarioDestinoSeleccionado.color?.nombre}} • Talla {{inventarioDestinoSeleccionado.talla?.numero}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="py-2 px-1">
+                  <div class="font-medium text-gray-800">{{item.serie}} - {{item.producto?.nombre}}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{item.color?.nombre}} • Talla {{item.talla?.numero}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+            <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El inventario de destino es obligatorio para traslados.
+            </small>
+          </div>
+        </div>
+        
+        <!-- Cantidad y detalles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Campo de Cantidad -->
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <label for="cantidad" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+              <i class="pi pi-hashtag mr-2 text-orange-500"></i>
+              Cantidad*
+            </label>
+            <p-inputNumber 
+              id="cantidad" 
+              [(ngModel)]="movimiento.cantidad"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              [min]="1"
+              [max]="inventarioSeleccionado?.cantidad || 9999"
+              [step]="1"
+              decrementButtonClass="p-button-danger p-button-sm"
+              incrementButtonClass="p-button-success p-button-sm"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              [ngClass]="{'ng-invalid border-red-300': submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)}"
+              [style]="{'width':'100%'}"
+              inputStyleClass="text-center font-bold text-lg"
+            />
+            <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              La cantidad debe ser mayor a 0.
+            </small>
+            <div class="bg-orange-50 border-l-4 border-orange-400 p-3 mt-3 rounded-r" *ngIf="movimiento.tipo === 'SALIDA' && inventarioSeleccionado && movimiento.cantidad > inventarioSeleccionado.cantidad">
+              <div class="flex items-center">
+                <i class="pi pi-exclamation-triangle text-orange-500 mr-2"></i>
+                <span class="text-sm text-orange-700">
+                  La cantidad excede el stock disponible ({{inventarioSeleccionado.cantidad}})
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campo de Referencia -->
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <label for="referencia" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+              <i class="pi pi-bookmark mr-2 text-purple-500"></i>
+              Referencia*
+            </label>
+            <input 
+              type="text" 
+              pInputText 
+              id="referencia" 
+              [(ngModel)]="movimiento.referencia"
+              class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Número de documento, orden, etc..."
+              [ngClass]="{'ng-invalid border-red-300 focus:ring-red-500 focus:border-red-500': submitted && !movimiento.referencia.trim()}" 
+            />
+            <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && !movimiento.referencia.trim()">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              La referencia es obligatoria.
+            </small>
+          </div>
+        </div>
+        
+        <!-- Campo de Descripción -->
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+          <label for="descripcion" class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+            <i class="pi pi-file-edit mr-2 text-indigo-500"></i>
+            Descripción*
+          </label>
+          <textarea 
+            id="descripcion" 
+            pInputTextarea 
+            class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none" 
+            [(ngModel)]="movimiento.descripcion"
+            rows="4" 
+            placeholder="Describe detalladamente el motivo del movimiento..."
+            [ngClass]="{'ng-invalid border-red-300 focus:ring-red-500 focus:border-red-500': submitted && !movimiento.descripcion.trim()}"
+          ></textarea>
+          <small class="text-red-500 flex items-center mt-2" *ngIf="submitted && !movimiento.descripcion?.trim()">
+            <i class="pi pi-exclamation-triangle mr-1"></i>
+            La descripción es obligatoria.
+          </small>
+          <div class="text-xs text-gray-400 mt-2 flex items-center">
+            <i class="pi pi-info-circle mr-1"></i>
+            Proporciona información detallada para facilitar el seguimiento
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+      <div class="flex justify-end items-center gap-3">
+        <button 
+          pButton 
+          pRipple 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          class="p-button-text p-button-secondary"
+          (click)="hideDialog()"
+          [disabled]="loading">
+        </button>
+        <button 
+          pButton 
+          pRipple 
+          [label]="editMode ? 'Actualizar Movimiento' : 'Crear Movimiento'" 
+          icon="pi pi-check" 
+          class="p-button-success px-6"
+          (click)="guardarMovimiento()"
+          [loading]="loading">
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+
 <!-- Modal de Detalle de Inventario -->
 <p-dialog 
   [(visible)]="detalleInventarioDialog" 
@@ -2684,7 +2938,7 @@
             <div class="text-sm text-gray-600">Stock Actual</div>
           </div>
           <div class="bg-white rounded-xl p-4 shadow-sm" *ngIf="inventario.valorTotal">
-            <div class="text-3xl font-bold text-green-600">${{inventario.valorTotal | number:'1.0-0'}}</div>
+            <div class="text-3xl font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
             <div class="text-sm text-gray-600">Valor Total</div>
           </div>
         </div>
@@ -2788,15 +3042,15 @@
             <div class="space-y-3">
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Costo Unitario:</span>
-                <span class="font-bold text-red-600">${{inventario.costo | number:'1.2-2'}}</span>
+                <span class="font-bold text-red-600">S/. {{inventario.costo | number:'1.2-2'}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Valor Unitario:</span>
-                <span class="font-bold text-blue-600">${{inventario.valorUnitario | number:'1.2-2'}}</span>
+                <span class="font-bold text-blue-600">S/. {{inventario.valorUnitario | number:'1.2-2'}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Valor Total:</span>
-                <span class="font-bold text-green-600">${{inventario.valorTotal | number:'1.2-2'}}</span>
+                <span class="font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.2-2'}}</span>
               </div>
               <div class="flex justify-between items-center" *ngIf="inventario.margen">
                 <span class="text-gray-600">Margen:</span>
@@ -2893,7 +3147,7 @@
                       'bg-green-100': movimiento.tipo === 'ENTRADA',
                       'bg-red-100': movimiento.tipo === 'SALIDA',
                       'bg-orange-100': movimiento.tipo === 'AJUSTE',
-                      'bg-blue-100': movimiento.tipo === 'TRANSFERENCIA'
+                      'bg-blue-100': movimiento.tipo === 'TRASLADO'
                     }"
                   >
                     <i 
@@ -2901,12 +3155,17 @@
                         'pi pi-arrow-down text-green-600': movimiento.tipo === 'ENTRADA',
                         'pi pi-arrow-up text-red-600': movimiento.tipo === 'SALIDA',
                         'pi pi-wrench text-orange-600': movimiento.tipo === 'AJUSTE',
-                        'pi pi-arrows-h text-blue-600': movimiento.tipo === 'TRANSFERENCIA'
+                        'pi pi-arrows-h text-blue-600': movimiento.tipo === 'TRASLADO'
                       }"
                     ></i>
                   </div>
                   <div>
-                    <div class="font-medium text-gray-800">{{movimiento.tipo}} - {{movimiento.motivo}}</div>
+                    <div class="font-medium text-gray-800">
+                      {{movimiento.tipo}} 
+                      <span *ngIf="movimiento.almacenDestinoNombre" class="text-sm text-gray-600">
+                        → {{movimiento.almacenDestinoNombre}}
+                      </span>
+                    </div>
                     <div class="text-sm text-gray-600">{{movimiento.referencia}}</div>
                   </div>
                 </div>
@@ -2916,38 +3175,39 @@
                          'text-green-600': movimiento.tipo === 'ENTRADA',
                          'text-red-600': movimiento.tipo === 'SALIDA',
                          'text-orange-600': movimiento.tipo === 'AJUSTE',
-                         'text-blue-600': movimiento.tipo === 'TRANSFERENCIA'
+                         'text-blue-600': movimiento.tipo === 'TRASLADO'
                        }">
                     {{movimiento.tipo === 'ENTRADA' ? '+' : movimiento.tipo === 'SALIDA' ? '-' : '±'}}{{movimiento.cantidad}}
                   </div>
                   <div class="text-sm text-gray-500">
-                    {{movimiento.fecha | date:'dd/MM/yyyy HH:mm'}}
+                    {{movimiento.fechaMovimiento | date:'dd/MM/yyyy HH:mm'}}
                   </div>
                 </div>
               </div>
               
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span class="text-gray-600">Stock anterior:</span>
-                  <span class="font-medium ml-2">{{movimiento.cantidadAnterior}}</span>
-                </div>
-                <div>
-                  <span class="text-gray-600">Stock nuevo:</span>
-                  <span class="font-medium ml-2">{{movimiento.cantidadNueva}}</span>
-                </div>
-                <div>
                   <span class="text-gray-600">Usuario:</span>
                   <span class="font-medium ml-2">{{movimiento.usuario}}</span>
                 </div>
-                <div *ngIf="movimiento.costo">
-                  <span class="text-gray-600">Costo:</span>
-                  <span class="font-medium ml-2">${{movimiento.costo | number:'1.2-2'}}</span>
+                <div *ngIf="movimiento.inventarioDestinoId">
+                  <span class="text-gray-600">Inventario Destino:</span>
+                  <span class="font-medium ml-2">#{{movimiento.inventarioDestinoId}}</span>
                 </div>
-              </div>
+                <div *ngIf="movimiento.estadoResultante">
+                  <span class="text-gray-600">Estado:</span>
+                  <p-tag 
+                    [value]="movimiento.estadoResultante"
+                    [severity]="getEstadoSeverity(movimiento.estadoResultante)"
+                    size="small"
+                    class="ml-2"
+                  />
+                </div>
+            </div>
               
-              <div *ngIf="movimiento.observaciones" class="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-600">
+              <div *ngIf="movimiento.descripcion" class="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-600">
                 <i class="pi pi-info-circle mr-1"></i>
-                {{movimiento.observaciones}}
+                {{movimiento.descripcion}}
               </div>
             </div>
           </div>
@@ -3051,411 +3311,6 @@
   </ng-template>
 </p-dialog>
 
-<!-- Modal de Movimientos de Inventario -->
-<p-dialog 
-  [(visible)]="movimientosDialog" 
-  [style]="{width: '1200px'}" 
-  [header]="'Movimientos de Inventario' + (inventario.producto?.nombre ? ' - ' + inventario.producto?.nombre : '')" 
-  [modal]="true" 
-  (onHide)="hideMovimientosDialog()"
-  [maximizable]="true"
->
-  <div>
-    <!-- Header con estadísticas de movimientos -->
-    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-6">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="bg-indigo-600 p-3 rounded-lg shadow-lg">
-            <i class="pi pi-history text-white text-xl"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-gray-800 m-0">Historial de Movimientos</h3>
-            <p class="text-gray-600 mt-1">Trazabilidad completa de entradas, salidas y ajustes</p>
-          </div>
-        </div>
-        <div class="flex gap-2">
-          <p-button 
-            label="Nuevo Movimiento" 
-            icon="pi pi-plus" 
-            severity="info"
-            (click)="abrirNuevoMovimiento()"
-          />
-          <p-button 
-            label="Exportar Movimientos" 
-            icon="pi pi-download" 
-            severity="secondary"
-            [outlined]="true"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Estadísticas de movimientos -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-green-50 rounded-xl p-4 border border-green-200">
-        <div class="flex items-center gap-3">
-          <div class="bg-green-600 p-2 rounded-lg">
-            <i class="pi pi-arrow-down text-white"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-green-600">1,240</div>
-            <div class="text-sm text-gray-600">Entradas Total</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-red-50 rounded-xl p-4 border border-red-200">
-        <div class="flex items-center gap-3">
-          <div class="bg-red-600 p-2 rounded-lg">
-            <i class="pi pi-arrow-up text-white"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-red-600">890</div>
-            <div class="text-sm text-gray-600">Salidas Total</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-orange-50 rounded-xl p-4 border border-orange-200">
-        <div class="flex items-center gap-3">
-          <div class="bg-orange-600 p-2 rounded-lg">
-            <i class="pi pi-wrench text-white"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-orange-600">45</div>
-            <div class="text-sm text-gray-600">Ajustes Total</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
-        <div class="flex items-center gap-3">
-          <div class="bg-blue-600 p-2 rounded-lg">
-            <i class="pi pi-arrows-h text-white"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-blue-600">120</div>
-            <div class="text-sm text-gray-600">Transferencias</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Splitter para vista dividida -->
-    <p-splitter [style]="{'height': '600px'}" [panelSizes]="[70, 30]">
-      <!-- Panel izquierdo: Timeline de movimientos -->
-      <ng-template pTemplate="panel">
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-4">
-            <h4 class="font-bold text-gray-800 flex items-center gap-2">
-              <i class="pi pi-clock text-indigo-600"></i>
-              Timeline de Movimientos
-            </h4>
-            <div class="flex gap-2">
-              <p-button 
-                icon="pi pi-filter" 
-                severity="secondary" 
-                [outlined]="true"
-                size="small"
-                pTooltip="Filtrar movimientos"
-              />
-              <p-button 
-                icon="pi pi-refresh" 
-                severity="secondary" 
-                [outlined]="true"
-                size="small"
-                pTooltip="Actualizar"
-              />
-            </div>
-          </div>
-          
-          <div class="movement-timeline max-h-96 overflow-y-auto">
-            <div 
-              *ngFor="let movimiento of (inventario.movimientos || []); trackBy: trackByMovimiento; let i = index" 
-              class="movement-item bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all duration-300 mb-4"
-            >
-              <!-- Header del movimiento -->
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <div 
-                    class="p-3 rounded-lg shadow-sm"
-                    [ngClass]="{
-                      'bg-green-100': movimiento.tipo === 'ENTRADA',
-                      'bg-red-100': movimiento.tipo === 'SALIDA',
-                      'bg-orange-100': movimiento.tipo === 'AJUSTE',
-                      'bg-blue-100': movimiento.tipo === 'TRANSFERENCIA'
-                    }"
-                  >
-                    <i 
-                      [ngClass]="{
-                        'pi pi-arrow-down text-green-600': movimiento.tipo === 'ENTRADA',
-                        'pi pi-arrow-up text-red-600': movimiento.tipo === 'SALIDA',
-                        'pi pi-wrench text-orange-600': movimiento.tipo === 'AJUSTE',
-                        'pi pi-arrows-h text-blue-600': movimiento.tipo === 'TRANSFERENCIA'
-                      }"
-                      class="text-xl"
-                    ></i>
-                  </div>
-                  <div>
-                    <div class="font-bold text-gray-800 text-lg">{{movimiento.tipo}}</div>
-                    <div class="text-sm text-gray-600">{{movimiento.motivo}}</div>
-                    <div class="text-xs text-gray-500" *ngIf="movimiento.referencia">
-                      Ref: {{movimiento.referencia}}
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="text-right">
-                  <div class="font-bold text-2xl" 
-                       [ngClass]="{
-                         'text-green-600': movimiento.tipo === 'ENTRADA',
-                         'text-red-600': movimiento.tipo === 'SALIDA',
-                         'text-orange-600': movimiento.tipo === 'AJUSTE',
-                         'text-blue-600': movimiento.tipo === 'TRANSFERENCIA'
-                       }">
-                    {{movimiento.tipo === 'ENTRADA' ? '+' : movimiento.tipo === 'SALIDA' ? '-' : '±'}}{{movimiento.cantidad}}
-                  </div>
-                  <div class="text-sm text-gray-500">
-                    {{movimiento.fecha | date:'dd/MM/yyyy'}}
-                  </div>
-                  <div class="text-xs text-gray-400">
-                    {{movimiento.fecha | date:'HH:mm'}}
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Detalles del movimiento -->
-              <div class="bg-gray-50 rounded-lg p-3">
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                  <div>
-                    <span class="text-gray-600 font-medium">Stock Anterior:</span>
-                    <div class="font-bold text-gray-800">{{movimiento.cantidadAnterior}} uds</div>
-                  </div>
-                  <div>
-                    <span class="text-gray-600 font-medium">Stock Nuevo:</span>
-                    <div class="font-bold text-gray-800">{{movimiento.cantidadNueva}} uds</div>
-                  </div>
-                  <div>
-                    <span class="text-gray-600 font-medium">Usuario:</span>
-                    <div class="font-bold text-gray-800">{{movimiento.usuario}}</div>
-                  </div>
-                  <div *ngIf="movimiento.costo">
-                    <span class="text-gray-600 font-medium">Costo Total:</span>
-                    <div class="font-bold text-green-600">${{movimiento.costo | number:'1.2-2'}}</div>
-                  </div>
-                  <div *ngIf="movimiento.almacenOrigen">
-                    <span class="text-gray-600 font-medium">Origen:</span>
-                    <div class="font-bold text-gray-800">{{movimiento.almacenOrigen.nombre}}</div>
-                  </div>
-                  <div *ngIf="movimiento.almacenDestino">
-                    <span class="text-gray-600 font-medium">Destino:</span>
-                    <div class="font-bold text-gray-800">{{movimiento.almacenDestino.nombre}}</div>
-                  </div>
-                </div>
-                
-                <div *ngIf="movimiento.observaciones" class="mt-3 pt-3 border-t border-gray-200">
-                  <div class="text-gray-600 font-medium text-sm mb-1">Observaciones:</div>
-                  <div class="text-gray-700 text-sm italic">{{movimiento.observaciones}}</div>
-                </div>
-              </div>
-              
-              <!-- Acciones del movimiento -->
-              <div class="flex justify-end gap-2 mt-3">
-                <p-button 
-                  icon="pi pi-eye" 
-                  size="small"
-                  [outlined]="true"
-                  pTooltip="Ver detalle completo"
-                />
-                <p-button 
-                  icon="pi pi-print" 
-                  size="small"
-                  severity="secondary"
-                  [outlined]="true"
-                  pTooltip="Imprimir comprobante"
-                />
-                <p-button 
-                  icon="pi pi-copy" 
-                  size="small"
-                  severity="info"
-                  [outlined]="true"
-                  pTooltip="Duplicar movimiento"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-      
-      <!-- Panel derecho: Resumen y filtros -->
-      <ng-template pTemplate="panel">
-        <div class="p-4">
-          <!-- Resumen de movimientos -->
-          <div class="mb-6">
-            <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <i class="pi pi-chart-bar text-purple-600"></i>
-              Resumen por Tipo
-            </h5>
-            <div class="space-y-3">
-              <div 
-                *ngFor="let tipo of tiposMovimiento" 
-                class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50"
-              >
-                <div class="flex items-center gap-2">
-                  <i [class]="tipo.icon" [style.color]="tipo.color"></i>
-                  <span class="text-sm font-medium">{{tipo.label}}</span>
-                </div>
-                <div class="text-right">
-                  <div class="font-bold" [style.color]="tipo.color">{{getRandomInt(10, 110)}}</div>
-                  <div class="text-xs text-gray-500">movimientos</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Filtros de movimientos -->
-          <div class="mb-6">
-            <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <i class="pi pi-filter text-blue-600"></i>
-              Filtros
-            </h5>
-            <div class="space-y-3">
-              <div>
-                <label for="tipoMovimiento" class="text-sm font-medium text-gray-700 mb-1 block">Tipo de Movimiento</label>
-                <p-select 
-                  id="tipoMovimiento"
-                  [options]="tiposMovimiento" 
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Todos los tipos"
-                  [showClear]="true"
-                  class="w-full"
-                  styleClass="h-10"
-                />
-              </div>
-              
-              <div>
-                <label for="fechaMovimiento" class="text-sm font-medium text-gray-700 mb-1 block">Rango de Fechas</label>
-                <p-calendar 
-                  id="fechaMovimiento"
-                  selectionMode="range" 
-                  [readonlyInput]="true"
-                  placeholder="Seleccionar fechas"
-                  [showIcon]="true"
-                  class="w-full"
-                  styleClass="h-10"
-                />
-              </div>
-              
-              <div>
-                <label for="usuario" class="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
-                <input 
-                  type="text" 
-                  pInputText 
-                  id="usuario"
-                  placeholder="Filtrar por usuario"
-                  class="w-full h-10"
-                />
-              </div>
-              
-              <div>
-                <label for="rangoCantidad" class="text-sm font-medium text-gray-700 mb-1 block">Rango de Cantidad</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <p-inputNumber
-                    id="rangoCantidad"
-                    placeholder="Min"
-                    [showButtons]="false"
-                    class="w-full"
-                    styleClass="h-10"
-                  />
-                  <p-inputNumber
-                    placeholder="Max"
-                    [showButtons]="false"
-                    class="w-full"
-                    styleClass="h-10"
-                  />
-                </div>
-              </div>
-              
-              <p-button 
-                label="Aplicar Filtros" 
-                icon="pi pi-check" 
-                class="w-full"
-                size="small"
-              />
-              
-              <p-button 
-                label="Limpiar Filtros" 
-                icon="pi pi-times" 
-                severity="secondary"
-                [outlined]="true"
-                class="w-full"
-                size="small"
-              />
-            </div>
-          </div>
-
-          <!-- Análisis de tendencias -->
-          <div>
-            <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <i class="pi pi-chart-line text-green-600"></i>
-              Análisis de Tendencias
-            </h5>
-            <div class="bg-green-50 rounded-lg p-4">
-              <div class="text-center mb-3">
-                <div class="text-2xl font-bold text-green-600">+15%</div>
-                <div class="text-sm text-gray-600">Crecimiento mensual</div>
-              </div>
-              <div class="space-y-2">
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Promedio diario:</span>
-                  <span class="font-medium">42 movimientos</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Pico más alto:</span>
-                  <span class="font-medium">158 movimientos</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Última actividad:</span>
-                  <span class="font-medium">Hace 2 horas</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </p-splitter>
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center">
-      <div class="text-sm text-gray-600">
-        <i class="pi pi-info-circle mr-1"></i>
-        Total de movimientos: {{inventario.movimientos?.length || 0}}
-      </div>
-      <div class="flex gap-3">
-        <p-button 
-          label="Cerrar" 
-          icon="pi pi-times" 
-          class="p-button-text" 
-          (click)="hideMovimientosDialog()" 
-        />
-        <p-button 
-          label="Nuevo Movimiento" 
-          icon="pi pi-plus" 
-          severity="info"
-          (click)="abrirNuevoMovimiento()" 
-        />
-        <p-button 
-          label="Exportar Historial" 
-          icon="pi pi-download" 
-          severity="secondary"
-          (click)="exportarMovimientos()" 
-        />
-      </div>
-    </div>
-  </ng-template>
-</p-dialog>
 
 <!-- Modal de Estadísticas Avanzadas -->
 <p-dialog 
@@ -3471,7 +3326,7 @@
     <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="text-center">
-          <div class="text-3xl font-bold text-green-600 mb-2">${{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
+          <div class="text-3xl font-bold text-green-600 mb-2">S/. {{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
           <div class="text-sm text-gray-600 font-medium">Valor Total Inventario</div>
           <div class="text-xs text-green-600 mt-1">↗ +12% vs mes anterior</div>
         </div>
@@ -3566,7 +3421,7 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="font-bold text-green-600">${{inventario.valorTotal | number:'1.0-0'}}</div>
+                  <div class="font-bold text-green-600">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
                   <div class="text-xs text-gray-500">{{inventario.cantidad}} uds</div>
                 </div>
               </div>
@@ -3603,7 +3458,7 @@
                   <i class="pi pi-info-circle text-blue-600"></i>
                   <span class="font-bold text-blue-800">Valor en Riesgo</span>
                 </div>
-                <div class="text-2xl font-bold text-blue-600">${{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</div>
+                <div class="text-2xl font-bold text-blue-600">S/. {{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</div>
                 <div class="text-sm text-blue-700">Productos sin movimiento</div>
               </div>
             </div>
@@ -3666,7 +3521,7 @@
                   </div>
                   <div>
                     <span class="text-gray-600">Valor Total:</span>
-                    <div class="font-bold text-green-600">${{analisis.valor | number:'1.0-0'}}</div>
+                    <div class="font-bold text-green-600">S/. {{analisis.valor | number:'1.0-0'}}</div>
                   </div>
                 </div>
                 
@@ -3745,16 +3600,16 @@
             <div class="space-y-4">
               <div class="bg-green-50 rounded-lg p-4">
                 <div class="text-center">
-                  <div class="text-3xl font-bold text-green-600 mb-2">${{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
+                  <div class="text-3xl font-bold text-green-600 mb-2">S/. {{calcularEstadisticas().valorTotalInventario | number:'1.0-0'}}</div>
                   <div class="text-sm text-gray-600">Valor Total del Inventario</div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
                   <div class="text-center">
-                    <div class="font-bold text-blue-600">${{(calcularEstadisticas().valorTotalInventario * 0.7) | number:'1.0-0'}}</div>
+                    <div class="font-bold text-blue-600">S/. {{(calcularEstadisticas().valorTotalInventario * 0.7) | number:'1.0-0'}}</div>
                     <div class="text-gray-600">Costo Total</div>
                   </div>
                   <div class="text-center">
-                    <div class="font-bold text-purple-600">${{(calcularEstadisticas().valorTotalInventario * 0.3) | number:'1.0-0'}}</div>
+                    <div class="font-bold text-purple-600">S/. {{(calcularEstadisticas().valorTotalInventario * 0.3) | number:'1.0-0'}}</div>
                     <div class="text-gray-600">Margen Total</div>
                   </div>
                 </div>
@@ -3776,7 +3631,7 @@
                 </div>
                 <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <span class="font-medium text-gray-700">Valor en Riesgo:</span>
-                  <span class="font-bold text-red-600">${{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</span>
+                  <span class="font-bold text-red-600">S/. {{calcularEstadisticas().valorEnRiesgo | number:'1.0-0'}}</span>
                 </div>
               </div>
             </div>
@@ -3801,7 +3656,7 @@
                     ></div>
                     <span class="font-medium text-sm">{{inventario.producto?.nombre}}</span>
                   </div>
-                  <span class="font-bold text-green-600 text-sm">${{inventario.valorTotal | number:'1.0-0'}}</span>
+                  <span class="font-bold text-green-600 text-sm">S/. {{inventario.valorTotal | number:'1.0-0'}}</span>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2 text-xs">
@@ -3810,7 +3665,7 @@
                     <div class="text-gray-600">Stock</div>
                   </div>
                   <div class="text-center">
-                    <div class="font-bold text-purple-600">${{inventario.valorUnitario | number:'1.0-0'}}</div>
+                    <div class="font-bold text-purple-600">S/. {{inventario.valorUnitario | number:'1.0-0'}}</div>
                     <div class="text-gray-600">Valor Unit.</div>
                   </div>
                   <div class="text-center">
@@ -3842,7 +3697,7 @@
               <div class="space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-600">Costo de Almacenamiento:</span>
-                  <span class="font-bold text-orange-600">$15,240</span>
+                  <span class="font-bold text-orange-600">S/. 15,240</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div class="bg-orange-500 h-2 rounded-full" style="width: 35%"></div>
@@ -3852,7 +3707,7 @@
               <div class="space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-600">Costo de Manejo:</span>
-                  <span class="font-bold text-blue-600">$8,950</span>
+                  <span class="font-bold text-blue-600">S/. 8,950</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div class="bg-blue-500 h-2 rounded-full" style="width: 20%"></div>
@@ -3862,7 +3717,7 @@
               <div class="space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-600">Obsolescencia:</span>
-                  <span class="font-bold text-red-600">$3,200</span>
+                  <span class="font-bold text-red-600">S/. 3,200</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div class="bg-red-500 h-2 rounded-full" style="width: 8%"></div>
@@ -3872,7 +3727,7 @@
               <div class="pt-3 border-t border-gray-200">
                 <div class="flex justify-between items-center font-bold">
                   <span class="text-gray-800">Total Costos:</span>
-                  <span class="text-purple-600">$27,390</span>
+                  <span class="text-purple-600">S/. 27,390</span>
                 </div>
               </div>
             </div>
@@ -5139,7 +4994,7 @@
           <div class="space-y-3">
             <div class="flex justify-between">
               <span class="opacity-90">Valor Total:</span>
-              <span class="font-bold">${{getValorPorCategoria(categoria) | number:'1.0-0'}}</span>
+              <span class="font-bold">S/.{{getValorPorCategoria(categoria) | number:'1.0-0'}}</span>
             </div>
             <div class="flex justify-between">
               <span class="opacity-90">% del Total:</span>
@@ -5206,7 +5061,7 @@
             
             <div class="bg-gray-50 rounded-lg p-4 text-center">
               <div class="text-2xl font-bold text-green-600">
-                ${{getValorPorCategoria(categoria) | number:'1.0-0'}}
+                S/. {{getValorPorCategoria(categoria) | number:'1.0-0'}}
               </div>
               <div class="text-sm text-gray-600">Valor Total</div>
             </div>
@@ -5267,11 +5122,11 @@
                     <div class="text-xs text-gray-500">Stock</div>
                   </div>
                   <div>
-                    <div class="font-bold text-green-600">${{inventario.valorUnitario | number:'1.0-0'}}</div>
+                    <div class="font-bold text-green-600">S/. {{inventario.valorUnitario | number:'1.0-0'}}</div>
                     <div class="text-xs text-gray-500">Valor Unit.</div>
                   </div>
                   <div>
-                    <div class="font-bold" [style.color]="categoria.color">${{inventario.valorTotal | number:'1.0-0'}}</div>
+                    <div class="font-bold" [style.color]="categoria.color">S/. {{inventario.valorTotal | number:'1.0-0'}}</div>
                     <div class="text-xs text-gray-500">Valor Total</div>
                   </div>
                   <div>

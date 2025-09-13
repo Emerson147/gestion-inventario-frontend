@@ -69,10 +69,6 @@ export class ColorService {
    * Elimina un color por su ID
    * @param id ID del color a eliminar
    */
-  /**
-   * Elimina un color por su ID
-   * @param id ID del color a eliminar
-   */
   eliminarColor(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
@@ -84,5 +80,12 @@ export class ColorService {
    */
   eliminarTalla(colorId: number, tallaId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${colorId}/tallas/${tallaId}`);
+  }
+
+  /**
+   * Obtiene todas las tallas disponibles
+   */
+  getTallas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/tallas`);
   }
 }

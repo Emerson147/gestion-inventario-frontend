@@ -1,186 +1,186 @@
-<!-- Toast y confirmaciones -->
-<p-toast position="top-right" [life]="4000" />
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<!-- Toast y confirmaciones optimizadas -->
+<p-toast position="top-right" [life]="4000" styleClass="custom-toast" />
+<p-confirmDialog [style]="{width: '450px'}" styleClass="custom-confirm-dialog"></p-confirmDialog>
 
-<!-- Indicador de auto-refresh -->
-<div class="auto-refresh-indicator" [class.show]="uiState.isTableLoading">
-  <i class="pi pi-sync mr-2"></i>
-  Actualizando datos...
+<!-- Indicadores de estado flotantes -->
+<div class="fixed top-4 right-4 z-50 space-y-2">
+  <!-- Auto-refresh -->
+  <div class="auto-refresh-indicator bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300" 
+       [class.translate-x-0]="uiState.isTableLoading" 
+       [class.translate-x-full]="!uiState.isTableLoading">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-sync animate-spin"></i>
+      <span class="text-sm font-medium">Actualizando datos...</span>
+    </div>
+  </div>
+  
+  <!-- Atajos de teclado -->
+  <div class="keyboard-shortcuts-hint bg-slate-800 text-white p-4 rounded-lg shadow-xl transform transition-all duration-300" 
+       [class.translate-x-0]="uiState.showKeyboardHints" 
+       [class.translate-x-full]="!uiState.showKeyboardHints">
+    <div class="flex items-center justify-between mb-3">
+      <h4 class="text-sm font-semibold">Atajos de Teclado</h4>
+      <button class="text-gray-400 hover:text-white" (click)="uiState.showKeyboardHints = false">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+    <div class="space-y-2 text-sm">
+      <div class="flex justify-between items-center">
+        <span>Nuevo cliente</span>
+        <kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+N</kbd>
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Buscar</span>
+        <kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+F</kbd>
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Actualizar</span>
+        <kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F5</kbd>
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Cerrar</span>
+        <kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Esc</kbd>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Indicador de atajos de teclado -->
-<div class="keyboard-shortcuts-hint" [class.show]="uiState.showKeyboardHints">
-  <div class="shortcut-item">
-    <span class="key">Ctrl+N</span>
-    <span>Nuevo cliente</span>
-  </div>
-  <div class="shortcut-item">
-    <span class="key">Ctrl+F</span>
-    <span>Buscar</span>
-  </div>
-  <div class="shortcut-item">
-    <span class="key">Esc</span>
-    <span>Cerrar</span>
-  </div>
-  <div class="shortcut-item">
-    <span class="key">F5</span>
-    <span>Actualizar</span>
-  </div>
-</div>
-
-<!-- Header premium con métricas modernizadas -->
-<div class="mb-4 lg:mb-6">
-  <div class="clientes-header-premium">
-    <div class="header-background"></div>
-    <div class="header-content">
+<!-- Header Premium Optimizado -->
+<div class="mb-6">
+  <div class="bg-slate-800 rounded-2xl shadow-xl border border-slate-700 overflow-hidden">
+    <!-- Contenido principal del header -->
+    <div class="p-8 relative">
+      <!-- Elementos decorativos optimizados -->
+      <div class="absolute top-8 left-16 w-32 h-32 bg-blue-600 opacity-10 rounded-full blur-2xl"></div>
+      <div class="absolute bottom-8 right-16 w-24 h-24 bg-purple-600 opacity-8 rounded-full blur-xl"></div>
       
-      <!-- Título principal adaptativo -->
-      <div class="title-section">
-        <div class="title-container">
-          <div class="title-icon">
-            <i class="pi pi-users text-white text-xl lg:text-2xl"></i>
-          </div>
-          <div class="title-content">
-            <h1 class="title-text text-xl lg:text-3xl">Gestión de Clientes</h1>
-            <p class="title-subtitle text-sm lg:text-base">
-              {{getSaludoPersonalizado()}} - Sistema de zapatería
-            </p>
-            <div class="title-meta hidden lg:flex">
-              <span class="meta-badge">
-                <i class="pi pi-calendar"></i>
-                {{getCurrentDate() | date:'dd/MM/yyyy'}}
-              </span>
-              <span class="meta-badge">
-                <i class="pi pi-clock"></i>
-                {{getCurrentTime()}} UTC
-              </span>
-              <span class="meta-badge">
-                <i class="pi pi-user"></i>
-                {{getCurrentUser()}}
-              </span>
-              <span class="meta-badge" *ngIf="uiState.lastUpdate">
-                <i class="pi pi-refresh"></i>
-                Actualizado: {{uiState.lastUpdate | date:'HH:mm:ss'}}
-              </span>
+      <div class="relative z-10">
+        <!-- Título principal -->
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-8">
+          <div class="flex-1">
+            <div class="flex items-center gap-6 mb-6">
+              <!-- Ícono principal -->
+              <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                <i class="pi pi-users text-white text-3xl"></i>
+              </div>
+              
+              <!-- Títulos -->
+              <div>
+                <h1 class="text-4xl lg:text-5xl font-black text-white mb-2">
+                  Gestión de Clientes
+                </h1>
+                <p class="text-xl text-slate-300 mb-4">
+                  {{getSaludoPersonalizado()}} - Sistema de zapatería
+                </p>
+                
+                <!-- Meta información -->
+                <div class="flex flex-wrap gap-4 text-sm text-slate-400">
+                  <div class="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded-full">
+                    <i class="pi pi-calendar text-blue-400"></i>
+                    <span>2025-07-13</span>
+                  </div>
+                  <div class="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded-full">
+                    <i class="pi pi-clock text-green-400"></i>
+                    <span>06:34:44 UTC</span>
+                  </div>
+                  <div class="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded-full">
+                    <i class="pi pi-user text-purple-400"></i>
+                    <span>Emerson147</span>
+                  </div>
+                  <div class="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded-full" *ngIf="uiState.lastUpdate">
+                    <i class="pi pi-refresh text-yellow-400"></i>
+                    <span>Actualizado: {{uiState.lastUpdate | date:'HH:mm:ss'}}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Métricas principales para desktop -->
-      <div class="metrics-section hidden lg:block">
-        <div class="metrics-grid">
-          
+        
+        <!-- Métricas principales optimizadas -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-8">
           <!-- Total clientes -->
-          <div class="metric-card total-clients">
-            <div class="metric-icon">
-              <i class="pi pi-users"></i>
-              <div class="metric-pulse"></div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ getMetricasZapateria().total }}</div>
-              <div class="metric-label">Total Clientes</div>
-              <div class="metric-info">
-                Base completa registrada
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                <i class="pi pi-users text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white">{{ getMetricasZapateria().total }}</div>
+                <div class="text-sm text-slate-300">Total Clientes</div>
               </div>
             </div>
           </div>
           
           <!-- Clientes activos -->
-          <div class="metric-card active-clients">
-            <div class="metric-icon">
-              <i class="pi pi-check-circle"></i>
-              <div class="metric-pulse"></div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ getMetricasZapateria().activos }}</div>
-              <div class="metric-label">Clientes Activos</div>
-              <div class="metric-percentage">
-                {{ getMetricasZapateria().porcentajeActivos }}% del total
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                <i class="pi pi-check-circle text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white">{{ getMetricasZapateria().activos }}</div>
+                <div class="text-sm text-slate-300">Activos</div>
+                <div class="text-xs text-green-400">{{ getMetricasZapateria().porcentajeActivos }}%</div>
               </div>
             </div>
           </div>
           
           <!-- Clientes VIP -->
-          <div class="metric-card vip-clients">
-            <div class="metric-icon">
-              <i class="pi pi-crown"></i>
-              <div class="metric-pulse"></div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ getMetricasZapateria().clientesVIP }}</div>
-              <div class="metric-label">Clientes VIP</div>
-              <div class="metric-info">
-                +10 pares comprados
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-yellow-600 rounded-lg flex items-center justify-center">
+                <i class="pi pi-crown text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white">{{ getMetricasZapateria().clientesVIP }}</div>
+                <div class="text-sm text-slate-300">VIP</div>
+                <div class="text-xs text-yellow-400">+10 pares</div>
               </div>
             </div>
           </div>
           
           <!-- Total ventas -->
-          <div class="metric-card total-sales">
-            <div class="metric-icon">
-              <i class="pi pi-money-bill"></i>
-              <div class="metric-pulse"></div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ getAnalisisValorCliente().totalVentas | currency:'S/. ':'symbol':'1.0-0' }}</div>
-              <div class="metric-label">Total Ventas</div>
-              <div class="metric-info">
-                Ingresos por clientes
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                <i class="pi pi-money-bill text-white"></i>
+              </div>
+              <div>
+                <div class="text-xl font-bold text-white">{{ getAnalisisValorCliente().totalVentas | currency:'S/. ':'symbol':'1.0-0' }}</div>
+                <div class="text-sm text-slate-300">Total Ventas</div>
               </div>
             </div>
           </div>
           
-          <!-- Promedio de compras -->
-          <div class="metric-card average-purchases">
-            <div class="metric-icon">
-              <i class="pi pi-chart-line"></i>
-              <div class="metric-pulse"></div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ getMetricasZapateria().promedioCompras | number:'1.1-1' }}</div>
-              <div class="metric-label">Promedio Compras</div>
-              <div class="metric-info">
-                Pares por cliente
+          <!-- Promedio compras -->
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
+                <i class="pi pi-chart-line text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white">{{ getMetricasZapateria().promedioCompras | number:'1.1-1' }}</div>
+                <div class="text-sm text-slate-300">Promedio</div>
+                <div class="text-xs text-orange-400">pares/cliente</div>
               </div>
             </div>
           </div>
           
           <!-- Seleccionados -->
-          <div class="metric-card selected-clients" *ngIf="selectedClientes.length">
-            <div class="metric-icon">
-              <i class="pi pi-check-square"></i>
-              <div class="selection-badge">{{ selectedClientes.length }}</div>
-            </div>
-            <div class="metric-content">
-              <div class="metric-value">{{ selectedClientes.length }}</div>
-              <div class="metric-label">Seleccionados</div>
-              <div class="metric-actions">
-                <button class="action-btn" (click)="exportarExcel()">
-                  <i class="pi pi-download"></i>
-                  Exportar
-                </button>
+          <div class="bg-slate-700 rounded-xl p-4 border border-slate-600 hover:bg-slate-600 transition-colors" *ngIf="selectedClientes.length">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center relative">
+                <i class="pi pi-check-square text-white"></i>
+                <div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {{ selectedClientes.length }}
+                </div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white">{{ selectedClientes.length }}</div>
+                <div class="text-sm text-slate-300">Seleccionados</div>
               </div>
             </div>
-          </div>
-          
-        </div>
-      </div>
-      
-      <!-- Métricas compactas para móvil -->
-      <div class="block lg:hidden">
-        <div class="metrics-mobile-grid">
-          <div class="metric-mobile">
-            <span class="metric-value">{{ getMetricasZapateria().total }}</span>
-            <span class="metric-label">Clientes</span>
-          </div>
-          <div class="metric-mobile">
-            <span class="metric-value">{{ getMetricasZapateria().activos }}</span>
-            <span class="metric-label">Activos</span>
-          </div>
-          <div class="metric-mobile">
-            <span class="metric-value">{{ getMetricasZapateria().clientesVIP }}</span>
-            <span class="metric-label">VIP</span>
           </div>
         </div>
       </div>
@@ -188,8 +188,8 @@
   </div>
 </div>
 
-<!-- Toolbar corporativo mejorado -->
-<div class="bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6">
+<!-- Toolbar Optimizado -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
   <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
     <!-- Acciones principales -->
     <div class="flex flex-wrap gap-3">
@@ -197,39 +197,39 @@
         *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}" 
         label="Nuevo Cliente" 
         icon="pi pi-plus" 
-        styleClass="shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700" 
+        styleClass="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" 
         (click)="openNew()"
         pTooltip="Crear un nuevo cliente (Ctrl+N)"
       />
+      
       <p-button 
         *appHasPermission="{module: 'clientes', permission: permissionTypes.DELETE}"
         [label]="'Eliminar (' + (selectedClientes.length || 0) + ')'" 
         icon="pi pi-trash" 
         severity="danger"
         [outlined]="true"
-        styleClass="shadow-sm hover:shadow-md transition-all duration-300" 
+        styleClass="shadow-lg hover:shadow-xl transition-all duration-300" 
         (click)="eliminarSeleccionados()" 
         [disabled]="!selectedClientes.length"
         pTooltip="Eliminar clientes seleccionados"
       />
     </div>
 
-    <!-- Controles de vista y utilidades -->
-    <div class="flex flex-wrap items-center gap-3">
+    <!-- Controles de vista -->
+    <div class="flex flex-wrap items-center gap-4">
       <!-- Selector de vista -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm font-medium text-neutral-700">Vista:</span>
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-semibold text-gray-700">Vista:</span>
         <p-selectButton 
           [(ngModel)]="currentView" 
           [options]="viewOptions" 
           optionLabel="label" 
           optionValue="value"
-          styleClass="border border-slate-300 shadow-sm"
-        >
+          styleClass="border border-gray-300 shadow-md">
           <ng-template let-option pTemplate="option">
-            <div class="flex items-center gap-2 px-1">
-              <i [class]="option.icon" class="mr-1"></i>
-              {{option.label}}
+            <div class="flex items-center gap-2 px-2">
+              <i [class]="option.icon"></i>
+              <span class="hidden sm:inline">{{option.label}}</span>
             </div>
           </ng-template>
         </p-selectButton>
@@ -239,1243 +239,1215 @@
       <div class="flex gap-2">
         <p-button 
           icon="pi pi-refresh" 
-          severity="secondary" 
+          severity="info" 
           [outlined]="true"
           [rounded]="true"
           pTooltip="Actualizar lista (F5)"
-          styleClass="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+          styleClass="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="cargarClientes()" 
           [loading]="loading"
         />
+        
         <p-button 
           icon="pi pi-download" 
           severity="success" 
           [outlined]="true"
           [rounded]="true"
           pTooltip="Exportar a Excel"
-          styleClass="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+          styleClass="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="exportarExcel()"
           [loading]="uiState.isExporting"
         />
+        
         <p-button 
           icon="pi pi-chart-bar" 
-          severity="info" 
+          severity="danger" 
           [outlined]="true"
           [rounded]="true"
           pTooltip="Ver estadísticas"
-          styleClass="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+          styleClass="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="mostrarEstadisticas()"
         />
+        
         <p-button 
           icon="pi pi-question-circle" 
-          severity="secondary" 
+          severity="help" 
           [outlined]="true"
           [rounded]="true"
           pTooltip="Atajos de teclado"
-          styleClass="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+          styleClass="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="uiState.showKeyboardHints = !uiState.showKeyboardHints"
         />
       </div>
     </div>
   </div>
 </div>
-          
-<!-- Vista de Tabla Premium -->
+
+<!-- Vista de Tabla Optimizada -->
 <div *ngIf="currentView === 'table'" class="mb-6 hidden lg:block">
-  <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+  <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
     <p-table
-#dt
-[value]="clientesFiltrados"
-[rows]="DEFAULT_PAGE_SIZE"
-[paginator]="true"
-[rowsPerPageOptions]="PAGE_SIZE_OPTIONS"
-                [totalRecords]="clientesFiltrados.length"
-                [(selection)]="selectedClientes"
-                dataKey="id"
-                [loading]="uiState.isTableLoading"
-                [showCurrentPageReport]="true"
-                currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
-                [globalFilterFields]="['nombres', 'apellidos', 'dni', 'ruc', 'email', 'telefono']"
-                styleClass="p-datatable-sm"
-                [scrollable]="true"
-                scrollHeight="calc(100vh - 450px)">
-                <!-- Caption premium -->
-                <ng-template pTemplate="caption">
-                  <div class="bg-gradient-to-r from-slate-50 to-blue-50 p-4 border-b border-slate-200">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div class="flex items-center gap-3">
-                        <div class="bg-blue-600 p-2 rounded-lg">
-                          <i class="pi pi-list text-white"></i>
-                        </div>
-                        <div>
-                          <h3 class="text-xl font-bold text-neutral-800 m-0">Lista de Clientes</h3>
-                          <p class="text-sm text-neutral-600 mt-1">
-                            {{clientesFiltrados.length}} clientes encontrados • Actualizado: {{uiState.lastUpdate | date:'HH:mm:ss'}}
-                          </p>
-                        </div>
-                      </div>
-                      <div class="flex gap-3">
-                        <p-iconfield>
-                          <p-inputicon styleClass="pi pi-search" />
-                          <input 
-                            pInputText 
-                            type="text" 
-                            (input)="onGlobalFilter(dt, $event)" 
-                            placeholder="Búsqueda rápida... (Ctrl+F)" 
-                            class="w-80 h-10 rounded-lg border-slate-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </p-iconfield>
-                      </div>
-                    </div>
-                  </div>
-                </ng-template>
-          
-                <!-- Header premium -->
-                <ng-template pTemplate="header">
-                  <tr class="bg-gradient-to-r from-slate-50 to-blue-50 text-neutral-700">
-                    <th style="width: 3rem" class="text-center border-b-2 border-slate-200">
-                      <p-tableHeaderCheckbox />
-                    </th>
-                    <th pSortableColumn="nombres" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-user text-blue-600"></i>
-                        Nombres
-                        <p-sortIcon field="nombres" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="apellidos" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-user text-blue-600"></i>
-                        Apellidos
-                        <p-sortIcon field="apellidos" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="dni" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-id-card text-indigo-600"></i>
-                        DNI
-                        <p-sortIcon field="dni" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="ruc" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-briefcase text-orange-600"></i>
-                        RUC
-                        <p-sortIcon field="ruc" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="telefono" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-phone text-green-600"></i>
-                        Teléfono
-                        <p-sortIcon field="telefono" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="email" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-envelope text-purple-600"></i>
-                        Email
-                        <p-sortIcon field="email" />
-                      </div>
-                    </th>
-                    <th pSortableColumn="estado" class="border-b-2 border-slate-200">
-                      <div class="flex items-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-check-circle text-emerald-600"></i>
-                        Estado
-                        <p-sortIcon field="estado" />
-                      </div>
-                    </th>
-                    <th class="text-center border-b-2 border-slate-200">
-                      <div class="flex items-center justify-center gap-2 font-bold text-neutral-700">
-                        <i class="pi pi-cog text-slate-600"></i>
-                        Acciones
-                      </div>
-                    </th>
-                  </tr>
-                </ng-template>
-          
-                <!-- Body de la tabla -->
-                <ng-template pTemplate="body" let-cliente let-rowIndex="rowIndex" [trackBy]="trackByClienteId">
-                  <tr class="hover:bg-blue-50 transition-colors duration-200" [class.bg-slate-50]="rowIndex % 2 === 0">
-                    <td class="text-center align-middle">
-                      <p-tableCheckbox [value]="cliente" />
-                    </td>
-                    
-                    <td class="align-middle">
-                      <div class="font-semibold text-neutral-800">{{cliente.nombres || '-'}}</div>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <span class="font-semibold text-neutral-800">{{cliente.apellidos || '-'}}</span>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <span *ngIf="cliente.dni" class="bg-indigo-50 text-indigo-700 py-1 px-2 rounded-md text-sm font-mono">{{cliente.dni}}</span>
-                      <span *ngIf="!cliente.dni" class="text-neutral-400 italic text-sm">No registrado</span>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <span *ngIf="cliente.ruc" class="bg-orange-50 text-orange-700 py-1 px-2 rounded-md text-sm font-mono">{{cliente.ruc}}</span>
-                      <span *ngIf="!cliente.ruc" class="text-neutral-400 italic text-sm">No registrado</span>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <div *ngIf="cliente.telefono" class="flex items-center gap-2">
-                        <i class="pi pi-phone text-green-500 text-sm"></i>
-                        <span>{{cliente.telefono}}</span>
-                      </div>
-                      <span *ngIf="!cliente.telefono" class="text-neutral-400 italic text-sm">No registrado</span>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <div *ngIf="cliente.email" class="flex items-center gap-2">
-                        <i class="pi pi-envelope text-purple-500 text-sm"></i>
-                        <span class="text-neutral-600 text-sm">{{cliente.email}}</span>
-                      </div>
-                      <span *ngIf="!cliente.email" class="text-neutral-400 italic text-sm">No registrado</span>
-                    </td>
-                    
-                    <td class="align-middle">
-                      <div class="flex">
-                        <p-tag 
-                          [value]="cliente.estado ? 'Activo' : 'Inactivo'" 
-                          [icon]="cliente.estado ? 'pi pi-check-circle' : 'pi pi-ban'"
-                          [severity]="cliente.estado ? 'success' : 'danger'"
-                          styleClass="shadow-sm"
-                        />
-                      </div>
-                    </td>
-                    
-                    <td>
-                      <div class="flex gap-1 justify-center">
-                        <p-button 
-                          icon="pi pi-eye" 
-                          [rounded]="true" 
-                          [text]="true"
-                          severity="info"
-                          pTooltip="Ver detalles"
-                          tooltipPosition="top"
-                          styleClass="hover:bg-blue-50 transition-all duration-300"
-                          (click)="verDetallesCliente(cliente)"
-                        />
-                        
-                        <p-button 
-                          *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
-                          icon="pi pi-pencil" 
-                          [rounded]="true" 
-                          [text]="true"
-                          severity="secondary"
-                          pTooltip="Editar cliente"
-                          tooltipPosition="top"
-                          styleClass="hover:bg-amber-50 transition-all duration-300"
-                          (click)="editCliente(cliente)"
-                        />
-                        
-                        <p-button 
-                          *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
-                          [icon]="cliente.estado ? 'pi pi-ban' : 'pi pi-check'" 
-                          [rounded]="true" 
-                          [text]="true"
-                          [severity]="cliente.estado ? 'danger' : 'success'"
-                          [pTooltip]="cliente.estado ? 'Desactivar cliente' : 'Activar cliente'"
-                          tooltipPosition="top"
-                          [styleClass]="'transition-all duration-300 ' + (cliente.estado ? 'hover:bg-red-50' : 'hover:bg-green-50')"
-                          (click)="cliente.estado ? desactivar(cliente) : reactivar(cliente)"
-                        />
-                        
-                        <p-button 
-                          icon="pi pi-ellipsis-v" 
-                          [rounded]="true" 
-                          [text]="true"
-                          severity="secondary"
-                          pTooltip="Más acciones"
-                          tooltipPosition="top"
-                          styleClass="hover:bg-slate-100 transition-all duration-300"
-                          (click)="mostrarMenuAcciones($event, cliente)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-          
-                <!-- Empty message -->
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="9" class="text-center py-12">
-                      <div class="flex flex-col items-center gap-6">
-                        <div class="bg-slate-100 p-8 rounded-full">
-                          <i class="pi pi-users text-6xl text-slate-400"></i>
-                        </div>
-                        <div class="text-center">
-                          <div class="text-2xl font-bold text-neutral-700 mb-2">No se encontraron clientes</div>
-                          <div class="text-neutral-500 mb-6 max-w-md mx-auto">
-                            No hay clientes que coincidan con los criterios de búsqueda aplicados.
-                          </div>
-                          <p-button 
-                            *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
-                            label="Registrar Primer Cliente" 
-                            icon="pi pi-plus" 
-                            styleClass="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700" 
-                            (click)="openNew()"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-          
-                <!-- Loading template -->
-                <ng-template pTemplate="loadingbody">
-                  <tr>
-                    <td colspan="9">
-                      <div class="flex items-center justify-center py-8">
-                        <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-                        <span class="ml-4 text-lg font-medium text-neutral-600">Cargando clientes...</span>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </div>
-</div>
-          
-<!-- Vista de tarjetas para móvil -->
-<div class="block lg:hidden">
-<div class="space-y-3">
-              <!-- Encabezado móvil -->
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-                <div class="flex justify-between items-center">
-                  <div>
-                    <h3 class="font-bold text-neutral-800">Clientes</h3>
-                    <p class="text-sm text-neutral-600">{{clientesFiltrados.length}} encontrados</p>
-                  </div>
-                  <div class="flex gap-2">
-                    <p-button 
-                      icon="pi pi-search" 
-                      [rounded]="true"
-                      [text]="true"
-                      (click)="uiState.showAdvancedFilters = !uiState.showAdvancedFilters"
-                    />
-                    <p-button 
-                      icon="pi pi-refresh" 
-                      [rounded]="true"
-                      [text]="true"
-                      (click)="cargarClientes()"
-                      [loading]="loading"
-                    />
-                  </div>
-                </div>
+      #dt
+      [value]="clientesFiltrados"
+      [rows]="DEFAULT_PAGE_SIZE"
+      [paginator]="true"
+      [rowsPerPageOptions]="PAGE_SIZE_OPTIONS"
+      [totalRecords]="clientesFiltrados.length"
+      [(selection)]="selectedClientes"
+      dataKey="id"
+      [loading]="uiState.isTableLoading"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
+      [globalFilterFields]="['nombres', 'apellidos', 'dni', 'ruc', 'email', 'telefono']"
+      styleClass="p-datatable-sm"
+      [scrollable]="true"
+      scrollHeight="calc(100vh - 450px)">
+      
+      <!-- Caption optimizado -->
+      <ng-template pTemplate="caption">
+        <div class="bg-gray-50 p-6 border-b border-gray-200">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-list text-white text-lg"></i>
               </div>
-          
-              <!-- Tarjetas de clientes -->
-              <div 
-                *ngFor="let cliente of clientesFiltrados; trackBy: trackByClienteId"
-                class="cliente-card-mobile"
-                [class.selected]="selectedClientes.includes(cliente)"
-                (click)="toggleClienteSelection(cliente)"
-                (keyup.enter)="toggleClienteSelection(cliente)"
-                (keyup.space)="toggleClienteSelection(cliente)"
-                tabindex="0"
-                role="button"
-                [attr.aria-label]="'Seleccionar cliente ' + cliente.nombres + ' ' + cliente.apellidos"
-              >
-                <!-- Avatar y estado -->
-                <div class="flex items-start justify-between mb-3">
-                  <div class="flex items-center space-x-3">
-                    <div class="cliente-avatar">
-                      <i class="pi pi-user text-blue-600"></i>
-                    </div>
-                    <div>
-                      <h3 class="font-semibold text-gray-800">
-                        {{cliente.nombres}} {{cliente.apellidos}}
-                      </h3>
-                      <p class="text-sm text-gray-500" *ngIf="cliente.email">
-                        {{cliente.email}}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <p-tag 
-                      [value]="cliente.estado ? 'Activo' : 'Inactivo'" 
-                      [severity]="cliente.estado ? 'success' : 'danger'"
-                      size="small"
-                    />
-                    <button 
-                      class="cliente-menu-btn"
-                      (click)="mostrarMenuAccionesMobile($event, cliente)"
-                      (keyup.enter)="mostrarMenuAccionesMobile($event, cliente)"
-                      (keyup.space)="mostrarMenuAccionesMobile($event, cliente)"
-                      aria-label="Mostrar opciones del cliente"
-                    >
-                      <i class="pi pi-ellipsis-v"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Información de contacto -->
-                <div class="cliente-info-mobile">
-                  <div *ngIf="cliente.telefono" class="info-item">
-                    <i class="pi pi-phone text-green-500"></i>
-                    <span>{{cliente.telefono}}</span>
-                  </div>
-                  <div *ngIf="cliente.dni" class="info-item">
-                    <i class="pi pi-id-card text-indigo-500"></i>
-                    <span>{{cliente.dni}}</span>
-                  </div>
-                  <div *ngIf="cliente.compras" class="info-item">
-                    <i class="pi pi-shopping-cart text-purple-500"></i>
-                    <span>{{cliente.compras}} compras</span>
-                  </div>
-                </div>
-                
-                <!-- Barra de completitud -->
-                <div class="completitud-bar-mobile">
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs text-gray-500">Perfil</span>
-                    <span class="text-xs font-medium">{{getCompletion(cliente)}}%</span>
-                  </div>
-                  <div class="completitud-progress">
-                    <div 
-                      class="completitud-fill"
-                      [style.width.%]="getCompletion(cliente)"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-  </div>
-          
-          <!-- FAB para móvil -->
-          <div class="quick-actions-mobile lg:hidden">
-            <p-button 
-              icon="pi pi-plus" 
-              [rounded]="true"
-              size="large"
-              styleClass="action-fab"
-              (click)="openNew()"
-              pTooltip="Nuevo Cliente"
-              *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
-            />
-          </div>
-          
-          <!-- Menú contextual -->
-          <p-menu #menuAcciones [popup]="true" [model]="itemsMenuAcciones"></p-menu>
-          
-          <!-- Diálogo de formulario premium con formulario reactivo -->
-          <p-dialog 
-            [(visible)]="visible" 
-            [header]="editMode ? 'Editar Cliente' : 'Nuevo Cliente'" 
-            [modal]="true" 
-            [style]="{width: '800px'}" 
-            [draggable]="false" 
-            [resizable]="false"
-            styleClass="border-0 shadow-2xl" 
-            (onHide)="hideDialog()"
-          >
-            <ng-template pTemplate="header">
-              <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-lg">
-                  <i class="pi {{editMode ? 'pi-pencil' : 'pi-user-plus'}} text-white text-xl"></i>
-                </div>
-                <span class="font-bold text-xl">{{editMode ? 'Editar Cliente' : 'Nuevo Cliente'}}</span>
-              </div>
-            </ng-template>
-            
-            <div class="p-5">
-              <!-- Indicador de modo -->
-              <div class="mb-4" *ngIf="editMode">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-                  <i class="pi pi-info-circle text-blue-600"></i>
-                  <span class="text-blue-800 text-sm">
-                    Estás editando el cliente <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong>
-                  </span>
-                </div>
-              </div>
-              
-              <form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="space-y-6">
-                <!-- Información personal -->
-                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                  <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-user text-blue-600"></i>
-                    Información Personal
-                  </h3>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Nombres -->
-                    <div class="field">
-                      <label for="nombres" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Nombres <span class="text-red-500">*</span>
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-blue-50 border-blue-200">
-                          <i class="pi pi-user text-blue-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="nombres" 
-                          formControlName="nombres"
-                          class="w-full border-slate-300" 
-                          placeholder="Nombres del cliente"
-                          [ngClass]="{'ng-invalid ng-dirty': f['nombres'].invalid && (f['nombres'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small *ngIf="getFieldError('nombres')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('nombres')}}
-                      </small>
-                    </div>
-                    
-                    <!-- Apellidos -->
-                    <div class="field">
-                      <label for="apellidos" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Apellidos <span class="text-red-500">*</span>
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-blue-50 border-blue-200">
-                          <i class="pi pi-user text-blue-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="apellidos" 
-                          formControlName="apellidos"
-                          class="w-full border-slate-300" 
-                          placeholder="Apellidos del cliente"
-                          [ngClass]="{'ng-invalid ng-dirty': f['apellidos'].invalid && (f['apellidos'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small *ngIf="getFieldError('apellidos')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('apellidos')}}
-                      </small>
-                    </div>
-                    
-                    <!-- Fecha de Nacimiento -->
-                    <div class="field col-span-1 md:col-span-2">
-                      <label for="fechaNacimiento" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Fecha de Nacimiento
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-purple-50 border-purple-200">
-                          <i class="pi pi-calendar text-purple-600"></i>
-                        </span>
-                        <p-datepicker 
-                          id="fechaNacimiento"
-                          formControlName="fechaNacimiento"
-                          dateFormat="yy-mm-dd" 
-                          [showIcon]="true"
-                          placeholder="Seleccionar fecha"
-                          [showButtonBar]="true"
-                          appendTo="body"
-                          styleClass="w-full"
-                          inputStyleClass="border-slate-300"
-                        />
-                      </div>
-                      <small *ngIf="getFieldError('fechaNacimiento')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('fechaNacimiento')}}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Información de contacto -->
-                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                  <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-phone text-green-600"></i>
-                    Información de Contacto
-                  </h3>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Teléfono -->
-                    <div class="field">
-                      <label for="telefono" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Teléfono
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-green-50 border-green-200">
-                          <i class="pi pi-phone text-green-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="telefono" 
-                          formControlName="telefono"
-                          class="w-full border-slate-300" 
-                          placeholder="+51 999 999 999"
-                          [ngClass]="{'ng-invalid ng-dirty': f['telefono'].invalid && (f['telefono'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small *ngIf="getFieldError('telefono')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('telefono')}}
-                      </small>
-                    </div>
-                    
-                    <!-- Email -->
-                    <div class="field">
-                      <label for="email" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Email
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-purple-50 border-purple-200">
-                          <i class="pi pi-envelope text-purple-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="email" 
-                          formControlName="email"
-                          type="email"
-                          class="w-full border-slate-300" 
-                          placeholder="correo@ejemplo.com"
-                          [ngClass]="{'ng-invalid ng-dirty': f['email'].invalid && (f['email'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small *ngIf="getFieldError('email')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('email')}}
-                      </small>
-                    </div>
-                    
-                    <!-- Dirección -->
-                    <div class="field col-span-1 md:col-span-2">
-                      <label for="direccion" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        Dirección
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-amber-50 border-amber-200">
-                          <i class="pi pi-map-marker text-amber-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="direccion" 
-                          formControlName="direccion"
-                          class="w-full border-slate-300" 
-                          placeholder="Dirección completa del cliente"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Información fiscal -->
-                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                  <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-id-card text-indigo-600"></i>
-                    Información Fiscal
-                  </h3>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- DNI -->
-                    <div class="field">
-                      <label for="dni" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        DNI
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-indigo-50 border-indigo-200">
-                          <i class="pi pi-id-card text-indigo-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="dni"
-                          formControlName="dni"
-                          maxlength="8" 
-                          pattern="[0-9]{8}"
-                          class="w-full border-slate-300" 
-                          placeholder="12345678"
-                          [ngClass]="{'ng-invalid ng-dirty': f['dni'].invalid && (f['dni'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small class="text-neutral-500 flex mt-1" *ngIf="!getFieldError('dni')">
-                        <i class="pi pi-info-circle mr-1"></i>
-                        8 dígitos numéricos
-                      </small>
-                      <small *ngIf="getFieldError('dni')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('dni')}}
-                      </small>
-                    </div>
-                    
-                    <!-- RUC -->
-                    <div class="field">
-                      <label for="ruc" class="flex text-sm font-medium text-neutral-700 mb-2">
-                        RUC
-                      </label>
-                      <div class="p-inputgroup shadow-sm">
-                        <span class="p-inputgroup-addon bg-orange-50 border-orange-200">
-                          <i class="pi pi-briefcase text-orange-600"></i>
-                        </span>
-                        <input 
-                          pInputText 
-                          id="ruc" 
-                          formControlName="ruc"
-                          maxlength="11" 
-                          pattern="[0-9]{11}"
-                          class="w-full border-slate-300" 
-                          placeholder="20123456789"
-                          [ngClass]="{'ng-invalid ng-dirty': f['ruc'].invalid && (f['ruc'].dirty || submitted)}"
-                        />
-                      </div>
-                      <small class="text-neutral-500 flex mt-1" *ngIf="!getFieldError('ruc')">
-                        <i class="pi pi-info-circle mr-1"></i>
-                        11 dígitos numéricos
-                      </small>
-                      <small *ngIf="getFieldError('ruc')" class="text-red-500 flex mt-1">
-                        <i class="pi pi-exclamation-circle mr-1"></i>
-                        {{getFieldError('ruc')}}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-          
-                <!-- Estado del cliente -->
-                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                  <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-toggle-on text-green-600"></i>
-                    Estado del Cliente
-                  </h3>
-                  
-                  <div class="field-checkbox">
-                    <p-checkbox 
-                      formControlName="estado"
-                      [binary]="true" 
-                      inputId="estado"
-                    ></p-checkbox>
-                    <label for="estado" class="ml-2 font-medium text-neutral-700">Cliente Activo</label>
-                    <p class="text-sm text-neutral-500 mt-1">Los clientes inactivos no aparecerán en reportes activos</p>
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <ng-template pTemplate="footer">
-              <div class="flex justify-between px-3">
-                <p-checkbox 
-                  *ngIf="!editMode" 
-                  [(ngModel)]="crearYAgregar" 
-                  [binary]="true" 
-                  inputId="crearYAgregar" 
-                  label="Crear y agregar otro"
-                  styleClass="text-sm"
-                ></p-checkbox>
-                
-                <div class="flex gap-2">
-                  <p-button 
-                    label="Cancelar" 
-                    icon="pi pi-times" 
-                    styleClass="p-button-text" 
-                    (click)="hideDialog()"
-                  />
-                  <p-button 
-                    [label]="editMode ? 'Actualizar Cliente' : 'Guardar Cliente'" 
-                    icon="pi pi-check" 
-                    styleClass="bg-gradient-to-r from-blue-600 to-blue-700"
-                    (click)="guardarCliente()" 
-                    [loading]="uiState.isFormSaving"
-                    [disabled]="clienteForm.invalid"
-                  />
-                </div>
-              </div>
-            </ng-template>
-          </p-dialog>
-          
-          <!-- Diálogo de Detalles del Cliente -->
-          <p-dialog 
-            [(visible)]="detalleDialog" 
-            [style]="{width: '900px'}" 
-            [header]="'Detalles del Cliente'" 
-            [modal]="true" 
-            (onHide)="hideDetalleDialog()"
-            [draggable]="false"
-            [resizable]="false"
-            styleClass="border-0 shadow-2xl"
-          >
-            <ng-template pTemplate="header">
-              <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-lg">
-                  <i class="pi pi-info-circle text-white text-xl"></i>
-                </div>
-                <span class="font-bold text-xl">Detalles del Cliente</span>
-              </div>
-            </ng-template>
-            
-            <div *ngIf="clienteDetalle" class="p-5">
-              <div class="grid">
-                <!-- Avatar y estado -->
-                <div class="col-12 md:col-3 text-center">
-                  <div class="mb-4">
-                    <div class="w-32 h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto flex items-center justify-center shadow-lg">
-                      <i class="pi pi-user text-4xl text-blue-600"></i>
-                    </div>
-                  </div>
-                  <h3 class="text-xl font-bold text-neutral-800 mb-2">
-                    {{clienteDetalle.nombres}} {{clienteDetalle.apellidos}}
-                  </h3>
-                  <p-tag 
-                    [value]="clienteDetalle.estado ? 'Cliente Activo' : 'Cliente Inactivo'" 
-                    [severity]="clienteDetalle.estado ? 'success' : 'danger'"
-                    [icon]="clienteDetalle.estado ? 'pi pi-check-circle' : 'pi pi-ban'"
-                    styleClass="shadow-sm mb-4"
-                  />
-                  
-                  <!-- Indicador de completitud -->
-                  <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <div class="text-sm font-medium text-neutral-700 mb-2">Perfil Completado</div>
-                    <div class="w-full bg-slate-200 rounded-full h-2">
-                      <div 
-                        class="bg-blue-600 h-2 rounded-full transition-all duration-500" 
-                        [style.width]="getCompletion(clienteDetalle) + '%'"
-                      ></div>
-                    </div>
-                    <div class="text-xs text-neutral-600 mt-1">{{getCompletion(clienteDetalle)}}%</div>
-                  </div>
-                  
-                  <!-- Métricas del cliente -->
-                  <div class="mt-4 space-y-2">
-                    <div class="bg-green-50 p-2 rounded-lg border border-green-200" *ngIf="clienteDetalle.compras">
-                      <div class="text-sm font-medium text-green-700">Compras Realizadas</div>
-                      <div class="text-lg font-bold text-green-800">{{clienteDetalle.compras}}</div>
-                    </div>
-                    <div class="bg-purple-50 p-2 rounded-lg border border-purple-200" *ngIf="clienteDetalle.totalCompras">
-                      <div class="text-sm font-medium text-purple-700">Total Gastado</div>
-                      <div class="text-lg font-bold text-purple-800">{{clienteDetalle.totalCompras | currency:'S/. ':'symbol':'1.0-0'}}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Información detallada -->
-                <div class="col-12 md:col-9">
-                  <div class="space-y-5">
-                    <!-- Información de contacto -->
-                    <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                        <i class="pi pi-phone text-green-600"></i>
-                        Información de Contacto
-                      </h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div *ngIf="clienteDetalle.telefono" class="flex items-center gap-2 bg-green-50 p-3 rounded-lg">
-                          <div class="bg-green-100 p-2 rounded-full">
-                            <i class="pi pi-phone text-green-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-green-600">Teléfono</div>
-                            <div class="font-medium text-neutral-800">{{clienteDetalle.telefono}}</div>
-                          </div>
-                        </div>
-                        <div *ngIf="clienteDetalle.email" class="flex items-center gap-2 bg-purple-50 p-3 rounded-lg">
-                          <div class="bg-purple-100 p-2 rounded-full">
-                            <i class="pi pi-envelope text-purple-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-purple-600">Email</div>
-                            <div class="font-medium text-neutral-800">{{clienteDetalle.email}}</div>
-                          </div>
-                        </div>
-                        <div *ngIf="clienteDetalle.direccion" class="flex items-center gap-2 bg-amber-50 p-3 rounded-lg col-span-1 md:col-span-2">
-                          <div class="bg-amber-100 p-2 rounded-full">
-                            <i class="pi pi-map-marker text-amber-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-amber-600">Dirección</div>
-                            <div class="font-medium text-neutral-800">{{clienteDetalle.direccion}}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Información fiscal -->
-                    <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                        <i class="pi pi-id-card text-indigo-600"></i>
-                        Información Fiscal
-                      </h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div *ngIf="clienteDetalle.dni" class="flex items-center gap-2 bg-indigo-50 p-3 rounded-lg">
-                          <div class="bg-indigo-100 p-2 rounded-full">
-                            <i class="pi pi-id-card text-indigo-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-indigo-600">DNI</div>
-                            <div class="font-medium text-neutral-800 font-mono">{{clienteDetalle.dni}}</div>
-                          </div>
-                        </div>
-                        <div *ngIf="clienteDetalle.ruc" class="flex items-center gap-2 bg-orange-50 p-3 rounded-lg">
-                          <div class="bg-orange-100 p-2 rounded-full">
-                            <i class="pi pi-briefcase text-orange-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-orange-600">RUC</div>
-                            <div class="font-medium text-neutral-800 font-mono">{{clienteDetalle.ruc}}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Información personal -->
-                    <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200" *ngIf="clienteDetalle.fechaNacimiento">
-                      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                        <i class="pi pi-calendar text-purple-600"></i>
-                        Información Personal
-                      </h4>
-                      <div class="flex items-center gap-2 bg-purple-50 p-3 rounded-lg">
-                        <div class="bg-purple-100 p-2 rounded-full">
-                          <i class="pi pi-calendar text-purple-600"></i>
-                        </div>
-                        <div>
-                          <div class="text-xs text-purple-600">Fecha de Nacimiento</div>
-                          <div class="font-medium text-neutral-800">{{clienteDetalle.fechaNacimiento | date:'dd/MM/yyyy'}}</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Fechas del sistema -->
-                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-5 shadow-sm border border-slate-200">
-                      <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                        <i class="pi pi-clock text-slate-700"></i>
-                        Información del Registro
-                      </h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div *ngIf="clienteDetalle.fechaCreacion" class="flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm">
-                          <div class="bg-green-100 p-2 rounded-full">
-                            <i class="pi pi-plus-circle text-green-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-green-600">Fecha de Registro</div>
-                            <div class="font-medium text-neutral-800">{{clienteDetalle.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</div>
-                          </div>
-                        </div>
-                        <div *ngIf="clienteDetalle.fechaActualizacion" class="flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm">
-                          <div class="bg-blue-100 p-2 rounded-full">
-                            <i class="pi pi-refresh text-blue-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-xs text-blue-600">Última Actualización</div>
-                            <div class="font-medium text-neutral-800">{{clienteDetalle.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-1">Lista de Clientes</h3>
+                <p class="text-sm text-gray-600">
+                  {{clientesFiltrados.length}} clientes encontrados • Actualizado: {{uiState.lastUpdate | date:'HH:mm:ss'}}
+                </p>
               </div>
             </div>
             
-            <ng-template pTemplate="footer">
-              <div class="flex justify-between gap-3 px-3">
-                <p-button 
-                  label="Exportar Ficha" 
-                  icon="pi pi-file-pdf" 
-                  severity="secondary"
-                  [outlined]="true"
-                  styleClass="shadow-sm"
-                  (click)="exportarFichaCliente(clienteDetalle!)" 
-                  *ngIf="clienteDetalle"
-                  [loading]="uiState.isExporting"
+            <div class="flex gap-3">
+              <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input 
+                  pInputText 
+                  type="text" 
+                  (input)="onGlobalFilter(dt, $event)" 
+                  placeholder="Búsqueda rápida... (Ctrl+F)" 
+                  class="w-80 h-12 rounded-lg border-gray-300 shadow-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
-                
-                <div class="flex gap-2">
-                  <p-button 
-                    label="Cerrar" 
-                    icon="pi pi-times" 
-                    styleClass="p-button-text" 
-                    (click)="hideDetalleDialog()" 
-                  />
-                  <p-button 
-                    *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
-                    label="Editar Cliente" 
-                    icon="pi pi-pencil" 
-                    styleClass="bg-gradient-to-r from-blue-600 to-blue-700"
-                    (click)="editCliente(clienteDetalle!); hideDetalleDialog()" 
-                  />
-                </div>
-              </div>
-            </ng-template>
-          </p-dialog>
-          
-          <!-- Modal de Estadísticas Premium -->
-          <p-dialog 
-            [(visible)]="estadisticasDialog" 
-            [style]="{width: '1100px'}" 
-            [header]="'Estadísticas de Clientes'" 
-            [modal]="true" 
-            (onHide)="hideEstadisticasDialog()"
-            [draggable]="false"
-            [resizable]="false"
-            styleClass="border-0 shadow-2xl"
-          >
-            <ng-template pTemplate="header">
-              <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-2 rounded-lg">
-                  <i class="pi pi-chart-bar text-white text-xl"></i>
-                </div>
-                <span class="font-bold text-xl">Dashboard de Clientes - {{getCurrentUser()}}</span>
-              </div>
-            </ng-template>
-            
-            <div class="p-5" *ngIf="clientes.length; else noStats">
-              <div class="grid">
-                <!-- Resumen general con métricas de zapatería -->
-                <div class="col-12">
-                  <div class="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-6 mb-6 shadow-sm border border-slate-200">
-                    <h3 class="text-xl font-bold text-neutral-800 mb-5 flex items-center gap-2">
-                      <i class="pi pi-chart-bar text-blue-600"></i>
-                      Resumen General de Clientes - {{getFechaFormateada()}}
-                    </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class="bg-blue-100 p-3 rounded-full">
-                            <i class="pi pi-users text-blue-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-2xl font-bold text-blue-600">{{getEstadisticas().total}}</div>
-                            <div class="text-sm text-neutral-600">Total Clientes</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class="bg-green-100 p-3 rounded-full">
-                            <i class="pi pi-check-circle text-green-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-2xl font-bold text-green-600">{{getEstadisticas().activos}}</div>
-                            <div class="text-sm text-neutral-600">Activos</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class="bg-purple-100 p-3 rounded-full">
-                            <i class="pi pi-percentage text-purple-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-2xl font-bold text-purple-600">{{getEstadisticas().porcentajeActivos | number:'1.0-0'}}%</div>
-                            <div class="text-sm text-neutral-600">% Activos</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class="bg-amber-100 p-3 rounded-full">
-                            <i class="pi pi-crown text-amber-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-2xl font-bold text-amber-600">{{getMetricasZapateria().clientesVIP}}</div>
-                            <div class="text-sm text-neutral-600">Clientes VIP</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class="bg-indigo-100 p-3 rounded-full">
-                            <i class="pi pi-money-bill text-indigo-600"></i>
-                          </div>
-                          <div>
-                            <div class="text-2xl font-bold text-indigo-600">{{getAnalisisValorCliente().totalVentas | currency:'S/. ':'symbol':'1.0-0'}}</div>
-                            <div class="text-sm text-neutral-600">Total Ventas</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Gráficos de completitud -->
-                <div class="col-12 md:col-6">
-                  <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm h-full">
-                    <h4 class="font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                      <i class="pi pi-chart-pie text-blue-600"></i>
-                      Completitud de Datos
-                    </h4>
-                    
-                    <div class="space-y-4">
-                      <!-- Clientes con email -->
-                      <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                        <div class="flex items-center gap-2">
-                          <i class="pi pi-envelope text-purple-600"></i>
-                          <span class="font-medium">Con Email</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <div class="w-32 bg-purple-200 rounded-full h-2">
-                            <div 
-                              class="bg-purple-600 h-2 rounded-full transition-all duration-500" 
-                              [style.width]="(getEstadisticas().clientesConEmail / getEstadisticas().total * 100) + '%'"
-                            ></div>
-                          </div>
-                          <span class="font-bold text-purple-600">{{getEstadisticas().clientesConEmail}}</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Clientes con teléfono -->
-                      <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                        <div class="flex items-center gap-2">
-                          <i class="pi pi-phone text-green-600"></i>
-                          <span class="font-medium">Con Teléfono</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <div class="w-32 bg-green-200 rounded-full h-2">
-                            <div 
-                              class="bg-green-600 h-2 rounded-full transition-all duration-500" 
-                              [style.width]="(getEstadisticas().clientesConTelefono / getEstadisticas().total * 100) + '%'"
-                            ></div>
-                          </div>
-                          <span class="font-bold text-green-600">{{getEstadisticas().clientesConTelefono}}</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Clientes completos -->
-                      <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                        <div class="flex items-center gap-2">
-                          <i class="pi pi-check-square text-blue-600"></i>
-                          <span class="font-medium">Perfil Completo</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <div class="w-32 bg-blue-200 rounded-full h-2">
-                            <div 
-                              class="bg-blue-600 h-2 rounded-full transition-all duration-500" 
-                              [style.width]="(getEstadisticas().clientesCompletos / getEstadisticas().total * 100) + '%'"
-                            ></div>
-                          </div>
-                          <span class="font-bold text-blue-600">{{getEstadisticas().clientesCompletos}}</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Métricas de zapatería -->
-                      <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
-                        <div class="flex items-center gap-2">
-                          <i class="pi pi-shopping-cart text-amber-600"></i>
-                          <span class="font-medium">Con Compras</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <div class="w-32 bg-amber-200 rounded-full h-2">
-                            <div 
-                              class="bg-amber-600 h-2 rounded-full transition-all duration-500" 
-                              [style.width]="(getMetricasZapateria().conCompras / getEstadisticas().total * 100) + '%'"
-                            ></div>
-                          </div>
-                          <span class="font-bold text-amber-600">{{getMetricasZapateria().conCompras}}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Distribución por estado -->
-                <div class="col-12 md:col-6">
-                  <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm h-full">
-                    <h4 class="font-bold text-neutral-800 mb-4 flex items-center gap-2">
-                      <i class="pi pi-chart-line text-green-600"></i>
-                      Distribución por Estado
-                    </h4>
-                    
-                    <div class="flex h-48 items-end justify-center gap-8">
-                      <!-- Activos -->
-                      <div class="flex flex-col items-center">
-                        <div class="font-semibold text-xs mb-2 text-green-600">Activos</div>
-                        <div 
-                          class="bg-green-500 w-16 rounded-t-lg transition-all duration-500" 
-                          [style.height]="(getEstadisticas().activos / getEstadisticas().total * 100) + '%'"
-                        ></div>
-                        <div class="font-bold text-lg mt-2 text-green-600">{{getEstadisticas().activos}}</div>
-                        <div class="text-xs text-neutral-500">{{(getEstadisticas().activos / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
-                      </div>
-                      
-                      <!-- Inactivos -->
-                      <div class="flex flex-col items-center">
-                        <div class="font-semibold text-xs mb-2 text-red-600">Inactivos</div>
-                        <div 
-                          class="bg-red-500 w-16 rounded-t-lg transition-all duration-500" 
-                          [style.height]="(getEstadisticas().inactivos / getEstadisticas().total * 100) + '%'"
-                        ></div>
-                        <div class="font-bold text-lg mt-2 text-red-600">{{getEstadisticas().inactivos}}</div>
-                        <div class="text-xs text-neutral-500">{{(getEstadisticas().inactivos / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
-                      </div>
-                      
-                      <!-- VIP -->
-                      <div class="flex flex-col items-center">
-                        <div class="font-semibold text-xs mb-2 text-amber-600">VIP</div>
-                        <div 
-                          class="bg-amber-500 w-16 rounded-t-lg transition-all duration-500" 
-                          [style.height]="(getMetricasZapateria().clientesVIP / getEstadisticas().total * 100) + '%'"
-                        ></div>
-                        <div class="font-bold text-lg mt-2 text-amber-600">{{getMetricasZapateria().clientesVIP}}</div>
-                        <div class="text-xs text-neutral-500">{{(getMetricasZapateria().clientesVIP / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
-                      </div>
-                    </div>
-                    
-                    <!-- Información adicional -->
-                    <div class="mt-6 p-3 bg-slate-50 rounded-lg">
-                      <h5 class="font-semibold text-neutral-700 mb-2">Información Adicional</h5>
-                      <div class="text-sm space-y-1">
-                        <div class="flex justify-between">
-                          <span>Promedio de compras:</span>
-                          <span class="font-medium">{{getMetricasZapateria().promedioCompras | number:'1.1-1'}} pares</span>
-                        </div>
-                        <div class="flex justify-between">
-                          <span>Ticket promedio:</span>
-                          <span class="font-medium">{{getAnalisisValorCliente().ticketPromedio | currency:'S/. ':'symbol':'1.0-0'}}</span>
-                        </div>
-                        <div class="flex justify-between">
-                          <span>Cliente top:</span>
-                          <span class="font-medium">{{getAnalisisValorCliente().clienteTop?.nombres || 'N/A'}}</span>
-                        </div>
-                        <div class="flex justify-between">
-                          <span>Última actualización:</span>
-                          <span class="font-medium">{{uiState.lastUpdate | date:'HH:mm:ss'}}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </p-iconfield>
             </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Header optimizado -->
+      <ng-template pTemplate="header">
+        <tr class="bg-gray-100 text-gray-700">
+          <th style="width: 3rem" class="text-center border-b-2 border-gray-200 p-4">
+            <p-tableHeaderCheckbox />
+          </th>
+          <th pSortableColumn="nombres" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-user text-blue-600"></i>
+              Nombres
+              <p-sortIcon field="nombres" />
+            </div>
+          </th>
+          <th pSortableColumn="apellidos" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-user text-blue-600"></i>
+              Apellidos
+              <p-sortIcon field="apellidos" />
+            </div>
+          </th>
+          <th pSortableColumn="dni" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-id-card text-indigo-600"></i>
+              DNI
+              <p-sortIcon field="dni" />
+            </div>
+          </th>
+          <th pSortableColumn="ruc" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-briefcase text-orange-600"></i>
+              RUC
+              <p-sortIcon field="ruc" />
+            </div>
+          </th>
+          <th pSortableColumn="telefono" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-phone text-green-600"></i>
+              Teléfono
+              <p-sortIcon field="telefono" />
+            </div>
+          </th>
+          <th pSortableColumn="email" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-envelope text-purple-600"></i>
+              Email
+              <p-sortIcon field="email" />
+            </div>
+          </th>
+          <th pSortableColumn="estado" class="border-b-2 border-gray-200 p-4">
+            <div class="flex items-center gap-2 font-bold">
+              <i class="pi pi-check-circle text-emerald-600"></i>
+              Estado
+              <p-sortIcon field="estado" />
+            </div>
+          </th>
+          <th class="text-center border-b-2 border-gray-200 p-4">
+            <div class="flex items-center justify-center gap-2 font-bold">
+              <i class="pi pi-cog text-gray-600"></i>
+              Acciones
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+
+      <!-- Body optimizado -->
+      <ng-template pTemplate="body" let-cliente let-rowIndex="rowIndex" [trackBy]="trackByClienteId">
+        <tr class="hover:bg-blue-50 transition-colors duration-200" [class.bg-gray-50]="rowIndex % 2 === 0">
+          <td class="text-center p-4">
+            <p-tableCheckbox [value]="cliente" />
+          </td>
           
-          <ng-template #noStats>
-            <div class="flex flex-col items-center justify-center py-10 text-center">
-              <div class="bg-slate-100 p-8 rounded-full inline-block mb-4">
-                <i class="pi pi-chart-bar text-4xl text-slate-400"></i>
-              </div>
-              <h3 class="text-xl font-bold text-neutral-700 mb-3">No hay datos disponibles</h3>
-              <p class="text-neutral-500 mb-6 max-w-lg">Para visualizar las estadísticas de clientes, primero debes registrar algunos clientes en tu base de datos.</p>
+          <td class="p-4">
+            <div class="font-semibold text-gray-900">{{cliente.nombres || '-'}}</div>
+          </td>
+          
+          <td class="p-4">
+            <span class="font-semibold text-gray-900">{{cliente.apellidos || '-'}}</span>
+          </td>
+          
+          <td class="p-4">
+            <span *ngIf="cliente.dni" class="bg-indigo-100 text-indigo-800 py-1 px-3 rounded-full text-sm font-mono">{{cliente.dni}}</span>
+            <span *ngIf="!cliente.dni" class="text-gray-400 italic text-sm">No registrado</span>
+          </td>
+          
+          <td class="p-4">
+            <span *ngIf="cliente.ruc" class="bg-orange-100 text-orange-800 py-1 px-3 rounded-full text-sm font-mono">{{cliente.ruc}}</span>
+            <span *ngIf="!cliente.ruc" class="text-gray-400 italic text-sm">No registrado</span>
+          </td>
+          
+          <td class="p-4">
+            <div *ngIf="cliente.telefono" class="flex items-center gap-2">
+              <i class="pi pi-phone text-green-500"></i>
+              <span>{{cliente.telefono}}</span>
+            </div>
+            <span *ngIf="!cliente.telefono" class="text-gray-400 italic text-sm">No registrado</span>
+          </td>
+          
+          <td class="p-4">
+            <div *ngIf="cliente.email" class="flex items-center gap-2">
+              <i class="pi pi-envelope text-purple-500"></i>
+              <span class="text-gray-700">{{cliente.email}}</span>
+            </div>
+            <span *ngIf="!cliente.email" class="text-gray-400 italic text-sm">No registrado</span>
+          </td>
+          
+          <td class="p-4">
+            <p-tag 
+              [value]="cliente.estado ? 'Activo' : 'Inactivo'" 
+              [icon]="cliente.estado ? 'pi pi-check-circle' : 'pi pi-ban'"
+              [severity]="cliente.estado ? 'success' : 'danger'"
+              styleClass="shadow-sm"
+            />
+          </td>
+          
+          <td class="p-4">
+            <div class="flex gap-2 justify-center">
               <p-button 
-                *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
-                label="Registrar Primer Cliente" 
-                icon="pi pi-plus" 
-                (click)="openNew(); hideEstadisticasDialog()"
-                styleClass="bg-gradient-to-r from-blue-600 to-blue-700"
+                icon="pi pi-eye" 
+                [rounded]="true" 
+                [text]="true"
+                severity="info"
+                pTooltip="Ver detalles"
+                styleClass="hover:bg-blue-100 transition-colors"
+                (click)="verDetallesCliente(cliente)"
+              />
+              
+              <p-button 
+                *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
+                icon="pi pi-pencil" 
+                [rounded]="true" 
+                [text]="true"
+                severity="danger"
+                pTooltip="Editar cliente"
+                styleClass="hover:bg-yellow-100 transition-colors"
+                (click)="editCliente(cliente)"
+              />
+              
+              <p-button 
+                *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
+                [icon]="cliente.estado ? 'pi pi-ban' : 'pi pi-check'" 
+                [rounded]="true" 
+                [text]="true"
+                [severity]="cliente.estado ? 'danger' : 'success'"
+                [pTooltip]="cliente.estado ? 'Desactivar cliente' : 'Activar cliente'"
+                [styleClass]="'transition-colors ' + (cliente.estado ? 'hover:bg-red-100' : 'hover:bg-green-100')"
+                (click)="cliente.estado ? desactivar(cliente) : reactivar(cliente)"
+              />
+              
+              <p-button 
+                icon="pi pi-ellipsis-v" 
+                [rounded]="true" 
+                [text]="true"
+                severity="secondary"
+                pTooltip="Más acciones"
+                styleClass="hover:bg-gray-100 transition-colors"
+                (click)="mostrarMenuAcciones($event, cliente)"
               />
             </div>
-          </ng-template>
-          
-          <ng-template pTemplate="footer">
-            <div class="flex justify-between gap-3 px-3">
-              <div>
-                <p-button 
-                  label="Actualizar Datos" 
-                  icon="pi pi-refresh" 
-                  severity="secondary"
-                  [outlined]="true"
-                  styleClass="shadow-sm"
-                  (click)="cargarClientes()" 
-                  [loading]="loading"
-                />
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty message optimizado -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9" class="text-center py-16">
+            <div class="flex flex-col items-center gap-6">
+              <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
+                <i class="pi pi-users text-4xl text-gray-400"></i>
               </div>
-              <div class="flex gap-2">
+              <div class="text-center max-w-md">
+                <h3 class="text-2xl font-bold text-gray-700 mb-3">No se encontraron clientes</h3>
+                <p class="text-gray-500 mb-6">
+                  No hay clientes que coincidan con los criterios de búsqueda aplicados.
+                </p>
                 <p-button 
-                  label="Cerrar" 
-                  icon="pi pi-times" 
-                  styleClass="p-button-text" 
-                  (click)="hideEstadisticasDialog()" 
-                />
-                <p-button 
-                  label="Exportar Estadísticas" 
-                  icon="pi pi-download" 
-                  severity="info"
-                  (click)="exportarPDF()"
-                  styleClass="bg-gradient-to-r from-indigo-600 to-indigo-700"
-                  [loading]="uiState.isExporting"
+                  *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
+                  label="Registrar Primer Cliente" 
+                  icon="pi pi-plus" 
+                  styleClass="bg-blue-600 hover:bg-blue-700 shadow-lg" 
+                  (click)="openNew()"
                 />
               </div>
             </div>
-          </ng-template>
-      </p-dialog>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Loading optimizado -->
+      <ng-template pTemplate="loadingbody">
+        <tr>
+          <td colspan="9" class="text-center py-12">
+            <div class="flex items-center justify-center gap-4">
+              <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-lg font-medium text-gray-600">Cargando clientes...</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Vista móvil optimizada -->
+<div class="block lg:hidden">
+  <div class="space-y-4">
+    <!-- Header móvil -->
+    <div class="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Clientes</h3>
+          <p class="text-sm text-gray-600">{{clientesFiltrados.length}} encontrados</p>
+        </div>
+        <div class="flex gap-2">
+          <p-button 
+            icon="pi pi-search" 
+            [rounded]="true"
+            [text]="true"
+            severity="info"
+            (click)="uiState.showAdvancedFilters = !uiState.showAdvancedFilters"
+          />
+          <p-button 
+            icon="pi pi-refresh" 
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            (click)="cargarClientes()"
+            [loading]="loading"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas de clientes optimizadas -->
+    <p-button 
+      *ngFor="let cliente of clientesFiltrados; trackBy: trackByClienteId"
+      class="bg-white rounded-xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
+      [class.ring-2]="selectedClientes.includes(cliente)"
+      [class.ring-blue-500]="selectedClientes.includes(cliente)"
+      (click)="toggleClienteSelection(cliente)">
+      
+      <!-- Header de la tarjeta -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+            <i class="pi pi-user text-white"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900">
+              {{cliente.nombres}} {{cliente.apellidos}}
+            </h3>
+            <p class="text-sm text-gray-600" *ngIf="cliente.email">
+              {{cliente.email}}
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <p-tag 
+            [value]="cliente.estado ? 'Activo' : 'Inactivo'" 
+            [severity]="cliente.estado ? 'success' : 'danger'"
+            size="small"
+          />
+          <button 
+            class="text-gray-400 hover:text-gray-600 p-1"
+            (click)="mostrarMenuAccionesMobile($event, cliente)"
+            (event.stopPropagation)="true">
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Información de contacto -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div *ngIf="cliente.telefono" class="flex items-center gap-2 text-sm">
+          <i class="pi pi-phone text-green-500"></i>
+          <span>{{cliente.telefono}}</span>
+        </div>
+        <div *ngIf="cliente.dni" class="flex items-center gap-2 text-sm">
+          <i class="pi pi-id-card text-indigo-500"></i>
+          <span>{{cliente.dni}}</span>
+        </div>
+        <div *ngIf="cliente.compras" class="flex items-center gap-2 text-sm">
+          <i class="pi pi-shopping-cart text-purple-500"></i>
+          <span>{{cliente.compras}} compras</span>
+        </div>
+      </div>
+      
+      <!-- Barra de completitud -->
+      <div class="mt-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs text-gray-500">Perfil completado</span>
+          <span class="text-xs font-semibold text-blue-600">{{getCompletion(cliente)}}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            class="bg-blue-600 h-2 rounded-full transition-all duration-500"
+            [style.width.%]="getCompletion(cliente)">
+          </div>
+        </div>
+      </div>
+    </p-button>
+  </div>
+</div>
+
+<!-- FAB para móvil -->
+<div class="fixed bottom-6 right-6 lg:hidden z-40">
+  <p-button 
+    icon="pi pi-plus" 
+    [rounded]="true"
+    size="large"
+    severity="info"
+    styleClass="w-14 h-14 shadow-2xl bg-blue-600 hover:bg-blue-700"
+    (click)="openNew()"
+    pTooltip="Nuevo Cliente"
+    *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
+  />
+</div>
+
+<!-- Menú contextual -->
+<p-menu #menuAcciones [popup]="true" [model]="itemsMenuAcciones"></p-menu>
+
+<!-- Diálogo de formulario premium optimizado -->
+<p-dialog 
+  [(visible)]="visible" 
+  [header]="editMode ? 'Editar Cliente' : 'Nuevo Cliente'" 
+  [modal]="true" 
+  [style]="{width: '800px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl" 
+  (onHide)="hideDialog()">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi {{editMode ? 'pi-pencil' : 'pi-user-plus'}} text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">{{editMode ? 'Editar Cliente' : 'Nuevo Cliente'}}</span>
+    </div>
+  </ng-template>
+  
+  <div class="p-5">
+    <!-- Indicador de modo -->
+    <div class="mb-4" *ngIf="editMode">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+        <i class="pi pi-info-circle text-blue-600"></i>
+        <span class="text-blue-800 text-sm">
+          Estás editando el cliente <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong>
+        </span>
+      </div>
+    </div>
+    
+    <form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="space-y-6">
+      <!-- Información personal -->
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-user text-blue-600"></i>
+          Información Personal
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Nombres -->
+          <div class="field">
+            <label for="nombres" class="flex text-sm font-medium text-gray-700 mb-2">
+              Nombres <span class="text-red-500">*</span>
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-blue-50 border-blue-200">
+                <i class="pi pi-user text-blue-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="nombres" 
+                formControlName="nombres"
+                class="w-full border-gray-300" 
+                placeholder="Nombres del cliente"
+                [ngClass]="{'ng-invalid ng-dirty': f['nombres'].invalid && (f['nombres'].dirty || submitted)}"
+              />
+            </div>
+            <small *ngIf="getFieldError('nombres')" class="text-red-500 flex mt-1">
+              <i class="pi pi-exclamation-circle mr-1"></i>
+              {{getFieldError('nombres')}}
+            </small>
+          </div>
+          
+          <!-- Apellidos -->
+          <div class="field">
+            <label for="apellidos" class="flex text-sm font-medium text-gray-700 mb-2">
+              Apellidos <span class="text-red-500">*</span>
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-blue-50 border-blue-200">
+                <i class="pi pi-user text-blue-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="apellidos" 
+                formControlName="apellidos"
+                class="w-full border-gray-300" 
+                placeholder="Apellidos del cliente"
+                [ngClass]="{'ng-invalid ng-dirty': f['apellidos'].invalid && (f['apellidos'].dirty || submitted)}"
+              />
+            </div>
+            <small *ngIf="getFieldError('apellidos')" class="text-red-500 flex mt-1">
+              <i class="pi pi-exclamation-circle mr-1"></i>
+              {{getFieldError('apellidos')}}
+            </small>
+          </div>
+          
+          <!-- Fecha de Nacimiento -->
+          <div class="field col-span-1 md:col-span-2">
+            <label for="fechaNacimiento" class="flex text-sm font-medium text-gray-700 mb-2">
+              Fecha de Nacimiento
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-purple-50 border-purple-200">
+                <i class="pi pi-calendar text-purple-600"></i>
+              </span>
+              <p-datepicker 
+                id="fechaNacimiento"
+                formControlName="fechaNacimiento"
+                dateFormat="yy-mm-dd" 
+                [showIcon]="true"
+                placeholder="Seleccionar fecha"
+                [showButtonBar]="true"
+                appendTo="body"
+                styleClass="w-full"
+                inputStyleClass="border-gray-300"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Información de contacto -->
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-phone text-green-600"></i>
+          Información de Contacto
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Teléfono -->
+          <div class="field">
+            <label for="telefono" class="flex text-sm font-medium text-gray-700 mb-2">
+              Teléfono
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-green-50 border-green-200">
+                <i class="pi pi-phone text-green-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="telefono" 
+                formControlName="telefono"
+                class="w-full border-gray-300" 
+                placeholder="+51 999 999 999"
+                [ngClass]="{'ng-invalid ng-dirty': f['telefono'].invalid && (f['telefono'].dirty || submitted)}"
+              />
+            </div>
+          </div>
+          
+          <!-- Email -->
+          <div class="field">
+            <label for="email" class="flex text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-purple-50 border-purple-200">
+                <i class="pi pi-envelope text-purple-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="email" 
+                formControlName="email"
+                type="email"
+                class="w-full border-gray-300" 
+                placeholder="correo@ejemplo.com"
+                [ngClass]="{'ng-invalid ng-dirty': f['email'].invalid && (f['email'].dirty || submitted)}"
+              />
+            </div>
+          </div>
+          
+          <!-- Dirección -->
+          <div class="field col-span-1 md:col-span-2">
+            <label for="direccion" class="flex text-sm font-medium text-gray-700 mb-2">
+              Dirección
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-yellow-50 border-yellow-200">
+                <i class="pi pi-map-marker text-yellow-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="direccion" 
+                formControlName="direccion"
+                class="w-full border-gray-300" 
+                placeholder="Dirección completa del cliente"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Información fiscal -->
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-id-card text-indigo-600"></i>
+          Información Fiscal
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- DNI -->
+          <div class="field">
+            <label for="dni" class="flex text-sm font-medium text-gray-700 mb-2">
+              DNI
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-indigo-50 border-indigo-200">
+                <i class="pi pi-id-card text-indigo-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="dni"
+                formControlName="dni"
+                maxlength="8" 
+                pattern="[0-9]{8}"
+                class="w-full border-gray-300" 
+                placeholder="12345678"
+                [ngClass]="{'ng-invalid ng-dirty': f['dni'].invalid && (f['dni'].dirty || submitted)}"
+              />
+            </div>
+            <small class="text-gray-500 flex mt-1" *ngIf="!getFieldError('dni')">
+              <i class="pi pi-info-circle mr-1"></i>
+              8 dígitos numéricos
+            </small>
+          </div>
+          
+          <!-- RUC -->
+          <div class="field">
+            <label for="ruc" class="flex text-sm font-medium text-gray-700 mb-2">
+              RUC
+            </label>
+            <div class="p-inputgroup shadow-sm">
+              <span class="p-inputgroup-addon bg-orange-50 border-orange-200">
+                <i class="pi pi-briefcase text-orange-600"></i>
+              </span>
+              <input 
+                pInputText 
+                id="ruc" 
+                formControlName="ruc"
+                maxlength="11" 
+                pattern="[0-9]{11}"
+                class="w-full border-gray-300" 
+                placeholder="20123456789"
+                [ngClass]="{'ng-invalid ng-dirty': f['ruc'].invalid && (f['ruc'].dirty || submitted)}"
+              />
+            </div>
+            <small class="text-gray-500 flex mt-1" *ngIf="!getFieldError('ruc')">
+              <i class="pi pi-info-circle mr-1"></i>
+              11 dígitos numéricos
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado del cliente -->
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-toggle-on text-green-600"></i>
+          Estado del Cliente
+        </h3>
+        
+        <div class="field-checkbox">
+          <p-checkbox 
+            formControlName="estado"
+            [binary]="true" 
+            inputId="estado"
+          ></p-checkbox>
+          <label for="estado" class="ml-2 font-medium text-gray-700">Cliente Activo</label>
+          <p class="text-sm text-gray-500 mt-1">Los clientes inactivos no aparecerán en reportes activos</p>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between px-3">
+      <p-checkbox 
+        *ngIf="!editMode" 
+        [(ngModel)]="crearYAgregar" 
+        [binary]="true" 
+        inputId="crearYAgregar" 
+        label="Crear y agregar otro"
+        styleClass="text-sm"
+      ></p-checkbox>
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          styleClass="p-button-text" 
+          (click)="hideDialog()"
+        />
+        <p-button 
+          [label]="editMode ? 'Actualizar Cliente' : 'Guardar Cliente'" 
+          icon="pi pi-check" 
+          styleClass="bg-blue-600 hover:bg-blue-700"
+          (click)="guardarCliente()" 
+          [loading]="uiState.isFormSaving"
+          [disabled]="clienteForm.invalid"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Diálogo de Detalles del Cliente optimizado -->
+<p-dialog 
+  [(visible)]="detalleDialog" 
+  [style]="{width: '900px'}" 
+  [header]="'Detalles del Cliente'" 
+  [modal]="true" 
+  (onHide)="hideDetalleDialog()"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi pi-info-circle text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">Detalles del Cliente</span>
+    </div>
+  </ng-template>
+  
+  <div *ngIf="clienteDetalle" class="p-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Avatar y estado -->
+      <div class="text-center">
+        <div class="mb-4">
+          <div class="w-32 h-32 bg-blue-600 rounded-full mx-auto flex items-center justify-center shadow-lg">
+            <i class="pi pi-user text-4xl text-white"></i>
+          </div>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">
+          {{clienteDetalle.nombres}} {{clienteDetalle.apellidos}}
+        </h3>
+        <p-tag 
+          [value]="clienteDetalle.estado ? 'Cliente Activo' : 'Cliente Inactivo'" 
+          [severity]="clienteDetalle.estado ? 'success' : 'danger'"
+          [icon]="clienteDetalle.estado ? 'pi pi-check-circle' : 'pi pi-ban'"
+          styleClass="shadow-sm mb-4"
+        />
+        
+        <!-- Indicador de completitud -->
+        <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div class="text-sm font-medium text-gray-700 mb-2">Perfil Completado</div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              class="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+              [style.width]="getCompletion(clienteDetalle) + '%'">
+            </div>
+          </div>
+          <div class="text-xs text-gray-600 mt-1">{{getCompletion(clienteDetalle)}}%</div>
+        </div>
+        
+        <!-- Métricas del cliente -->
+        <div class="mt-4 space-y-2">
+          <div class="bg-green-50 p-2 rounded-lg border border-green-200" *ngIf="clienteDetalle.compras">
+            <div class="text-sm font-medium text-green-700">Compras Realizadas</div>
+            <div class="text-lg font-bold text-green-800">{{clienteDetalle.compras}}</div>
+          </div>
+          <div class="bg-purple-50 p-2 rounded-lg border border-purple-200" *ngIf="clienteDetalle.totalCompras">
+            <div class="text-sm font-medium text-purple-700">Total Gastado</div>
+            <div class="text-lg font-bold text-purple-800">{{clienteDetalle.totalCompras | currency:'S/. ':'symbol':'1.0-0'}}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Información detallada -->
+      <div class="md:col-span-2">
+        <div class="space-y-5">
+          <!-- Información de contacto -->
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-phone text-green-600"></i>
+              Información de Contacto
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div *ngIf="clienteDetalle.telefono" class="flex items-center gap-2 bg-green-50 p-3 rounded-lg">
+                <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-phone text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-green-600">Teléfono</div>
+                  <div class="font-medium text-gray-800">{{clienteDetalle.telefono}}</div>
+                </div>
+              </div>
+              <div *ngIf="clienteDetalle.email" class="flex items-center gap-2 bg-purple-50 p-3 rounded-lg">
+                <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-envelope text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-purple-600">Email</div>
+                  <div class="font-medium text-gray-800">{{clienteDetalle.email}}</div>
+                </div>
+              </div>
+              <div *ngIf="clienteDetalle.direccion" class="flex items-center gap-2 bg-yellow-50 p-3 rounded-lg col-span-1 md:col-span-2">
+                <div class="w-10 h-10 bg-yellow-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-map-marker text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-yellow-600">Dirección</div>
+                  <div class="font-medium text-gray-800">{{clienteDetalle.direccion}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Información fiscal -->
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-id-card text-indigo-600"></i>
+              Información Fiscal
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div *ngIf="clienteDetalle.dni" class="flex items-center gap-2 bg-indigo-50 p-3 rounded-lg">
+                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-id-card text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-indigo-600">DNI</div>
+                  <div class="font-medium text-gray-800 font-mono">{{clienteDetalle.dni}}</div>
+                </div>
+              </div>
+              <div *ngIf="clienteDetalle.ruc" class="flex items-center gap-2 bg-orange-50 p-3 rounded-lg">
+                <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-briefcase text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-orange-600">RUC</div>
+                  <div class="font-medium text-gray-800 font-mono">{{clienteDetalle.ruc}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Información personal -->
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200" *ngIf="clienteDetalle.fechaNacimiento">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-calendar text-purple-600"></i>
+              Información Personal
+            </h4>
+            <div class="flex items-center gap-2 bg-purple-50 p-3 rounded-lg">
+              <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-calendar text-white"></i>
+              </div>
+              <div>
+                <div class="text-xs text-purple-600">Fecha de Nacimiento</div>
+                <div class="font-medium text-gray-800">{{clienteDetalle.fechaNacimiento | date:'dd/MM/yyyy'}}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fechas del sistema -->
+          <div class="bg-gray-50 rounded-xl p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <i class="pi pi-clock text-gray-700"></i>
+              Información del Registro
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div *ngIf="clienteDetalle.fechaCreacion" class="flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm">
+                <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-plus-circle text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-green-600">Fecha de Registro</div>
+                  <div class="font-medium text-gray-800">{{clienteDetalle.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</div>
+                </div>
+              </div>
+              <div *ngIf="clienteDetalle.fechaActualizacion" class="flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm">
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                  <i class="pi pi-refresh text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-blue-600">Última Actualización</div>
+                  <div class="font-medium text-gray-800">{{clienteDetalle.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between gap-3 px-3">
+      <p-button 
+        label="Exportar Ficha" 
+        icon="pi pi-file-pdf" 
+        severity="secondary"
+        [outlined]="true"
+        styleClass="shadow-sm"
+        (click)="exportarFichaCliente(clienteDetalle!)" 
+        *ngIf="clienteDetalle"
+        [loading]="uiState.isExporting"
+      />
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cerrar" 
+          icon="pi pi-times" 
+          styleClass="p-button-text" 
+          (click)="hideDetalleDialog()" 
+        />
+        <p-button 
+          *appHasPermission="{module: 'clientes', permission: permissionTypes.EDIT}"
+          label="Editar Cliente" 
+          icon="pi pi-pencil" 
+          styleClass="bg-blue-600 hover:bg-blue-700"
+          (click)="editCliente(clienteDetalle!); hideDetalleDialog()" 
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Estadísticas Premium -->
+<p-dialog 
+  [(visible)]="estadisticasDialog" 
+  [style]="{width: '1100px'}" 
+  [header]="'Estadísticas de Clientes'" 
+  [modal]="true" 
+  (onHide)="hideEstadisticasDialog()"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi pi-chart-bar text-white text-xl"></i>
+      </div>
+      <span class="font-bold text-xl">Dashboard de Clientes - Emerson147</span>
+    </div>
+  </ng-template>
+  
+  <div class="p-5" *ngIf="clientes.length; else noStats">
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Resumen general con métricas de zapatería -->
+      <div class="bg-gray-50 rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+          <i class="pi pi-chart-bar text-blue-600"></i>
+          Resumen General de Clientes - 2025-07-13
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-users text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-blue-600">{{getEstadisticas().total}}</div>
+                <div class="text-sm text-gray-600">Total Clientes</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-check-circle text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-green-600">{{getEstadisticas().activos}}</div>
+                <div class="text-sm text-gray-600">Activos</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-percentage text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-purple-600">{{getEstadisticas().porcentajeActivos | number:'1.0-0'}}%</div>
+                <div class="text-sm text-gray-600">% Activos</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-crown text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-yellow-600">{{getMetricasZapateria().clientesVIP}}</div>
+                <div class="text-sm text-gray-600">Clientes VIP</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center">
+                <i class="pi pi-money-bill text-white"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-indigo-600">{{getAnalisisValorCliente().totalVentas | currency:'S/. ':'symbol':'1.0-0'}}</div>
+                <div class="text-sm text-gray-600">Total Ventas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gráficos de completitud y distribución -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Completitud de Datos -->
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="pi pi-chart-pie text-blue-600"></i>
+            Completitud de Datos
+          </h4>
+          
+          <div class="space-y-4">
+            <!-- Clientes con email -->
+            <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-envelope text-purple-600"></i>
+                <span class="font-medium">Con Email</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-purple-200 rounded-full h-2">
+                  <div 
+                    class="bg-purple-600 h-2 rounded-full transition-all duration-500" 
+                    [style.width]="(getEstadisticas().clientesConEmail / getEstadisticas().total * 100) + '%'">
+                  </div>
+                </div>
+                <span class="font-bold text-purple-600">{{getEstadisticas().clientesConEmail}}</span>
+              </div>
+            </div>
+            
+            <!-- Clientes con teléfono -->
+            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-phone text-green-600"></i>
+                <span class="font-medium">Con Teléfono</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-green-200 rounded-full h-2">
+                  <div 
+                    class="bg-green-600 h-2 rounded-full transition-all duration-500" 
+                    [style.width]="(getEstadisticas().clientesConTelefono / getEstadisticas().total * 100) + '%'">
+                  </div>
+                </div>
+                <span class="font-bold text-green-600">{{getEstadisticas().clientesConTelefono}}</span>
+              </div>
+            </div>
+            
+            <!-- Clientes completos -->
+            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-check-square text-blue-600"></i>
+                <span class="font-medium">Perfil Completo</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-blue-200 rounded-full h-2">
+                  <div 
+                    class="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+                    [style.width]="(getEstadisticas().clientesCompletos / getEstadisticas().total * 100) + '%'">
+                  </div>
+                </div>
+                <span class="font-bold text-blue-600">{{getEstadisticas().clientesCompletos}}</span>
+              </div>
+            </div>
+            
+            <!-- Métricas de zapatería -->
+            <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-shopping-cart text-yellow-600"></i>
+                <span class="font-medium">Con Compras</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-yellow-200 rounded-full h-2">
+                  <div 
+                    class="bg-yellow-600 h-2 rounded-full transition-all duration-500" 
+                    [style.width]="(getMetricasZapateria().conCompras / getEstadisticas().total * 100) + '%'">
+                  </div>
+                </div>
+                <span class="font-bold text-yellow-600">{{getMetricasZapateria().conCompras}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Distribución por estado -->
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="pi pi-chart-line text-green-600"></i>
+            Distribución por Estado
+          </h4>
+          
+          <div class="flex h-48 items-end justify-center gap-8">
+            <!-- Activos -->
+            <div class="flex flex-col items-center">
+              <div class="font-semibold text-xs mb-2 text-green-600">Activos</div>
+              <div 
+                class="bg-green-500 w-16 rounded-t-lg transition-all duration-500" 
+                [style.height]="(getEstadisticas().activos / getEstadisticas().total * 100) + '%'">
+              </div>
+              <div class="font-bold text-lg mt-2 text-green-600">{{getEstadisticas().activos}}</div>
+              <div class="text-xs text-gray-500">{{(getEstadisticas().activos / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
+            </div>
+            
+            <!-- Inactivos -->
+            <div class="flex flex-col items-center">
+              <div class="font-semibold text-xs mb-2 text-red-600">Inactivos</div>
+              <div 
+                class="bg-red-500 w-16 rounded-t-lg transition-all duration-500" 
+                [style.height]="(getEstadisticas().inactivos / getEstadisticas().total * 100) + '%'">
+              </div>
+              <div class="font-bold text-lg mt-2 text-red-600">{{getEstadisticas().inactivos}}</div>
+              <div class="text-xs text-gray-500">{{(getEstadisticas().inactivos / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
+            </div>
+            
+            <!-- VIP -->
+            <div class="flex flex-col items-center">
+              <div class="font-semibold text-xs mb-2 text-yellow-600">VIP</div>
+              <div 
+                class="bg-yellow-500 w-16 rounded-t-lg transition-all duration-500" 
+                [style.height]="(getMetricasZapateria().clientesVIP / getEstadisticas().total * 100) + '%'">
+              </div>
+              <div class="font-bold text-lg mt-2 text-yellow-600">{{getMetricasZapateria().clientesVIP}}</div>
+              <div class="text-xs text-gray-500">{{(getMetricasZapateria().clientesVIP / getEstadisticas().total * 100) | number:'1.0-0'}}%</div>
+            </div>
+          </div>
+          
+          <!-- Información adicional -->
+          <div class="mt-6 p-3 bg-gray-50 rounded-lg">
+            <h5 class="font-semibold text-gray-700 mb-2">Información Adicional</h5>
+            <div class="text-sm space-y-1">
+              <div class="flex justify-between">
+                <span>Promedio de compras:</span>
+                <span class="font-medium">{{getMetricasZapateria().promedioCompras | number:'1.1-1'}} pares</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Ticket promedio:</span>
+                <span class="font-medium">{{getAnalisisValorCliente().ticketPromedio | currency:'S/. ':'symbol':'1.0-0'}}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Cliente top:</span>
+                <span class="font-medium">{{getAnalisisValorCliente().clienteTop?.nombres || 'N/A'}}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Última actualización:</span>
+                <span class="font-medium">{{uiState.lastUpdate | date:'HH:mm:ss'}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noStats>
+    <div class="flex flex-col items-center justify-center py-10 text-center">
+      <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+        <i class="pi pi-chart-bar text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-xl font-bold text-gray-700 mb-3">No hay datos disponibles</h3>
+      <p class="text-gray-500 mb-6 max-w-lg">Para visualizar las estadísticas de clientes, primero debes registrar algunos clientes en tu base de datos.</p>
+      <p-button 
+        *appHasPermission="{module: 'clientes', permission: permissionTypes.CREATE}"
+        label="Registrar Primer Cliente" 
+        icon="pi pi-plus" 
+        (click)="openNew(); hideEstadisticasDialog()"
+        styleClass="bg-blue-600 hover:bg-blue-700"
+      />
+    </div>
+  </ng-template>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between gap-3 px-3">
+      <div>
+        <p-button 
+          label="Actualizar Datos" 
+          icon="pi pi-refresh" 
+          severity="secondary"
+          [outlined]="true"
+          styleClass="shadow-sm"
+          (click)="cargarClientes()" 
+          [loading]="loading"
+        />
+      </div>
+      <div class="flex gap-2">
+        <p-button 
+          label="Cerrar" 
+          icon="pi pi-times" 
+          styleClass="p-button-text" 
+          (click)="hideEstadisticasDialog()" 
+        />
+        <p-button 
+          label="Exportar Estadísticas" 
+          icon="pi pi-download" 
+          severity="info"
+          (click)="exportarPDF()"
+          styleClass="bg-indigo-600 hover:bg-indigo-700"
+          [loading]="uiState.isExporting"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -294,8 +294,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   // ========== CONFIGURACIÓN ==========
   viewOptions: ViewOption[] = [
     { label: 'Paleta', value: 'palette', icon: 'pi pi-palette' },
-    { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
-    { label: 'Cuadrícula', value: 'grid', icon: 'pi pi-th-large' }
+    { label: 'Tabla', value: 'table', icon: 'pi pi-list' }
   ];
 
   // Categorías de tallas mejoradas
@@ -792,7 +791,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
               this.cargarColoresPorProducto();
               this.selectedColores = [];
             },
-            error: (error) => this.handleError(error, 'No se pudo eliminar el color')
+            error: (error) => this.handleError(error, 'No se pudo eliminar el color, tiene inventario asociado')
           });
       }
     });

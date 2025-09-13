@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -26,9 +26,11 @@ import { ChipModule } from 'primeng/chip';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
-// 🛡️ INTERFACES PARA CONFIGURACIÓN
+// 🛡️ INTERFACES PARA CONFIGURACIÓN (manteniendo las tuyas)
 export interface UsuarioSistema {
   id: number;
   username: string;
@@ -108,7 +110,6 @@ export interface ConfiguracionBackup {
   servicioNube: 'GOOGLE_DRIVE' | 'DROPBOX' | 'AWS_S3';
 }
 
-// Agregar interfaces para los eventos de archivo
 interface FileUploadEvent {
   files: File[];
 }
@@ -146,20 +147,24 @@ interface FileReaderEvent {
     ChipModule,
     TagModule,
     TableModule,
-    DialogModule
+    DialogModule,
+    InputNumberModule,
+    MultiSelectModule
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './configuracion.component.html',
-  styleUrls: ['./configuracion.component.scss']
+  styleUrls: ['./configuracion.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // 🚀 Optimización de performance
 })
 export class ConfiguracionComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   
-  // Variables principales
+  // Variables principales actualizadas
   loading = false;
   guardando = false;
   currentUser = 'Emerson147';
-  currentDateTime = '03/06/2025 07:40:10';
+  currentDateTime = '2025-07-12 23:33:31'; // Actualizado con la fecha actual
   
   // Sección activa
   seccionActiva = 0;
@@ -170,7 +175,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   mostrarFormularioUsuario = false;
   nuevoUsuario: UsuarioSistema = this.inicializarUsuario();
   
-  // Configuración del negocio
+  // Configuración del negocio (manteniendo tu configuración)
   configNegocio: ConfiguracionNegocio = {
     nombre: 'EMPRESA EMERSON147 S.A.C.',
     ruc: '20123456789',
@@ -192,8 +197,9 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   impresoras: ConfiguracionImpresora[] = [];
   impresoraSeleccionada: ConfiguracionImpresora | null = null;
   mostrarFormularioImpresora = false;
+  nuevaImpresora: Partial<ConfiguracionImpresora> = {}; // Agregado para el formulario
   
-  // Configuración fiscal
+  // Configuración fiscal (manteniendo tu configuración)
   configFiscal: ConfiguracionFiscal = {
     emisorElectronico: true,
     usuarioSol: 'EMERSON147',
@@ -206,7 +212,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     serieNota: 'N001'
   };
   
-  // Personalización
+  // Personalización (manteniendo tu configuración)
   temaActual: TemaPersonalizado = {
     nombre: 'Tema Emerson147',
     colorPrimario: '#3b82f6',
@@ -217,7 +223,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     esOscuro: false
   };
   
-  // Backup y sincronización
+  // Backup y sincronización (manteniendo tu configuración)
   configBackup: ConfiguracionBackup = {
     backupAutomatico: true,
     frecuenciaBackup: 'DIARIO',
@@ -228,12 +234,13 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     servicioNube: 'GOOGLE_DRIVE'
   };
   
-  // Variables de estado
+  // Variables de estado adicionales para el HTML optimizado
   testConexionImpresora = false;
+  probandoConexion = false; // Agregado para el formulario de impresora
   backupEnProgreso = false;
   progresBackup = 0;
   
-  // Opciones para dropdowns
+  // Opciones para dropdowns (manteniendo tus opciones)
   opcionesRol = [
     { label: 'Administrador', value: 'ADMIN', icon: 'pi pi-crown' },
     { label: 'Supervisor', value: 'SUPERVISOR', icon: 'pi pi-eye' },
@@ -251,6 +258,19 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     { label: 'Soles (PEN)', value: 'PEN', icon: 'pi pi-money-bill' },
     { label: 'Dólares (USD)', value: 'USD', icon: 'pi pi-dollar' },
     { label: 'Euros (EUR)', value: 'EUR', icon: 'pi pi-euro' }
+  ];
+  
+  // Opciones adicionales para impresoras (agregadas para el HTML optimizado)
+  tiposImpresora = [
+    { label: 'Térmica USB', value: 'TERMICA_USB' },
+    { label: 'Térmica Red', value: 'TERMICA_RED' },
+    { label: 'Láser', value: 'LASER' }
+  ];
+  
+  tamanosPapel = [
+    { label: '58mm', value: '58mm' },
+    { label: '80mm', value: '80mm' },
+    { label: 'A4', value: 'A4' }
   ];
   
   opcionesTipoImpresora = [
@@ -278,13 +298,13 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   ];
   
   diasSemana = [
-    { label: 'Lunes', value: 'Lunes' },
-    { label: 'Martes', value: 'Martes' },
-    { label: 'Miércoles', value: 'Miércoles' },
-    { label: 'Jueves', value: 'Jueves' },
-    { label: 'Viernes', value: 'Viernes' },
-    { label: 'Sábado', value: 'Sábado' },
-    { label: 'Domingo', value: 'Domingo' }
+    { label: 'Lunes', value: 'Lunes', id: 1 },
+    { label: 'Martes', value: 'Martes', id: 2 },
+    { label: 'Miércoles', value: 'Miércoles', id: 3 },
+    { label: 'Jueves', value: 'Jueves', id: 4 },
+    { label: 'Viernes', value: 'Viernes', id: 5 },
+    { label: 'Sábado', value: 'Sábado', id: 6 },
+    { label: 'Domingo', value: 'Domingo', id: 7 }
   ];
 
   private confirmationService: ConfirmationService = inject(ConfirmationService);
@@ -300,14 +320,42 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ✅ INICIALIZACIÓN Y CARGA DE DATOS
+  // 🚀 MÉTODOS DE TRACKING PARA OPTIMIZACIÓN (agregados)
+  trackByUsuarioId(index: number, usuario: UsuarioSistema): number {
+    return usuario.id;
+  }
+
+  trackByImpresoraId(index: number, impresora: ConfiguracionImpresora): number {
+    return impresora.id;
+  }
+
+  trackByDiaId(index: number, dia: { id: number }): number {
+    return dia.id;
+  }
+
+  // 🚀 MÉTODOS DE LAZY LOADING (agregados para optimización)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  cargarUsuariosLazy(event: { first?: number; rows?: number | null }) {
+    this.loading = true;
+    this.cdr.markForCheck();
+    
+    setTimeout(() => {
+      // Simular carga paginada
+      this.loading = false;
+      this.cdr.markForCheck();
+    }, 500);
+  }
+
+  // ✅ INICIALIZACIÓN Y CARGA DE DATOS (manteniendo tu lógica)
   cargarDatosConfiguracion(): void {
     this.loading = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       this.cargarUsuarios();
       this.cargarImpresoras();
       this.loading = false;
+      this.cdr.markForCheck();
       console.log('📊 Datos de configuración cargados para Emerson147');
     }, 1500);
   }
@@ -321,7 +369,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         email: 'emerson@empresa.com',
         rol: 'ADMIN',
         estado: 'ACTIVO',
-        ultimoAcceso: new Date('2025-06-03T07:35:00'),
+        ultimoAcceso: new Date('2025-07-12T23:35:00'),
         permisos: ['VENTAS', 'REPORTES', 'CONFIGURACION', 'USUARIOS'],
         avatar: 'EA',
         telefono: '+51 987 654 321',
@@ -334,7 +382,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         email: 'juan.perez@empresa.com',
         rol: 'VENDEDOR',
         estado: 'ACTIVO',
-        ultimoAcceso: new Date('2025-06-02T18:30:00'),
+        ultimoAcceso: new Date('2025-07-12T18:30:00'),
         permisos: ['VENTAS'],
         avatar: 'JP',
         telefono: '+51 987 123 456',
@@ -347,7 +395,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         email: 'maria.garcia@empresa.com',
         rol: 'SUPERVISOR',
         estado: 'ACTIVO',
-        ultimoAcceso: new Date('2025-06-02T20:15:00'),
+        ultimoAcceso: new Date('2025-07-12T20:15:00'),
         permisos: ['VENTAS', 'REPORTES'],
         avatar: 'MG',
         telefono: '+51 987 789 012',
@@ -410,21 +458,24 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     };
   }
 
-  // ✅ GESTIÓN DE USUARIOS
+  // ✅ GESTIÓN DE USUARIOS (manteniendo tu lógica)
   mostrarNuevoUsuario(): void {
     this.nuevoUsuario = this.inicializarUsuario();
     this.usuarioSeleccionado = null;
     this.mostrarFormularioUsuario = true;
+    this.cdr.markForCheck();
   }
 
   editarUsuario(usuario: UsuarioSistema): void {
     this.usuarioSeleccionado = { ...usuario };
     this.nuevoUsuario = { ...usuario };
     this.mostrarFormularioUsuario = true;
+    this.cdr.markForCheck();
   }
 
   guardarUsuario(): void {
     this.guardando = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       if (this.usuarioSeleccionado) {
@@ -451,6 +502,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       
       this.mostrarFormularioUsuario = false;
       this.guardando = false;
+      this.cdr.markForCheck();
       console.log(`👤 Usuario gestionado por ${this.currentUser}:`, this.nuevoUsuario.nombre);
     }, 2000);
   }
@@ -469,14 +521,16 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
           summary: 'Usuario Eliminado',
           detail: `Usuario ${usuario.nombre} eliminado del sistema`
         });
+        this.cdr.markForCheck();
         console.log(`🗑️ Usuario eliminado por ${this.currentUser}:`, usuario.nombre);
       }
     });
   }
 
-  // ✅ CONFIGURACIÓN DEL NEGOCIO
+  // ✅ CONFIGURACIÓN DEL NEGOCIO (manteniendo tu lógica)
   guardarConfiguracionNegocio(): void {
     this.guardando = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       this.messageService.add({
@@ -485,13 +539,15 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         detail: 'Configuración del negocio actualizada correctamente'
       });
       this.guardando = false;
+      this.cdr.markForCheck();
       console.log(`🏪 Configuración del negocio actualizada por ${this.currentUser}`);
     }, 2000);
   }
 
-  // ✅ GESTIÓN DE IMPRESORAS
+  // ✅ GESTIÓN DE IMPRESORAS (manteniendo tu lógica + nuevos métodos)
   testearConexionImpresora(impresora: ConfiguracionImpresora): void {
     this.testConexionImpresora = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       const exito = Math.random() > 0.3; // 70% de probabilidad de éxito
@@ -513,6 +569,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       }
       
       this.testConexionImpresora = false;
+      this.cdr.markForCheck();
       console.log(`🖨️ Test de impresora ${impresora.nombre} por ${this.currentUser}: ${impresora.estado}`);
     }, 3000);
   }
@@ -526,12 +583,63 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       summary: 'Impresora por Defecto',
       detail: `${impresora.nombre} establecida como impresora principal`
     });
+    this.cdr.markForCheck();
     console.log(`🖨️ Impresora por defecto cambiada por ${this.currentUser}:`, impresora.nombre);
   }
 
-  // ✅ CONFIGURACIÓN FISCAL
+  // Nuevos métodos para el formulario de impresora
+  probarConexionImpresora(): void {
+    this.probandoConexion = true;
+    this.cdr.markForCheck();
+    
+    setTimeout(() => {
+      this.probandoConexion = false;
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Conexión Probada',
+        detail: 'La impresora responde correctamente'
+      });
+      this.cdr.markForCheck();
+    }, 2000);
+  }
+
+  guardarImpresora(): void {
+    this.guardando = true;
+    this.cdr.markForCheck();
+    
+    setTimeout(() => {
+      const nuevaId = Math.max(...this.impresoras.map(i => i.id)) + 1;
+      const impresora: ConfiguracionImpresora = {
+        id: nuevaId,
+        nombre: this.nuevaImpresora.nombre || 'Nueva Impresora',
+        tipo: this.nuevaImpresora.tipo || 'TERMICA',
+        ip: this.nuevaImpresora.ip,
+        puerto: this.nuevaImpresora.puerto,
+        driver: this.nuevaImpresora.driver || 'ESC/POS',
+        tamanoPapel: this.nuevaImpresora.tamanoPapel || '80mm',
+        estado: 'CONECTADA',
+        esDefault: this.nuevaImpresora.esDefault || false,
+        ubicacion: this.nuevaImpresora.ubicacion || 'Nueva Ubicación'
+      };
+      
+      this.impresoras.push(impresora);
+      this.mostrarFormularioImpresora = false;
+      this.nuevaImpresora = {};
+      this.guardando = false;
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Impresora Agregada',
+        detail: `Impresora ${impresora.nombre} configurada correctamente`
+      });
+      this.cdr.markForCheck();
+    }, 1000);
+  }
+
+  // ✅ CONFIGURACIÓN FISCAL (manteniendo tu lógica)
   guardarConfiguracionFiscal(): void {
     this.guardando = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       this.messageService.add({
@@ -540,13 +648,15 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         detail: 'Configuración SUNAT actualizada correctamente'
       });
       this.guardando = false;
+      this.cdr.markForCheck();
       console.log(`💰 Configuración fiscal actualizada por ${this.currentUser}`);
     }, 2000);
   }
 
-  // ✅ PERSONALIZACIÓN DE TEMA
+  // ✅ PERSONALIZACIÓN DE TEMA (manteniendo tu lógica + nuevos métodos)
   aplicarTema(): void {
     this.guardando = true;
+    this.cdr.markForCheck();
     
     setTimeout(() => {
       // Aplicar estilos CSS personalizados
@@ -560,8 +670,22 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         detail: 'Personalización aplicada correctamente'
       });
       this.guardando = false;
+      this.cdr.markForCheck();
       console.log(`🎨 Tema personalizado aplicado por ${this.currentUser}`);
     }, 1500);
+  }
+
+  aplicarTemaPreview(): void {
+    // Aplicar temporalmente sin guardar
+    document.documentElement.style.setProperty('--primary-color', this.temaActual.colorPrimario);
+    document.documentElement.style.setProperty('--secondary-color', this.temaActual.colorSecundario);
+    document.documentElement.style.setProperty('--accent-color', this.temaActual.colorAcento);
+    
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Vista Previa',
+      detail: 'Mostrando vista previa del tema'
+    });
   }
 
   resetearTema(): void {
@@ -574,16 +698,19 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       fontFamily: 'Inter',
       esOscuro: false
     };
-    this.aplicarTema();
+    this.aplicarTemaPreview();
+    this.cdr.markForCheck();
   }
 
-  // ✅ BACKUP Y SINCRONIZACIÓN
+  // ✅ BACKUP Y SINCRONIZACIÓN (manteniendo tu lógica)
   ejecutarBackupManual(): void {
     this.backupEnProgreso = true;
     this.progresBackup = 0;
+    this.cdr.markForCheck();
     
     const interval = setInterval(() => {
       this.progresBackup += Math.random() * 15;
+      this.cdr.markForCheck();
       
       if (this.progresBackup >= 100) {
         this.progresBackup = 100;
@@ -597,13 +724,14 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
             summary: 'Backup Completado',
             detail: 'Respaldo de datos realizado exitosamente'
           });
+          this.cdr.markForCheck();
           console.log(`💾 Backup manual ejecutado por ${this.currentUser}`);
         }, 500);
       }
     }, 200);
   }
 
-  // ✅ UTILIDADES
+  // ✅ UTILIDADES OPTIMIZADAS (manteniendo tu lógica + nuevos métodos)
   getRolIcon(rol: string): string {
     switch (rol) {
       case 'ADMIN': return 'pi pi-crown';
@@ -612,6 +740,16 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       case 'CAJERO': return 'pi pi-calculator';
       default: return 'pi pi-user';
     }
+  }
+
+  getRolClasses(rol: string): string {
+    const roleClassMap: Record<string, string> = {
+      'ADMIN': 'bg-red-100 text-red-800',
+      'SUPERVISOR': 'bg-purple-100 text-purple-800',
+      'CAJERO': 'bg-blue-100 text-blue-800',
+      'VENDEDOR': 'bg-green-100 text-green-800'
+    };
+    return roleClassMap[rol] || 'bg-gray-100 text-gray-800';
   }
 
   getEstadoSeverity(estado: string): string {
@@ -632,6 +770,15 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     }
   }
 
+  getImpresoraTipoClasses(tipo: string): string {
+    const tipoClassMap: Record<string, string> = {
+      'TERMICA': 'bg-blue-600',
+      'LASER': 'bg-purple-600',
+      'MATRIZ': 'bg-green-600'
+    };
+    return tipoClassMap[tipo] || 'bg-gray-600';
+  }
+
   formatearFechaUltimoAcceso(fecha: Date): string {
     const ahora = new Date();
     const diferencia = ahora.getTime() - fecha.getTime();
@@ -645,7 +792,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     return `Hace ${dias} días`;
   }
 
-  onDiaLaboralChange(option: { label: string; value: string; },$event: CheckboxChangeEvent) {
+  onDiaLaboralChange(option: { label: string; value: string; }, $event: CheckboxChangeEvent) {
     if ($event.checked) {
       if (!this.configNegocio.diasLaborales.includes(option.value)) {
         this.configNegocio.diasLaborales.push(option.value);
@@ -653,9 +800,10 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     } else {
       this.configNegocio.diasLaborales = this.configNegocio.diasLaborales.filter(day => day !== option.value);
     }
+    this.cdr.markForCheck();
   }
 
-  // ✅ EVENTOS DE ARCHIVO
+  // ✅ EVENTOS DE ARCHIVO (manteniendo tu lógica)
   onUploadLogo(event: FileUploadEvent): void {
     const file = event.files[0];
     if (file) {
@@ -668,6 +816,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
             summary: 'Logo Subido',
             detail: 'Logo de empresa actualizado correctamente'
           });
+          this.cdr.markForCheck();
         }
       };
       reader.readAsDataURL(file);
@@ -686,9 +835,11 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
             summary: 'Favicon Subido',
             detail: 'Icono del sistema actualizado correctamente'
           });
+          this.cdr.markForCheck();
         }
       };
       reader.readAsDataURL(file);
     }
   }
+
 }

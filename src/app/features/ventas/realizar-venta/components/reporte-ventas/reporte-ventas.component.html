@@ -1,813 +1,860 @@
-<div class="reportes-container">
+<div class="reportes-container min-h-screen bg-gray-50">
 
-  <!-- 🏢 HEADER EMPRESARIAL PRINCIPAL -->
-  <div class="header-empresarial">
-    <div class="header-content">
-      <div class="empresa-info">
-        <div class="logo-empresa">
-          <i class="pi pi-chart-bar"></i>
+  <!-- 🏢 HEADER EMPRESARIAL OPTIMIZADO -->
+  <div class="header-empresarial bg-slate-800 text-white shadow-lg">
+    <div class="header-content p-6">
+      <div class="flex justify-between items-center">
+        
+        <!-- Info Empresa -->
+        <div class="empresa-info flex items-center gap-6">
+          <div class="logo-empresa w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="pi pi-chart-bar text-3xl text-white"></i>
+          </div>
+          <div class="empresa-details">
+            <h1 class="text-3xl font-bold text-white mb-2">📊 Centro de Reportes Empresariales</h1>
+            <p class="text-slate-300 text-lg mb-1">
+              Sistema Integral de Análisis de Datos - Usuario: <strong class="text-blue-300">{{currentUser}}</strong>
+            </p>
+            <p class="text-slate-400 flex items-center gap-2">
+              <i class="pi pi-calendar text-green-400"></i>
+              Fecha del Sistema: <span class="text-green-300">{{currentDateTime}} UTC</span>
+            </p>
+          </div>
         </div>
-        <div class="empresa-details">
-          <h1>📊 Centro de Reportes Empresariales</h1>
-          <p class="empresa-subtitle">
-            Sistema Integral de Análisis de Datos - Usuario: <strong>{{currentUser}}</strong>
-          </p>
-          <p class="fecha-sistema">
-            <i class="pi pi-calendar"></i>
-            Fecha del Sistema: {{currentDateTime}} UTC
-          </p>
-        </div>
-      </div>
-      
-      <div class="estado-sistema">
-        <p-card styleClass="estado-card">
-          <div class="estado-content">
-            <i class="pi pi-check-circle"></i>
-            <div>
-              <div class="estado-titulo">Sistema</div>
-              <div class="estado-valor">ACTIVO</div>
+        
+        <!-- Estado Sistema -->
+        <div class="estado-sistema">
+          <div class="bg-green-600 rounded-xl p-4 shadow-lg border border-green-500">
+            <div class="flex items-center gap-3 text-white">
+              <i class="pi pi-check-circle text-2xl"></i>
+              <div>
+                <div class="font-bold text-lg">Sistema</div>
+                <div class="text-green-100">ACTIVO</div>
+              </div>
             </div>
           </div>
-        </p-card>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 📈 DASHBOARD PRINCIPAL -->
-  <div class="dashboard-principal">
-    <p-splitter [style]="{'height': '800px'}" styleClass="mb-5">
+  <!-- 📈 DASHBOARD PRINCIPAL OPTIMIZADO -->
+  <div class="dashboard-principal bg-white">
+    <p-splitter [style]="{'height': '800px'}" styleClass="border-0">
       
-      <!-- PANEL IZQUIERDO - FILTROS Y CONTROLES -->
+      <!-- PANEL IZQUIERDO - FILTROS OPTIMIZADOS -->
       <ng-template pTemplate="panel">
-        <p-panel header="🔍 Centro de Control" styleClass="filtros-panel">
-          
-          <!-- Filtros Principales -->
-          <p-accordion [multiple]="true" [activeIndex]="[0, 1]">
+        <div class="filtros-panel bg-white border-r border-gray-200 h-full overflow-y-auto">
+          <p-panel header="🔍 Centro de Control" styleClass="border-0 h-full">
             
-            <!-- Filtros de Tiempo -->
-            <p-accordionTab header="📅 Filtros de Tiempo">
-              <div class="filtros-tiempo">
-                <div class="p-field">
-                  <label for="periodoSeleccionado">Período:</label>
-                  <p-dropdown 
-                    [(ngModel)]="periodoSeleccionado"
-                    [options]="periodos"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Seleccionar período"
-                    styleClass="w-full">
-                  </p-dropdown>
-                </div>
-                
-                <div class="p-field">
-                  <label for="rangoFechas">Rango de Fechas:</label>
-                  <p-calendar 
-                    [(ngModel)]="rangoFechas"
-                    selectionMode="range"
-                    [readonlyInput]="true"
-                    placeholder="Seleccionar rango"
-                    dateFormat="dd/mm/yy"
-                    [showIcon]="true"
-                    styleClass="w-full">
-                  </p-calendar>
-                </div>
-              </div>
-            </p-accordionTab>
-            
-            <!-- Filtros de Datos -->
-            <p-accordionTab header="🏢 Filtros de Datos">
-              <div class="filtros-datos">
-                <div class="p-field">
-                  <label for="sucursalesSeleccionadas">Sucursales:</label>
-                  <p-multiSelect 
-                    [(ngModel)]="sucursalesSeleccionadas"
-                    [options]="sucursales"
-                    optionLabel="nombre"
-                    optionValue="id"
-                    placeholder="Seleccionar sucursales"
-                    styleClass="w-full">
-                  </p-multiSelect>
-                </div>
-                
-                <div class="p-field">
-                  <label for="vendedoresSeleccionados">Vendedores:</label>
-                  <p-multiSelect 
-                    [(ngModel)]="vendedoresSeleccionados"
-                    [options]="vendedores"
-                    optionLabel="nombre"
-                    optionValue="id"
-                    placeholder="Seleccionar vendedores"
-                    styleClass="w-full">
-                  </p-multiSelect>
-                </div>
-                
-                <div class="p-field">
-                  <label for="categoriasSeleccionadas">Categorías:</label>
-                  <p-multiSelect 
-                    [(ngModel)]="categoriasSeleccionadas"
-                    [options]="categorias"
-                    optionLabel="nombre"
-                    optionValue="id"
-                    placeholder="Seleccionar categorías"
-                    styleClass="w-full">
-                  </p-multiSelect>
-                </div>
-              </div>
-            </p-accordionTab>
-            
-            <!-- Filtros Avanzados -->
-            <p-accordionTab header="⚙️ Filtros Avanzados">
-              <div class="filtros-avanzados">
-                <div class="p-field">
-                  <label for="rangoMontos">Rango de Montos:</label>
-                  <p-slider 
-                    [(ngModel)]="rangoMontos"
-                    [range]="true"
-                    [min]="0"
-                    [max]="100000"
-                    [step]="1000"
-                    styleClass="w-full">
-                  </p-slider>
-                  <div class="range-labels">
-                    <span>S/ {{rangoMontos[0] | number}}</span>
-                    <span>S/ {{rangoMontos[1] | number}}</span>
+            <!-- Filtros Principales -->
+            <p-accordion [multiple]="true" [activeIndex]="[0, 1]">
+              
+              <!-- Filtros de Tiempo -->
+              <p-accordionTab header="📅 Filtros de Tiempo">
+                <div class="filtros-tiempo p-4 space-y-4 bg-blue-50">
+                  <div class="space-y-2">
+                    <label for="periodoSeleccionado" class="block text-sm font-semibold text-gray-700">Período:</label>
+                    <p-dropdown 
+                      [(ngModel)]="periodoSeleccionado"
+                      [options]="periodos"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccionar período"
+                      styleClass="w-full">
+                    </p-dropdown>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="rangoFechas" class="block text-sm font-semibold text-gray-700">Rango de Fechas:</label>
+                    <p-calendar 
+                      [(ngModel)]="rangoFechas"
+                      selectionMode="range"
+                      [readonlyInput]="true"
+                      placeholder="Seleccionar rango"
+                      dateFormat="dd/mm/yy"
+                      [showIcon]="true"
+                      styleClass="w-full">
+                    </p-calendar>
                   </div>
                 </div>
-                
-                <div class="p-field">
-                  <label for="minimoTransacciones" >Mínimo de Transacciones:</label>
-                  <p-inputNumber 
-                    [(ngModel)]="minimoTransacciones"
-                    [min]="1"
-                    [max]="1000"
-                    [showButtons]="true"
-                    buttonLayout="horizontal"
-                    incrementButtonIcon="pi pi-plus"
-                    decrementButtonIcon="pi pi-minus"
-                    styleClass="w-full">
-                  </p-inputNumber>
+              </p-accordionTab>
+              
+              <!-- Filtros de Datos -->
+              <p-accordionTab header="🏢 Filtros de Datos">
+                <div class="filtros-datos p-4 space-y-4 bg-purple-50">
+                  <div class="space-y-2">
+                    <label for="sucursalesSeleccionadas" class="block text-sm font-semibold text-gray-700">Sucursales:</label>
+                    <p-multiSelect 
+                      [(ngModel)]="sucursalesSeleccionadas"
+                      [options]="sucursales"
+                      optionLabel="nombre"
+                      optionValue="id"
+                      placeholder="Seleccionar sucursales"
+                      styleClass="w-full">
+                    </p-multiSelect>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="vendedoresSeleccionados" class="block text-sm font-semibold text-gray-700">Vendedores:</label>
+                    <p-multiSelect 
+                      [(ngModel)]="vendedoresSeleccionados"
+                      [options]="vendedores"
+                      optionLabel="nombre"
+                      optionValue="id"
+                      placeholder="Seleccionar vendedores"
+                      styleClass="w-full">
+                    </p-multiSelect>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="categoriasSeleccionadas" class="block text-sm font-semibold text-gray-700">Categorías:</label>
+                    <p-multiSelect 
+                      [(ngModel)]="categoriasSeleccionadas"
+                      [options]="categorias"
+                      optionLabel="nombre"
+                      optionValue="id"
+                      placeholder="Seleccionar categorías"
+                      styleClass="w-full">
+                    </p-multiSelect>
+                  </div>
                 </div>
+              </p-accordionTab>
+              
+              <!-- Filtros Avanzados -->
+              <p-accordionTab header="⚙️ Filtros Avanzados">
+                <div class="filtros-avanzados p-4 space-y-4 bg-green-50">
+                  <div class="space-y-3">
+                    <label for="rangoMontos" class="block text-sm font-semibold text-gray-700">Rango de Montos:</label>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p-slider 
+                        [(ngModel)]="rangoMontos"
+                        [range]="true"
+                        [min]="0"
+                        [max]="100000"
+                        [step]="1000"
+                        styleClass="w-full">
+                      </p-slider>
+                      <div class="flex justify-between text-sm text-gray-600 mt-2">
+                        <span class="bg-gray-100 px-2 py-1 rounded">S/ {{rangoMontos[0] | number}}</span>
+                        <span class="bg-gray-100 px-2 py-1 rounded">S/ {{rangoMontos[1] | number}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="minimoTransacciones" class="block text-sm font-semibold text-gray-700">Mínimo de Transacciones:</label>
+                    <p-inputNumber 
+                      [(ngModel)]="minimoTransacciones"
+                      [min]="1"
+                      [max]="1000"
+                      [showButtons]="true"
+                      buttonLayout="horizontal"
+                      incrementButtonIcon="pi pi-plus"
+                      decrementButtonIcon="pi pi-minus"
+                      styleClass="w-full">
+                    </p-inputNumber>
+                  </div>
+                </div>
+              </p-accordionTab>
+            </p-accordion>
+            
+            <!-- Botones de Acción -->
+            <div class="acciones-filtros p-4 bg-gray-50 border-t border-gray-200">
+              <div class="space-y-3">
+                <p-button 
+                  label="Aplicar Filtros"
+                  icon="pi pi-search"
+                  styleClass="p-button-success w-full"
+                  [loading]="aplicandoFiltros"
+                  (click)="aplicarFiltros()">
+                </p-button>
+                
+                <p-button 
+                  label="Limpiar Filtros"
+                  icon="pi pi-refresh"
+                  styleClass="p-button-secondary w-full"
+                  [outlined]="true"
+                  (click)="limpiarFiltros()">
+                </p-button>
+                
+                <p-button 
+                  label="Guardar Configuración"
+                  icon="pi pi-save"
+                  styleClass="p-button-info w-full"
+                  [outlined]="true"
+                  (click)="guardarConfiguracion()">
+                </p-button>
               </div>
-            </p-accordionTab>
-          </p-accordion>
-          
-          <!-- Botones de Acción -->
-          <div class="acciones-filtros">
-            <p-button 
-              label="Aplicar Filtros"
-              icon="pi pi-search"
-              styleClass="p-button-success w-full mb-2"
-              [loading]="aplicandoFiltros"
-              (click)="aplicarFiltros()">
-            </p-button>
-            
-            <p-button 
-              label="Limpiar Filtros"
-              icon="pi pi-refresh"
-              styleClass="p-button-secondary w-full mb-2"
-              [outlined]="true"
-              (click)="limpiarFiltros()">
-            </p-button>
-            
-            <p-button 
-              label="Guardar Configuración"
-              icon="pi pi-save"
-              styleClass="p-button-info w-full"
-              [outlined]="true"
-              (click)="guardarConfiguracion()">
-            </p-button>
-          </div>
-          
-        </p-panel>
+            </div>
+          </p-panel>
+        </div>
       </ng-template>
       
-      <!-- PANEL DERECHO - CONTENIDO PRINCIPAL -->
+      <!-- PANEL DERECHO - CONTENIDO OPTIMIZADO -->
       <ng-template pTemplate="panel">
-        <div class="contenido-principal">
+        <div class="contenido-principal h-full overflow-y-auto">
           
           <!-- Tabs Principales de Reportes -->
-          <p-tabView [(activeIndex)]="tabActivo" styleClass="reportes-tabs">
+          <p-tabView [(activeIndex)]="tabActivo" 
+                     styleClass="reportes-tabs h-full">
             
             <!-- 📊 DASHBOARD EJECUTIVO -->
             <p-tabPanel header="📊 Dashboard Ejecutivo">
               
-              <!-- KPIs Principales -->
-              <div class="kpis-principales">
-                <div class="grid">
-                  <div class="col-12 lg:col-3">
-                    <p-card styleClass="kpi-card ventas-card">
-                      <div class="kpi-content">
-                        <div class="kpi-icon">
-                          <i class="pi pi-dollar"></i>
-                        </div>
-                        <div class="kpi-info">
-                          <div class="kpi-valor">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
-                          <div class="kpi-titulo">Ventas Totales</div>
-                          <div class="kpi-porcentaje positivo">
-                            <i class="pi pi-arrow-up"></i>
-                            +{{kpis.crecimientoVentas}}%
-                          </div>
+              <!-- KPIs Principales OPTIMIZADOS -->
+              <div class="kpis-principales p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  
+                  <!-- Ventas Card -->
+                  <div class="bg-green-500 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1">
+                        <div class="text-3xl font-bold mb-1">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
+                        <div class="text-green-100 text-sm mb-2">Ventas Totales</div>
+                        <div class="flex items-center gap-1 text-sm bg-green-600 rounded-full px-2 py-1 w-fit">
+                          <i class="pi pi-arrow-up text-xs"></i>
+                          <span>+{{kpis.crecimientoVentas}}%</span>
                         </div>
                       </div>
-                    </p-card>
+                      <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i class="pi pi-dollar text-2xl"></i>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div class="col-12 lg:col-3">
-                    <p-card styleClass="kpi-card transacciones-card">
-                      <div class="kpi-content">
-                        <div class="kpi-icon">
-                          <i class="pi pi-shopping-cart"></i>
-                        </div>
-                        <div class="kpi-info">
-                          <div class="kpi-valor">{{kpis.numeroTransacciones | number}}</div>
-                          <div class="kpi-titulo">Transacciones</div>
-                          <div class="kpi-porcentaje positivo">
-                            <i class="pi pi-arrow-up"></i>
-                            +{{kpis.crecimientoTransacciones}}%
-                          </div>
+                  <!-- Transacciones Card -->
+                  <div class="bg-blue-500 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1">
+                        <div class="text-3xl font-bold mb-1">{{kpis.numeroTransacciones | number}}</div>
+                        <div class="text-blue-100 text-sm mb-2">Transacciones</div>
+                        <div class="flex items-center gap-1 text-sm bg-blue-600 rounded-full px-2 py-1 w-fit">
+                          <i class="pi pi-arrow-up text-xs"></i>
+                          <span>+{{kpis.crecimientoTransacciones}}%</span>
                         </div>
                       </div>
-                    </p-card>
+                      <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="pi pi-shopping-cart text-2xl"></i>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div class="col-12 lg:col-3">
-                    <p-card styleClass="kpi-card clientes-card">
-                      <div class="kpi-content">
-                        <div class="kpi-icon">
-                          <i class="pi pi-users"></i>
-                        </div>
-                        <div class="kpi-info">
-                          <div class="kpi-valor">{{kpis.clientesUnicos | number}}</div>
-                          <div class="kpi-titulo">Clientes Únicos</div>
-                          <div class="kpi-porcentaje positivo">
-                            <i class="pi pi-arrow-up"></i>
-                            +{{kpis.crecimientoClientes}}%
-                          </div>
+                  <!-- Clientes Card -->
+                  <div class="bg-orange-500 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1">
+                        <div class="text-3xl font-bold mb-1">{{kpis.clientesUnicos | number}}</div>
+                        <div class="text-orange-100 text-sm mb-2">Clientes Únicos</div>
+                        <div class="flex items-center gap-1 text-sm bg-orange-600 rounded-full px-2 py-1 w-fit">
+                          <i class="pi pi-arrow-up text-xs"></i>
+                          <span>+{{kpis.crecimientoClientes}}%</span>
                         </div>
                       </div>
-                    </p-card>
+                      <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
+                        <i class="pi pi-users text-2xl"></i>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div class="col-12 lg:col-3">
-                    <p-card styleClass="kpi-card ticket-card">
-                      <div class="kpi-content">
-                        <div class="kpi-icon">
-                          <i class="pi pi-receipt"></i>
-                        </div>
-                        <div class="kpi-info">
-                          <div class="kpi-valor">S/ {{kpis.ticketPromedio | number:'1.0-0'}}</div>
-                          <div class="kpi-titulo">Ticket Promedio</div>
-                          <div class="kpi-porcentaje positivo">
-                            <i class="pi pi-arrow-up"></i>
-                            +{{kpis.crecimientoTicket}}%
-                          </div>
+                  <!-- Ticket Promedio Card -->
+                  <div class="bg-purple-500 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1">
+                        <div class="text-3xl font-bold mb-1">S/ {{kpis.ticketPromedio | number:'1.0-0'}}</div>
+                        <div class="text-purple-100 text-sm mb-2">Ticket Promedio</div>
+                        <div class="flex items-center gap-1 text-sm bg-purple-600 rounded-full px-2 py-1 w-fit">
+                          <i class="pi pi-arrow-up text-xs"></i>
+                          <span>+{{kpis.crecimientoTicket}}%</span>
                         </div>
                       </div>
-                    </p-card>
+                      <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="pi pi-receipt text-2xl"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <!-- Progreso de Meta -->
-              <div class="progreso-meta mb-4">
-                <p-card header="🎯 Progreso de Meta Mensual" styleClass="meta-card">
-                  <div class="meta-content">
-                    <div class="meta-info">
-                      <div class="meta-actual">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
-                      <div class="meta-objetivo">Meta: S/ {{kpis.metaMensual | number:'1.0-0'}}</div>
-                    </div>
-                    <div class="meta-progreso">
-                      <p-progressBar 
-                        [value]="progresoMeta"
-                        [style]="{'height': '20px'}"
-                        [showValue]="true">
-                      </p-progressBar>
+              <!-- Progreso de Meta OPTIMIZADO -->
+              <div class="progreso-meta p-4">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <i class="pi pi-target text-red-500"></i>
+                      Progreso de Meta Mensual
+                    </h3>
+                    <div class="text-right">
+                      <div class="text-2xl font-bold text-green-600">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
+                      <div class="text-sm text-gray-500">Meta: S/ {{kpis.metaMensual | number:'1.0-0'}}</div>
                     </div>
                   </div>
-                </p-card>
+                  <p-progressBar 
+                    [value]="progresoMeta"
+                    [style]="{'height': '20px'}"
+                    [showValue]="true"
+                    unit="%">
+                  </p-progressBar>
+                </div>
               </div>
               
-              <!-- Gráficos Principales -->
-              <div class="graficos-principales">
-                <div class="grid">
+              <!-- Gráficos Principales OPTIMIZADOS -->
+              <div class="graficos-principales p-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   
                   <!-- Gráfico de Ventas -->
-                  <div class="col-12 lg:col-8">
-                    <p-card header="📈 Evolución de Ventas" styleClass="grafico-card">
+                  <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                      <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                          <i class="pi pi-chart-line text-blue-500"></i>
+                          Evolución de Ventas
+                        </h3>
+                        <div class="flex gap-2">
+                          <p-selectButton 
+                            [(ngModel)]="tipoGraficoVentas"
+                            [options]="tiposGrafico"
+                            optionLabel="label"
+                            optionValue="value"
+                            (onChange)="cambiarTipoGrafico()"
+                            size="small">
+                          </p-selectButton>
+                        </div>
+                      </div>
                       <p-chart 
                         type="line"
                         [data]="datosGraficoVentas"
                         [options]="opcionesGraficoVentas"
-                        [width]="'100%'"
-                        height="400">
+                        height="350">
                       </p-chart>
-                      
-                      <div class="grafico-controles">
-                        <p-selectButton 
-                          [(ngModel)]="tipoGraficoVentas"
-                          [options]="tiposGrafico"
-                          optionLabel="label"
-                          optionValue="value"
-                          (onChange)="cambiarTipoGrafico()">
-                        </p-selectButton>
-                      </div>
-                    </p-card>
+                    </div>
                   </div>
                   
                   <!-- Gráfico de Métodos de Pago -->
-                  <div class="col-12 lg:col-4">
-                    <p-card header="💳 Métodos de Pago" styleClass="grafico-card">
+                  <div>
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="pi pi-credit-card text-purple-500"></i>
+                        Métodos de Pago
+                      </h3>
                       <p-chart 
                         type="doughnut"
                         [data]="datosGraficoMetodosPago"
                         [options]="opcionesGraficoCircular"
-                        [width]="'100%'"
                         height="300">
                       </p-chart>
                       
-                      <!-- Leyenda personalizada -->
-                      <div class="metodos-leyenda">
-                        <div *ngFor="let metodo of resumenMetodosPago" class="metodo-item">
-                          <div class="metodo-color" [style.background]="metodo.color"></div>
-                          <div class="metodo-info">
-                            <div class="metodo-nombre">{{metodo.nombre}}</div>
-                            <div class="metodo-porcentaje">{{metodo.porcentaje}}%</div>
+                      <!-- Leyenda optimizada -->
+                      <div class="metodos-leyenda mt-4 space-y-2">
+                        <div *ngFor="let metodo of resumenMetodosPago" 
+                             class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                          <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full" [style.background]="metodo.color"></div>
+                            <span class="text-sm font-medium">{{metodo.nombre}}</span>
                           </div>
+                          <span class="text-sm font-bold">{{metodo.porcentaje}}%</span>
                         </div>
                       </div>
-                    </p-card>
+                    </div>
                   </div>
                 </div>
               </div>
               
             </p-tabPanel>
             
-            <!-- 🏆 TOP PRODUCTOS Y VENDEDORES -->
+            <!-- 🏆 TOP PRODUCTOS Y VENDEDORES OPTIMIZADO -->
             <p-tabPanel header="🏆 Top Performance">
               
-              <div class="grid">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
                 
                 <!-- Top Productos -->
-                <div class="col-12 lg:col-6">
-                  <p-card header="🥇 Top 10 Productos" styleClass="top-card">
-                    <p-table 
-                      [value]="topProductos"
-                      styleClass="p-datatable-sm"
-                      [paginator]="false"
-                      [rows]="10">
-                      
-                      <ng-template pTemplate="header">
-                        <tr>
-                          <th>Rank</th>
-                          <th>Producto</th>
-                          <th>Ventas</th>
-                          <th>Cantidad</th>
-                        </tr>
-                      </ng-template>
-                      
-                      <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
-                        <tr>
-                          <td>
-                            <p-badge 
-                              [value]="(rowIndex + 1).toString()"
-                              [severity]="getRankSeverity(rowIndex)">
-                            </p-badge>
-                          </td>
-                          <td>
-                            <div class="producto-info">
-                              <div class="producto-nombre">{{producto.nombre}}</div>
-                              <div class="producto-categoria">{{producto.categoria}}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="producto-ventas">
-                              <strong>S/ {{producto.totalVentas | number:'1.0-0'}}</strong>
-                            </div>
-                          </td>
-                          <td>
-                            <p-chip 
-                              [label]="producto.cantidadVendida.toString()"
-                              styleClass="cantidad-chip">
-                            </p-chip>
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </p-table>
-                  </p-card>
+                <div>
+                  <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-blue-50">
+                      <h3 class="text-lg font-bold text-blue-900 flex items-center gap-2">
+                        <i class="pi pi-star text-yellow-500"></i>
+                        Top 10 Productos
+                      </h3>
+                    </div>
+                    <div class="p-6">
+                      <p-table 
+                        [value]="topProductos"
+                        styleClass="p-datatable-sm"
+                        [paginator]="false"
+                        [rows]="10">
+                        
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th class="w-16">Rank</th>
+                            <th>Producto</th>
+                            <th class="text-right">Ventas</th>
+                            <th class="text-center">Cantidad</th>
+                          </tr>
+                        </ng-template>
+                        
+                        <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
+                          <tr class="hover:bg-blue-50 transition-colors">
+                            <td>
+                              <p-badge 
+                                [value]="(rowIndex + 1).toString()"
+                                [severity]="getRankSeverity(rowIndex)"
+                                styleClass="font-bold">
+                              </p-badge>
+                            </td>
+                            <td>
+                              <div class="producto-info">
+                                <div class="font-semibold text-gray-900">{{producto.nombre}}</div>
+                                <div class="text-sm text-gray-500">{{producto.categoria}}</div>
+                              </div>
+                            </td>
+                            <td class="text-right">
+                              <div class="font-bold text-green-600">S/ {{producto.totalVentas | number:'1.0-0'}}</div>
+                            </td>
+                            <td class="text-center">
+                              <p-chip 
+                                [label]="producto.cantidadVendida.toString()"
+                                styleClass="bg-blue-100 text-blue-700">
+                              </p-chip>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
                 </div>
                 
                 <!-- Top Vendedores -->
-                <div class="col-12 lg:col-6">
-                  <p-card header="🌟 Top 10 Vendedores" styleClass="top-card">
-                    <p-table 
-                      [value]="topVendedores"
-                      styleClass="p-datatable-sm"
-                      [paginator]="false"
-                      [rows]="10">
-                      
-                      <ng-template pTemplate="header">
-                        <tr>
-                          <th>Rank</th>
-                          <th>Vendedor</th>
-                          <th>Ventas</th>
-                          <th>Comisión</th>
-                        </tr>
-                      </ng-template>
-                      
-                      <ng-template pTemplate="body" let-vendedor let-rowIndex="rowIndex">
-                        <tr>
-                          <td>
-                            <p-badge 
-                              [value]="(rowIndex + 1).toString()"
-                              [severity]="getRankSeverity(rowIndex)">
-                            </p-badge>
-                          </td>
-                          <td>
-                            <div class="vendedor-info">
-                              <p-avatar 
-                                [label]="vendedor.iniciales"
-                                size="normal"
-                                shape="circle"
-                                styleClass="mr-2">
-                              </p-avatar>
-                              <div>
-                                <div class="vendedor-nombre">{{vendedor.nombre}}</div>
-                                <div class="vendedor-sucursal">{{vendedor.sucursal}}</div>
+                <div>
+                  <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-green-50">
+                      <h3 class="text-lg font-bold text-green-900 flex items-center gap-2">
+                        <i class="pi pi-users text-blue-500"></i>
+                        Top 10 Vendedores
+                      </h3>
+                    </div>
+                    <div class="p-6">
+                      <p-table 
+                        [value]="topVendedores"
+                        styleClass="p-datatable-sm"
+                        [paginator]="false"
+                        [rows]="10">
+                        
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th class="w-16">Rank</th>
+                            <th>Vendedor</th>
+                            <th class="text-right">Ventas</th>
+                            <th class="text-right">Comisión</th>
+                          </tr>
+                        </ng-template>
+                        
+                        <ng-template pTemplate="body" let-vendedor let-rowIndex="rowIndex">
+                          <tr class="hover:bg-green-50 transition-colors">
+                            <td>
+                              <p-badge 
+                                [value]="(rowIndex + 1).toString()"
+                                [severity]="getRankSeverity(rowIndex)"
+                                styleClass="font-bold">
+                              </p-badge>
+                            </td>
+                            <td>
+                              <div class="flex items-center gap-3">
+                                <p-avatar 
+                                  [label]="vendedor.iniciales"
+                                  size="normal"
+                                  shape="circle"
+                                  styleClass="bg-blue-500 text-white">
+                                </p-avatar>
+                                <div>
+                                  <div class="font-semibold text-gray-900">{{vendedor.nombre}}</div>
+                                  <div class="text-sm text-gray-500">{{vendedor.sucursal}}</div>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="vendedor-ventas">
-                              <strong>S/ {{vendedor.totalVentas | number:'1.0-0'}}</strong>
-                              <div class="vendedor-meta">
-                                <p-progressBar 
-                                  [value]="vendedor.porcentajeMeta"
-                                  [style]="{'height': '6px'}"
-                                  [showValue]="false">
-                                </p-progressBar>
-                                <small>{{vendedor.porcentajeMeta}}% de meta</small>
+                            </td>
+                            <td class="text-right">
+                              <div class="space-y-1">
+                                <div class="font-bold text-green-600">S/ {{vendedor.totalVentas | number:'1.0-0'}}</div>
+                                <div class="text-xs">
+                                  <p-progressBar 
+                                    [value]="vendedor.porcentajeMeta"
+                                    [style]="{'height': '4px'}"
+                                    [showValue]="false">
+                                  </p-progressBar>
+                                  <span class="text-gray-500">{{vendedor.porcentajeMeta}}% meta</span>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            <p-chip 
-                              [label]="'S/ ' + (vendedor.comision | number:'1.0-0')"
-                              styleClass="comision-chip">
-                            </p-chip>
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </p-table>
-                  </p-card>
+                            </td>
+                            <td class="text-right">
+                              <p-chip 
+                                [label]="'S/ ' + (vendedor.comision | number:'1.0-0')"
+                                styleClass="bg-green-100 text-green-700">
+                              </p-chip>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               <!-- Gráfico de Vendedores -->
-              <div class="vendedores-grafico mt-4">
-                <p-card header="📊 Comparativo de Vendedores" styleClass="grafico-card">
+              <div class="vendedores-grafico p-4">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="pi pi-chart-bar text-indigo-500"></i>
+                    Comparativo de Vendedores
+                  </h3>
                   <p-chart 
                     type="bar"
                     [data]="datosGraficoVendedores"
                     [options]="opcionesGraficoBarras"
-                    [width]="'100%'"
                     height="400">
                   </p-chart>
-                </p-card>
+                </div>
               </div>
               
             </p-tabPanel>
             
-            <!-- 👥 ANÁLISIS DE CLIENTES -->
+            <!-- 👥 ANÁLISIS DE CLIENTES OPTIMIZADO -->
             <p-tabPanel header="👥 Análisis de Clientes">
               
-              <div class="grid">
+              <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4">
                 
                 <!-- Segmentación de Clientes -->
-                <div class="col-12 lg:col-4">
-                  <p-card header="🎯 Segmentación de Clientes" styleClass="segmentos-card">
+                <div>
+                  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <i class="pi pi-chart-pie text-purple-500"></i>
+                      Segmentación
+                    </h3>
                     <p-chart 
                       type="pie"
                       [data]="datosSegmentosClientes"
                       [options]="opcionesGraficoCircular"
-                      [width]="'100%'"
-                      height="300">
+                      height="250">
                     </p-chart>
                     
-                    <div class="segmentos-detalle">
-                      <div class="segmento-item premium">
-                        <i class="pi pi-star"></i>
-                        <span>Premium VIP: 127 clientes</span>
+                    <div class="segmentos-detalle mt-4 space-y-2">
+                      <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
+                        <div class="flex items-center gap-2">
+                          <i class="pi pi-star text-yellow-500"></i>
+                          <span class="text-sm font-medium">Premium VIP</span>
+                        </div>
+                        <span class="text-sm font-bold">127</span>
                       </div>
-                      <div class="segmento-item frecuente">
-                        <i class="pi pi-heart"></i>
-                        <span>Frecuentes: 245 clientes</span>
+                      <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                        <div class="flex items-center gap-2">
+                          <i class="pi pi-heart text-blue-500"></i>
+                          <span class="text-sm font-medium">Frecuentes</span>
+                        </div>
+                        <span class="text-sm font-bold">245</span>
                       </div>
-                      <div class="segmento-item ocasional">
-                        <i class="pi pi-user"></i>
-                        <span>Ocasionales: 195 clientes</span>
+                      <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-2">
+                          <i class="pi pi-user text-gray-500"></i>
+                          <span class="text-sm font-medium">Ocasionales</span>
+                        </div>
+                        <span class="text-sm font-bold">195</span>
                       </div>
                     </div>
-                  </p-card>
+                  </div>
                 </div>
                 
                 <!-- Top Clientes -->
-                <div class="col-12 lg:col-8">
-                  <p-card header="👑 Top 15 Clientes" styleClass="clientes-card">
-                    <p-table 
-                      [value]="topClientes"
-                      styleClass="p-datatable-sm"
-                      [paginator]="true"
-                      [rows]="15"
-                      [globalFilterFields]="['nombres', 'apellidos', 'email']">
-                      
-                      <ng-template pTemplate="caption">
-                        <div class="table-header">
-                          <span class="p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input 
-                              pInputText 
-                              type="text" 
-                              placeholder="Buscar clientes..."
-                              (input)="filtrarClientes($event)">
-                          </span>
+                <div class="lg:col-span-3">
+                  <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-purple-50">
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-purple-900 flex items-center gap-2">
+                          <i class="pi pi-crown text-yellow-500"></i>
+                          Top 15 Clientes
+                        </h3>
+                        <div class="relative">
+                          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                          <input 
+                            type="text" 
+                            placeholder="Buscar clientes..."
+                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
+                            (input)="filtrarClientes($event)">
                         </div>
-                      </ng-template>
-                      
-                      <ng-template pTemplate="header">
-                        <tr>
-                          <th>Cliente</th>
-                          <th>Segmento</th>
-                          <th>Total Compras</th>
-                          <th>Última Compra</th>
-                          <th>Acciones</th>
-                        </tr>
-                      </ng-template>
-                      
-                      <ng-template pTemplate="body" let-cliente>
-                        <tr>
-                          <td>
-                            <div class="cliente-info">
-                              <p-avatar 
-                                [label]="getClienteInitials(cliente)"
-                                size="normal"
-                                shape="circle"
-                                styleClass="mr-2 cliente-avatar">
-                              </p-avatar>
-                              <div>
-                                <div class="cliente-nombre">{{cliente.nombres}} {{cliente.apellidos}}</div>
-                                <div class="cliente-email">{{cliente.email}}</div>
+                      </div>
+                    </div>
+                    <div class="p-6">
+                      <p-table 
+                        [value]="topClientes"
+                        styleClass="p-datatable-sm"
+                        [paginator]="true"
+                        [rows]="15">
+                        
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th>Cliente</th>
+                            <th>Segmento</th>
+                            <th class="text-right">Total Compras</th>
+                            <th>Última Compra</th>
+                            <th class="text-center">Acciones</th>
+                          </tr>
+                        </ng-template>
+                        
+                        <ng-template pTemplate="body" let-cliente>
+                          <tr class="hover:bg-purple-50 transition-colors">
+                            <td>
+                              <div class="flex items-center gap-3">
+                                <p-avatar 
+                                  [label]="getClienteInitials(cliente)"
+                                  size="normal"
+                                  shape="circle"
+                                  styleClass="bg-purple-500 text-white">
+                                </p-avatar>
+                                <div>
+                                  <div class="font-semibold text-gray-900">{{cliente.nombres}} {{cliente.apellidos}}</div>
+                                  <div class="text-sm text-gray-500">{{cliente.email}}</div>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            <p-chip 
-                              [label]="cliente.segmento"
-                              [styleClass]="getSegmentoClass(cliente.segmento)">
-                            </p-chip>
-                          </td>
-                          <td>
-                            <div class="cliente-compras">
-                              <strong>S/ {{cliente.totalCompras | number:'1.0-0'}}</strong>
-                              <div class="cliente-frecuencia">{{cliente.numeroCompras}} compras</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="ultima-compra">
-                              {{cliente.ultimaCompra | date:'dd/MM/yyyy'}}
-                            </div>
-                          </td>
-                          <td>
-                            <div class="cliente-acciones">
-                              <p-button 
-                                icon="pi pi-eye"
-                                styleClass="p-button-rounded p-button-text p-button-sm"
-                                pTooltip="Ver detalles"
-                                (click)="verDetalleCliente(cliente)">
-                              </p-button>
-                              <p-button 
-                                icon="pi pi-envelope"
-                                styleClass="p-button-rounded p-button-text p-button-sm"
-                                pTooltip="Enviar email"
-                                (click)="enviarEmailCliente(cliente)">
-                              </p-button>
-                            </div>
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </p-table>
-                  </p-card>
+                            </td>
+                            <td>
+                              <p-chip 
+                                [label]="cliente.segmento"
+                                [styleClass]="getSegmentoClass(cliente.segmento)">
+                              </p-chip>
+                            </td>
+                            <td class="text-right">
+                              <div>
+                                <div class="font-bold text-green-600">S/ {{cliente.totalCompras | number:'1.0-0'}}</div>
+                                <div class="text-sm text-gray-500">{{cliente.numeroCompras}} compras</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="text-sm">{{cliente.ultimaCompra | date:'dd/MM/yyyy'}}</div>
+                            </td>
+                            <td class="text-center">
+                              <div class="flex justify-center gap-1">
+                                <p-button 
+                                  icon="pi pi-eye"
+                                  styleClass="p-button-rounded p-button-text p-button-sm"
+                                  pTooltip="Ver detalles"
+                                  (click)="verDetalleCliente(cliente)">
+                                </p-button>
+                                <p-button 
+                                  icon="pi pi-envelope"
+                                  styleClass="p-button-rounded p-button-text p-button-sm"
+                                  pTooltip="Enviar email"
+                                  (click)="enviarEmailCliente(cliente)">
+                                </p-button>
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Frecuencia de Compras -->
-              <div class="frecuencia-compras mt-4">
-                <p-card header="🔄 Frecuencia de Compras" styleClass="grafico-card">
-                  <p-chart 
-                    type="bar"
-                    [data]="datosFrecuenciaCompras"
-                    [options]="opcionesGraficoBarras"
-                    [width]="'100%'"
-                    height="300">
-                  </p-chart>
-                </p-card>
               </div>
               
             </p-tabPanel>
             
-            <!-- 📄 GENERACIÓN DE REPORTES -->
+            <!-- 📄 GENERACIÓN DE REPORTES OPTIMIZADO -->
             <p-tabPanel header="📄 Generar Reportes">
               
               <!-- Tipos de Reportes -->
-              <div class="tipos-reportes">
-                <div class="grid">
+              <div class="tipos-reportes p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   
-                  <div class="col-12 lg:col-3" *ngFor="let tipo of tiposReportes">
-                    <p-card [styleClass]="'reporte-card ' + tipo.clase">
-                      <div class="reporte-content">
-                        <div class="reporte-icon">
-                          <i [class]="tipo.icono"></i>
+                  <div *ngFor="let tipo of tiposReportes" 
+                       class="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+                    <div class="p-6">
+                      <div class="text-center mb-4">
+                        <div class="w-16 h-16 mx-auto rounded-xl flex items-center justify-center mb-3"
+                             [class]="'bg-' + tipo.clase + '-100'">
+                          <i [class]="tipo.icono + ' text-3xl text-' + tipo.clase + '-600'"></i>
                         </div>
-                        <div class="reporte-info">
-                          <h4>{{tipo.titulo}}</h4>
-                          <p>{{tipo.descripcion}}</p>
-                        </div>
-                        <div class="reporte-accion">
-                          <p-button 
-                            [label]="'Generar ' + tipo.formato"
-                            [icon]="tipo.iconoAccion"
-                            [styleClass]="'p-button-' + tipo.severidad + ' w-full'"
-                            [loading]="tipo.generando"
-                            (click)="generarReporte(tipo.tipo)">
-                          </p-button>
-                        </div>
-                        
-                        <!-- Progreso de generación -->
-                        <div class="reporte-progreso" *ngIf="tipo.generando">
-                          <p-progressBar 
-                            [value]="tipo.progreso"
-                            [style]="{'height': '8px', 'margin-top': '10px'}"
-                            [showValue]="false">
-                          </p-progressBar>
-                          <small>Generando... {{tipo.progreso}}%</small>
+                        <h4 class="text-lg font-bold text-gray-900">{{tipo.titulo}}</h4>
+                        <p class="text-sm text-gray-600 mt-1">{{tipo.descripcion}}</p>
+                      </div>
+                      
+                      <p-button 
+                        [label]="'Generar ' + tipo.formato"
+                        [icon]="tipo.iconoAccion"
+                        [styleClass]="'p-button-' + tipo.severidad + ' w-full'"
+                        [loading]="tipo.generando"
+                        (click)="generarReporte(tipo.tipo)">
+                      </p-button>
+                      
+                      <!-- Progreso -->
+                      <div *ngIf="tipo.generando" class="mt-3">
+                        <p-progressBar 
+                          [value]="tipo.progreso"
+                          [style]="{'height': '8px'}"
+                          [showValue]="false">
+                        </p-progressBar>
+                        <div class="text-xs text-gray-500 mt-1 text-center">
+                          Generando... {{tipo.progreso}}%
                         </div>
                       </div>
-                    </p-card>
+                    </div>
                   </div>
                 </div>
               </div>
               
               <!-- Historial de Reportes -->
-              <div class="historial-reportes mt-5">
-                <p-card header="📋 Historial de Reportes Generados" styleClass="historial-card">
-                  <p-table 
-                    [value]="historialReportes"
-                    styleClass="p-datatable-sm"
-                    [paginator]="true"
-                    [rows]="10"
-                    [loading]="cargandoHistorial"
-                    [lazy]="true"
-                    (onLazyLoad)="cargarHistorialReportes($event)">
-                    
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th>Reporte</th>
-                        <th>Fecha Generación</th>
-                        <th>Tipo</th>
-                        <th>Estado</th>
-                        <th>Archivo</th>
-                        <th>Acciones</th>
-                      </tr>
-                    </ng-template>
-                    
-                    <ng-template pTemplate="body" let-reporte>
-                      <tr>
-                        <td>
-                          <div class="reporte-item">
-                            <i [class]="reporte.icon" class="mr-2"></i>
-                            <span>{{reporte.tipo}}</span>
-                          </div>
-                        </td>
-                        <td>{{reporte.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
-                        <td>
-                          <p-chip [label]="reporte.tipo" styleClass="tipo-chip"></p-chip>
-                        </td>
-                        <td>
-                          <p-tag 
-                            [value]="reporte.estado"
-                            [severity]="getEstadoReporteSeverity(reporte.estado)"
-                            [icon]="getEstadoReporteIcon(reporte.estado)">
-                          </p-tag>
-                        </td>
-                        <td>
-                          <div class="archivo-info">
-                            <div class="archivo-nombre">{{reporte.archivo}}</div>
-                            <div class="archivo-tamaño">{{reporte.tamano | number:'1.1-1'}} MB</div>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="acciones-reporte">
-                            <p-button 
-                              icon="pi pi-download"
-                              styleClass="p-button-rounded p-button-text p-button-sm"
-                              pTooltip="Descargar"
-                              [disabled]="reporte.estado !== 'COMPLETADO'"
-                              (click)="descargarReporte(reporte)">
-                            </p-button>
-                            <p-button 
-                              icon="pi pi-eye"
-                              styleClass="p-button-rounded p-button-text p-button-sm"
-                              pTooltip="Vista previa"
-                              [disabled]="reporte.estado !== 'COMPLETADO'"
-                              (click)="vistaPrevia(reporte)">
-                            </p-button>
-                            <p-button 
-                              icon="pi pi-trash"
-                              styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                              pTooltip="Eliminar"
-                              (click)="eliminarReporte(reporte)">
-                            </p-button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                    
-                    <ng-template pTemplate="emptymessage">
-                      <tr>
-                        <td colspan="6" class="text-center">
-                          <div class="empty-state">
-                            <i class="pi pi-file-o" style="font-size: 3rem; color: #ccc;"></i>
-                            <p>No hay reportes generados</p>
-                            <p-button 
-                              label="Generar Primer Reporte"
-                              icon="pi pi-plus"
-                              styleClass="p-button-outlined"
-                              (click)="tabActivo = 0">
-                            </p-button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
-                </p-card>
+              <div class="historial-reportes p-4">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                  <div class="p-6 border-b border-gray-200 bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <i class="pi pi-history text-blue-500"></i>
+                      Historial de Reportes Generados
+                    </h3>
+                  </div>
+                  <div class="p-6">
+                    <p-table 
+                      [value]="historialReportes"
+                      styleClass="p-datatable-sm"
+                      [paginator]="true"
+                      [rows]="10"
+                      [loading]="cargandoHistorial">
+                      
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>Reporte</th>
+                          <th>Fecha Generación</th>
+                          <th>Tipo</th>
+                          <th>Estado</th>
+                          <th>Archivo</th>
+                          <th class="text-center">Acciones</th>
+                        </tr>
+                      </ng-template>
+                      
+                      <ng-template pTemplate="body" let-reporte>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                          <td>
+                            <div class="flex items-center gap-2">
+                              <i [class]="reporte.icon + ' text-blue-500'"></i>
+                              <span class="font-medium">{{reporte.tipo}}</span>
+                            </div>
+                          </td>
+                          <td>{{reporte.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
+                          <td>
+                            <p-chip [label]="reporte.tipo" styleClass="bg-blue-100 text-blue-700"></p-chip>
+                          </td>
+                          <td>
+                            <p-tag 
+                              [value]="reporte.estado"
+                              [severity]="getEstadoReporteSeverity(reporte.estado)"
+                              [icon]="getEstadoReporteIcon(reporte.estado)">
+                            </p-tag>
+                          </td>
+                          <td>
+                            <div>
+                              <div class="font-medium text-sm">{{reporte.archivo}}</div>
+                              <div class="text-xs text-gray-500">{{reporte.tamano | number:'1.1-1'}} MB</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="flex justify-center gap-1">
+                              <p-button 
+                                icon="pi pi-download"
+                                styleClass="p-button-rounded p-button-text p-button-sm"
+                                pTooltip="Descargar"
+                                [disabled]="reporte.estado !== 'COMPLETADO'"
+                                (click)="descargarReporte(reporte)">
+                              </p-button>
+                              <p-button 
+                                icon="pi pi-eye"
+                                styleClass="p-button-rounded p-button-text p-button-sm"
+                                pTooltip="Vista previa"
+                                [disabled]="reporte.estado !== 'COMPLETADO'"
+                                (click)="vistaPrevia(reporte)">
+                              </p-button>
+                              <p-button 
+                                icon="pi pi-trash"
+                                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                                pTooltip="Eliminar"
+                                (click)="eliminarReporte(reporte)">
+                              </p-button>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-8">
+                            <div class="text-center">
+                              <i class="pi pi-file-o text-6xl text-gray-300 mb-4"></i>
+                              <h4 class="text-lg font-medium text-gray-600 mb-2">No hay reportes generados</h4>
+                              <p class="text-gray-500 mb-4">Comienza generando tu primer reporte</p>
+                              <p-button 
+                                label="Generar Primer Reporte"
+                                icon="pi pi-plus"
+                                styleClass="p-button-outlined"
+                                (click)="tabActivo = 0">
+                              </p-button>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
               </div>
               
             </p-tabPanel>
             
-            <!-- 🤖 INTELIGENCIA ARTIFICIAL -->
+            <!-- 🤖 INTELIGENCIA ARTIFICIAL OPTIMIZADO -->
             <p-tabPanel header="🤖 IA & Predicciones">
               
               <!-- Configuración de IA -->
-              <div class="ia-configuracion mb-4">
-                <p-card header="🧠 Configuración de Inteligencia Artificial" styleClass="ia-card">
-                  <div class="grid">
-                    <div class="col-12 lg:col-4">
-                      <div class="p-field">
-                        <label for="algoritmoIA">Algoritmo de IA:</label>
-                        <p-dropdown 
-                          [(ngModel)]="algoritmoIA"
-                          [options]="algoritmosIA"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Seleccionar algoritmo"
-                          styleClass="w-full">
-                        </p-dropdown>
-                      </div>
+              <div class="ia-configuracion p-4">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                  <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="pi pi-cog text-purple-500"></i>
+                    Configuración de Inteligencia Artificial
+                  </h3>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="space-y-2">
+                      <label for="algoritmoIA" class="block text-sm font-semibold text-gray-700">Algoritmo de IA:</label>
+                      <p-dropdown 
+                        [(ngModel)]="algoritmoIA"
+                        [options]="algoritmosIA"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccionar algoritmo"
+                        styleClass="w-full">
+                      </p-dropdown>
                     </div>
                     
-                    <div class="col-12 lg:col-4">
-                      <div class="p-field">
-                        <label for="ventanaTiempo">Ventana de Tiempo:</label>
-                        <p-dropdown 
-                          [(ngModel)]="ventanaTiempo"
-                          [options]="ventanasTiempo"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Seleccionar ventana"
-                          styleClass="w-full">
-                        </p-dropdown>
-                      </div>
+                    <div class="space-y-2">
+                      <label for="ventanaTiempo" class="block text-sm font-semibold text-gray-700">Ventana de Tiempo:</label>
+                      <p-dropdown 
+                        [(ngModel)]="ventanaTiempo"
+                        [options]="ventanasTiempo"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccionar ventana"
+                        styleClass="w-full">
+                      </p-dropdown>
                     </div>
                     
-                    <div class="col-12 lg:col-4">
-                      <div class="p-field">
-                        <label for="variablesPredictivas">Variables Predictivas:</label>
-                        <p-multiSelect 
-                          [(ngModel)]="variablesPredictivas"
-                          [options]="variablesDisponibles"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Seleccionar variables"
-                          styleClass="w-full">
-                        </p-multiSelect>
-                      </div>
+                    <div class="space-y-2">
+                      <label for="variablesPredictivas" class="block text-sm font-semibold text-gray-700">Variables Predictivas:</label>
+                      <p-multiSelect 
+                        [(ngModel)]="variablesPredictivas"
+                        [options]="variablesDisponibles"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccionar variables"
+                        styleClass="w-full">
+                      </p-multiSelect>
                     </div>
                   </div>
                   
-                  <div class="ia-acciones">
+                  <div class="flex flex-wrap gap-3">
                     <p-button 
                       label="Entrenar Modelo"
                       icon="pi pi-cog"
-                      styleClass="p-button-success mr-2"
+                      styleClass="p-button-success"
                       [loading]="entrenandoModelo"
                       (click)="entrenarModelo()">
                     </p-button>
@@ -815,7 +862,7 @@
                     <p-button 
                       label="Generar Predicción"
                       icon="pi pi-chart-line"
-                      styleClass="p-button-info mr-2"
+                      styleClass="p-button-info"
                       [loading]="generandoPrediccion"
                       (click)="generarPrediccion()">
                     </p-button>
@@ -828,91 +875,122 @@
                       (click)="exportarModelo()">
                     </p-button>
                   </div>
-                </p-card>
+                </div>
               </div>
               
               <!-- Predicciones y Métricas -->
-              <div class="predicciones-metricas">
-                <div class="grid">
+              <div class="predicciones-metricas p-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   
                   <!-- Predicciones Principales -->
-                  <div class="col-12 lg:col-8">
-                    <p-card header="📈 Predicciones de Ventas" styleClass="predicciones-card">
+                  <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="pi pi-chart-line text-green-500"></i>
+                        Predicciones de Ventas
+                      </h3>
                       <p-chart 
                         type="line"
                         [data]="datosPredicciones"
                         [options]="opcionesGraficoPredicciones"
-                        [width]="'100%'"
                         height="400">
                       </p-chart>
                       
                       <!-- Métricas de Precisión -->
-                      <div class="metricas-precision">
-                        <div class="metrica-item">
-                          <span class="metrica-label">Precisión del Modelo:</span>
-                          <p-progressBar 
-                            [value]="predicciones.confianza"
-                            [style]="{'height': '12px'}"
-                            [showValue]="true"
-                            unit="%">
-                          </p-progressBar>
+                      <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                          <span class="font-semibold text-gray-700">Precisión del Modelo:</span>
+                          <span class="font-bold text-green-600">{{predicciones.confianza}}%</span>
                         </div>
+                        <p-progressBar 
+                          [value]="predicciones.confianza"
+                          [style]="{'height': '12px'}"
+                          [showValue]="false">
+                        </p-progressBar>
                       </div>
-                    </p-card>
+                    </div>
                   </div>
                   
                   <!-- Insights de IA -->
-                  <div class="col-12 lg:col-4">
-                    <p-card header="🎯 Insights de IA" styleClass="insights-card">
-                      <div class="insights-lista">
-                        <div class="insight-item">
-                          <i class="pi pi-arrow-up insight-icon positivo"></i>
-                          <div class="insight-content">
-                            <div class="insight-titulo">Crecimiento Esperado</div>
-                            <div class="insight-valor">+{{predicciones.proximaSemana}}%</div>
-                            <div class="insight-descripcion">próxima semana</div>
+                  <div>
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="pi pi-lightbulb text-yellow-500"></i>
+                        Insights de IA
+                      </h3>
+                      
+                      <div class="space-y-4">
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                          <div class="flex items-center gap-3">
+                            <i class="pi pi-arrow-up text-green-600 text-xl"></i>
+                            <div>
+                              <div class="font-semibold text-green-900">Crecimiento Esperado</div>
+                              <div class="text-2xl font-bold text-green-600">+{{predicciones.proximaSemana}}%</div>
+                              <div class="text-sm text-green-700">próxima semana</div>
+                            </div>
                           </div>
                         </div>
                         
-                        <div class="insight-item">
-                          <i class="pi pi-chart-line insight-icon neutro"></i>
-                          <div class="insight-content">
-                            <div class="insight-titulo">Tendencia Mensual</div>
-                            <div class="insight-valor">+{{predicciones.proximoMes}}%</div>
-                            <div class="insight-descripcion">próximo mes</div>
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div class="flex items-center gap-3">
+                            <i class="pi pi-chart-line text-blue-600 text-xl"></i>
+                            <div>
+                              <div class="font-semibold text-blue-900">Tendencia Mensual</div>
+                              <div class="text-2xl font-bold text-blue-600">+{{predicciones.proximoMes}}%</div>
+                              <div class="text-sm text-blue-700">próximo mes</div>
+                            </div>
                           </div>
                         </div>
                         
-                        <div class="insight-item">
-                          <i class="pi pi-shield insight-icon confianza"></i>
-                          <div class="insight-content">
-                            <div class="insight-titulo">Confianza</div>
-                            <div class="insight-valor">{{predicciones.confianza}}%</div>
-                            <div class="insight-descripcion">precisión del modelo</div>
+                        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                          <div class="flex items-center gap-3">
+                            <i class="pi pi-shield text-purple-600 text-xl"></i>
+                            <div>
+                              <div class="font-semibold text-purple-900">Confianza</div>
+                              <div class="text-2xl font-bold text-purple-600">{{predicciones.confianza}}%</div>
+                              <div class="text-sm text-purple-700">precisión del modelo</div>
+                            </div>
                           </div>
                         </div>
                         
-                        <div class="insight-item">
-                          <i class="pi pi-trending-up insight-icon tendencia"></i>
-                          <div class="insight-content">
-                            <div class="insight-titulo">Tendencia</div>
-                            <div class="insight-valor">{{predicciones.tendencia | titlecase}}</div>
-                            <div class="insight-descripcion">dirección general</div>
+                        <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                          <div class="flex items-center gap-3">
+                            <i class="pi pi-trending-up text-orange-600 text-xl"></i>
+                            <div>
+                              <div class="font-semibold text-orange-900">Tendencia</div>
+                              <div class="text-2xl font-bold text-orange-600">{{predicciones.tendencia | titlecase}}</div>
+                              <div class="text-sm text-orange-700">dirección general</div>
+                            </div>
                           </div>
                         </div>
                       </div>
                       
                       <!-- Recomendaciones -->
-                      <div class="recomendaciones">
-                        <h5>💡 Recomendaciones</h5>
-                        <ul class="recomendaciones-lista">
-                          <li>Incrementar stock en productos de alta rotación</li>
-                          <li>Enfocar marketing en segmento premium</li>
-                          <li>Optimizar horarios de personal</li>
-                          <li>Implementar promociones específicas</li>
-                        </ul>
+                      <div class="mt-6">
+                        <h5 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                          <i class="pi pi-lightbulb text-yellow-500"></i>
+                          Recomendaciones
+                        </h5>
+                        <div class="space-y-2">
+                          <div class="flex items-start gap-2 text-sm">
+                            <i class="pi pi-check text-green-500 mt-0.5"></i>
+                            <span>Incrementar stock en productos de alta rotación</span>
+                          </div>
+                          <div class="flex items-start gap-2 text-sm">
+                            <i class="pi pi-check text-green-500 mt-0.5"></i>
+                            <span>Enfocar marketing en segmento premium</span>
+                          </div>
+                          <div class="flex items-start gap-2 text-sm">
+                            <i class="pi pi-check text-green-500 mt-0.5"></i>
+                            <span>Optimizar horarios de personal</span>
+                          </div>
+                          <div class="flex items-start gap-2 text-sm">
+                            <i class="pi pi-check text-green-500 mt-0.5"></i>
+                            <span>Implementar promociones específicas</span>
+                          </div>
+                        </div>
                       </div>
-                    </p-card>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -924,8 +1002,8 @@
     </p-splitter>
   </div>
 
-  <!-- 🚀 FLOATING ACTION BUTTON -->
-  <div class="floating-actions">
+  <!-- 🚀 FLOATING ACTION BUTTON OPTIMIZADO -->
+  <div class="floating-actions fixed bottom-6 right-6 z-50">
     <p-speedDial 
       [model]="menuFlotante"
       [radius]="80"
@@ -934,52 +1012,53 @@
       [transitionDelay]="80"
       showIcon="pi pi-plus"
       hideIcon="pi pi-times"
-      buttonClassName="p-button-help p-button-lg">
+      buttonClassName="p-button-help p-button-lg shadow-lg">
     </p-speedDial>
   </div>
 </div>
 
-<!-- DIÁLOGOS Y MODALES -->
-<p-confirmDialog></p-confirmDialog>
-<p-toast></p-toast>
+<!-- DIÁLOGOS OPTIMIZADOS -->
+<p-confirmDialog styleClass="confirm-dialog"></p-confirmDialog>
+<p-toast position="top-right" styleClass="custom-toast"></p-toast>
 
-<!-- DIALOG PARA DETALLES -->
+<!-- DIALOG OPTIMIZADO PARA DETALLES -->
 <p-dialog 
   [(visible)]="mostrarDetalles"
   [header]="tituloDetalle"
   [modal]="true"
-  [style]="{width: '80vw', height: '80vh'}"
+  [style]="{width: '85vw', height: '85vh'}"
   [closable]="true"
-  styleClass="detalle-dialog">
+  styleClass="detalle-dialog bg-white rounded-xl">
   
-  <div class="detalle-content">
-    <!-- Contenido dinámico según el tipo de detalle -->
+  <div class="detalle-content h-full overflow-y-auto">
     <div [ngSwitch]="tipoDetalle">
       
-      <!-- Detalle de Cliente -->
+      <!-- Detalle de Cliente OPTIMIZADO -->
       <div *ngSwitchCase="'cliente'" class="cliente-detalle">
-        <div class="grid" *ngIf="clienteSeleccionado">
-          <div class="col-12 lg:col-4">
-            <p-card header="Información Personal" styleClass="info-card">
-              <div class="cliente-info-completa">
-                <p-avatar 
-                  [label]="getClienteInitials(clienteSeleccionado)"
-                  size="xlarge"
-                  shape="circle"
-                  styleClass="mb-3">
-                </p-avatar>
-                <h4>{{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}</h4>
-                <p>{{clienteSeleccionado.email}}</p>
-                <p-chip 
-                  [label]="clienteSeleccionado.segmento"
-                  [styleClass]="getSegmentoClass(clienteSeleccionado.segmento)">
-                </p-chip>
-              </div>
-            </p-card>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" *ngIf="clienteSeleccionado">
+          <div>
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 text-center">
+              <h4 class="text-lg font-bold text-gray-900 mb-4">Información Personal</h4>
+              <p-avatar 
+                [label]="getClienteInitials(clienteSeleccionado)"
+                size="xlarge"
+                shape="circle"
+                styleClass="mb-4 bg-blue-500 text-white">
+              </p-avatar>
+              <h5 class="text-xl font-bold text-gray-900 mb-2">
+                {{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}
+              </h5>
+              <p class="text-gray-600 mb-4">{{clienteSeleccionado.email}}</p>
+              <p-chip 
+                [label]="clienteSeleccionado.segmento"
+                [styleClass]="getSegmentoClass(clienteSeleccionado.segmento)">
+              </p-chip>
+            </div>
           </div>
           
-          <div class="col-12 lg:col-8">
-            <p-card header="Historial de Compras" styleClass="historial-card">
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <h4 class="text-lg font-bold text-gray-900 mb-4">Historial de Compras</h4>
               <p-table 
                 [value]="historialComprasCliente"
                 styleClass="p-datatable-sm"
@@ -990,26 +1069,24 @@
                   <tr>
                     <th>Fecha</th>
                     <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-right">Total</th>
                   </tr>
                 </ng-template>
                 
                 <ng-template pTemplate="body" let-compra>
-                  <tr>
+                  <tr class="hover:bg-gray-50 transition-colors">
                     <td>{{compra.fecha | date:'dd/MM/yyyy'}}</td>
-                    <td>{{compra.producto}}</td>
-                    <td>{{compra.cantidad}}</td>
-                    <td>S/ {{compra.total | number:'1.0-0'}}</td>
+                    <td class="font-medium">{{compra.producto}}</td>
+                    <td class="text-center">{{compra.cantidad}}</td>
+                    <td class="text-right font-bold text-green-600">S/ {{compra.total | number:'1.0-0'}}</td>
                   </tr>
                 </ng-template>
               </p-table>
-            </p-card>
+            </div>
           </div>
         </div>
       </div>
-      
-      <!-- Otros tipos de detalles pueden ir aquí -->
     </div>
   </div>
 </p-dialog>

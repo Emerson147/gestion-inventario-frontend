@@ -7,30 +7,19 @@
     <div class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-6 lg:gap-8">
       
       <!-- Título principal -->
-      <div class="flex-1 max-w-2xl">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-2xl shadow-lg flex-shrink-0">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-indigo-600 p-2 rounded-lg shadow-lg">
             <i class="pi pi-shopping-bag text-white text-2xl" aria-hidden="true"></i>
           </div>
           
-          <div class="min-w-0 flex-1">
-            <h1 class="text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2 leading-tight">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 m-0">
               Catálogo de Productos
             </h1>
-            <p class="text-slate-600 text-base lg:text-lg font-medium mb-3">
+            <p class="text-gray-600 mt-1 mb-0">
               Gestiona la información de tus productos
             </p>
-            
-            <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-              <div class="flex items-center gap-2">
-                <i class="pi pi-clock text-blue-500" aria-hidden="true"></i>
-                <span>Actualizado: {{ getCurrentTime() | date:'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-              <div class="flex items-center gap-2" *ngIf="productos && productos.length > 0">
-                <i class="pi pi-database text-green-500" aria-hidden="true"></i>
-                <span>Catálogo activo</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -39,58 +28,66 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-shrink-0">
         
         <!-- Total productos en catálogo -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="productos && productos.length > 0">
-          <div class="text-center">
-            <div class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+          <div class="flex items-center gap-3">
+            <div class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl transition-colors duration-300">
               <i class="pi pi-list text-blue-600 text-xl" aria-hidden="true"></i>
             </div>
-            <div class="text-2xl lg:text-3xl font-bold text-blue-700 mb-1">
-              {{ productos.length | number }}
+            <div class="flex flex-col">
+              <div class="text-2xl lg:text-3xl font-bold text-blue-700">
+                {{ productos.length | number }}
+              </div>
+              <div class="text-xs lg:text-sm text-slate-600 ">Productos</div>
             </div>
-            <div class="text-xs lg:text-sm text-slate-600 font-semibold">Productos</div>
           </div>
         </div>
         
         <!-- Categorías únicas -->
         <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="productos && productos.length > 0">
-          <div class="text-center">
-            <div class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+          <div class="flex items-center gap-3">
+            <div class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl transition-colors duration-300">
               <i class="pi pi-tags text-purple-600 text-xl" aria-hidden="true"></i>
             </div>
-            <div class="text-2xl lg:text-3xl font-bold text-purple-700 mb-1">
-              {{ getCategorias() | number }}
+            <div class="flex flex-col">
+              <div class="text-2xl lg:text-3xl font-bold text-purple-700">
+                {{ getCategorias() | number }}
+              </div>
+              <div class="text-xs lg:text-sm text-slate-600">Categorías</div>
             </div>
-            <div class="text-xs lg:text-sm text-slate-600 font-semibold">Categorías</div>
           </div>
         </div>
         
         <!-- Rango de precios -->
         <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="productos && productos.length > 0">
-          <div class="text-center">
-            <div class="bg-emerald-50 group-hover:bg-emerald-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+          <div class="flex items-center gap-3">
+            <div class="bg-emerald-50 group-hover:bg-emerald-100 p-3 rounded-xl transition-colors duration-300">
               <i class="pi pi-dollar text-emerald-600 text-xl" aria-hidden="true"></i>
             </div>
-            <div class="text-lg lg:text-xl font-bold text-emerald-700 mb-1">
-              {{ getPrecioMinimo() | currency:'S/. ':'symbol':'1.0-0' }} - {{ getPrecioMaximo() | currency:'S/. ':'symbol':'1.0-0' }}
+            <div class="flex flex-col">
+              <div class="text-lg lg:text-xl font-bold text-emerald-700">
+                {{ getPrecioMinimo() | currency:'S/. ':'symbol':'1.0-0' }} - {{ getPrecioMaximo() | currency:'S/. ':'symbol':'1.0-0' }}
+              </div>
+              <div class="text-xs lg:text-sm text-slate-600">Rango Precios</div>
             </div>
-            <div class="text-xs lg:text-sm text-slate-600 font-semibold">Rango Precios</div>
           </div>
         </div>
 
         <!-- Precio promedio -->
         <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="productos && productos.length > 0">
-          <div class="text-center">
-            <div class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+          <div class="flex items-center gap-3">
+            <div class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl transition-colors duration-300">
               <i class="pi pi-chart-bar text-orange-600 text-xl" aria-hidden="true"></i>
             </div>
-            <div class="text-2xl lg:text-3xl font-bold text-orange-700 mb-1">
-              {{ getPrecioPromedio() | currency:'S/. ':'symbol':'1.0-0' }}
+            <div class="flex flex-col">
+              <div class="text-2xl lg:text-3xl font-bold text-orange-700">
+                {{ getPrecioPromedio() | currency:'S/. ':'symbol':'1.0-0' }}
+              </div>
+              <div class="text-xs lg:text-sm text-slate-600">Precio Promedio</div>
             </div>
-            <div class="text-xs lg:text-sm text-slate-600 font-semibold">Precio Promedio</div>
           </div>
         </div>
       </div>
@@ -223,6 +220,7 @@
       [value]="productosFiltrados"
       [rows]="15"
       [paginator]="true"
+      [globalFilterFields]="['nombre', 'descripcion', 'categoria.nombre', 'precio']"
       [totalRecords]="productosFiltrados.length"
       [(selection)]="selectedProductos"
       [rowHover]="true"

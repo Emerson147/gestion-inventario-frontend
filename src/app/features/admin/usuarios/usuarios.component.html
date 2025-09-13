@@ -20,13 +20,13 @@
       </div>
       
       <!-- Dashboard metrics con hover effects -->
-      <div class="flex flex-wrap gap-4">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-shrink-0">
         <!-- Total usuarios -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="users?.length">
           <div class="flex items-center gap-3">
-            <div class="bg-blue-100 p-2 rounded-lg">
-              <i class="pi pi-users text-blue-600"></i>
+            <div class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+              <i class="pi pi-list text-blue-600 text-xl" aria-hidden="true"></i>
             </div>
             <div>
               <div class="text-2xl font-bold text-blue-600">{{ calcularMetricasUsuarios().total }}</div>
@@ -36,11 +36,11 @@
         </div>
         
         <!-- Usuarios activos -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="users?.length">
           <div class="flex items-center gap-3">
-            <div class="bg-green-100 p-2 rounded-lg">
-              <i class="pi pi-check-circle text-green-600"></i>
+            <div class="bg-green-50 group-hover:bg-green-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+              <i class="pi pi-check-circle text-green-600 text-xl" aria-hidden="true"></i>
             </div>
             <div>
               <div class="text-2xl font-bold text-green-600">{{ calcularMetricasUsuarios().activos }}</div>
@@ -50,11 +50,11 @@
         </div>
         
         <!-- Administradores -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="calcularMetricasUsuarios().admins > 0">
           <div class="flex items-center gap-3">
-            <div class="bg-red-100 p-2 rounded-lg">
-              <i class="pi pi-crown text-red-600"></i>
+            <div class="bg-red-50 group-hover:bg-red-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+              <i class="pi pi-crown text-red-600 text-xl" aria-hidden="true"></i>
             </div>
             <div>
               <div class="text-2xl font-bold text-red-600">{{ calcularMetricasUsuarios().admins }}</div>
@@ -64,11 +64,11 @@
         </div>
         
         <!-- Usuarios seleccionados -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="selectedUsers?.length">
           <div class="flex items-center gap-3">
-            <div class="bg-orange-100 p-2 rounded-lg">
-              <i class="pi pi-check-square text-orange-600"></i>
+            <div class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+              <i class="pi pi-check-square text-orange-600 text-xl" aria-hidden="true"></i>
             </div>
             <div>
               <div class="text-2xl font-bold text-orange-600">{{ selectedUsers.length }}</div>
@@ -78,11 +78,11 @@
         </div>
         
         <!-- Nuevos usuarios (últimos 30 días) -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px]" 
+        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
              *ngIf="calcularMetricasUsuarios().nuevosUsuarios > 0">
           <div class="flex items-center gap-3">
-            <div class="bg-purple-100 p-2 rounded-lg">
-              <i class="pi pi-user-plus text-purple-600"></i>
+            <div class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
+              <i class="pi pi-user-plus text-purple-600 text-xl" aria-hidden="true"></i>
             </div>
             <div>
               <div class="text-2xl font-bold text-purple-600">{{ calcularMetricasUsuarios().nuevosUsuarios }}</div>

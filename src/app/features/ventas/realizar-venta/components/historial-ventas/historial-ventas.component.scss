@@ -25,3 +25,174 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
+
+/* Estilos personalizados para el historial de ventas */
+
+.custom-accordion {
+  .p-accordion-header-link {
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300;
+  }
+  
+  .p-accordion-content {
+    @apply border-blue-200;
+  }
+}
+
+.custom-calendar {
+  .p-calendar {
+    @apply shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+}
+
+.custom-multiselect,
+.custom-dropdown {
+  .p-multiselect,
+  .p-dropdown {
+    @apply shadow-md hover:shadow-lg transition-all duration-300 border-gray-300 hover:border-blue-400;
+  }
+}
+
+.custom-slider {
+  .p-slider-handle {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg transform hover:scale-110 transition-all duration-300;
+  }
+  
+  .p-slider-range {
+    @apply bg-gradient-to-r from-blue-400 to-purple-500;
+  }
+}
+
+.custom-menubar {
+  .p-menubar-root-list {
+    @apply bg-transparent;
+  }
+}
+
+.custom-select-button {
+  .p-button {
+    @apply shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5;
+  }
+}
+
+.custom-dataview {
+  .p-paginator {
+    @apply bg-white bg-opacity-80 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg;
+  }
+}
+
+.custom-dialog {
+  .p-dialog-header {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white;
+  }
+  
+  .p-dialog-content {
+    @apply bg-gray-50;
+  }
+}
+
+.custom-tabview {
+  .p-tabview-nav {
+    @apply bg-white rounded-t-xl shadow-sm;
+  }
+  
+  .p-tabview-panel {
+    @apply bg-white rounded-b-xl shadow-sm;
+  }
+}
+
+.custom-fieldset {
+  .p-fieldset-legend {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg shadow-md;
+  }
+  
+  .p-fieldset-content {
+    @apply bg-gray-50 rounded-b-lg;
+  }
+}
+
+.custom-table {
+  .p-datatable-thead > tr > th {
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200;
+  }
+  
+  .p-datatable-tbody > tr:hover {
+    @apply bg-blue-50 transform scale-[1.01] transition-all duration-200;
+  }
+}
+
+.custom-payment-card {
+  @apply shadow-xl border border-gray-200 rounded-2xl overflow-hidden;
+}
+
+.custom-confirm-dialog {
+  .p-dialog-header {
+    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white;
+  }
+}
+
+.custom-context-menu {
+  @apply shadow-2xl border border-gray-200 rounded-xl backdrop-blur-sm bg-white bg-opacity-95;
+  
+  .p-menuitem-link {
+    @apply hover:bg-blue-50 rounded-lg transition-colors duration-200;
+  }
+}
+
+.custom-toast {
+  .p-toast-message {
+    @apply shadow-2xl border border-gray-200 rounded-xl backdrop-blur-sm;
+  }
+}
+
+/* Animaciones adicionales */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Efectos hover mejorados */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+.group:hover .group-hover\:shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .custom-accordion .p-accordion-header-link {
+    @apply text-sm px-3 py-2;
+  }
+  
+  .custom-dialog {
+    .p-dialog-content {
+      @apply p-2;
+    }
+  }
+}

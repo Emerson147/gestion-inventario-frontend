@@ -9,7 +9,7 @@ import { ProductosComponent } from './productos/productos.component';
 import { ColoresComponent } from './colores/colores.component';
 import { AlmacenesComponent } from './almacenes/almacenes.component';
 import { InventarioComponent } from './inventario/inventario.component';
-import { MovimientosInventarioComponent } from './movimientos-inventario/movimientos-inventario.component';
+// import { MovimientosInventarioComponent } from './movimientos-inventario/movimientos-inventario.component';
 // Otros componentes...
 
 const routes: Routes = [
@@ -49,12 +49,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS']}
   },
-  {
-    path: 'movimientos-inventario',
-    component: MovimientosInventarioComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS']}
-  }
+  // {
+  //   path: 'movimientos-inventario',
+  //   component: MovimientosInventarioComponent,
+  //   canActivate: [AuthGuard],
+  //   data: { roles: ['ROLE_ADMIN', 'ROLE_VENTAS']}
+  // }
 
 ];
 

@@ -127,9 +127,24 @@ export class AuthService {
   getUserRoles(): string[] {
     const token = this.getToken();
     if (token) {
-      const decoded: DecodedToken = jwtDecode(token);
-      // Separar roles si vienen como string con comas
-      return decoded.roles.split(',').map(role => role.trim());
+      try {
+        const decoded: DecodedToken = jwtDecode(token);
+        
+        // Manejar diferentes formatos de roles
+        if (typeof decoded.roles === 'string') {
+          // Si es un string, separar por comas
+          return decoded.roles.split(',').map(role => role.trim());
+        } else if (Array.isArray(decoded.roles)) {
+          // Si ya es un array
+          return decoded.roles;
+        } else {
+          // Si es un solo rol
+          return [decoded.roles];
+        }
+      } catch (error) {
+        console.error('Error al decodificar roles del token:', error);
+        return [];
+      }
     }
     return [];
   }

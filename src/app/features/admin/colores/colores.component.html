@@ -162,17 +162,6 @@
           class="shadow-sm hover:shadow-md transition-all duration-300"
           (click)="mostrarEstadisticas()"
         />
-        <p-button 
-          icon="pi pi-filter-slash" 
-          severity="secondary" 
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Limpiar filtros"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="limpiarFiltros()"
-          [disabled]="!productoSeleccionadoFiltro"
-        />
       </div>
     </div>
   </div>
@@ -180,34 +169,37 @@
 
 <!-- Panel de filtros con diseño más moderno -->
 <div class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
     <p-panel 
-      header="Filtros de Productos y Búsqueda" 
       [toggleable]="true" 
       [collapsed]="filtrosPanelCollapsed"
       styleClass="border-0 shadow-none"
     >
+      <!-- Header -->
       <ng-template pTemplate="header">
-        <div class="flex items-center gap-2">
-          <div class="bg-blue-100 p-2 rounded-lg">
-            <i class="pi pi-filter text-blue-600"></i>
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-100 p-2 rounded-xl shadow-sm">
+            <i class="pi pi-filter text-blue-600 text-lg"></i>
           </div>
-          <span class="font-semibold text-gray-800">Filtros de Productos y Búsqueda</span>
+          <span class="font-semibold text-gray-800 text-lg">Filtros de Productos y Búsqueda</span>
           <p-tag 
             *ngIf="getTotalFiltrosActivos() > 0" 
             [value]="getTotalFiltrosActivos() + ' activo' + (getTotalFiltrosActivos() > 1 ? 's' : '')"
             severity="info"
             size="small"
+            class="ml-2"
           />
         </div>
       </ng-template>
       
-      <div class="grid gap-4 pt-4">
+      <!-- Contenido filtros -->
+      <div class="grid gap-6 pt-4">
+        
         <!-- Selector de producto principal -->
         <div class="col-12 md:col-5">
-          <label for="productoSelect" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-box mr-2 text-blue-600"></i>
-            Producto
+          <!-- FIX: quitar 'block' porque ya usamos flex -->
+          <label for="productoSelect" class="font-semibold mb-2 text-gray-700 flex items-center gap-2">
+            <i class="pi pi-box text-blue-600"></i> Producto
           </label>
           <p-select 
             inputId="productoSelect"
@@ -235,13 +227,13 @@
               </div>
             </ng-template>
             <ng-template let-item pTemplate="item">
-              <div class="flex items-center gap-3 p-2">
+              <div class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg transition">
                 <div class="bg-blue-100 p-2 rounded">
                   <i class="pi pi-box text-blue-600"></i>
                 </div>
                 <div>
                   <div class="font-medium text-gray-800">{{item.codigo}} - {{item.nombre}}</div>
-                  <div class="text-sm text-gray-500">${{item.precio | number:'1.2-2'}}</div>
+                  <div class="text-sm text-gray-500">S/. {{item.precioVenta | number:'1.2-2'}}</div>
                 </div>
               </div>
             </ng-template>
@@ -250,9 +242,9 @@
         
         <!-- Filtro por texto -->
         <div class="col-12 md:col-3">
-          <label for="buscarColorInput" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-search mr-2 text-purple-600" aria-hidden="true"></i>
-            Buscar Color
+          <!-- FIX: quitar 'block' + mantener flex -->
+          <label for="buscarColorInput" class="font-semibold mb-2 text-gray-700 flex items-center gap-2">
+            <i class="pi pi-search text-purple-600"></i> Buscar Color
           </label>
           <p-iconfield class="w-full">
             <p-inputicon styleClass="pi pi-search" />
@@ -263,7 +255,7 @@
               (input)="aplicarFiltrosTexto()"
               (keyup.enter)="aplicarFiltrosTexto()"
               placeholder="Nombre del color..."
-              class="w-full h-12 text-base rounded-lg"
+              class="w-full h-12 text-base rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-400 focus:outline-none"
               aria-label="Buscar por nombre de color"
             />
           </p-iconfield>
@@ -271,9 +263,9 @@
         
         <!-- Filtro por talla -->
         <div class="col-12 md:col-2">
-          <label for="filtroTallaInput" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-tags mr-2 text-green-600" aria-hidden="true"></i>
-            Talla
+          <!-- FIX: quitar 'block' + mantener flex -->
+          <label for="filtroTallaInput" class="font-semibold mb-2 text-gray-700 flex items-center gap-2">
+            <i class="pi pi-tags text-green-600"></i> Talla
           </label>
           <input 
             id="filtroTallaInput"
@@ -282,7 +274,7 @@
             (input)="aplicarFiltrosTexto()"
             (keyup.enter)="aplicarFiltrosTexto()"
             placeholder="Ej: XL, 42..."
-            class="w-full h-12 text-base rounded-lg"
+            class="w-full h-12 text-base rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-400 focus:outline-none"
             aria-label="Filtrar por talla"
           />
         </div>
@@ -296,22 +288,22 @@
             [outlined]="true"
             size="small"
             (click)="limpiarFiltros()"
-            class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
+            class="w-full h-12 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
           />
         </div>
       </div>
       
       <!-- Información del producto seleccionado -->
-      <div *ngIf="productoSeleccionadoFiltro" class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+      <div *ngIf="productoSeleccionadoFiltro" class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 shadow-sm">
         <div class="flex items-center gap-3">
-          <div class="bg-blue-600 p-2 rounded-lg">
-            <i class="pi pi-check text-white"></i>
+          <div class="bg-blue-600 p-2 rounded-xl shadow-md">
+            <i class="pi pi-check text-white text-lg"></i>
           </div>
           <div>
             <div class="font-semibold text-gray-800">Producto Seleccionado</div>
             <div class="text-sm text-gray-600">
               <strong>{{productoSeleccionadoFiltro.codigo}}</strong> - {{productoSeleccionadoFiltro.nombre}} 
-              <span class="text-green-600 font-semibold">${{productoSeleccionadoFiltro.precioVenta | number:'1.2-2'}}</span>
+              <span class="text-green-600 font-semibold ml-2">S/. {{productoSeleccionadoFiltro.precioVenta | number:'1.2-2'}}</span>
             </div>
           </div>
         </div>
@@ -320,110 +312,144 @@
   </div>
 </div>
 
+
 <!-- Vista de Paleta de Colores (Nueva vista principal) -->
-<div *ngIf="currentView === 'palette'" class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <!-- Header de la paleta -->
-    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="bg-purple-600 p-2 rounded-lg">
-            <i class="pi pi-palette text-white"></i>
+<div *ngIf="currentView === 'palette'" class="mb-8">
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+    <!-- Header de la paleta mejorado -->
+    <div class="relative bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 p-6 border-b border-purple-200/30">
+      <!-- Decoración de fondo -->
+      <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10"></div>
+      <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+      
+      <div class="relative z-10 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 shadow-lg">
+            <i class="pi pi-palette text-white text-xl"></i>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-gray-800 m-0">Paleta de Colores</h3>
-            <p class="text-sm text-gray-600 mt-1" *ngIf="coloresFiltrados?.length">
-              {{coloresFiltrados.length}} colores encontrados
+            <h3 class="text-2xl font-bold text-white m-0 tracking-tight">Paleta de Colores</h3>
+            <p class="text-purple-100 mt-1 text-sm font-medium" *ngIf="coloresFiltrados?.length">
+              <i class="pi pi-check-circle mr-1"></i>
+              {{coloresFiltrados.length}} colores disponibles
             </p>
           </div>
         </div>
         <div class="text-right" *ngIf="productoSeleccionadoFiltro">
-          <div class="text-sm font-medium text-gray-700">{{productoSeleccionadoFiltro.codigo}}</div>
-          <div class="text-xs text-gray-500">{{productoSeleccionadoFiltro.nombre}}</div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+            <div class="text-sm font-bold text-white">{{productoSeleccionadoFiltro.codigo}}</div>
+            <div class="text-xs text-purple-100 mt-1">{{productoSeleccionadoFiltro.nombre}}</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Grid de colores -->
-    <div class="p-6" *ngIf="coloresFiltrados?.length; else emptyPalette">
-      <div class="palette-grid">
+    <!-- Grid de colores mejorado -->
+    <div class="p-8 bg-gradient-to-b from-gray-50/50 to-white" *ngIf="coloresFiltrados?.length; else emptyPalette">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         <div 
           *ngFor="let color of coloresFiltrados; trackBy: trackByColor" 
-          class="color-palette-item bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+          class="group bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 ease-out hover:border-purple-300/50"
         >
-          <!-- Header del color con muestra -->
-          <div class="relative h-24 flex items-center justify-center" 
-               [style.background]="'linear-gradient(135deg, ' + (color.codigoHex || '#cccccc') + ' 0%, ' + (color.codigoHex || '#cccccc') + '80 100%)'">
-            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <!-- Header del color con muestra mejorado -->
+          <div class="relative h-32 flex items-center justify-center overflow-hidden" 
+               [style.background]="'linear-gradient(135deg, ' + (color.codigoHex || '#e5e7eb') + ' 0%, ' + (color.codigoHex || '#e5e7eb') + 'cc 50%, ' + (color.codigoHex || '#e5e7eb') + '80 100%)'">
+            <!-- Patrón decorativo -->
+            <div class="absolute inset-0 opacity-10" 
+                 style="background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 20px 20px;"></div>
+            
+            <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <p-button 
                 icon="pi pi-eye" 
                 [rounded]="true"
                 size="small"
                 severity="info"
-                class="bg-white bg-opacity-90"
-                pTooltip="Ver detalles"
+                class="bg-white/95 backdrop-blur-sm shadow-lg border-0 hover:bg-white"
+                pTooltip="Ver detalles del color"
+                tooltipPosition="left"
                 (click)="verDetallesColor(color)"
               />
             </div>
-            <div class="text-center">
-              <div class="bg-white bg-opacity-90 rounded-lg px-3 py-1 shadow-sm">
-                <div class="font-bold text-sm" [style.color]="getContrastColor(color.codigoHex)">
+            
+            <div class="text-center relative z-10">
+              <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-white/20">
+                <div class="font-bold text-sm tracking-wider" [style.color]="getContrastColor(color.codigoHex)">
                   {{color.codigoHex || 'Sin código'}}
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Información del color -->
-          <div class="p-4">
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="text-lg font-bold text-gray-800 m-0">{{color.nombre}}</h4>
-              <p-checkbox 
-                value="color"
-                [(ngModel)]="selectedColores"
-                class="ml-2"
-              />
+          <!-- Información del color mejorada -->
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1 min-w-0">
+                <h4 class="text-lg font-bold text-gray-800 m-0 truncate group-hover:text-purple-700 transition-colors duration-300">
+                  {{color.nombre}}
+                </h4>
+              </div>
+              <div class="ml-3 flex-shrink-0">
+                <p-checkbox 
+                  value="color"
+                  [(ngModel)]="selectedColores"
+                  class="transform scale-110 hover:scale-125 transition-transform duration-200"
+                />
+              </div>
             </div>
             
-            <!-- Código del color -->
-            <div class="flex items-center gap-2 mb-3">
-              <div class="bg-gray-100 p-2 rounded-lg">
-                <i class="pi pi-hashtag text-gray-600 text-sm"></i>
+            <!-- Código del color mejorado -->
+            <div class="flex items-center gap-3 mb-4 p-3 bg-gray-50/80 rounded-xl border border-gray-100/50">
+              <div class="bg-purple-100 p-2 rounded-lg flex-shrink-0">
+                <i class="pi pi-hashtag text-purple-600 text-sm"></i>
               </div>
-              <span class="text-sm font-mono text-gray-600">{{color.codigoHex || 'No definido'}}</span>
+              <div class="flex-1 min-w-0">
+                <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Código Hex</span>
+                <div class="text-sm font-mono text-gray-700 font-semibold">{{color.codigoHex || 'No definido'}}</div>
+              </div>
             </div>
             
-            <!-- Tallas disponibles -->
-            <div class="mb-4">
-              <div class="flex items-center gap-2 mb-2">
-                <i class="pi pi-tags text-green-600"></i>
-                <span class="text-sm font-semibold text-gray-700">Tallas ({{color.tallas?.length || 0}})</span>
-              </div>
-              <div class="size-chart" *ngIf="color.tallas?.length; else noSizes">
-                <span 
-                  *ngFor="let talla of color.tallas" 
-                  class="talla-chip bg-green-100 text-green-800 border border-green-200"
-                >
-                  {{talla.numero}}
+            <!-- Tallas disponibles mejoradas -->
+            <div class="mb-6">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="bg-emerald-100 p-1.5 rounded-lg">
+                  <i class="pi pi-tags text-emerald-600 text-sm"></i>
+                </div>
+                <span class="text-sm font-bold text-gray-700">Tallas Disponibles</span>
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded-full">
+                  {{color.tallas?.length || 0}}
                 </span>
               </div>
+              
+              <div *ngIf="color.tallas?.length; else noSizes">
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    *ngFor="let talla of color.tallas" 
+                    class="inline-flex items-center justify-center min-w-[2.5rem] h-10 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-800 text-sm font-bold px-3 py-2 rounded-xl border border-emerald-200/50 hover:shadow-md hover:scale-105 transition-all duration-200"
+                  >
+                    {{talla.numero}}
+                  </span>
+                </div>
+              </div>
+              
               <ng-template #noSizes>
-                <div class="flex items-center gap-2 text-gray-500 text-sm">
-                  <i class="pi pi-exclamation-triangle text-orange-500"></i>
-                  <span class="italic">Sin tallas definidas</span>
+                <div class="flex items-center gap-2 p-3 bg-amber-50/80 rounded-xl border border-amber-200/50">
+                  <i class="pi pi-exclamation-triangle text-amber-500 text-sm"></i>
+                  <span class="text-amber-700 text-sm font-medium">Sin tallas configuradas</span>
                 </div>
               </ng-template>
             </div>
             
-            <!-- Acciones -->
-            <div class="flex gap-2 pt-3 border-t border-gray-100">
+            <!-- Acciones mejoradas -->
+            <div class="flex gap-2 pt-4 border-t border-gray-100">
               <p-button 
                 *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
                 icon="pi pi-pencil" 
                 [outlined]="true"
                 size="small"
-                class="flex-1"
-                pTooltip="Editar"
+                class="flex-1 hover:shadow-md transition-shadow duration-200"
+                pTooltip="Editar color"
+                tooltipPosition="top"
                 (click)="editColor(color)"
               />
               <p-button 
@@ -432,55 +458,76 @@
                 severity="danger" 
                 [outlined]="true"
                 size="small"
-                class="flex-1"
-                pTooltip="Eliminar"
+                class="flex-1 hover:shadow-md transition-shadow duration-200"
+                pTooltip="Eliminar color"
+                tooltipPosition="top"
                 (click)="eliminarColor(color)"
               />
             </div>
           </div>
         </div>
         
-        <!-- Card para agregar nuevo color -->
+        <!-- Card para agregar nuevo color mejorada -->
         <button 
           *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
-          class="w-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300 cursor-pointer group min-h-[300px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          class="group relative w-full border-2 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50/80 hover:to-pink-50/80 transition-all duration-500 cursor-pointer min-h-[400px] focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:ring-offset-2 hover:shadow-xl hover:-translate-y-1"
           (click)="openNew()"
           (keyup.enter)="openNew()"
           (keyup.space)="openNew()"
           aria-label="Agregar nuevo color"
         >
-          <div class="bg-purple-100 p-6 rounded-full mb-4 group-hover:bg-purple-200 transition-colors duration-300">
-            <i class="pi pi-plus text-3xl text-purple-600"></i>
+          <!-- Decoración de fondo -->
+          <div class="absolute inset-0 bg-gradient-to-br from-transparent via-purple-50/0 to-pink-50/0 group-hover:via-purple-50/30 group-hover:to-pink-50/30 rounded-3xl transition-all duration-500"></div>
+          
+          <div class="relative z-10 text-center">
+            <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-8 rounded-full mb-6 group-hover:from-purple-200 group-hover:to-purple-300 group-hover:scale-110 transition-all duration-500 shadow-lg group-hover:shadow-xl">
+              <i class="pi pi-plus text-4xl text-purple-600 group-hover:rotate-90 transition-transform duration-500"></i>
+            </div>
+            <span class="block text-xl font-bold text-gray-700 mb-3 group-hover:text-purple-700 transition-colors duration-300">
+              Agregar Nuevo Color
+            </span>
+            <span class="block text-sm text-gray-500 leading-relaxed max-w-xs mx-auto group-hover:text-gray-600 transition-colors duration-300">
+              Crear un nuevo color con sus respectivas tallas y configuraciones
+            </span>
           </div>
-          <span class="text-xl font-semibold text-gray-700 mb-2">Agregar Color</span>
-          <span class="text-sm text-gray-500 text-center">Presione Enter o haga clic para crear un nuevo color con tallas</span>
         </button>
       </div>
     </div>
     
+    <!-- Estados vacíos mejorados -->
     <ng-template #emptyPalette>
-      <div class="text-center py-12">
+      <div class="text-center py-16 px-8">
         <div *ngIf="productoSeleccionadoFiltro; else sinProductoSeleccionado">
-          <div class="bg-purple-100 p-8 rounded-full inline-block mb-4">
-            <i class="pi pi-palette text-4xl text-purple-600"></i>
+          <div class="relative inline-block mb-8">
+            <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-12 rounded-full shadow-lg">
+              <i class="pi pi-palette text-5xl text-purple-600"></i>
+            </div>
+            <div class="absolute -top-2 -right-2 w-6 h-6 bg-amber-400 rounded-full animate-pulse"></div>
           </div>
-          <h3 class="text-xl font-bold text-gray-700 mb-2">No hay colores disponibles</h3>
-          <p class="text-gray-500 mb-6">Este producto no tiene colores configurados aún</p>
+          <h3 class="text-2xl font-bold text-gray-700 mb-4">Paleta en Blanco</h3>
+          <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+            Este producto está esperando su primera pincelada. ¡Comience creando colores únicos para dar vida a su catálogo!
+          </p>
           <p-button 
             *appHasPermission="{module: 'colores', permission: permissionTypes.CREATE}"
             label="Crear Primer Color" 
             icon="pi pi-plus" 
             size="large"
-            class="shadow-lg hover:shadow-xl transition-all duration-300" 
+            class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105" 
             (click)="openNew()"
           />
         </div>
+        
         <ng-template #sinProductoSeleccionado>
-          <div class="bg-blue-100 p-8 rounded-full inline-block mb-4">
-            <i class="pi pi-filter text-4xl text-blue-600"></i>
+          <div class="relative inline-block mb-8">
+            <div class="bg-gradient-to-br from-blue-100 to-indigo-200 p-12 rounded-full shadow-lg">
+              <i class="pi pi-filter text-5xl text-blue-600"></i>
+            </div>
           </div>
-          <h3 class="text-xl font-bold text-gray-700 mb-2">Seleccione un producto</h3>
-          <p class="text-gray-500">Elija un producto para ver y gestionar su paleta de colores</p>
+          <h3 class="text-2xl font-bold text-gray-700 mb-4">Seleccione un Producto</h3>
+          <p class="text-gray-500 max-w-md mx-auto leading-relaxed">
+            Elija un producto del catálogo para explorar y gestionar su paleta de colores personalizada
+          </p>
         </ng-template>
       </div>
     </ng-template>
@@ -762,85 +809,6 @@
   </div>
 </div>
 
-<!-- Vista de Cuadrícula -->
-<div *ngIf="currentView === 'grid'" class="mb-6">
-  <div class="grid">
-    <div class="col-12 sm:col-6 lg:col-4 xl:col-3" *ngFor="let color of coloresFiltrados; trackBy: trackByColor">
-      <!-- Card compacta modernizada -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
-        <!-- Header del color -->
-        <div class="h-20 relative flex items-center justify-center" 
-             [style.background]="'linear-gradient(135deg, ' + (color.codigoHex || '#cccccc') + ' 0%, ' + (color.codigoHex || '#cccccc') + '80 100%)'">
-          <div class="bg-white bg-opacity-90 rounded-lg px-3 py-1 shadow-sm">
-            <span class="font-bold text-sm" [style.color]="getContrastColor(color.codigoHex)">
-              {{color.nombre}}
-            </span>
-          </div>
-          <p-checkbox 
-            value="color"
-            [(ngModel)]="selectedColores"
-            class="absolute top-2 right-2 bg-white bg-opacity-90 rounded"
-          />
-        </div>
-        
-        <!-- Contenido -->
-        <div class="p-4">
-          <div class="text-center mb-3">
-            <div class="font-mono text-sm text-gray-600">{{color.codigoHex || 'Sin código'}}</div>
-          </div>
-          
-          <!-- Tallas -->
-          <div class="mb-3">
-            <div class="text-xs text-gray-600 mb-1">Tallas ({{color.tallas?.length || 0}})</div>
-            <div class="flex flex-wrap gap-1" *ngIf="color.tallas?.length; else noTallas">
-              <span 
-                *ngFor="let talla of color.tallas" 
-                class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium"
-              >
-                {{talla.numero}}
-              </span>
-            </div>
-            <ng-template #noTallas>
-              <div class="text-xs text-gray-400 italic">Sin tallas</div>
-            </ng-template>
-          </div>
-          
-          <!-- Acciones -->
-          <div class="flex gap-1">
-            <p-button 
-              icon="pi pi-eye" 
-              [outlined]="true"
-              size="small"
-              severity="info"
-              class="flex-1"
-              pTooltip="Ver"
-              (click)="verDetallesColor(color)"
-            />
-            <p-button 
-              *appHasPermission="{module: 'colores', permission: permissionTypes.EDIT}"
-              icon="pi pi-pencil" 
-              [outlined]="true"
-              size="small"
-              class="flex-1"
-              pTooltip="Editar"
-              (click)="editColor(color)"
-            />
-            <p-button 
-              *appHasPermission="{module: 'colores', permission: permissionTypes.DELETE}"
-              icon="pi pi-trash" 
-              severity="danger" 
-              [outlined]="true"
-              size="small"
-              class="flex-1"
-              pTooltip="Eliminar"
-              (click)="eliminarColor(color)"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Diálogo premium para crear/editar color -->
 <p-dialog 
@@ -961,7 +929,7 @@
                   </div>
                   <div>
                     <div class="font-medium">{{item.codigo}} - {{item.nombre}}</div>
-                    <div class="text-sm text-gray-500">${{item.precio | number:'1.2-2'}}</div>
+                    <div class="text-sm text-gray-500">S/. {{item.precioVenta | number:'1.2-2'}}</div>
                   </div>
                 </div>
               </ng-template>

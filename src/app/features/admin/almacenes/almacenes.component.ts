@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, CUSTOM_ELEMENT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { PagedResponse } from '../../../core/models/paged-response.model';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -435,6 +434,10 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   selectedAlmacenes: AlmacenExtendido[] = [];
   almacen: AlmacenExtendido = this.initAlmacen();
 
+  // Cache para estadísticas (evita recálculos innecesarios)
+  private _cachedStats: AlmacenStats | null = null;
+  private _lastAlmacenesLength = 0;
+
   // ========== ESTADO UI ==========
   almacenDialog = false;
   editMode = false;
@@ -675,46 +678,52 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Genera datos simulados para demostración
+   * 👇 Genera datos simulados para demostración (con valores consistentes)
    */
   generarDatosSimulados(): void {
     // Simular datos extendidos para los almacenes existentes
-    this.almacenes = this.almacenes.map((almacen, index) => ({
-      ...almacen,
-      capacidadMaxima: 1000 + (index * 500),
-      capacidadUtilizada: Math.floor(Math.random() * 800) + 200,
-      estado: (['ACTIVO', 'ACTIVO', 'MANTENIMIENTO', 'ACTIVO'] as const)[index % 4],
-      responsable: ['Carlos Mendoza', 'Ana García', 'Luis Rodríguez', 'María Fernández'][index % 4],
-      telefono: [`+51 ${900000000 + index}`, `+51 ${900000001 + index}`][index % 2],
-      email: [`almacen${index + 1}@empresa.com`],
-      tipoAlmacen: (['PRINCIPAL', 'SUCURSAL', 'TEMPORAL', 'DEPOSITO'] as const)[index % 4],
-      horarioOperacion: '24/7',
-      ubicacionGeografica: {
-        latitud: -12.0464 + (Math.random() - 0.5) * 0.1,
-        longitud: -77.0428 + (Math.random() - 0.5) * 0.1,
-        direccion: `Av. Industrial ${100 + index * 50}`,
-        ciudad: 'Lima',
-        pais: 'Perú',
-        codigoPostal: `150${10 + index}`
-      },
-      temperatura: {
-        min: 18,
-        max: 25,
-        actual: 20 + Math.random() * 3
-      },
-      humedad: {
-        min: 40,
-        max: 60,
-        actual: 45 + Math.random() * 10
-      },
-      kpis: {
-        rotacionInventario: 75 + Math.random() * 20,
-        preciscionInventario: 92 + Math.random() * 7,
-        tiempoPromedioPicking: 15 + Math.random() * 10,
-        eficienciaEspacio: 80 + Math.random() * 15
-      },
-      zonas: this.generarZonasSimuladas()
-    }));
+    this.almacenes = this.almacenes.map((almacen, index) => {
+      // Usar ID del almacén para generar valores consistentes
+      const almacenId = almacen.id || (index + 1);
+      const seed = almacenId * 12345; // Semilla para valores consistentes
+      
+      return {
+        ...almacen,
+        capacidadMaxima: 1000 + (index * 500),
+        capacidadUtilizada: 200 + ((seed % 800) + 200),
+        estado: (['ACTIVO', 'ACTIVO', 'MANTENIMIENTO', 'ACTIVO'] as const)[index % 4],
+        responsable: ['Carlos Mendoza', 'Ana García', 'Luis Rodríguez', 'María Fernández'][index % 4],
+        telefono: [`+51 ${900000000 + index}`, `+51 ${900000001 + index}`][index % 2],
+        email: [`almacen${index + 1}@empresa.com`],
+        tipoAlmacen: (['PRINCIPAL', 'SUCURSAL', 'TEMPORAL', 'DEPOSITO'] as const)[index % 4],
+        horarioOperacion: '24/7',
+        ubicacionGeografica: {
+          latitud: -12.0464 + ((seed % 100 - 50) / 1000),
+          longitud: -77.0428 + ((seed % 100 - 50) / 1000),
+          direccion: `Av. Industrial ${100 + index * 50}`,
+          ciudad: 'Lima',
+          pais: 'Perú',
+          codigoPostal: `150${10 + index}`
+        },
+        temperatura: {
+          min: 18,
+          max: 25,
+          actual: 20 + ((seed % 30) / 10)
+        },
+        humedad: {
+          min: 40,
+          max: 60,
+          actual: 45 + ((seed % 100) / 10)
+        },
+        kpis: {
+          rotacionInventario: 75 + (seed % 20),
+          preciscionInventario: 92 + (seed % 7),
+          tiempoPromedioPicking: 15 + (seed % 10),
+          eficienciaEspacio: 80 + (seed % 15)
+        },
+        zonas: this.generarZonasSimuladas(almacenId)
+      };
+    });
 
     // Calcular porcentaje de ocupación
     this.almacenes.forEach(almacen => {
@@ -727,9 +736,11 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Genera zonas simuladas para cada almacén
+   * 👇 Genera zonas simuladas para cada almacén (con valores consistentes)
    */
-  generarZonasSimuladas(): ZonaAlmacen[] {
+  generarZonasSimuladas(almacenId: number): ZonaAlmacen[] {
+    const seed = almacenId * 12345; // Semilla para valores consistentes
+    
     return [
       {
         id: 1,
@@ -737,7 +748,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         nombre: 'Zona de Recepción',
         descripcion: 'Área para recepción de mercancías',
         capacidad: 200,
-        ocupacion: Math.floor(Math.random() * 150),
+        ocupacion: 50 + (seed % 150),
         tipo: 'RECEPCION',
         estado: 'ACTIVA',
         coordenadas: { x: 10, y: 10, width: 80, height: 40 }
@@ -748,7 +759,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         nombre: 'Almacenamiento Principal',
         descripcion: 'Zona principal de almacenamiento',
         capacidad: 500,
-        ocupacion: Math.floor(Math.random() * 400),
+        ocupacion: 100 + (seed % 400),
         tipo: 'ALMACENAMIENTO',
         estado: 'ACTIVA',
         coordenadas: { x: 100, y: 10, width: 120, height: 80 }
@@ -759,7 +770,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         nombre: 'Zona de Picking',
         descripcion: 'Área para preparación de pedidos',
         capacidad: 150,
-        ocupacion: Math.floor(Math.random() * 100),
+        ocupacion: 30 + (seed % 100),
         tipo: 'PICKING',
         estado: 'ACTIVA',
         coordenadas: { x: 230, y: 10, width: 70, height: 50 }
@@ -770,7 +781,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         nombre: 'Zona de Despacho',
         descripcion: 'Área para despacho de pedidos',
         capacidad: 100,
-        ocupacion: Math.floor(Math.random() * 80),
+        ocupacion: 20 + (seed % 80),
         tipo: 'DESPACHO',
         estado: 'ACTIVA',
         coordenadas: { x: 310, y: 10, width: 60, height: 40 }
@@ -779,16 +790,24 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Calcula estadísticas generales de almacenes
+   * 👇 Calcula estadísticas generales de almacenes (con cache)
    */
   calcularEstadisticas(): AlmacenStats {
+    // Verificar si necesitamos recalcular
+    if (this._cachedStats && this._lastAlmacenesLength === this.almacenes.length) {
+      return this._cachedStats;
+    }
+
     const capacidadTotal = this.almacenes.reduce((sum, a) => sum + (a.capacidadMaxima || 0), 0);
     const capacidadUtilizada = this.almacenes.reduce((sum, a) => sum + (a.capacidadUtilizada || 0), 0);
     const almacenesActivos = this.almacenes.filter(a => a.estado === 'ACTIVO').length;
     const almacenesInactivos = this.almacenes.filter(a => a.estado !== 'ACTIVO').length;
     const zonasTotal = this.almacenes.reduce((sum, a) => sum + (a.zonas?.length || 0), 0);
 
-    return {
+    // Generar valor fijo para evitar cambios aleatorios
+    const valorInventarioTotal = 750000; // Valor fijo en lugar de Math.random()
+
+    this._cachedStats = {
       totalAlmacenes: this.almacenes.length,
       capacidadTotal,
       capacidadUtilizada,
@@ -798,9 +817,63 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
       zonasTotal,
       distribucionCapacidad: this.getDistribucionCapacidad(),
       alertasCapacidad: this.getAlertasCapacidad(),
-      eficienciaPromedio: this.almacenes.reduce((sum, a) => sum + (a.kpis?.eficienciaEspacio || 0), 0) / this.almacenes.length,
-      valorInventarioTotal: Math.random() * 1000000 + 500000 // Simulado
+      eficienciaPromedio: this.almacenes.length > 0 ? 
+        this.almacenes.reduce((sum, a) => sum + (a.kpis?.eficienciaEspacio || 0), 0) / this.almacenes.length : 0,
+      valorInventarioTotal
     };
+
+    this._lastAlmacenesLength = this.almacenes.length;
+    return this._cachedStats;
+  }
+
+  /**
+   * 👇 Limpia el cache de estadísticas
+   */
+  private clearStatsCache(): void {
+    this._cachedStats = null;
+  }
+
+  // ========== MÉTODOS PARA VALORES FIJOS (REEMPLAZAN Math.random) ==========
+
+  /**
+   * 👇 Retorna valor fijo para inventario por almacén
+   */
+  getValorInventarioAlmacen(almacen: AlmacenExtendido): number {
+    // Usar el ID del almacén para generar un valor consistente
+    const baseValue = almacen.id ? almacen.id * 10000 + 25000 : 35000;
+    return baseValue;
+  }
+
+  /**
+   * 👇 Retorna valor fijo para operación
+   */
+  getValorOperacion(almacen: AlmacenExtendido): number {
+    const baseValue = almacen.id ? almacen.id * 500 + 2500 : 3000;
+    return baseValue;
+  }
+
+  /**
+   * 👇 Retorna valor fijo para mantenimiento
+   */
+  getValorMantenimiento(almacen: AlmacenExtendido): number {
+    const baseValue = almacen.id ? almacen.id * 300 + 1200 : 1500;
+    return baseValue;
+  }
+
+  /**
+   * 👇 Retorna valor fijo para personal
+   */
+  getValorPersonal(almacen: AlmacenExtendido): number {
+    const baseValue = almacen.id ? almacen.id * 200 + 800 : 1000;
+    return baseValue;
+  }
+
+  /**
+   * 👇 Retorna valor fijo para ROI
+   */
+  getROI(almacen: AlmacenExtendido): number {
+    const baseValue = almacen.id ? (almacen.id % 15) + 12 : 15;
+    return baseValue;
   }
 
   /**
@@ -1034,10 +1107,16 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   loadAlmacenes(): void {
     this.loading = true;
     
-    this.almacenService.getAlmacenes().subscribe({
-      next: (response: PagedResponse<Almacen>) => {
-        // Map the response content to AlmacenExtendido array
-        this.almacenes = (response?.content || []).map((item: Almacen) => ({
+    // Limpiar cache de estadísticas
+    this.clearStatsCache();
+    
+    this.almacenService.getAlmacenes().subscribe(
+      (response) => {
+        // Check if response is a PagedResponse or a direct array
+        const almacenesData = 'contenido' in response ? response.contenido : response;
+        
+        // Map the data to AlmacenExtendido array
+        this.almacenes = (almacenesData || []).map((item: Almacen) => ({
           ...item,
           // Add any additional properties needed for AlmacenExtendido
           estado: 'ACTIVO', // Default value, adjust as needed
@@ -1047,13 +1126,13 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
         } as AlmacenExtendido));
         this.generarDatosSimulados(); // Enriquecer con datos simulados
       },
-      error: (error: Error) => {
+      (error: Error) => {
         this.handleError(error, 'No se pudo cargar los almacenes');
       },
-      complete: () => {
+      () => {
         this.loading = false;
       }
-    });
+    );
   }
 
   // ========== CRUD (Manteniendo funcionalidad original) ==========

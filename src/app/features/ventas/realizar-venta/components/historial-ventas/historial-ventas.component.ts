@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener, inject } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // PrimeNG Imports
@@ -43,6 +43,8 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { VentasService } from '../../../../../core/services/ventas.service';
+import { EstadisticasVentasService } from '../../../../../core/services/estadisticas-ventas.service';
+import { VentaResponse } from '../../../../../core/models/venta.model';
 
 // Interfaces
 interface Venta {
@@ -177,6 +179,7 @@ interface OpcionesGrafico {
 
 interface DistribucionPago {
   nombre: string;
+  color: string;
   cantidad: number;
   porcentaje: number;
 }
@@ -191,6 +194,8 @@ interface TopProducto {
   nombre: string;
   cantidad: number;
 }
+
+
 
 interface EventoAutoComplete {
   query: string;
@@ -316,7 +321,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   estadisticas: EstadisticasVenta = {
     ventasHoy: 0,
     totalVentasHoy: 0,
-    clientesUnicos: 0,
+    clientesUnicos: 10,
     clientesNuevos: 0,
     productosVendidos: 0,
     tiposProductos: 0,
@@ -407,13 +412,24 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private ventasService: VentasService = inject(VentasService); // Reemplazar con tu servicio real
     // private exportService: any   // Reemplazar con tu servicio de exportación
+  private estadisticasVentasService = inject(EstadisticasVentasService);
+
+  // Agregar estas propiedades para el estado de carga:
+  cargandoEstadisticas = false;
+  errorEstadisticas: string | null = null;
 
   constructor() {
     this.inicializarConfiguraciones();
   }
 
   ngOnInit(): void {
-    console.log('🚀 Inicializando Historial de Ventas...');
+    console.log('🚀 [INICIO] Inicializando Historial de Ventas...');
+    console.log('📊 [CONFIG] Usuario actual:', 'Emerson147');
+    console.log('📅 [FECHA] Fecha actual:', new Date().toISOString());
+    
+    // Verificar servicio
+    console.log('🔧 [SERVICIO] VentasService:', this.ventasService);
+    
     this.inicializarComponente();
     this.cargarDatosIniciales();
     this.configurarRelojes();
@@ -447,19 +463,61 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
 
   private cargarDatosIniciales(): void {
+    console.log('📚 [CARGA] Iniciando carga de datos...');
     this.cargandoVentas = true;
     
-    // Cargar ventas
-    this.cargarVentas();
+    // TEST: Primero cargar datos de ejemplo
+    console.log('🧪 [TEST] Cargando datos de ejemplo primero...');
+    this.ventas = this.generarVentasEjemplo();
+    this.aplicarFiltrosYOrdenamiento();
     
-    // Cargar estadísticas
+    // Después intentar cargar datos reales
+    this.cargarVentasReales();
     this.cargarEstadisticas();
-    
-    // Cargar datos para gráficos
-    this.cargarDatosGraficos();
     
     this.cargandoVentas = false;
   }
+  
+
+  private cargarVentasReales(): void {
+    console.log('🔄 [API] Intentando cargar ventas desde API...');
+    
+    const filtrosApi = {
+      fechaDesde: this.rangoFechas[0],
+      fechaHasta: this.rangoFechas[1]
+    };
+    
+    console.log('📋 [FILTROS] Filtros para API:', filtrosApi);
+    
+    this.ventasService.obtenerVentas(filtrosApi)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          console.log('✅ [API SUCCESS] Datos recibidos:', {
+            cantidad: data?.length || 0,
+            ejemplo: data?.[0] || 'Sin datos'
+          });
+          
+          if (data && data.length > 0) {
+            this.procesarVentasAPI(data);
+          } else {
+            console.log('⚠️ [API] No hay datos, manteniendo ejemplos');
+          }
+        },
+        error: (error) => {
+          console.error('❌ [API ERROR] Error al cargar ventas:', error);
+          console.log('📝 [FALLBACK] Manteniendo datos de ejemplo');
+          
+          this.messageService.add({
+            severity: 'warn',
+            summary: '⚠️ Modo Offline',
+            detail: 'Mostrando datos de ejemplo. Verifique conexión.',
+            life: 5000
+          });
+        }
+      });
+  }
+
 
   private configurarRelojes(): void {
     setInterval(() => {
@@ -615,67 +673,331 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   cargarVentas(evento?: LazyLoadEvent): void {
     this.cargandoVentas = true;
     
-    console.log('📊 Cargando ventas...', evento);
+    console.log('📊 Cargando ventas desde API...', evento);
     
-    // TODO: Implementar llamada real al servicio
-    setTimeout(() => {
-      this.ventas = this.generarVentasEjemplo();
+    // Construir filtros para la API
+    const filtrosApi = {
+      fechaDesde: this.rangoFechas[0],
+      fechaHasta: this.rangoFechas[1],
+      estado: this.estadosSeleccionados.length === 1 ? this.estadosSeleccionados[0] : undefined,
+      termino: this.busquedaRapida || undefined
+    };
+    
+    // Llamar al servicio real
+    this.ventasService.obtenerVentas(filtrosApi)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.ventas = data.map(venta => ({
+            id: venta.id,
+            numeroVenta: venta.numeroVenta,
+            fechaVenta: new Date(venta.fechaCreacion),
+            cliente: venta.cliente ? {
+              id: venta.cliente.id,
+              nombres: venta.cliente.nombres,
+              apellidos: venta.cliente.apellidos,
+              dni: venta.cliente.documento,
+              ruc: venta.cliente.documento,
+              email: '',
+              telefono: '',
+              calificacion: 0
+            } : undefined,
+            usuario: venta.usuario ? {
+              id: venta.usuario.id,
+              nombres: venta.usuario.nombre,
+              apellidos: '',
+              email: ''
+            } : undefined,
+            total: venta.total,
+            subtotal: venta.subtotal,
+            igv: venta.igv,
+            estado: venta.estado as EstadoVenta,
+            tipoComprobante: venta.tipoComprobante,
+            serieComprobante: venta.serieComprobante,
+            pago: undefined,
+            detalles: [],
+            observaciones: venta.observaciones
+          }));
+          
+          this.aplicarFiltrosYOrdenamiento();
+          this.cargandoVentas = false;
+          
+          this.messageService.add({
+            severity: 'success',
+            summary: '✅ Datos Cargados',
+            detail: `${this.ventasFiltradas.length} ventas encontradas`,
+            life: 3000
+          });
+        },
+        error: (error) => {
+          console.error('Error al cargar ventas:', error);
+          this.cargandoVentas = false;
+          
+          // Mostrar mensaje de error
+          this.messageService.add({
+            severity: 'error',
+            summary: '❌ Error',
+            detail: `No se pudieron cargar las ventas: ${error.message || 'Error del servidor'}`,
+            life: 5000
+          });
+          
+          // Cargar datos de ejemplo como fallback (opcional)
+          this.ventas = this.generarVentasEjemplo();
+          this.aplicarFiltrosYOrdenamiento();
+        }
+      });
+  }
+
+  private procesarVentasAPI(data: VentaResponse[]): void {
+    console.log('🔄 [MAPEO] Procesando ventas del API con estructura correcta...');
+    
+    try {
+      this.ventas = data.map((venta, index) => {
+        if (index < 3) {
+          console.log(`📝 [MAPEO ${index}] Estructura de venta:`, venta);
+        }
+        
+        // ✅ MAPEO CORRECTO según tu API real
+        const ventaMapeada: Venta = {
+          id: venta.id,
+          numeroVenta: venta.numeroVenta,
+          fechaVenta: new Date(venta.fechaCreacion),
+          
+          // Cliente con estructura correcta
+          cliente: venta.cliente ? {
+            id: venta.cliente.id,
+            nombres: venta.cliente.nombres,
+            apellidos: venta.cliente.apellidos,
+            dni: venta.cliente.documento,
+            ruc: venta.cliente.documento,
+            email: '',
+            telefono: '',
+            calificacion: Math.floor(Math.random() * 5) + 1 // Temporal hasta que tengas este dato
+          } : {
+            id: 0,
+            nombres: 'Público',
+            apellidos: 'General',
+            dni: '',
+            calificacion: 0
+          },
+          
+          // Usuario con estructura correcta
+          usuario: venta.usuario ? {
+            id: venta.usuario.id,
+            nombres: venta.usuario.nombre,
+            apellidos: venta.usuario.username,
+            email: `${venta.usuario.username}@sistema.com`
+          } : {
+            id: 1,
+            nombres: 'Emerson147',
+            apellidos: 'Sistema',
+            email: 'emerson147@sistema.com'
+          },
+          
+          // Montos
+          total: venta.total,
+          subtotal: venta.subtotal,
+          igv: venta.igv,
+          
+          // Estado y comprobante
+          estado: this.mapearEstado(venta.estado),
+          tipoComprobante: venta.tipoComprobante,
+          serieComprobante: venta.serieComprobante,
+          
+          // Pago (asumir efectivo por defecto, puedes agregar lógica específica)
+          pago: {
+            id: venta.id,
+            metodoPago: this.determinarMetodoPago(),
+            monto: venta.total
+          },
+          
+          // Detalles mapeados correctamente
+          detalles: venta.detalles?.map(detalle => ({
+            id: detalle.id,
+            producto: {
+              id: detalle.producto.id,
+              nombre: detalle.producto.nombre,
+              codigo: detalle.producto.codigo
+            },
+            cantidad: detalle.cantidad,
+            precioUnitario: detalle.precioUnitario,
+            subtotal: detalle.subtotal
+          })) || [],
+          
+          observaciones: venta.observaciones || ''
+        };
+        
+        return ventaMapeada;
+      });
+      
+      console.log('✅ [MAPEO] Ventas procesadas correctamente:', {
+        total: this.ventas.length,
+        primeraVenta: this.ventas[0],
+        estructura: 'Mapeado según API real'
+      });
+      
       this.aplicarFiltrosYOrdenamiento();
-      this.cargandoVentas = false;
       
       this.messageService.add({
         severity: 'success',
-        summary: '✅ Datos Cargados',
-        detail: `${this.ventasFiltradas.length} ventas encontradas`,
-        life: 3000
+        summary: '✅ Ventas Reales Cargadas',
+        detail: `${this.ventas.length} ventas cargadas desde la base de datos`,
+        life: 4000
       });
-    }, 1000);
+      
+    } catch (error) {
+      console.error('❌ [MAPEO ERROR] Error al procesar ventas:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error de Mapeo',
+        detail: 'Error al procesar los datos del servidor',
+        life: 5000
+      });
+    }
   }
+  
 
   private cargarEstadisticas(): void {
-    // TODO: Implementar carga real de estadísticas
-    this.estadisticas = {
-      ventasHoy: 45,
-      totalVentasHoy: 8750.50,
-      clientesUnicos: 32,
-      clientesNuevos: 8,
-      productosVendidos: 156,
-      tiposProductos: 23,
-      porcentajeCrecimiento: 12.5,
-      promedioVenta: 194.46,
-      metaDiaria: 10000
-    };
-
-    this.progresoMeta = Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100);
+    console.log('📊 [ESTADISTICAS] Solicitando estadísticas del API...');
     
+    this.ventasService.obtenerResumenDiario()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resumen) => {
+          console.log('✅ [ESTADISTICAS] Resumen recibido del API:', resumen);
+          
+          // ✅ MAPEO CORREGIDO según la estructura real del API
+          this.estadisticas = {
+            ventasHoy: resumen.cantidadVentas || 0, // Usar cantidadVentas, no totalVentas
+            totalVentasHoy: resumen.totalVentas || 0, // Usar totalVentas
+            clientesUnicos: resumen.clientesUnicos || 0,
+            clientesNuevos: resumen.clientesNuevos || 0,
+            productosVendidos: resumen.cantidadProductos || 0, // Usar cantidadProductos
+            tiposProductos: resumen.tiposProductos || resumen.cantidadProductos || 0,
+            porcentajeCrecimiento: resumen.porcentajeCrecimiento || 0,
+            promedioVenta: resumen.totalVentas && resumen.cantidadVentas 
+              ? resumen.totalVentas / resumen.cantidadVentas 
+              : 0,
+            metaDiaria: 10000
+          };
+          
+          // Actualizar progreso de meta
+          this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
+          
+          console.log('📊 [ESTADISTICAS] Estadísticas procesadas CORREGIDAS:', this.estadisticas);
+          
+          // Generar datos complementarios desde el API
+          this.generarDatosComplementariosDesdeAPI();
+          
+          this.messageService.add({
+            severity: 'success',
+            summary: '📊 Estadísticas Cargadas',
+            detail: `${this.estadisticas.ventasHoy} ventas hoy - S/ ${this.estadisticas.totalVentasHoy}`,
+            life: 4000
+          });
+        },
+        error: (error) => {
+          console.error('❌ [ESTADISTICAS ERROR]:', error);
+          this.cargarEstadisticasPorDefecto();
+          
+          this.messageService.add({
+            severity: 'warn',
+            summary: '⚠️ Estadísticas Offline',
+            detail: 'Mostrando estadísticas de ejemplo',
+            life: 3000
+          });
+        }
+      });
+  }
+  
+  private generarDatosComplementariosDesdeAPI(): void {
+    console.log('🔄 [COMPLEMENTARIOS] Generando datos complementarios...');
+    
+    // Generar distribución de pagos por defecto ya que ResumenDiarioResponse no incluye esta info
     this.distribucionPagos = [
-      { nombre: 'Efectivo', cantidad: 25, porcentaje: 55 },
-      { nombre: 'Tarjeta', cantidad: 15, porcentaje: 33 },
-      { nombre: 'Digital', cantidad: 5, porcentaje: 12 }
+      { nombre: 'Efectivo', cantidad: 25, porcentaje: 55, color: '#10b981' },
+      { nombre: 'Tarjeta', cantidad: 15, porcentaje: 33, color: '#3b82f6' },
+      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' }
     ];
-
+    
+    // Top productos por defecto ya que ResumenDiarioResponse no incluye esta info
     this.topProductos = [
       { nombre: 'Producto A', cantidad: 25 },
       { nombre: 'Producto B', cantidad: 18 },
       { nombre: 'Producto C', cantidad: 12 }
     ];
-
+    
+    console.log('✅ [COMPLEMENTARIOS] Datos generados:', {
+      distribucionPagos: this.distribucionPagos.length,
+      topProductos: this.topProductos.length
+    });
+    
+    // Actividad reciente
     this.actividadReciente = [
-      {
-        titulo: 'Venta completada',
-        descripcion: 'V-2024-001234 - S/ 125.50',
-        tiempo: 'hace 2 min'
+      { 
+        titulo: 'Resumen actualizado', 
+        descripcion: `${this.estadisticas.ventasHoy} ventas registradas hoy`, 
+        tiempo: 'hace 1 min' 
       },
-      {
-        titulo: 'Cliente nuevo',
-        descripcion: 'Juan Pérez registrado',
-        tiempo: 'hace 5 min'
+      { 
+        titulo: 'Total del día', 
+        descripcion: `S/ ${this.estadisticas.totalVentasHoy.toFixed(2)} en ventas`, 
+        tiempo: 'hace 2 min' 
       },
-      {
-        titulo: 'Pago procesado',
-        descripcion: 'Tarjeta terminada en 1234',
-        tiempo: 'hace 8 min'
+      { 
+        titulo: 'Sistema activo', 
+        descripcion: 'Conexión con API establecida', 
+        tiempo: 'hace 3 min' 
       }
+    ];
+    
+    console.log('📊 [COMPLEMENTARIOS] Datos generados:', {
+      distribucionPagos: this.distribucionPagos,
+      topProductos: this.topProductos
+    });
+  }
+
+  private cargarEstadisticasPorDefecto(): void {
+    console.log('🔄 [ESTADISTICAS] Cargando estadísticas por defecto...');
+    
+    this.estadisticas = {
+      ventasHoy: 12,
+      totalVentasHoy: 2450.75,
+      clientesUnicos: 8,
+      clientesNuevos: 3,
+      productosVendidos: 25,
+      tiposProductos: 15,
+      porcentajeCrecimiento: 15.2,
+      promedioVenta: 204.23,
+      metaDiaria: 10000
+    };
+    
+    this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
+    
+    this.generarDatosComplementarios();
+    
+    console.log('✅ [ESTADISTICAS] Estadísticas por defecto cargadas:', this.estadisticas);
+  }
+  
+  
+
+  private generarDatosComplementarios(): void {
+    this.distribucionPagos = [
+      { nombre: 'Efectivo', cantidad: 25, porcentaje: 55, color: '#10b981' },
+      { nombre: 'Tarjeta', cantidad: 15, porcentaje: 33, color: '#3b82f6' },
+      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' }
+    ];
+    
+    this.topProductos = [
+      { nombre: 'Producto A', cantidad: 25 },
+      { nombre: 'Producto B', cantidad: 18 },
+      { nombre: 'Producto C', cantidad: 12 }
+    ];
+    
+    this.actividadReciente = [
+      { titulo: 'Venta completada', descripcion: 'V-2024-001234 - S/ 125.50', tiempo: 'hace 2 min' },
+      { titulo: 'Cliente nuevo', descripcion: 'Juan Pérez registrado', tiempo: 'hace 5 min' },
+      { titulo: 'Pago procesado', descripcion: 'Tarjeta terminada en 1234', tiempo: 'hace 8 min' }
     ];
   }
 
@@ -697,7 +1019,13 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
   // ✅ FILTRADO Y BÚSQUEDA
   filtrarVentas(): void {
-    console.log('🔍 Aplicando filtros...', this.filtros);
+    console.log('🔍 [FILTROS] Aplicando filtros...', {
+      totalVentas: this.ventas.length,
+      busquedaRapida: this.busquedaRapida,
+      estadosSeleccionados: this.estadosSeleccionados,
+      metodosSeleccionados: this.metodosSeleccionados,
+      rangoMonto: this.rangoMonto
+    });
     
     this.ventasFiltradas = this.ventas.filter(venta => {
       // Filtro por búsqueda rápida
@@ -736,6 +1064,13 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     this.ordenarVentas();
     this.actualizarPaginacion();
+    
+    console.log('✅ [FILTROS] Filtrado completado:', {
+      ventasFiltradas: this.ventasFiltradas.length,
+      ventasPaginadas: this.ventasPaginadas.length,
+      paginaActual: this.paginaActual,
+      totalPaginas: this.totalPaginas
+    });
   }
 
   buscarSugerencias(evento: EventoAutoComplete): void {
@@ -837,6 +1172,8 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
   // ✅ ORDENAMIENTO
   ordenarVentas(): void {
+    console.log('🔄 [ORDENAMIENTO] Ordenando ventas por:', this.ordenarPor);
+    
     this.ventasFiltradas.sort((a, b) => {
       let valorA: string | number | Date, valorB: string | number | Date;
 
@@ -865,10 +1202,13 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     });
 
     this.actualizarPaginacion();
+    console.log('✅ [ORDENAMIENTO] Ventas ordenadas correctamente');
   }
 
   // ✅ PAGINACIÓN
   private actualizarPaginacion(): void {
+    console.log('🔄 [PAGINACION] Actualizando paginación...');
+    
     this.totalVentas = this.ventasFiltradas.length;
     this.totalPaginas = Math.ceil(this.totalVentas / this.ventasPorPagina);
     
@@ -876,6 +1216,14 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     const fin = inicio + this.ventasPorPagina;
     
     this.ventasPaginadas = this.ventasFiltradas.slice(inicio, fin);
+    
+    console.log('✅ [PAGINACION] Paginación actualizada:', {
+      totalVentas: this.totalVentas,
+      totalPaginas: this.totalPaginas,
+      paginaActual: this.paginaActual,
+      ventasPorPagina: this.ventasPorPagina,
+      ventasPaginadas: this.ventasPaginadas.length
+    });
   }
 
   cambiarPagina(pagina: number): void {
@@ -1018,6 +1366,32 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       style: 'currency',
       currency: 'PEN'
     }).format(monto);
+  }
+
+  private mapearEstado(estado: string): EstadoVenta {
+    console.log('🔄 [MAPEO] Mapeando estado:', estado);
+    
+    const estados: Record<string, EstadoVenta> = {
+      'PENDIENTE': 'PENDIENTE',
+      'COMPLETADA': 'COMPLETADA',
+      'ANULADA': 'ANULADA',
+      'PROCESANDO': 'PROCESANDO'
+    };
+    
+    const estadoMapeado = estados[estado] || 'PENDIENTE';
+    console.log('✅ [MAPEO] Estado mapeado:', estado, '→', estadoMapeado);
+    
+    return estadoMapeado;
+  }
+
+  private determinarMetodoPago(): MetodoPago {
+    console.log('🔄 [PAGO] Determinando método de pago...');
+    
+    // Por defecto asumir efectivo, puedes ajustar según tu lógica de negocio
+    const metodoPago = 'EFECTIVO';
+    console.log('✅ [PAGO] Método de pago determinado:', metodoPago);
+    
+    return metodoPago;
   }
 
   getEstadoClass(estado: EstadoVenta): string {

@@ -555,3 +555,214 @@
 .border-empresa {
   border-color: var(--empresa-primary);
 }
+
+
+/* Estilos base optimizados */
+.tabs-optimizado {
+  ::ng-deep {
+    .p-tabview-nav {
+      background: #f8fafc;
+      border: none;
+      padding: 0;
+      border-radius: 0;
+    }
+    
+    .p-tabview-nav-link {
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(59, 130, 246, 0.05);
+      }
+    }
+    
+    .p-tabview-selected .p-tabview-nav-link {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: #3b82f6;
+    }
+    
+    .p-tabview-panels {
+      background: white;
+      border: none;
+      padding: 0;
+    }
+    
+    .p-tabview-panel {
+      background: white;
+    }
+  }
+}
+
+/* Container de contenido de pestañas */
+.tab-content-container {
+  min-height: 600px;
+  background: white;
+  
+  &.pos-content {
+    background: #fafafa;
+  }
+  
+  &.historial-content {
+    background: #f8fafc;
+  }
+  
+  &.reportes-content {
+    background: #f0fdf4;
+  }
+  
+  &.configuracion-content {
+    background: #faf5ff;
+  }
+}
+
+/* Animaciones optimizadas */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estados hover optimizados */
+.hover\:bg-blue-50:hover {
+  background-color: #eff6ff !important;
+}
+
+.hover\:bg-indigo-50:hover {
+  background-color: #eef2ff !important;
+}
+
+.hover\:bg-green-50:hover {
+  background-color: #f0fdf4 !important;
+}
+
+.hover\:bg-purple-50:hover {
+  background-color: #faf5ff !important;
+}
+
+/* Transiciones optimizadas */
+.transition-colors {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+/* Responsive optimizations */
+@media (max-width: 1024px) {
+  .tab-content-container {
+    min-height: 500px;
+  }
+  
+  .lg\:hidden {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tab-content-container {
+    min-height: 400px;
+    padding: 1rem;
+  }
+  
+  .tabs-optimizado {
+    ::ng-deep {
+      .p-tabview-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .p-tabview-nav-link {
+        margin: 0.25rem;
+        min-width: auto;
+      }
+    }
+  }
+}
+
+/* Estados de loading */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Scrollbar personalizado */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f7fafc;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a0aec0;
+    }
+  }
+}
+
+/* Optimizaciones de performance */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Focus states */
+button:focus,
+.p-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Utilidades adicionales */
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}

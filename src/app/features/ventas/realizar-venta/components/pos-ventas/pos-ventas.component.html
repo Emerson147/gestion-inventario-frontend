@@ -1,0 +1,1921 @@
+<!-- Contenido de POS -->
+<div class="h-screen bg-gray-50 flex flex-col">
+  <!-- Header Profesional Optimizado -->
+  <header class="bg-slate-800 text-white shadow-xl border-b-4 border-blue-500">
+    <div class="flex justify-between items-center p-4">
+      <!-- SECCIÓN IZQUIERDA: Branding + Info Sistema -->
+      <div class="flex items-center gap-6">
+        <!-- Logo y Empresa -->
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <div
+              class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors"
+            >
+              <i class="pi pi-shop text-white text-3xl"></i>
+            </div>
+            <!-- Indicador online -->
+            <div
+              class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"
+            ></div>
+          </div>
+
+          <div>
+            <h1 class="text-2xl font-bold tracking-wide">
+              SISTEMA EMPRESARIAL POS
+            </h1>
+            <div class="flex items-center gap-4 text-sm text-slate-300">
+              <span class="flex items-center gap-1">
+                <i class="pi pi-building text-xs"></i>
+                RUC: 20123456789
+              </span>
+              <span>•</span>
+              <span class="flex items-center gap-1">
+                <i class="pi pi-desktop text-xs"></i>
+                Caja: POS-001
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado del Sistema -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex items-center gap-2 bg-green-600 px-3 py-2 rounded-full shadow-md"
+          >
+            <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+            <span class="text-sm font-medium text-white">SUNAT Online</span>
+          </div>
+
+          <div
+            class="flex items-center gap-2 bg-blue-600 px-3 py-2 rounded-full shadow-md"
+          >
+            <i class="pi pi-user text-sm text-white"></i>
+            <span class="text-sm font-medium text-white">Emerson147</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN CENTRO: Información de Venta Actual -->
+      <div class="text-center px-6">
+        <div
+          class="bg-slate-700 rounded-xl p-4 border border-slate-600 shadow-lg"
+        >
+          <div class="text-sm text-slate-300 mb-1">
+            Cliente: {{ clienteSeleccionado?.nombres || "Público General" }}
+            <button
+              *ngIf="!clienteSeleccionado"
+              class="ml-2 bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs transition-colors"
+              (click)="openClientModal()"
+            >
+              <i class="pi pi-plus mr-1"></i>Seleccionar
+            </button>
+          </div>
+          <div class="text-4xl font-mono font-bold text-green-400 mb-1">
+            {{ formatearMoneda(totalVenta) }}
+          </div>
+          <div class="text-xs text-slate-400">
+            Venta #{{ getNumeroVenta() }} • {{ carrito.length }} productos •
+            {{ getCurrentDateTime() }}
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DERECHA: Panel de Control -->
+      <div class="flex items-center gap-3">
+        <!-- Métricas Rápidas -->
+        <div class="text-right mr-4 bg-slate-700 rounded-lg p-3">
+          <div class="text-xs text-slate-400">Ventas Hoy</div>
+          <div class="text-lg font-bold text-blue-400">
+            {{ formatearMoneda(ventasHoy) }}
+          </div>
+          <div class="text-xs text-slate-400">
+            {{ transaccionesHoy }} transacciones
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex gap-2">
+          <button
+            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
+            title="Dashboard Gerencial"
+            (click)="abrirDashboard()"
+          >
+            <i
+              class="pi pi-chart-line text-slate-300 group-hover:text-white text-lg"
+            ></i>
+          </button>
+
+          <button
+            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
+            title="Reportes"
+            (click)="abrirReportes()"
+          >
+            <i
+              class="pi pi-chart-bar text-slate-300 group-hover:text-white text-lg"
+            ></i>
+          </button>
+
+          <button
+            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
+            title="Configuración"
+            (click)="abrirConfiguracion()"
+          >
+            <i
+              class="pi pi-cog text-slate-300 group-hover:text-white text-lg"
+            ></i>
+          </button>
+
+          <div class="w-px h-8 bg-slate-600 mx-1"></div>
+
+          <button
+            class="group p-3 bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-200 hover:scale-105"
+            title="Cerrar Sesión"
+            (click)="cerrarSesion()"
+          >
+            <i class="pi pi-sign-out text-white text-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Estado Inferior -->
+    <div
+      class="bg-slate-900 px-4 py-2 text-xs flex justify-between items-center border-t border-slate-700"
+    >
+      <div class="flex items-center gap-6">
+        <span class="flex items-center gap-1">
+          <i class="pi pi-calendar text-blue-400"></i>
+          {{ getCurrentTime() }}
+        </span>
+        <span class="flex items-center gap-1">
+          <i class="pi pi-clock text-green-400"></i>
+          Turno iniciado: {{ horaInicioTurno }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span class="bg-green-600 text-green-100 px-2 py-1 rounded">
+          <i class="pi pi-check-circle mr-1"></i>
+          Sistema Operativo
+        </span>
+        <span class="text-slate-400"> v2.1.0 • Build 2025-07-13 </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 flex overflow-hidden">
+    <!-- Panel Izquierdo: Productos (65%) -->
+    <section class="w-[65%] flex flex-col p-4 space-y-4">
+      <!-- Búsqueda Principal Optimizada -->
+      <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <!-- Búsqueda por código -->
+          <div class="lg:col-span-2">
+            <label
+              for="codigoInput"
+              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+            >
+              <i class="pi pi-qrcode text-blue-600"></i>
+              Código de Producto
+            </label>
+            <div class="flex gap-2">
+              <input
+                #codigoInput
+                pInputText
+                [(ngModel)]="codigoBusqueda"
+                placeholder="Escanear o escribir código..."
+                (keyup.enter)="buscarProductoPorCodigo()"
+                class="flex-1 text-lg font-mono p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+              />
+              <p-button
+                icon="pi pi-search"
+                severity="info"
+                styleClass="px-4 py-3"
+                (click)="buscarProductoPorCodigo()"
+              ></p-button>
+            </div>
+          </div>
+
+          <!-- Cantidad -->
+          <div>
+            <label
+              for="cantidadInput"
+              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+            >
+              <i class="pi pi-hashtag text-green-600"></i>
+              Cantidad
+            </label>
+            <p-inputNumber
+              [(ngModel)]="cantidadInput"
+              [min]="1"
+              [max]="999"
+              [showButtons]="true"
+              inputStyleClass="p-3"
+              styleClass="w-full"
+            ></p-inputNumber>
+          </div>
+
+          <!-- Scanner -->
+          <div>
+            <label
+              for="scannerButton"
+              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+            >
+              <i class="pi pi-camera text-purple-600"></i>
+              Escáner
+            </label>
+            <p-button
+              icon="pi pi-camera"
+              label="F8"
+              [outlined]="true"
+              severity="secondary"
+              styleClass="w-full h-12"
+              (click)="activarScanner()"
+            ></p-button>
+          </div>
+        </div>
+
+        <!-- Búsqueda avanzada optimizada -->
+        <div class="mt-6">
+          <label
+            for="autoComplete"
+            class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+          >
+            <i class="pi pi-search text-indigo-600"></i>
+            Búsqueda Avanzada
+          </label>
+          <p-autoComplete
+            [(ngModel)]="productoBusqueda"
+            [suggestions]="productosAutoComplete"
+            (completeMethod)="buscarProductosAutoComplete($event)"
+            (onSelect)="seleccionarProductoAutoComplete($event)"
+            field="displayLabel"
+            placeholder="Buscar por nombre, código o descripción..."
+            styleClass="w-full"
+            [dropdown]="true"
+            scrollHeight="400px"
+            [virtualScroll]="true"
+            [itemSize]="80"
+            [showClear]="true"
+            [minLength]="0"
+          >
+            <ng-template let-producto pTemplate="item">
+              <div
+                class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+              >
+                <div class="flex-shrink-0">
+                  <img
+                    *ngIf="producto?.imagen"
+                    [src]="getImageUrl(producto.producto.imagen)"
+                    [alt]="producto.producto.nombre"
+                    class="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                  />
+                  <div
+                    *ngIf="!producto.producto?.imagen"
+                    class="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-lg"
+                  >
+                    <i class="pi pi-image text-gray-400"></i>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-gray-900">
+                    {{ producto.producto?.codigo }} •
+                    {{ producto.producto?.nombre }}
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    {{ producto.color?.nombre }} •
+                    {{ producto.talla?.numero }} • {{ producto.serie }}
+                  </div>
+                  <div class="text-lg font-bold text-blue-600">
+                    {{
+                      formatearMoneda(
+                        obtenerPrecioProducto(producto.producto?.id || 0)
+                      )
+                    }}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div
+                    [class]="getStockClass(producto.cantidad)"
+                    class="font-medium"
+                  >
+                    Stock: {{ producto.cantidad }}
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
+        </div>
+      </div>
+
+      <!-- Scanner Optimizado -->
+      <div *ngIf="scannerActive" class="bg-gray-900 rounded-xl p-4 shadow-lg">
+        <div class="relative h-64 rounded-lg overflow-hidden bg-black">
+          <video #videoElement class="w-full h-full object-cover"></video>
+          <div
+            class="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
+            <div class="scanner-overlay">
+              <div class="w-48 h-48 border-4 border-red-500 relative">
+                <div
+                  class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-red-400"
+                ></div>
+                <div
+                  class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-red-400"
+                ></div>
+                <div
+                  class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-red-400"
+                ></div>
+                <div
+                  class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-red-400"
+                ></div>
+                <div
+                  class="absolute top-1/2 left-0 right-0 h-0.5 bg-red-500 animate-pulse"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <button
+            class="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+            (click)="cerrarScanner()"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Productos Populares Optimizado -->
+      <div
+        *ngIf="productosPopulares.length > 0 && !scannerActive"
+        class="flex-1"
+      >
+        <div
+          class="bg-white rounded-xl p-6 shadow-lg h-full flex flex-col border border-gray-200"
+        >
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center"
+            >
+              <i class="pi pi-star-fill text-white"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800">Productos Populares</h3>
+            <span
+              class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium"
+            >
+              {{ productosPopulares.length }} productos
+            </span>
+          </div>
+
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 flex-1"
+          >
+            <div
+              *ngFor="
+                let producto of productosPopulares;
+                trackBy: trackByProductoPopularId
+              "
+              class="bg-gray-50 hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              (click)="seleccionarProductoPopular(producto)"
+              (keydown.enter)="seleccionarProductoPopular(producto)"
+              (keydown.space)="seleccionarProductoPopular(producto)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Seleccionar ' + producto.producto.nombre"
+            >
+              <div class="text-center">
+                <div class="relative mb-3">
+                  <img
+                    [src]="
+                      producto.producto.imagen ||
+                      '/assets/images/product-placeholder.jpg'
+                    "
+                    [alt]="producto.producto.nombre"
+                    class="w-full h-20 object-cover rounded-lg border border-gray-200"
+                    onerror="this.src='/assets/images/product-placeholder.jpg'"
+                  />
+                  <span
+                    class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md"
+                  >
+                    {{ producto.cantidad }}
+                  </span>
+                </div>
+                <div
+                  class="text-sm font-semibold text-gray-700 truncate mb-2"
+                  [title]="producto.producto.nombre"
+                >
+                  {{ producto.producto.nombre }}
+                </div>
+                <div class="text-lg font-bold text-blue-600">
+                  {{
+                    formatearMoneda(
+                      obtenerPrecioProducto(producto.producto.id || 0)
+                    )
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel Derecho: Carrito y Pago (35%) -->
+    <aside
+      class="w-[35%] bg-white border-l border-gray-200 flex flex-col shadow-lg"
+    >
+      <!-- Cliente Actual Optimizado -->
+      <div class="p-6 border-b border-gray-200 bg-blue-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md"
+            >
+              <i class="pi pi-user text-white text-lg"></i>
+            </div>
+            <div>
+              <div class="font-bold text-gray-900">
+                {{
+                  clienteSeleccionado
+                    ? clienteSeleccionado.nombres +
+                      " " +
+                      clienteSeleccionado.apellidos
+                    : "Cliente General"
+                }}
+              </div>
+              <div class="text-sm text-gray-600" *ngIf="clienteSeleccionado">
+                {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
+              </div>
+            </div>
+          </div>
+          <p-button
+            icon="pi pi-user-edit"
+            severity="info"
+            [outlined]="true"
+            size="small"
+            styleClass="hover:scale-105 transition-transform"
+            (click)="openClientModal()"
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- Carrito de Compras Optimizado -->
+      <div class="flex-1 flex flex-col">
+        <div class="p-6 border-b border-gray-200 bg-gray-50">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-gray-800 flex items-center gap-2">
+              <div
+                class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"
+              >
+                <i class="pi pi-shopping-cart text-white"></i>
+              </div>
+              Carrito
+              <span
+                class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-bold"
+              >
+                {{ carrito.length }}
+              </span>
+            </h3>
+            <p-button
+              *ngIf="carrito.length > 0"
+              icon="pi pi-trash"
+              severity="danger"
+              [outlined]="true"
+              size="small"
+              styleClass="hover:scale-105 transition-transform"
+              (click)="limpiarCarrito()"
+            ></p-button>
+          </div>
+        </div>
+
+        <!-- Items del carrito -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Carrito vacío -->
+          <div
+            *ngIf="carrito.length === 0"
+            class="p-8 text-center text-gray-500"
+          >
+            <div
+              class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <i class="pi pi-shopping-cart text-4xl text-gray-400"></i>
+            </div>
+            <p class="font-semibold text-lg mb-2">Carrito Vacío</p>
+            <p class="text-sm">Agregue productos para comenzar</p>
+          </div>
+
+          <!-- Lista de productos -->
+          <div *ngIf="carrito.length > 0" class="p-4 space-y-4">
+            <div
+              *ngFor="
+                let item of carrito;
+                trackBy: trackByInventarioId;
+                let i = index
+              "
+              class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow"
+            >
+              <div class="flex items-start gap-4">
+                <!-- Imagen -->
+                <div class="relative flex-shrink-0">
+                  <img
+                    *ngIf="item.producto?.imagen"
+                    [src]="item.producto.imagen"
+                    [alt]="item.producto.nombre"
+                    class="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                    onerror="this.src='/assets/images/product-placeholder.jpg'"
+                  />
+                  <div
+                    *ngIf="!item.producto?.imagen"
+                    class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg"
+                  >
+                    <i class="pi pi-image text-gray-400"></i>
+                  </div>
+                  <span
+                    class="absolute -top-2 -left-2 bg-blue-600 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold"
+                  >
+                    {{ i + 1 }}
+                  </span>
+                </div>
+
+                <!-- Info del producto -->
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-gray-900 truncate mb-1">
+                    {{ item.producto.nombre }}
+                  </div>
+                  <div class="flex gap-1 flex-wrap mb-2">
+                    <span
+                      class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium"
+                      >{{ item.color.nombre }}</span
+                    >
+                    <span
+                      class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium"
+                      >{{ item.talla.numero }}</span
+                    >
+                  </div>
+                  <div class="text-xs text-gray-500 mb-3">
+                    {{ item.codigoCompleto }}
+                  </div>
+
+                  <!-- Controles de cantidad -->
+                  <div class="flex items-center gap-2">
+                    <button
+                      class="w-8 h-8 bg-gray-300 hover:bg-gray-400 rounded-lg text-sm flex items-center justify-center transition-colors"
+                      [disabled]="item.cantidad <= 1"
+                      (click)="actualizarCantidadItem(item, item.cantidad - 1)"
+                    >
+                      <i class="pi pi-minus text-xs"></i>
+                    </button>
+
+                    <input
+                      type="number"
+                      [(ngModel)]="item.cantidad"
+                      (blur)="actualizarCantidadItem(item, item.cantidad)"
+                      min="1"
+                      [max]="item.stock"
+                      class="w-14 text-center text-sm border border-gray-300 rounded-lg px-2 py-1 font-mono"
+                    />
+
+                    <button
+                      class="w-8 h-8 bg-gray-300 hover:bg-gray-400 rounded-lg text-sm flex items-center justify-center transition-colors"
+                      [disabled]="item.cantidad >= item.stock"
+                      (click)="actualizarCantidadItem(item, item.cantidad + 1)"
+                    >
+                      <i class="pi pi-plus text-xs"></i>
+                    </button>
+
+                    <div
+                      class="text-xs text-gray-500 ml-2 bg-gray-200 px-2 py-1 rounded"
+                    >
+                      Stock: {{ item.stock }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Precio y eliminar -->
+                <div class="text-right flex-shrink-0">
+                  <div class="font-bold text-green-600 text-lg mb-1">
+                    {{ formatearMoneda(item.subtotal) }}
+                  </div>
+                  <div class="text-xs text-gray-500 mb-2">
+                    {{ formatearMoneda(item.precioUnitario) }} c/u
+                  </div>
+                  <button
+                    class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
+                    (click)="eliminarItemCarrito(item)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen y Pago Optimizado -->
+      <div class="border-t border-gray-200 p-6 space-y-4 bg-gray-50">
+        <!-- Totales -->
+        <div
+          class="space-y-3 text-sm bg-white rounded-lg p-4 border border-gray-200"
+        >
+          <div class="flex justify-between">
+            <span class="text-gray-600">Subtotal:</span>
+            <span class="font-semibold">{{
+              formatearMoneda(subtotalVenta)
+            }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">IGV (18%):</span>
+            <span class="font-semibold">{{ formatearMoneda(igvVenta) }}</span>
+          </div>
+          <div
+            *ngIf="descuentoVenta > 0"
+            class="flex justify-between text-green-600"
+          >
+            <span>Descuento:</span>
+            <span class="font-semibold"
+              >-{{ formatearMoneda(descuentoVenta) }}</span
+            >
+          </div>
+          <div class="border-t pt-3 flex justify-between text-xl font-bold">
+            <span>TOTAL:</span>
+            <span class="text-green-600">{{
+              formatearMoneda(totalVenta)
+            }}</span>
+          </div>
+        </div>
+
+        <!-- Descuento rápido -->
+        <div
+          class="flex items-center gap-3 bg-white rounded-lg p-3 border border-gray-200"
+        >
+          <input
+            type="checkbox"
+            [(ngModel)]="aplicarDescuento"
+            (change)="toggleDescuento()"
+            class="rounded"
+          />
+          <label for="descuentoCheckbox" class="text-sm font-semibold"
+            >Descuento</label
+          >
+          <input
+            *ngIf="aplicarDescuento"
+            type="number"
+            [(ngModel)]="porcentajeDescuento"
+            (input)="calcularDescuento()"
+            min="0"
+            max="100"
+            step="0.1"
+            placeholder="%"
+            class="w-20 px-2 py-1 text-sm border rounded ml-auto"
+          />
+        </div>
+
+        <!-- Comprobante -->
+        <div class="grid grid-cols-2 gap-3">
+          <select
+            [(ngModel)]="nuevaVenta.tipoComprobante"
+            (change)="onComprobanteChange()"
+            class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Tipo</option>
+            <option *ngFor="let tipo of tiposComprobante" [value]="tipo.value">
+              {{ tipo.label }}
+            </option>
+          </select>
+
+          <select
+            [(ngModel)]="nuevaVenta.serieComprobante"
+            [disabled]="!nuevaVenta.tipoComprobante"
+            class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Serie</option>
+            <option
+              *ngFor="let serie of seriesComprobante"
+              [value]="serie.value"
+            >
+              {{ serie.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Observaciones -->
+        <textarea
+          [(ngModel)]="nuevaVenta.observaciones"
+          placeholder="Observaciones..."
+          rows="2"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+        ></textarea>
+
+        <!-- Botones de Pago -->
+        <div class="space-y-3">
+          <!-- Botón principal -->
+          <button
+            class="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-200 hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            [disabled]="!canProcessPayment()"
+            (click)="iniciarPago()"
+          >
+            💳 PROCESAR PAGO - {{ formatearMoneda(totalVenta) }}
+          </button>
+
+          <!-- Métodos rápidos -->
+          <div class="grid grid-cols-3 gap-2">
+            <button
+              class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-3 rounded-lg text-sm font-semibold transition-colors hover:shadow-md"
+              [disabled]="!canProcessPayment()"
+              (click)="pagoRapido('EFECTIVO')"
+            >
+              💵 Efectivo
+            </button>
+            <button
+              class="bg-purple-500 hover:bg-purple-600 text-white py-3 px-3 rounded-lg text-sm font-semibold transition-colors hover:shadow-md"
+              [disabled]="!canProcessPayment()"
+              (click)="pagoRapido('TARJETA_DEBITO')"
+            >
+              💳 Tarjeta
+            </button>
+            <button
+              class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-3 rounded-lg text-sm font-semibold transition-colors hover:shadow-md"
+              [disabled]="!canProcessPayment()"
+              (click)="pagoRapido('YAPE')"
+            >
+              📱 Digital
+            </button>
+          </div>
+        </div>
+
+        <!-- Venta a crédito -->
+        <div
+          class="flex items-center gap-3 text-sm bg-white rounded-lg p-3 border border-gray-200"
+        >
+          <input type="checkbox" [(ngModel)]="esVentaCredito" class="rounded" />
+          <label for="esVentaCredito" class="font-medium"
+            >Venta a crédito</label
+          >
+          <select
+            *ngIf="esVentaCredito"
+            [(ngModel)]="cuotasCredito"
+            class="ml-auto px-2 py-1 text-xs border rounded"
+          >
+            <option *ngFor="let cuota of opcionesCuotas" [value]="cuota.value">
+              {{ cuota.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Atajos Rápidos Optimizado -->
+        <div class="bg-blue-50 p-4 border border-blue-200 rounded-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h5
+              class="text-sm font-bold text-blue-900 uppercase tracking-wide flex items-center gap-2"
+            >
+              <i class="pi pi-keyboard text-blue-600"></i>
+              Atajos Rápidos
+            </h5>
+            <button
+              class="text-xs text-blue-600 hover:text-blue-800 underline"
+              (click)="showKeyboardHelp = true"
+            >
+              Ver todos
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="flex items-center justify-between py-1">
+              <span class="text-gray-700">Cliente</span>
+              <kbd
+                class="px-2 py-1 bg-white border border-blue-300 rounded text-xs font-mono shadow-sm"
+                >F3</kbd
+              >
+            </div>
+            <div class="flex items-center justify-between py-1">
+              <span class="text-gray-700">Escáner</span>
+              <kbd
+                class="px-2 py-1 bg-white border border-blue-300 rounded text-xs font-mono shadow-sm"
+                >F8</kbd
+              >
+            </div>
+            <div class="flex items-center justify-between py-1">
+              <span class="text-gray-700">Efectivo</span>
+              <kbd
+                class="px-1.5 py-1 bg-white border border-blue-300 rounded text-xs font-mono shadow-sm"
+                >Ctrl+1</kbd
+              >
+            </div>
+            <div class="flex items-center justify-between py-1">
+              <span class="text-green-700 font-semibold">Procesar</span>
+              <kbd
+                class="px-2 py-1 bg-green-100 border border-green-300 rounded text-xs font-mono shadow-sm"
+                >F12</kbd
+              >
+            </div>
+          </div>
+
+          <div class="mt-3 text-center">
+            <span class="text-xs text-gray-600">Presiona </span>
+            <kbd
+              class="px-1.5 py-1 bg-blue-100 border border-blue-300 rounded text-xs font-mono"
+              >F1</kbd
+            >
+            <span class="text-xs text-gray-600"> para ayuda completa</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Loading States Optimizados -->
+
+  <!-- 💳 Loading de Procesamiento de Pago -->
+  <div
+    *ngIf="procesandoPago"
+    class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-2xl p-8 text-center max-w-md mx-4 shadow-2xl">
+      <!-- Icono animado -->
+      <div
+        class="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center relative"
+      >
+        <i class="pi pi-credit-card text-3xl text-green-600"></i>
+
+        <!-- Anillo de progreso optimizado -->
+        <svg
+          class="absolute inset-0 w-20 h-20 transform -rotate-90"
+          viewBox="0 0 80 80"
+        >
+          <circle
+            cx="40"
+            cy="40"
+            r="35"
+            stroke="#e5e7eb"
+            stroke-width="6"
+            fill="none"
+          ></circle>
+          <circle
+            cx="40"
+            cy="40"
+            r="35"
+            stroke="#10b981"
+            stroke-width="6"
+            fill="none"
+            stroke-linecap="round"
+            [style.stroke-dasharray]="220"
+            [style.stroke-dashoffset]="220 - (220 * progressPercentage) / 100"
+            class="transition-all duration-500 ease-out"
+          ></circle>
+        </svg>
+
+        <!-- Porcentaje -->
+        <span class="absolute text-xs font-bold text-green-600"
+          >{{ progressPercentage }}%</span
+        >
+      </div>
+
+      <!-- Mensaje principal -->
+      <h3 class="text-xl font-bold text-gray-800 mb-2">Procesando Pago</h3>
+      <div class="text-2xl font-mono font-bold text-green-600 mb-4">
+        {{ formatearMoneda(totalVenta) }}
+      </div>
+
+      <!-- Mensaje de progreso -->
+      <p class="text-gray-600 mb-4">{{ loadingMessage }}</p>
+
+      <!-- Advertencia -->
+      <div
+        class="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg border border-orange-200"
+      >
+        <i class="pi pi-exclamation-triangle mr-2"></i>
+        No interrumpa este proceso
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading States Adicionales -->
+  <div
+    *ngIf="searchingProducts"
+    class="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border-l-4 border-blue-500 z-50"
+  >
+    <div class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
+      >
+        <i class="pi pi-spin pi-spinner text-blue-600"></i>
+      </div>
+      <div>
+        <div class="font-semibold text-gray-800">{{ loadingMessage }}</div>
+        <div class="text-xs text-gray-500">Buscando en inventario...</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="addingToCart"
+    class="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border-l-4 border-green-500 z-50"
+  >
+    <div class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"
+      >
+        <i class="pi pi-spin pi-spinner text-green-600"></i>
+      </div>
+      <div>
+        <div class="font-semibold text-gray-800">{{ loadingMessage }}</div>
+        <div class="text-xs text-gray-500">Validando stock...</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="loadingClient"
+    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-xl z-50"
+  >
+    <div class="flex items-center gap-4">
+      <div
+        class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center"
+      >
+        <i class="pi pi-spin pi-spinner text-purple-600"></i>
+      </div>
+      <div>
+        <div class="font-bold text-gray-800">{{ loadingMessage }}</div>
+        <div class="text-sm text-gray-500">Obteniendo historial...</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="connectingScanner"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-50"
+  >
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <i class="pi pi-camera text-xl"></i>
+        <div
+          class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"
+        ></div>
+      </div>
+      <div>
+        <div class="font-semibold">{{ loadingMessage }}</div>
+        <div class="text-xs text-gray-300">Inicializando cámara...</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="savingData"
+    class="fixed bottom-4 left-4 bg-blue-600 text-white p-3 rounded-lg shadow-lg z-50 flex items-center gap-3"
+  >
+    <i class="pi pi-spin pi-spinner"></i>
+    <span class="text-sm font-semibold">{{ loadingMessage }}</span>
+  </div>
+</div>
+
+<!-- Modal de Cliente Optimizado -->
+<p-dialog
+  [(visible)]="showClientModal"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '850px', height: 'auto' }"
+  styleClass="cliente-dialog-optimizado"
+  [blockScroll]="true"
+>
+  <!-- HEADER OPTIMIZADO -->
+  <ng-template pTemplate="header">
+    <div
+      class="flex items-center justify-between w-full bg-indigo-600 text-white p-6 -mx-6 -mt-6 mb-6"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center shadow-lg"
+        >
+          <i class="pi pi-users text-white text-2xl"></i>
+        </div>
+        <div>
+          <div class="text-sm text-indigo-100 font-medium">
+            👥 Gestión de Cliente
+          </div>
+          <div class="text-2xl font-bold">
+            {{
+              clienteSeleccionado
+                ? "Cliente Seleccionado"
+                : "Buscar o Crear Cliente"
+            }}
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTADOR DE CLIENTES -->
+      <div
+        class="flex items-center gap-2 bg-white bg-opacity-10 rounded-full px-4 py-2"
+      >
+        <i class="pi pi-database text-white"></i>
+        <span class="text-sm font-medium"
+          >{{ clientesFiltrados.length || 0 }} clientes</span
+        >
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="p-6 space-y-6 max-h-96 overflow-y-auto">
+    <!-- CONTENIDO DINÁMICO BASADO EN ESTADO -->
+    <div *ngIf="!clienteSeleccionado">
+      <!-- SECCIÓN DE BÚSQUEDA -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"
+          >
+            <i class="pi pi-search text-white text-sm"></i>
+          </div>
+          <h4 class="text-lg font-bold text-gray-900">Buscar Cliente</h4>
+        </div>
+
+        <!-- BUSCADOR AVANZADO -->
+        <div class="relative">
+          <p-autoComplete
+            [(ngModel)]="clienteBusqueda"
+            [suggestions]="clientesFiltrados"
+            (completeMethod)="buscarClientes($event)"
+            (onSelect)="onClienteSelect($event)"
+            field="nombres"
+            placeholder="🔍 Buscar por nombre, DNI, RUC o email..."
+            styleClass="w-full"
+            [dropdown]="true"
+            [showClear]="true"
+            scrollHeight="250px"
+            [minLength]="0"
+            [completeOnFocus]="true"
+          >
+            <ng-template let-cliente pTemplate="item">
+              <div
+                class="flex items-center gap-4 p-3 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+              >
+                <div class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-md"
+                  >
+                    {{ cliente.nombres?.charAt(0) || "C"
+                    }}{{ cliente.apellidos?.charAt(0) || "L" }}
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-gray-900">
+                    {{ cliente.nombres }} {{ cliente.apellidos }}
+                  </div>
+                  <div class="text-sm text-gray-500 flex items-center gap-2">
+                    <i class="pi pi-id-card text-xs"></i>
+                    {{ cliente.dni || cliente.ruc }}
+                    <span *ngIf="cliente.email" class="flex items-center gap-1">
+                      <i class="pi pi-envelope text-xs"></i>
+                      {{ cliente.email }}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="cliente.telefono"
+                    class="text-xs text-gray-400 flex items-center gap-1"
+                  >
+                    <i class="pi pi-phone"></i>
+                    {{ cliente.telefono }}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-sm font-semibold text-green-600">
+                    {{ cliente.compras || 0 }} compras
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    {{ formatearMoneda(cliente.totalCompras || 0) }}
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
+        </div>
+
+        <!-- FILTROS RÁPIDOS -->
+        <div class="flex gap-2 flex-wrap">
+          <button
+            class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+            (click)="filtrarClientesPorTipo('frecuentes')"
+          >
+            🌟 Frecuentes
+          </button>
+          <button
+            class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
+            (click)="filtrarClientesPorTipo('nuevos')"
+          >
+            🆕 Nuevos
+          </button>
+          <button
+            class="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
+            (click)="filtrarClientesPorTipo('vip')"
+          >
+            💎 VIP
+          </button>
+        </div>
+      </div>
+
+      <!-- CLIENTES RECIENTES -->
+      <div *ngIf="clientesRecientes.length > 0">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center"
+          >
+            <i class="pi pi-clock text-white text-sm"></i>
+          </div>
+          <h4 class="text-lg font-bold text-gray-900">Clientes Recientes</h4>
+          <span
+            class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium"
+            >{{ clientesRecientes.length }}</span
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button
+            *ngFor="let cliente of clientesRecientes.slice(0, 6)"
+            class="text-left p-4 border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 hover:shadow-md"
+            (click)="seleccionarCliente(cliente)"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+              >
+                {{ cliente.nombres.charAt(0) || "C"
+                }}{{ cliente.apellidos.charAt(0) || "L" }}
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-900">
+                  {{ cliente.nombres }} {{ cliente.apellidos }}
+                </div>
+                <div class="text-xs text-gray-500 flex items-center gap-2">
+                  <span>{{ cliente.dni || cliente.ruc }}</span>
+                  <span
+                    *ngIf="cliente.compras"
+                    class="bg-gray-100 px-2 py-0.5 rounded-full"
+                  >
+                    {{ cliente.compras }} compras
+                  </span>
+                </div>
+              </div>
+              <i class="pi pi-arrow-right text-gray-400"></i>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- CREAR NUEVO CLIENTE -->
+      <div
+        class="text-center py-8 bg-green-50 rounded-2xl border-2 border-dashed border-green-300"
+      >
+        <div
+          class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="pi pi-user-plus text-white text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">¿Cliente Nuevo?</h3>
+        <p class="text-gray-600 mb-4 text-sm">
+          Crea un nuevo perfil en segundos
+        </p>
+        <button
+          class="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors shadow-lg"
+          (click)="nuevoCliente()"
+        >
+          <i class="pi pi-plus mr-2"></i>
+          Crear Nuevo Cliente
+        </button>
+      </div>
+    </div>
+
+    <!-- CLIENTE SELECCIONADO -->
+    <div *ngIf="clienteSeleccionado">
+      <!-- HEADER DEL CLIENTE -->
+      <div class="bg-green-500 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center gap-4 mb-4">
+          <div
+            class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md"
+          >
+            {{ clienteSeleccionado.nombres.charAt(0) || "C"
+            }}{{ clienteSeleccionado.apellidos.charAt(0) || "L" }}
+          </div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold mb-1">
+              {{ clienteSeleccionado.nombres }}
+              {{ clienteSeleccionado.apellidos }}
+            </div>
+            <div class="text-green-100 flex items-center gap-2">
+              <i class="pi pi-id-card"></i>
+              {{ clienteSeleccionado.dni ? "DNI" : "RUC" }}:
+              {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-3xl font-bold">
+              {{ clienteSeleccionado.compras || 0 }}
+            </div>
+            <div class="text-sm text-green-100">compras realizadas</div>
+          </div>
+        </div>
+
+        <!-- INDICADORES DE ESTADO -->
+        <div class="flex gap-2">
+          <span
+            class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium"
+          >
+            ✅ Cliente Activo
+          </span>
+          <span
+            *ngIf="(clienteSeleccionado.compras || 0) > 5"
+            class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-medium"
+          >
+            🌟 Cliente Frecuente
+          </span>
+          <span
+            *ngIf="(clienteSeleccionado.totalCompras || 0) > 1000"
+            class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium"
+          >
+            💎 Cliente VIP
+          </span>
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN DETALLADA -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- DATOS DE CONTACTO -->
+        <div class="bg-blue-50 rounded-xl p-5 border border-blue-200">
+          <div class="flex items-center gap-2 mb-4">
+            <div
+              class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"
+            >
+              <i class="pi pi-address-book text-white text-sm"></i>
+            </div>
+            <h5 class="font-bold text-gray-900">Información de Contacto</h5>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              *ngIf="clienteSeleccionado.email"
+              class="flex items-center gap-3"
+            >
+              <i class="pi pi-envelope text-blue-500"></i>
+              <div>
+                <div class="text-xs text-gray-500">Email</div>
+                <div class="font-medium text-gray-900">
+                  {{ clienteSeleccionado.email }}
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="clienteSeleccionado.telefono"
+              class="flex items-center gap-3"
+            >
+              <i class="pi pi-phone text-blue-500"></i>
+              <div>
+                <div class="text-xs text-gray-500">Teléfono</div>
+                <div class="font-medium text-gray-900">
+                  {{ clienteSeleccionado.telefono }}
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="clienteSeleccionado.direccion"
+              class="flex items-center gap-3"
+            >
+              <i class="pi pi-map-marker text-blue-500"></i>
+              <div>
+                <div class="text-xs text-gray-500">Dirección</div>
+                <div class="font-medium text-gray-900">
+                  {{ clienteSeleccionado.direccion }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESTADÍSTICAS DE COMPRAS -->
+        <div class="bg-purple-50 rounded-xl p-5 border border-purple-200">
+          <div class="flex items-center gap-2 mb-4">
+            <div
+              class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center"
+            >
+              <i class="pi pi-chart-bar text-white text-sm"></i>
+            </div>
+            <h5 class="font-bold text-gray-900">Historial de Compras</h5>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-3 bg-white rounded-lg">
+              <div class="text-2xl font-bold text-purple-600">
+                {{ clienteSeleccionado.compras || 0 }}
+              </div>
+              <div class="text-xs text-gray-600">Compras</div>
+            </div>
+
+            <div class="text-center p-3 bg-white rounded-lg">
+              <div class="text-lg font-bold text-green-600">
+                {{ formatearMoneda(clienteSeleccionado.totalCompras || 0) }}
+              </div>
+              <div class="text-xs text-gray-600">Total</div>
+            </div>
+
+            <div class="text-center p-3 bg-white rounded-lg">
+              <div class="text-lg font-bold text-blue-600">
+                {{ formatearMoneda(getPromedioCompras(clienteSeleccionado)) }}
+              </div>
+              <div class="text-xs text-gray-600">Promedio</div>
+            </div>
+
+            <div class="text-center p-3 bg-white rounded-lg">
+              <div class="text-sm font-bold text-orange-600">
+                {{
+                  clienteSeleccionado.ultimaCompra
+                    ? (clienteSeleccionado.ultimaCompra | date : "dd/MM")
+                    : "N/A"
+                }}
+              </div>
+              <div class="text-xs text-gray-600">Última</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES DEL CLIENTE -->
+      <div class="flex gap-3 mt-6">
+        <button
+          class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md flex items-center justify-center gap-2"
+          (click)="editarCliente()"
+        >
+          <i class="pi pi-pencil"></i>
+          Editar Cliente
+        </button>
+
+        <button
+          class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md flex items-center justify-center gap-2"
+          (click)="limpiarClienteSeleccionado()"
+        >
+          <i class="pi pi-refresh"></i>
+          Cambiar Cliente
+        </button>
+
+        <button
+          class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md"
+          (click)="verHistorialCliente()"
+        >
+          <i class="pi pi-history"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <ng-template pTemplate="footer">
+    <div
+      class="flex justify-between items-center p-6 bg-gray-50 -mx-6 -mb-6 mt-6 border-t border-gray-200"
+    >
+      <!-- INFO RÁPIDA -->
+      <div class="flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+          <span class="text-gray-600">Cliente:</span>
+          <span class="font-bold text-gray-900">
+            {{
+              clienteSeleccionado
+                ? clienteSeleccionado.nombres +
+                  " " +
+                  clienteSeleccionado.apellidos
+                : "No seleccionado"
+            }}
+          </span>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="flex gap-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          [outlined]="true"
+          (click)="showClientModal = false"
+          styleClass="px-6 py-2"
+        >
+        </p-button>
+
+        <p-button
+          [label]="
+            clienteSeleccionado ? 'Confirmar Cliente' : 'Seleccionar Cliente'
+          "
+          [icon]="clienteSeleccionado ? 'pi pi-check' : 'pi pi-user'"
+          severity="success"
+          [disabled]="!clienteSeleccionado"
+          (click)="confirmarCliente()"
+          styleClass="px-8 py-2 shadow-lg"
+        >
+        </p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Ayuda de Teclado -->
+<p-dialog
+  header="⌨️ Atajos de Teclado"
+  [(visible)]="showKeyboardHelp"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="w-11/12 max-w-2xl"
+>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Funciones Principales -->
+    <div>
+      <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+        <i class="pi pi-cog text-blue-600"></i>
+        Funciones Principales
+      </h4>
+      <div class="space-y-2">
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Buscar Producto</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F2</kbd>
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Seleccionar Cliente</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F3</kbd>
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Aplicar Descuento</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F4</kbd>
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Activar Escáner</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F8</kbd>
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Abrir Caja</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F9</kbd>
+        </div>
+        <div
+          class="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200"
+        >
+          <span class="text-sm font-medium">Procesar Pago</span>
+          <kbd class="px-2 py-1 bg-green-200 rounded text-xs font-mono"
+            >F12</kbd
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagos Rápidos -->
+    <div>
+      <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+        <i class="pi pi-credit-card text-green-600"></i>
+        Pagos Rápidos
+      </h4>
+      <div class="space-y-2">
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">💵 Pago Efectivo</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl+1</kbd
+          >
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">💳 Pago Tarjeta</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl+2</kbd
+          >
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">📱 Pago Digital</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl+3</kbd
+          >
+        </div>
+      </div>
+
+      <h4 class="font-semibold text-gray-800 mb-3 mt-6 flex items-center gap-2">
+        <i class="pi pi-wrench text-purple-600"></i>
+        Utilidades
+      </h4>
+      <div class="space-y-2">
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Limpiar Carrito</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl+Del</kbd
+          >
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Aumentar Cantidad</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl++</kbd
+          >
+        </div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">Disminuir Cantidad</span>
+          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
+            >Ctrl+-</kbd
+          >
+        </div>
+        <div
+          class="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200"
+        >
+          <span class="text-sm">Cancelar / Salir</span>
+          <kbd class="px-2 py-1 bg-red-200 rounded text-xs font-mono">ESC</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <p class="text-sm text-blue-800">
+      <i class="pi pi-info-circle mr-2"></i>
+      <strong>Tip profesional:</strong> Los atajos funcionan desde cualquier
+      parte del sistema, excepto cuando estés escribiendo en un campo de texto.
+    </p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-center">
+      <button
+        class="bg-blue-600 text-white px-6 py-2 rounded font-medium"
+        (click)="showKeyboardHelp = false"
+      >
+        Entendido
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIÁLOGO: COMPROBANTE FINAL -->
+<p-dialog 
+  [(visible)]="comprobanteDialog" 
+  [header]="'Venta Completada'" 
+  [modal]="true" 
+  [style]="{width: '700px'}" 
+  [draggable]="false" 
+  [resizable]="false"
+  styleClass="border-0 shadow-2xl comprobante-dialog"
+  [closable]="true"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+        <i class="pi pi-check-circle text-white text-xl"></i>
+      </div>
+      <div>
+        <div class="text-sm text-gray-500">Venta #{{ventaParaComprobante?.numeroVenta}}</div>
+        <div class="text-2xl font-bold text-gray-800">¡Venta Completada!</div>
+      </div>
+    </div>
+  </ng-template>
+  
+  <div class="p-5">
+    <!-- Vista previa del comprobante -->
+    <div class="comprobante-preview" *ngIf="ventaParaComprobante">
+      <!-- Encabezado del comprobante -->
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-1">{{getTipoComprobanteLabel(ventaParaComprobante.tipoComprobante)}}</h3>
+        <div class="text-lg font-mono font-semibold text-blue-600">
+          {{ventaParaComprobante.serieComprobante}}-{{ventaParaComprobante.numeroComprobante || 'PENDIENTE'}}
+        </div>
+        <div class="text-sm text-gray-600 mt-2">
+          Fecha: {{ventaParaComprobante.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+        </div>
+      </div>
+      
+      <!-- Información del cliente -->
+      <div class="bg-blue-50/60 backdrop-blur-sm rounded-lg p-4 mb-4 border border-blue-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <h5 class="font-bold text-blue-800 mb-1">Datos del Cliente</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              <div><span class="text-gray-500">Nombre:</span> <span class="font-medium">{{ventaParaComprobante.cliente.nombres}} {{ventaParaComprobante.cliente.apellidos}}</span></div>
+              <div><span class="text-gray-500">Documento:</span> <span class="font-medium">{{ventaParaComprobante.cliente.documento}}</span></div>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="bg-blue-100 rounded-lg py-1 px-3 text-blue-800 font-medium text-sm inline-block">
+              <i class="pi pi-user-plus mr-1"></i>
+              Cliente registrado
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Detalle de productos -->
+      <div class="mb-4">
+        <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <i class="pi pi-shopping-bag text-purple-600"></i>
+          Detalle de Productos
+        </h5>
+        
+        <div class="overflow-auto max-h-48">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 text-left">
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold">Producto</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-center">Cant.</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">P. Unit.</th>
+                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of ventaParaComprobante.detalles" class="border-b border-gray-100">
+                <td class="p-2">
+                  <div class="font-medium text-gray-800">{{detalle.producto.nombre}}</div>
+                  <div class="text-xs text-gray-500">
+                    {{detalle.color.nombre}} - {{detalle.talla}} - {{detalle.producto.codigo}}
+                  </div>
+                </td>
+                <td class="p-2 text-center font-medium">{{detalle.cantidad}}</td>
+                <td class="p-2 text-right font-mono">{{formatearMoneda(detalle.precioUnitario)}}</td>
+                <td class="p-2 text-right font-mono font-medium text-blue-700">{{formatearMoneda(detalle.subtotal)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Totales -->
+      <div class="bg-gray-50/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+        <div class="grid grid-cols-2">
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Método de pago</div>
+            <div class="flex items-center gap-2">
+              <i class="pi pi-wallet text-blue-600"></i>
+              <span class="font-medium">{{getMetodoPagoLabel(pagoActual.metodoPago)}}</span>
+            </div>
+          </div>
+          
+          <div>
+            <div class="space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Subtotal:</span>
+                <span class="font-mono">{{formatearMoneda(ventaParaComprobante.subtotal)}}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">IGV (18%):</span>
+                <span class="font-mono">{{formatearMoneda(ventaParaComprobante.igv)}}</span>
+              </div>
+              <div class="flex justify-between font-medium pt-2 border-t border-gray-300">
+                <span class="text-gray-800">TOTAL:</span>
+                <span class="font-mono text-xl text-emerald-600">{{formatearMoneda(ventaParaComprobante.total)}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Observaciones -->
+      <div *ngIf="ventaParaComprobante.observaciones" class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+        <h5 class="font-semibold text-yellow-800 mb-1 flex items-center gap-2">
+          <i class="pi pi-comment"></i>
+          Observaciones:
+        </h5>
+        <p class="text-sm text-yellow-700">{{ventaParaComprobante.observaciones}}</p>
+      </div>
+      
+      <!-- Mensajes finales -->
+      <div class="mt-6 text-center">
+        <div class="text-gray-500 text-sm mb-2">Vendedor: {{ventaParaComprobante.usuario.nombre}}</div>
+        <div class="text-gray-400 text-xs">¡Gracias por su compra!</div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center px-3">
+      <div class="flex gap-2">
+        <p-button 
+          label="Imprimir" 
+          icon="pi pi-print" 
+          severity="secondary"
+          [outlined]="true"
+          (click)="imprimirComprobante(ventaParaComprobante!)"
+        ></p-button>
+        
+        <p-button 
+          label="Enviar" 
+          icon="pi pi-envelope" 
+          severity="info"
+          [outlined]="true"
+          (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
+        ></p-button>
+        
+        <p-button 
+          label="Descargar PDF" 
+          icon="pi pi-file-pdf" 
+          severity="danger"
+          [outlined]="true"
+          (click)="descargarComprobantePDF(ventaParaComprobante!)"
+        ></p-button>
+      </div>
+      
+      <div class="flex gap-2">
+        <p-button 
+          label="Cerrar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          (click)="cerrarComprobante()"
+        ></p-button>
+        
+        <p-button 
+          label="Nueva Venta" 
+          icon="pi pi-plus" 
+          severity="success"
+          (click)="nuevaVentaRapida()"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DIALOGO: DASHBOARD GERENCIAL  -->
+<p-dialog 
+  [(visible)]="showDashboard" 
+  [modal]="true" 
+  [closable]="true"
+  [maximizable]="true"
+  [style]="{width: '95vw', height: '90vh'}" 
+  styleClass="dashboard-modal-empresarial"
+  header="📊 Dashboard Gerencial - Sistema Empresarial POS">
+  
+  <div class="dashboard-content p-6 h-full overflow-auto">
+    
+    <!-- KPIs Principales usando tu interfaz -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      
+      <div *ngFor="let metrica of metricas" 
+           class="bg-gradient-to-br {{getColorMetrica(metrica.color)}} rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+        
+        <!-- Loading overlay -->
+        <div *ngIf="metrica.loading" 
+             class="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm">
+          <i class="pi pi-spin pi-spinner text-2xl"></i>
+        </div>
+        
+        <!-- Header de la métrica -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+            <i class="pi {{metrica.icono}} text-2xl"></i>
+          </div>
+          
+          <!-- Tendencia -->
+          <div *ngIf="metrica.tendencia" class="text-right">
+            <div class="text-xs opacity-80">{{metrica.tendencia.periodo}}</div>
+            <div class="flex items-center gap-1 text-lg font-bold opacity-90">
+              <i class="pi {{getIconoTendencia(metrica.tendencia)}} text-sm"></i>
+              {{metrica.tendencia.porcentaje}}%
+            </div>
+          </div>
+        </div>
+        
+        <!-- Valor principal -->
+        <div class="text-3xl font-bold mb-2">
+            <span *ngIf="typeof metrica.valor === 'number'">
+            {{metrica.categoria === 'ventas' || metrica.categoria === 'financiero' ? 
+                formatearMoneda(metrica.valor) : 
+                metrica.valor}}
+          </span>
+          <span *ngIf="typeof metrica.valor === 'string'">{{metrica.valor}}</span>
+        </div>
+        
+        <!-- Título -->
+        <div class="text-sm opacity-90 mb-2">{{metrica.titulo}}</div>
+        
+        <!-- Objetivo si existe -->
+        <div *ngIf="metrica.objetivo" class="text-xs opacity-70">
+          Meta: {{metrica.categoria === 'ventas' || metrica.categoria === 'financiero' ? formatearMoneda(metrica.objetivo.valor) : metrica.objetivo.valor}} 
+          ({{metrica.objetivo.progreso.toFixed(1)}}%)
+        </div>
+        
+        <!-- Alerta crítica -->
+        <div *ngIf="metrica.alertaCritica?.activa" 
+             class="mt-2 bg-red-500/30 border border-red-300 rounded-lg p-2">
+          <div class="flex items-center gap-2 text-xs">
+            <i class="pi pi-exclamation-triangle"></i>
+            {{metrica.alertaCritica?.mensaje}}
+          </div>
+        </div>
+        
+        <!-- Última actualización -->
+        <div class="absolute bottom-2 right-2 text-xs opacity-60">
+          {{metrica.ultimaActualizacion | date:'HH:mm:ss'}}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detalles expandidos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Desglose de Ventas -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">💰 Desglose de Ventas</h3>
+          <button class="text-sm text-blue-600 hover:text-blue-800" 
+                  (click)="verDetalleVentas()">
+            Ver detalle
+          </button>
+        </div>
+        
+        <div *ngFor="let item of metricas[0]?.desglose" 
+             class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+          <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full" [style.background-color]="item.color"></div>
+            <span class="font-medium text-gray-700">{{item.label}}</span>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-gray-800">{{formatearMoneda(item.valor)}}</div>
+            <div class="text-xs text-gray-500">{{item.porcentaje}}%</div>
+          </div>
+        </div>
+        
+        <!-- Gráfico placeholder -->
+        <div class="mt-4 h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+          <span class="text-gray-400 text-sm">📊 Gráfico circular próximamente</span>
+        </div>
+      </div>
+      
+      <!-- Productos por Categoría -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">📦 Productos por Categoría</h3>
+          <button class="text-sm text-blue-600 hover:text-blue-800" 
+                  (click)="verStockCritico()">
+            Stock crítico
+          </button>
+        </div>
+        
+        <div *ngFor="let item of metricas[3]?.desglose" 
+             class="flex items-center justify-between py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full" [style.background-color]="item.color"></div>
+            <span class="font-medium text-gray-700">{{item.label}}</span>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-gray-800">{{item.valor}} uds</div>
+            <div class="text-xs text-gray-500">{{item.porcentaje}}%</div>
+          </div>
+        </div>
+        
+        <!-- Barra de progreso total -->
+        <div class="mt-4 bg-gray-200 rounded-full h-2">
+          <div class="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full" 
+               style="width: 87%"></div>
+        </div>
+        <div class="text-xs text-gray-500 mt-1 text-center">87% del objetivo diario</div>
+      </div>
+    </div>
+    
+    <!-- Métricas adicionales -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <div *ngFor="let metrica of metricas" class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-{{metrica.color === 'success' ? 'green' : metrica.color === 'info' ? 'blue' : metrica.color === 'warning' ? 'orange' : 'purple'}}-500 rounded-lg flex items-center justify-center">
+            <i class="pi {{metrica.icono}} text-white text-sm"></i>
+          </div>
+          <h4 class="font-bold text-gray-800">{{metrica.titulo}}</h4>
+        </div>
+        
+        <div *ngIf="metrica.metricas" class="space-y-2">
+          <div *ngFor="let submetrica of metrica.metricas" 
+               class="flex justify-between items-center text-sm">
+            <span class="text-gray-600 flex items-center gap-1">
+              <i *ngIf="submetrica.icono" class="pi {{submetrica.icono}} text-xs"></i>
+              {{submetrica.label}}
+            </span>
+            <span class="font-medium text-gray-800">{{submetrica.valor}}</span>
+          </div>
+        </div>
+        
+        <!-- Botón de acción -->
+        <button *ngIf="metrica.accionPrincipal" 
+                class="mt-4 w-full bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                [disabled]="metrica.accionPrincipal.disabled"
+                (click)="metrica.accionPrincipal.callback()">
+          <i class="pi {{metrica.accionPrincipal.icono}}"></i>
+          {{metrica.accionPrincipal.label}}
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2 text-sm text-gray-500">
+        <i class="pi pi-refresh animate-spin"></i>
+        Actualizando cada 30 segundos
+      </div>
+      <div class="flex gap-2">
+        <p-button label="Exportar Reporte" icon="pi pi-download" [outlined]="true" 
+                  (click)="exportarReporte('reporte')"></p-button>
+        <p-button label="Actualizar" icon="pi pi-refresh" severity="info" [outlined]="true"
+                  (click)="actualizarTodasLasMetricas()"></p-button>
+        <p-button label="Cerrar" icon="pi pi-times" (click)="showDashboard = false"></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+

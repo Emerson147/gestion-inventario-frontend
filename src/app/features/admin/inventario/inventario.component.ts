@@ -14,29 +14,29 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { PanelModule } from 'primeng/panel'; // 👈 Nuevo import
-import { TooltipModule } from 'primeng/tooltip'; // 👈 Nuevo import
-import { AvatarModule } from 'primeng/avatar'; // 👈 Nuevo import
-import { CardModule } from 'primeng/card'; // 👈 Nuevo import
-import { ChipModule } from 'primeng/chip'; // 👈 Nuevo import
-import { BadgeModule } from 'primeng/badge'; // 👈 Nuevo import
-import { TabViewModule } from 'primeng/tabview'; // 👈 Nuevo import
-import { SelectButtonModule } from 'primeng/selectbutton'; // 👈 Nuevo import
-import { OverlayPanelModule } from 'primeng/overlaypanel'; // 👈 Nuevo import
-import { SliderModule } from 'primeng/slider'; // 👈 Nuevo import
-import { ProgressBarModule } from 'primeng/progressbar'; // 👈 Nuevo import
-import { KnobModule } from 'primeng/knob'; // 👈 Nuevo import
-import { ChartModule } from 'primeng/chart'; // 👈 Nuevo import
-import { CalendarModule } from 'primeng/calendar'; // 👈 Nuevo import
-import { CheckboxModule } from 'primeng/checkbox'; // 👈 Nuevo import
-import { RatingModule } from 'primeng/rating'; // 👈 Nuevo import
-import { AccordionModule } from 'primeng/accordion'; // 👈 Nuevo import
-import { SplitterModule } from 'primeng/splitter'; // 👈 Nuevo import
-import { TimelineModule } from 'primeng/timeline'; // 👈 Nuevo import
-import { DataViewModule } from 'primeng/dataview'; // 👈 Nuevo import
-import { OrganizationChartModule } from 'primeng/organizationchart'; // 👈 Nuevo import
-import { TreeTableModule } from 'primeng/treetable'; // 👈 Nuevo import
-import { ScrollerModule } from 'primeng/scroller'; // 👈 Nuevo import
+import { PanelModule } from 'primeng/panel'; 
+import { TooltipModule } from 'primeng/tooltip'; 
+import { AvatarModule } from 'primeng/avatar'; 
+import { CardModule } from 'primeng/card'; 
+import { ChipModule } from 'primeng/chip'; 
+import { BadgeModule } from 'primeng/badge'; 
+import { TabViewModule } from 'primeng/tabview'; 
+import { SelectButtonModule } from 'primeng/selectbutton'; 
+import { OverlayPanelModule } from 'primeng/overlaypanel'; 
+import { SliderModule } from 'primeng/slider'; 
+import { ProgressBarModule } from 'primeng/progressbar'; 
+import { KnobModule } from 'primeng/knob'; 
+import { ChartModule } from 'primeng/chart'; 
+import { CalendarModule } from 'primeng/calendar'; 
+import { CheckboxModule } from 'primeng/checkbox'; 
+import { RatingModule } from 'primeng/rating'; 
+import { AccordionModule } from 'primeng/accordion'; 
+import { SplitterModule } from 'primeng/splitter'; 
+import { TimelineModule } from 'primeng/timeline'; 
+import { DataViewModule } from 'primeng/dataview'; 
+import { OrganizationChartModule } from 'primeng/organizationchart'; 
+import { TreeTableModule } from 'primeng/treetable'; 
+import { ScrollerModule } from 'primeng/scroller'; 
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Inventario, EstadoInventario, InventarioRequest } from '../../../core/models/inventario.model';
@@ -47,8 +47,12 @@ import { InventarioService } from '../../../core/services/inventario.service';
 import { ProductoService } from '../../../core/services/producto.service';
 import { ColorService } from '../../../core/services/colores.service';
 import { AlmacenService } from '../../../core/services/almacen.service';
+import { MovimientoInventarioService } from '../../../core/services/movimiento-inventario.service';
+import { PagedResponse, MovimientoResponse, MovimientoRequest, TipoMovimiento } from '../../../core/models/movimientos-inventario.model';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { finalize, forkJoin, catchError, of, firstValueFrom } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { jwtDecode } from 'jwt-decode';
 
 interface ViewOption {
   label: string;
@@ -80,23 +84,6 @@ interface InventarioAlerta {
   fechaAlerta: Date;
   accionRecomendada: string;
   urgente: boolean;
-}
-
-interface MovimientoInventario {
-  id: number;
-  tipo: 'ENTRADA' | 'SALIDA' | 'AJUSTE' | 'TRANSFERENCIA';
-  inventario: Inventario;
-  cantidad: number;
-  cantidadAnterior: number;
-  cantidadNueva: number;
-  motivo: string;
-  usuario: string;
-  fecha: Date;
-  almacenOrigen?: Almacen;
-  almacenDestino?: Almacen;
-  referencia?: string;
-  costo?: number;
-  observaciones?: string;
 }
 
 interface FiltrosInventario {
@@ -134,7 +121,7 @@ interface InventarioExtendido extends Inventario {
   ubicacionAlmacen?: string;
   lote?: string;
   fechaVencimiento?: Date;
-  movimientos?: MovimientoInventario[];
+  movimientos?: MovimientoResponse[];
 }
 
 @Component({
@@ -155,29 +142,29 @@ interface InventarioExtendido extends Inventario {
     TagModule,
     ToastModule,
     ToolbarModule,
-    PanelModule, // 👈 Nuevo import
-    TooltipModule, // 👈 Nuevo import
-    AvatarModule, // 👈 Nuevo import
-    CardModule, // 👈 Nuevo import
-    ChipModule, // 👈 Nuevo import
-    BadgeModule, // 👈 Nuevo import
-    TabViewModule, // 👈 Nuevo import
-    SelectButtonModule, // 👈 Nuevo import
-    OverlayPanelModule, // 👈 Nuevo import
-    SliderModule, // 👈 Nuevo import
-    ProgressBarModule, // 👈 Nuevo import
-    KnobModule, // 👈 Nuevo import
-    ChartModule, // 👈 Nuevo import
-    CalendarModule, // 👈 Nuevo import
-    CheckboxModule, // 👈 Nuevo import
-    RatingModule, // 👈 Nuevo import
-    AccordionModule, // 👈 Nuevo import
-    SplitterModule, // 👈 Nuevo import
-    TimelineModule, // 👈 Nuevo import
-    DataViewModule, // 👈 Nuevo import
-    OrganizationChartModule, // 👈 Nuevo import
-    TreeTableModule, // 👈 Nuevo import
-    ScrollerModule, // 👈 Nuevo import
+    PanelModule, 
+    TooltipModule, 
+    AvatarModule, 
+    CardModule, 
+    ChipModule, 
+    BadgeModule,
+    TabViewModule, 
+    SelectButtonModule, 
+    OverlayPanelModule, 
+    SliderModule, 
+    ProgressBarModule, 
+    KnobModule,
+    ChartModule, 
+    CalendarModule, 
+    CheckboxModule, 
+    RatingModule, 
+    AccordionModule, 
+    SplitterModule,
+    TimelineModule, 
+    DataViewModule, 
+    OrganizationChartModule, 
+    TreeTableModule, 
+    ScrollerModule,
     HasPermissionDirective
   ],
   providers: [MessageService, ConfirmationService],
@@ -505,8 +492,13 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   colores: Color[] = [];
   tallas: Talla[] = [];
   almacenes: Almacen[] = [];
+  movimientoDialog = false;
+  newMovimientosDialog = false;
+
 
   inventariosTotales: InventarioExtendido[] = [];
+
+  movimiento!: MovimientoResponse;
 
   // ========== FILTROS ==========
   productoSeleccionadoFiltro: Producto | null = null;
@@ -517,6 +509,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   colorSeleccionado: Color | null = null;
   tallaSeleccionada: Talla | null = null;
   almacenSeleccionado: Almacen | null = null;
+  inventarioSeleccionado: Inventario | null = null;
+  inventarioDestinoSeleccionado: Inventario | null = null;
 
   // ========== ESTADO UI ==========
   inventarioDialog = false;
@@ -567,8 +561,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
     { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' },
     { label: 'Movimientos', value: 'movements', icon: 'pi pi-history' },
-    { label: 'Análisis ABC', value: 'abc', icon: 'pi pi-sort-amount-down' },
-    { label: 'Alertas', value: 'alerts', icon: 'pi pi-exclamation-triangle' }
   ];
 
   estadosInventario: { label: string, value: EstadoInventario, color: string, icon: string }[] = [
@@ -591,6 +583,41 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     { categoria: 'C', label: 'Categoría C', descripcion: 'Bajo valor/rotación', color: '#ef4444' }
   ];
 
+  // UTILIDADES
+  private createEmptyMovimientoResponse(): MovimientoResponse {
+    return {
+      id: 0,
+      inventarioId: 0,
+      cantidad: 0,
+      tipo: TipoMovimiento.ENTRADA,
+      descripcion: '',
+      referencia: '',
+      usuario: '',
+      fechaMovimiento: new Date().toISOString(),
+      // Campos opcionales
+      inventarioDestinoId: undefined,
+      estadoResultante: undefined,
+      almacenDestinoNombre: undefined,
+      producto: undefined,
+      color: undefined,
+      talla: undefined
+    };
+  }
+
+  private getCurrentUsername(): string {
+      const token = this.authService.getToken();
+      if (!token) return 'sistema';
+      
+      try {
+        const decodedToken = jwtDecode<{ sub: string }>(token);
+        return decodedToken.sub;
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        return 'sistema';
+      }
+    }
+
+
   // Computed properties for inventory statistics
   get totalUnidades(): number {
     return this.inventariosFiltrados?.reduce((sum, inv) => sum + (inv.cantidad || 0), 0) || 0;
@@ -611,11 +638,16 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   // Helper methods for template calculations
   getRandomInt(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    // Usar valores consistentes en lugar de Math.random()
+    // Esto evita el error ExpressionChangedAfterItHasBeenCheckedError
+    return Math.floor(min + ((max - min) * 0.6)); // Valor fijo en el 60% del rango
   }
 
   getRandomFloat(min: number, max: number, decimals = 1): string {
-    return (Math.random() * (max - min) + min).toFixed(decimals);
+    // Usar valores consistentes basados en la categoría en lugar de Math.random()
+    // Esto evita el error ExpressionChangedAfterItHasBeenCheckedError
+    const baseValue = min + ((max - min) * 0.6); // Valor fijo en el 60% del rango
+    return baseValue.toFixed(decimals);
   }
 
   getInventariosByCategoria(categoria: 'A' | 'B' | 'C'): InventarioExtendido[] {
@@ -657,8 +689,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     private readonly productoService: ProductoService = inject(ProductoService);
     private readonly colorService: ColorService = inject(ColorService);
     private readonly almacenService: AlmacenService = inject(AlmacenService);
+    private readonly movimientoService: MovimientoInventarioService = inject(MovimientoInventarioService);
     private readonly messageService: MessageService = inject(MessageService);
     private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
+    private readonly authService: AuthService = inject(AuthService);
     public permissionService: PermissionService = inject(PermissionService);
 
   constructor(
@@ -668,6 +702,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.movimiento = this.createEmptyMovimientoResponse();
     this.loadProductos();
     this.loadAlmacenes();
     this.generarDatosSimulados();
@@ -718,31 +753,36 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Genera datos simulados para demostración
+   * 👇 Genera datos simulados para demostración (con valores consistentes)
    */
   generarDatosSimulados(): void {
     // Simular datos extendidos para los inventarios existentes
-    this.inventariosFiltrados = this.inventariosFiltrados.map((inventario, index) => ({
-      ...inventario,
-      valorUnitario: Math.random() * 100 + 20,
-      rotacion: Math.random() * 12 + 1,
-      diasSinMovimiento: Math.floor(Math.random() * 90),
-      stockMinimo: Math.floor(inventario.cantidad * 0.2),
-      stockMaximo: Math.floor(inventario.cantidad * 2),
-      puntoReorden: Math.floor(inventario.cantidad * 0.3),
-      categoriaABC: ['A', 'B', 'C'][index % 3] as 'A' | 'B' | 'C',
-      tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as 'SUBIENDO' | 'BAJANDO' | 'ESTABLE',
-      prediccionDemanda: Math.floor(Math.random() * 50) + 10,
-      fechaUltimoMovimiento: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-      proveedorPrincipal: ['Proveedor A', 'Proveedor B', 'Proveedor C'][index % 3],
-      tiempoReposicion: Math.floor(Math.random() * 15) + 5,
-      costo: Math.random() * 80 + 10,
-      margen: Math.random() * 50 + 20,
-      ubicacionAlmacen: `Pasillo ${index + 1}-Estante ${Math.floor(Math.random() * 10) + 1}`,
-      lote: `LT${String(index + 1).padStart(4, '0')}`,
-      fechaVencimiento: new Date(Date.now() + Math.random() * 365 * 24 * 60 * 60 * 1000),
-      movimientos: this.generarMovimientosSimulados(inventario)
-    }));
+    this.inventariosFiltrados = this.inventariosFiltrados.map((inventario, index) => {
+      // Usar índice para generar valores consistentes
+      const seed = index * 12345;
+      
+      return {
+        ...inventario,
+        valorUnitario: 20 + (seed % 100),
+        rotacion: 1 + (seed % 12),
+        diasSinMovimiento: seed % 90,
+        stockMinimo: Math.floor(inventario.cantidad * 0.2),
+        stockMaximo: Math.floor(inventario.cantidad * 2),
+        puntoReorden: Math.floor(inventario.cantidad * 0.3),
+        categoriaABC: ['A', 'B', 'C'][index % 3] as 'A' | 'B' | 'C',
+        tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as 'SUBIENDO' | 'BAJANDO' | 'ESTABLE',
+        prediccionDemanda: 10 + (seed % 50),
+        fechaUltimoMovimiento: new Date(Date.now() - (seed % 30) * 24 * 60 * 60 * 1000),
+        proveedorPrincipal: ['Proveedor A', 'Proveedor B', 'Proveedor C'][index % 3],
+        tiempoReposicion: 5 + (seed % 15),
+        costo: 10 + (seed % 80),
+        margen: 20 + (seed % 50),
+        ubicacionAlmacen: `Pasillo ${index + 1}-Estante ${(seed % 10) + 1}`,
+        lote: `LT${String(index + 1).padStart(4, '0')}`,
+        fechaVencimiento: new Date(Date.now() + (seed % 365) * 24 * 60 * 60 * 1000),
+        movimientos: []
+      };
+    });
 
     // Calcular valor total para cada inventario
     this.inventariosFiltrados.forEach(inventario => {
@@ -755,46 +795,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Genera movimientos simulados para un inventario
-   */
-  generarMovimientosSimulados(inventario: Inventario): MovimientoInventario[] {
-    const movimientos: MovimientoInventario[] = [];
-    const tiposMovimiento = ['ENTRADA', 'SALIDA', 'AJUSTE', 'TRANSFERENCIA'];
-    const motivos = [
-      'Compra a proveedor',
-      'Venta a cliente',
-      'Ajuste por inventario físico',
-      'Transferencia entre almacenes',
-      'Devolución de cliente',
-      'Producto defectuoso',
-      'Promoción especial'
-    ];
-
-    for (let i = 0; i < 5; i++) {
-      const fecha = new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000);
-      const tipo = tiposMovimiento[Math.floor(Math.random() * tiposMovimiento.length)] as 'ENTRADA' | 'SALIDA' | 'AJUSTE' | 'TRANSFERENCIA';
-      const cantidad = Math.floor(Math.random() * 20) + 1;
-      
-      movimientos.push({
-        id: Date.now() + i,
-        tipo,
-        inventario,
-        cantidad,
-        cantidadAnterior: inventario.cantidad + (tipo === 'ENTRADA' ? -cantidad : cantidad),
-        cantidadNueva: inventario.cantidad,
-        motivo: motivos[Math.floor(Math.random() * motivos.length)],
-        usuario: ['Admin', 'Operador1', 'Supervisor'][Math.floor(Math.random() * 3)],
-        fecha,
-        referencia: `MOV-${String(Date.now() + i).slice(-6)}`,
-        costo: tipo === 'ENTRADA' ? Math.random() * 100 + 20 : undefined,
-        observaciones: Math.random() > 0.5 ? 'Movimiento automático del sistema' : undefined
-      });
-    }
-
-    return movimientos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
-  }
-
-  /**
    * 👇 Calcula estadísticas generales de inventarios
    */
   calcularEstadisticas(): InventarioStats {
@@ -803,6 +803,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     const stockCritico = inventarios.filter(inv => inv.cantidad <= (inv.stockMinimo || 5)).length;
     const agotados = inventarios.filter(inv => inv.cantidad === 0).length;
     const rotacionPromedio = inventarios.reduce((sum, inv) => sum + (inv.rotacion || 0), 0) / inventarios.length;
+    const movimientosDelMes = inventarios.reduce((sum, inv) => sum + (inv.movimientos?.length || 0), 0);
+    const eficienciaStock = valorTotal / (valorTotal + stockCritico);
+
 
     return {
       totalProductos: inventarios.length,
@@ -810,8 +813,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       stockCritico,
       productosAgotados: agotados,
       rotacionPromedio,
-      movimientosDelMes: 1240, // Simulado
-      eficienciaStock: 85.5, // Simulado
+      movimientosDelMes,
+      eficienciaStock,
       valorEnRiesgo: valorTotal * 0.15, // Simulado
       zonasDemanda: this.getZonasDemanda(),
       tendenciasStock: this.getTendenciasStock(),
@@ -833,16 +836,19 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Obtiene tendencias de stock
+   * 👇 Obtiene tendencias de stock (con valores consistentes)
    */
   getTendenciasStock(): { mes: string, entrada: number, salida: number, saldo: number }[] {
     const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-    return meses.map(mes => ({
-      mes,
-      entrada: Math.floor(Math.random() * 1000) + 500,
-      salida: Math.floor(Math.random() * 800) + 400,
-      saldo: Math.floor(Math.random() * 500) + 200
-    }));
+    return meses.map((mes, index) => {
+      const seed = index * 12345; // Semilla para valores consistentes
+      return {
+        mes,
+        entrada: 500 + (seed % 1000),
+        salida: 400 + (seed % 800),
+        saldo: 200 + (seed % 500)
+      };
+    });
   }
 
   /**
@@ -1027,7 +1033,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return alerta.id || index;
   }
 
-  trackByMovimiento(index: number, movimiento: MovimientoInventario): number | undefined {
+  trackByMovimiento(index: number, movimiento: MovimientoResponse): number | undefined {
     return movimiento.id || index;
   }
 
@@ -1040,12 +1046,55 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 👇 Muestra movimientos
+   * 👇 Muestra y carga los movimientos del inventario
    */
-  mostrarMovimientos(inventario?: InventarioExtendido): void {
+  mostrarMovimientos(inventario?: Inventario): void {
     if (inventario) {
       this.inventario = inventario;
+      this.loading = true;
+      
+      // Usar el endpoint correcto con filtro por inventario
+      this.movimientoService.buscarMovimientos(
+        inventario.id, // inventarioId - filtra por inventario específico
+        undefined,     // productoId
+        undefined,     // colorId
+        undefined,     // tallaId
+        undefined,     // tipo
+        undefined,     // fechaInicio
+        undefined,     // fechaFin
+        0,            // page
+        100,          // size
+        'fechaMovimiento', // sortBy
+        'desc'        // sortDir
+      )
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe({
+        next: (response: PagedResponse<MovimientoResponse>) => {
+          if (response && response.contenido) {
+            // Ya vienen filtrados del backend por inventarioId
+            this.inventario.movimientos = response.contenido.map((mov: MovimientoResponse) => ({
+              ...mov,
+              // El backend ya envía fechaMovimiento como string ISO, no necesita conversión
+            }));
+            
+            if (this.inventario.movimientos.length === 0) {
+              this.showWarning('No se encontraron movimientos para este inventario');
+            }
+          } else {
+            this.inventario.movimientos = [];
+            this.showWarning('No se encontraron movimientos para este inventario');
+          }
+        },
+        error: (error: unknown) => {
+          console.error('Error al cargar movimientos:', error);
+          this.handleError(error, 'Error al cargar el historial de movimientos');
+          this.inventario.movimientos = [];
+        }
+      });
     }
+    
     this.movimientosDialog = true;
   }
 
@@ -1123,7 +1172,14 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   loadAlmacenes(): void {
     this.almacenService.getAlmacenes().subscribe({
-      next: (response) => this.almacenes = response.content || [],
+      next: (response) => {
+        // Check if response is an array or a paged response
+        if (Array.isArray(response)) {
+          this.almacenes = response;
+        } else {
+          this.almacenes = response.contenido || [];
+        }
+      },
       error: (error: unknown) => this.handleError(error, 'No se pudieron cargar los almacenes')
     });
   }
@@ -1204,6 +1260,102 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // === MOVIMIENTOS INVENTARIO
+  guardarMovimiento(): void {
+      this.submitted = true;
+    
+      if (!this.isValidMovimiento()) {
+        return;
+      }
+    
+      this.loading = true;
+    
+      const movimientoData: Omit<MovimientoRequest, 'id' | 'fechaMovimiento' | 'usuario'> = {
+        inventarioId: this.inventarioSeleccionado?.id ?? 0,
+        inventarioDestinoId: this.movimiento.tipo === 'TRASLADO' ? this.inventarioDestinoSeleccionado?.id ?? 0 : undefined,
+        tipo: this.movimiento.tipo,
+        cantidad: this.movimiento.cantidad,
+        referencia: this.movimiento.referencia?.trim() || `MOV-${Date.now()}`,
+        descripcion: this.movimiento.descripcion,
+        // El usuario se maneja en el backend basado en el token de autenticación
+      };
+    
+      if (this.editMode && this.movimiento.id) {
+        this.showWarning('Funcionalidad de actualización en desarrollo');
+        this.loading = false;
+        this.hideDialog();
+      } else {
+        this.movimientoService.createMovimiento(movimientoData)
+          .pipe(finalize(() => this.loading = false))
+          .subscribe({
+            next: (result) => {
+              if (this.inventario.movimientos) {
+                this.inventario.movimientos.unshift(result);
+              }
+              // this.filtrarMovimientosPorInventario(); // Actualizar la lista filtrada
+              this.showSuccess('Movimiento creado exitosamente');
+              this.hideDialog();
+            },
+            error: (error: unknown) => {
+              this.handleError(error, 'Error creando movimiento');
+            }
+          });
+      }
+    }
+
+  // ========== VALIDACIONES ==========
+  isValidMovimiento(): boolean {
+    if (!this.inventarioSeleccionado) {
+      this.showError('Debe seleccionar un inventario');
+      return false;
+    }
+
+    if (!this.movimiento.tipo) {
+      this.showError('Debe seleccionar un tipo de movimiento');
+      return false;
+    }
+
+    if (!this.movimiento.cantidad || this.movimiento.cantidad <= 0) {
+      this.showError('La cantidad debe ser mayor a 0');
+      return false;
+    }
+
+    if (!this.movimiento.descripcion?.trim()) {
+      this.showError('La descripción es obligatoria');
+      return false;
+    }
+
+    if (!this.movimiento.referencia?.trim()) {
+      this.showError('La referencia es obligatoria');
+      return false;
+    }
+
+    // Validar stock suficiente para salidas
+    if (this.movimiento.tipo === 'SALIDA') {
+      const stockDisponible = this.inventarioSeleccionado.cantidad;
+      if (this.movimiento.cantidad > stockDisponible) {
+        this.showError(`Stock insuficiente. Disponible: ${stockDisponible}`);
+        return false;
+      }
+    }
+
+    // Validar inventario destino para traslados
+    if (this.movimiento.tipo === 'TRASLADO') {
+      if (!this.inventarioDestinoSeleccionado) {
+        this.showError('Debe seleccionar un inventario de destino para el traslado');
+        return false;
+      }
+      
+      if (this.inventarioDestinoSeleccionado.id === this.inventarioSeleccionado.id) {
+        this.showError('El inventario de destino no puede ser el mismo que el de origen');
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  
   // ========== CRUD (Manteniendo funcionalidad original) ==========
 
   openNew(): void {
@@ -1226,6 +1378,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   editInventario(inventario: InventarioExtendido): void {
+    console.log('Editando inventario:', inventario);
+    console.log('Almacén del inventario:', inventario.almacen);
+
     if (!this.permissionService.canEdit('inventario')) {
       this.showError('No tiene permisos para editar inventarios');
       return;
@@ -1235,6 +1390,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     this.inventario = { ...inventario };
     this.productoSeleccionado = inventario.producto;
     this.almacenSeleccionado = inventario.almacen;
+
+    console.log('Edit mode:', this.editMode);
+    console.log('Almacén seleccionado:', this.almacenSeleccionado)
     
     const originalColorId = inventario.color?.id;
     const originalTallaId = inventario.talla?.id;
@@ -1429,15 +1587,19 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     dt.filterGlobal(element.value, 'contains');
   }
 
-  getEstadoSeverity(estado: EstadoInventario): 'success' | 'danger' | 'warning' | 'info' | 'secondary' {
-    const severityMap = {
-      [EstadoInventario.DISPONIBLE]: 'success' as const,
-      [EstadoInventario.AGOTADO]: 'danger' as const,
-      [EstadoInventario.BAJO_STOCK]: 'warning' as const,
-      [EstadoInventario.RESERVADO]: 'info' as const
+  getEstadoSeverity(estado: EstadoInventario | string): 'success' | 'danger' | 'warning' | 'info' | 'secondary' {
+    const severityMap: Record<EstadoInventario, 'success' | 'danger' | 'warning' | 'info'> = {
+      [EstadoInventario.DISPONIBLE]: 'success',
+      [EstadoInventario.AGOTADO]: 'danger',
+      [EstadoInventario.BAJO_STOCK]: 'warning',
+      [EstadoInventario.RESERVADO]: 'info'
     };
+
+    if (Object.values(EstadoInventario).includes(estado as EstadoInventario)) {
+      return severityMap[estado as EstadoInventario];
+    }
     
-    return severityMap[estado] || 'secondary';
+    return 'secondary';
   }
 
   // ========== EXPORTACIÓN (Manteniendo y expandiendo funcionalidad original) ==========
@@ -1694,8 +1856,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
    * Abre modal para nuevo movimiento
    */
    abrirNuevoMovimiento(): void {
-    this.showInfo('Función de nuevo movimiento en desarrollo...');
-    // Aquí se implementaría el modal de nuevo movimiento
+    this.newMovimientosDialog = true;
+    this.movimiento = this.createEmptyMovimientoResponse();
+    this.submitted = false;
+    this.resetSelections();
   }
 
     /**
@@ -1704,42 +1868,52 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     exportarMovimientos(): void {
       const todosMovimientos = this.inventariosFiltrados
         .flatMap(inv => inv.movimientos || [])
-        .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
-  
+        .sort((a, b) => new Date(b.fechaMovimiento).getTime() - new Date(a.fechaMovimiento).getTime());
+    
       if (!todosMovimientos.length) {
         this.showWarning('No hay movimientos para exportar');
         return;
       }
-  
+    
       this.showInfo('Generando reporte de movimientos...');
-  
+    
       import('xlsx').then(xlsx => {
         const dataToExport = todosMovimientos.map(mov => ({
           'ID Movimiento': mov.id,
           'Tipo': mov.tipo,
-          'Producto': mov.inventario?.producto?.nombre || 'N/A',
-          'Color': mov.inventario?.color?.nombre || 'N/A',
-          'Talla': mov.inventario?.talla?.numero || 'N/A',
+          'Inventario ID': mov.inventarioId,
+          'Producto': mov.producto?.nombre || 'N/A',
+          'Código Producto': mov.producto?.codigo || 'N/A',
+          'Color': mov.color?.nombre || 'N/A',
+          'Talla': mov.talla?.numero || 'N/A',
           'Cantidad': mov.cantidad,
-          'Cantidad Anterior': mov.cantidadAnterior,
-          'Cantidad Nueva': mov.cantidadNueva,
-          'Motivo': mov.motivo,
-          'Usuario': mov.usuario,
-          'Fecha': new Date(mov.fecha).toLocaleString('es-PE'),
+          'Descripción': mov.descripcion,
           'Referencia': mov.referencia || '',
-          'Costo': mov.costo || 0,
-          'Almacén Origen': mov.almacenOrigen?.nombre || '',
-          'Almacén Destino': mov.almacenDestino?.nombre || '',
-          'Observaciones': mov.observaciones || ''
+          'Usuario': mov.usuario,
+          'Fecha': new Date(mov.fechaMovimiento).toLocaleString('es-PE'),
+          'Inventario Destino ID': mov.inventarioDestinoId || '',
+          'Almacén Destino': mov.almacenDestinoNombre || '',
+          'Estado Resultante': mov.estadoResultante || ''
         }));
         
         const worksheet = xlsx.utils.json_to_sheet(dataToExport);
         
         const colWidths = [
-          { wch: 12 }, { wch: 12 }, { wch: 25 }, { wch: 12 }, { wch: 8 },
-          { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 25 }, { wch: 12 },
-          { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 },
-          { wch: 30 }
+          { wch: 12 }, // ID Movimiento
+          { wch: 12 }, // Tipo
+          { wch: 12 }, // Inventario ID
+          { wch: 25 }, // Producto
+          { wch: 15 }, // Código Producto
+          { wch: 12 }, // Color
+          { wch: 8 },  // Talla
+          { wch: 10 }, // Cantidad
+          { wch: 30 }, // Descripción
+          { wch: 15 }, // Referencia
+          { wch: 12 }, // Usuario
+          { wch: 18 }, // Fecha
+          { wch: 15 }, // Inventario Destino ID
+          { wch: 15 }, // Almacén Destino
+          { wch: 15 }  // Estado Resultante
         ];
         worksheet['!cols'] = colWidths;
         

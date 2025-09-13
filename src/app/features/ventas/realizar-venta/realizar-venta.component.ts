@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, inject, ChangeDetectorRef } from '@angular/core';
 import { VentaRequest, VentaResponse } from '../../../core/models/venta.model';
 import { Cliente } from '../../../core/models/cliente.model';
 import { Producto } from '../../../core/models/product.model';
@@ -36,7 +36,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { StepsModule } from 'primeng/steps';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
-import { Subject } from 'rxjs';
+import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PagoRequest, PagoResponse } from '../../../core/models/pago.model';
 import { Inventario } from '../../../core/models/inventario.model';
@@ -47,7 +47,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageModule } from 'primeng/message';
 
 import { MetricaVenta } from './components/metrics/metric-card.interface';
-import { UserInfoCardComponent, UserInfo } from './components/user-info/user-info-card.component';
+import { UserInfo } from './components/user-info/user-info-card.component';
 import { HistorialVentasComponent } from "./components/historial-ventas/historial-ventas.component";
 import { ReportesComponent } from "./components/reporte-ventas/reporte-ventas.component";
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
@@ -55,6 +55,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { environment } from '../../../../environments/environment';
 import { Color, Talla } from '../../../core/models/colors.model';
 import { ChartData, ChartOptions } from 'chart.js';
+import { PosVentasComponent } from './components/pos-ventas/pos-ventas.component';
 
 
 interface OpcionSelect {
@@ -143,7 +144,8 @@ interface Tendencia {
     KnobModule,
     ProgressBarModule,
     MessageModule,
-    UserInfoCardComponent,
+    FloatLabelModule,
+    PosVentasComponent,
     HistorialVentasComponent,
     ReportesComponent,
     ConfiguracionComponent,
@@ -163,6 +165,44 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
 
     // Mini gráficos de ejemplo (ya los tienes)
     miniGraficoVentas = [65, 78, 82, 90, 75, 88, 92];
+    // Métodos para TabView optimizado
+    abrirSelectorCliente(): void {
+      this.mostrarInfo('Selector de cliente', 'Abriendo selector de clientes...');
+      // Aquí podrías abrir un modal o enfocar el input de búsqueda
+    }
+
+    quitarCliente(): void {
+      this.clienteSeleccionado = null;
+      this.mostrarInfo('Cliente eliminado', 'Se ha quitado el cliente de la venta');
+    }
+
+    seleccionarMetodo(alias: string): void {
+      const map: Record<string, string> = {
+        efectivo: 'EFECTIVO',
+        tarjeta: 'TARJETA_CREDITO',
+        credito: 'CREDITO'
+      };
+      const metodo = map[alias] || alias;
+      this.seleccionarMetodoPago(metodo);
+    }
+
+    cancelarVenta(): void {
+      this.carrito = [];
+      this.subtotalVenta = 0;
+      this.igvVenta = 0;
+      this.totalVenta = 0;
+      this.nuevaVenta = this.initNuevaVenta();
+      this.clienteSeleccionado = null;
+      this.mostrarInfo('Venta cancelada', 'La venta actual ha sido cancelada');
+    }
+
+    finalizarVenta(): void {
+      if (!this.canProcessPayment()) {
+        this.mostrarError('No se puede cobrar', 'Falta información: cliente, productos o comprobante');
+        return;
+      }
+      this.pagoDialog = true;
+    }
 
   // Control de permisos
   permissionTypes = PermissionType;
@@ -182,6 +222,9 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   
   // Vista activa
   activeTabIndex = 0;
+  
+  // Control de estado de caja
+  cajaAbierta = false;
   
   // 
   showKeyboardHelp = false;
@@ -372,6 +415,11 @@ seriesComprobante: { label: string, value: string }[] = [
   networkStatus: 'online' | 'offline' | 'slow' = 'online';
   lastSync = new Date();
 
+  // Propiedades para acciones rápidas
+  fondoInicial = 0;
+  ventaActual: any = {};
+  productoSeleccionado: any = null;
+
   private ventasService: VentasService = inject(VentasService);
   private pagosService: PagosService = inject(PagosService);
   private clienteService: ClienteService = inject(ClienteService);
@@ -380,7 +428,9 @@ seriesComprobante: { label: string, value: string }[] = [
   private messageService: MessageService = inject(MessageService);
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private permissionService: PermissionService = inject(PermissionService);
+  private changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
 
+  
   constructor(
    
   ) {
@@ -391,6 +441,7 @@ seriesComprobante: { label: string, value: string }[] = [
 
   ngOnInit() {
     this.loadPermissions();
+    this.inicializarEstadoCaja(); // Nuevo método para gestionar estado de caja
     this.cargarDatosIniciales();
       // ✅ FORZAR CARGA DE PRODUCTOS DIRECTAMENTE
     setTimeout(() => {
@@ -408,6 +459,8 @@ seriesComprobante: { label: string, value: string }[] = [
     this.inicializarMetricas();
     // this.initAudio(); // Lo agregaremos después
     this.setupKeyboardShortcuts();
+    this.inicializarComponente();
+    this.configurarActualizacionesTiempoReal();
   }
   
   ngOnDestroy(): void {
@@ -770,15 +823,6 @@ private startTimeUpdate(): void {
 
 
 // Funciones de acciones rápidas
-nuevaVentaRapida(): void {
-  this.activeTabIndex = 1;
-  this.pasoActual = 0;
-  this.limpiarFormularioVenta();
-  this.mostrarExito('Nueva Venta', 'Iniciando nueva venta...');
-  setTimeout(() => {
-    this.codigoInput?.nativeElement?.focus();
-  }, 100);
-}
 
 busquedaRapida(): void {
   this.mostrarInfo('Búsqueda Rápida', 'Función de búsqueda global activada');
@@ -1176,7 +1220,7 @@ verificarConfiguracionesPendientes(): void {
 
   private cargarVentas(): void {
     this.loading = true;
-    this.ventasService.listar()
+    this.ventasService.obtenerTodasLasVentas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
@@ -2605,5 +2649,319 @@ resetearEstadoPago(): void {
     return colores[color] || 'from-gray-500 to-gray-600';
   }
 
+  // Métodos trackBy para optimización de rendimiento
+  trackByProductoId(index: number, producto: { producto?: { id: number } }): number {
+    return producto?.producto?.id || index;
+  }
+
+  trackByProductoPopularId(index: number, producto: Inventario): number {
+    return producto?.producto?.id || index;
+  }
+
   
+
+  private sessionStartTime = new Date();
+  
+  // Usuario y sistema
+  currentUser = 'Emerson147';
+
+  
+  // Métricas del día
+  ingresosDia = 25679.50;
+  clientesAtendidos = 89;
+  productosVendidos = 342;
+  
+  
+
+ 
+  private inicializarComponente() {
+    console.log(`🚀 Header Premium iniciado por ${this.currentUser} - ${this.getCurrentDateTime()}`);
+  }
+
+  private configurarActualizacionesTiempoReal() {
+    // Actualizar ping cada 30 segundos
+    interval(30000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.actualizarPing();
+      });
+
+    // Actualizar métricas cada 5 minutos
+    interval(300000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.actualizarMetricas();
+      });
+
+    // Actualizar fecha/hora cada segundo
+    interval(1000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.changeDetectorRef.markForCheck();
+      });
+  }
+
+  private actualizarPing() {
+    this.ping = Math.floor(Math.random() * 30) + 15; // 15-45ms
+    this.changeDetectorRef.markForCheck();
+  }
+
+  private actualizarMetricas() {
+    // Simular incremento gradual de métricas durante el día
+    this.ventasHoy += Math.floor(Math.random() * 3);
+    this.ingresosDia += Math.random() * 500;
+    this.clientesAtendidos += Math.floor(Math.random() * 2);
+    this.productosVendidos += Math.floor(Math.random() * 5);
+    this.changeDetectorRef.markForCheck();
+  }
+
+  // ✅ MÉTODOS DE INFORMACIÓN
+  getUserInitials(): string {
+    return this.currentUser.substring(0, 2).toUpperCase();
+  }
+
+ 
+
+  getSessionTime(): string {
+    const now = new Date();
+    const diff = now.getTime() - this.sessionStartTime.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  getLastBackup(): string {
+    const lastBackup = new Date();
+    lastBackup.setHours(2, 0, 0, 0); // Backup a las 2:00 AM
+    return lastBackup.toLocaleTimeString('es-PE', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // ==================== GESTIÓN DE CAJA ====================
+  inicializarEstadoCaja() {
+    // Verificar si hay un estado de caja guardado en localStorage
+    const cajaGuardada = localStorage.getItem('cajaAbierta');
+    if (cajaGuardada) {
+      this.cajaAbierta = JSON.parse(cajaGuardada);
+      if (this.cajaAbierta) {
+        console.log('💰 Restaurando estado de caja abierta');
+      }
+    }
+  }
+
+  private guardarEstadoCaja() {
+    localStorage.setItem('cajaAbierta', JSON.stringify(this.cajaAbierta));
+  }
+
+
+
+  cerrarCaja() {
+    this.confirmationService.confirm({
+      message: '¿Está seguro que desea cerrar la caja? Se volverá a la pantalla inicial.',
+      header: 'Confirmar Cierre de Caja',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, cerrar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.cajaAbierta = false;
+        this.activeTabIndex = 0;
+        this.guardarEstadoCaja(); // Guardar estado
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Caja Cerrada',
+          detail: 'La caja registradora ha sido cerrada',
+          life: 3000
+        });
+        console.log('💰 Cerrando caja registradora...');
+        // Lógica adicional para cerrar caja (resumen del día, reportes, etc.)
+      }
+    });
+  }
+
+  // ==================== MÉTODOS DE ACCIONES RÁPIDAS ====================
+  irAPOS() {
+    this.activeTabIndex = 0; // Ir a la pestaña POS
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Navegación',
+      detail: 'Redirigido al Punto de Venta',
+      life: 2000
+    });
+  }
+
+  verTotalesDelDia() {
+    // Mostrar un dialog con los totales del día
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Totales del Día',
+      detail: `Ventas: ${this.contarVentasDelDia()} | Total: S/ ${this.getTotalVentasDelDia().toFixed(2)}`,
+      life: 5000
+    });
+    // También podríamos abrir un dialog con información detallada
+  }
+
+  imprimirReporteCaja() {
+    console.log('🖨️ Imprimiendo reporte de caja...');
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Impresión',
+      detail: 'Enviando reporte a la impresora...',
+      life: 3000
+    });
+    // Aquí iría la lógica real de impresión
+  }
+
+  contarVentasDelDia(): number {
+    // Contar ventas del día actual
+    const hoy = new Date();
+    return this.ventas.filter(venta => {
+      const fechaVenta = new Date(venta.fechaCreacion);
+      return fechaVenta.toDateString() === hoy.toDateString();
+    }).length;
+  }
+
+  getTotalVentasDelDia(): number {
+    // Calcular total de ventas del día actual
+    const hoy = new Date();
+    return this.ventas
+      .filter(venta => {
+        const fechaVenta = new Date(venta.fechaCreacion);
+        return fechaVenta.toDateString() === hoy.toDateString();
+      })
+      .reduce((total, venta) => total + venta.total, 0);
+  }
+
+  getPromedioVenta(): number {
+    const totalVentas = this.contarVentasDelDia();
+    if (totalVentas === 0) return 0;
+    return this.getTotalVentasDelDia() / totalVentas;
+  }
+
+  nuevaVentaRapida(): void {
+    console.log('🛒 Iniciando nueva venta rápida...');
+    this.limpiarFormularioVenta();
+    this.activeTabIndex = 0; // Ir a la pestaña POS
+    this.pasoActual = 0;
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Nueva Venta',
+      detail: 'Iniciando nueva venta...',
+      life: 2000
+    });
+    // Enfocar en el campo de código de producto
+    setTimeout(() => {
+      const codigoInput = document.querySelector('input[placeholder*="código"]') as HTMLInputElement;
+      if (codigoInput) {
+        codigoInput.focus();
+      }
+    }, 100);
+  }
+
+  abrirCaja(): void {
+    if (this.cajaAbierta) {
+      this.mostrarAdvertencia('Caja ya abierta', 'La caja registradora ya está abierta');
+      return;
+    }
+
+    this.confirmationService.confirm({
+      message: '¿Está seguro que desea abrir la caja registradora?',
+      header: 'Confirmar Apertura de Caja',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, abrir',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.abrirCajaRegistradora();
+      }
+    });
+  }
+
+  verReportes() {
+    console.log('📊 Abriendo reportes...');
+    this.activeTabIndex = 2; // Navegar a la pestaña de reportes
+    this.loadingReportes = true;
+    this.cargarEstadisticas();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Reportes',
+      detail: 'Cargando reportes de ventas...',
+      life: 2000
+    });
+  }
+
+  configuracion() {
+    console.log('⚙️ Abriendo configuración...');
+    this.activeTabIndex = 3; // Navegar a la pestaña de configuración
+    this.cargarConfiguraciones();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Configuración',
+      detail: 'Abriendo panel de configuración...',
+      life: 2000
+    });
+  }
+
+  private cargarConfiguraciones(): void {
+    // Cargar configuraciones guardadas en localStorage
+    const configGuardada = localStorage.getItem('configuracion_ventas');
+    if (configGuardada) {
+      try {
+        this.configuracion = JSON.parse(configGuardada);
+      } catch (error) {
+        console.error('Error al cargar configuración:', error);
+      }
+    }
+  }
+
+  private mostrarAdvertencia(titulo: string, mensaje: string): void {
+    this.messageService.add({
+      severity: 'warn',
+      summary: titulo,
+      detail: mensaje,
+      life: 4000
+    });
+  }
+
+  // Métodos auxiliares para acciones rápidas
+  private abrirCajaRegistradora(): void {
+    console.log('💰 Abriendo caja registradora...');
+    this.cajaAbierta = true;
+    this.fondoInicial = 1000; // Fondo inicial por defecto
+    this.registrarAperturaCaja();
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Caja Abierta',
+      detail: 'Caja registradora abierta exitosamente',
+      life: 3000
+    });
+  }
+
+  private registrarAperturaCaja(): void {
+    const aperturaCaja = {
+      fecha: new Date().toISOString(),
+      usuario: 'Usuario Actual', // TODO: Obtener usuario real
+      fondoInicial: this.fondoInicial,
+      estado: 'ABIERTA'
+    };
+    localStorage.setItem('caja_apertura', JSON.stringify(aperturaCaja));
+  }
+
+  private obtenerTopProductos(): any[] {
+    return [
+      { nombre: 'Zapatilla Nike Air Max', ventas: 45 },
+      { nombre: 'Zapato Formal Oxford', ventas: 32 },
+      { nombre: 'Sandalias Casual', ventas: 28 }
+    ];
+  }
+
+  private obtenerVentasPorHora(): any[] {
+    return [
+      { hora: '09:00', ventas: 12 },
+      { hora: '10:00', ventas: 18 },
+      { hora: '11:00', ventas: 25 },
+      { hora: '12:00', ventas: 30 }
+    ];
+  }
+
 }

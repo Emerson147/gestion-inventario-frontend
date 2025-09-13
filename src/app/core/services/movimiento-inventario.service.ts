@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { MovimientoInventario, PagedResponse } from '../../core/models/movimientos-inventario.model';
+import { MovimientoRequest, MovimientoResponse, PagedResponse } from '../../core/models/movimientos-inventario.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -18,30 +18,30 @@ export class MovimientoInventarioService {
     page = 0, 
     size = 100, 
     sortBy = 'nombre', 
-    sortDir = 'asc'): Observable<PagedResponse<MovimientoInventario>> {
+    sortDir = 'asc'): Observable<PagedResponse<MovimientoResponse>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
       .set('sortBy', sortBy)
       .set('sortDir', sortDir);
 
-    return this.http.get<PagedResponse<MovimientoInventario>>(`${this.apiUrl}`, { params });
+    return this.http.get<PagedResponse<MovimientoResponse>>(`${this.apiUrl}/buscar`, { params });
        
   }
 
-  obtenerMovimientoPorId(id: number): Observable<MovimientoInventario> {
-    return this.http.get<MovimientoInventario>(`${this.apiUrl}/${id}`);
+  obtenerMovimientoPorId(id: number): Observable<MovimientoResponse> {
+    return this.http.get<MovimientoResponse>(`${this.apiUrl}/${id}`);
   }
 
-  createMovimiento(movimientoData: Omit<MovimientoInventario, 'id' | 'fechaMovimiento' | 'usuario'>): Observable<MovimientoInventario> {
+  createMovimiento(movimientoData: Omit<MovimientoRequest, 'id' | 'fechaMovimiento' | 'usuario'>): Observable<MovimientoResponse> {
     // Usamos Omit para indicar que no se espera id, fechaMovimiento ni usuario al crear
-    return this.http.post<MovimientoInventario>(`${this.apiUrl}/registrar`, movimientoData);
+    return this.http.post<MovimientoResponse>(`${this.apiUrl}/registrar`, movimientoData);
   }
 
-  updateMovimiento(movimiento: MovimientoInventario): Observable<MovimientoInventario> {
+  updateMovimiento(movimiento: MovimientoResponse): Observable<MovimientoResponse> {
     // Nota: El backend no tiene endpoint de actualización, podrías necesitar agregarlo
     // Por ahora mantengo la estructura original
-    return this.http.put<MovimientoInventario>(`${this.apiUrl}/${movimiento.id}`, movimiento);
+    return this.http.put<MovimientoResponse>(`${this.apiUrl}/${movimiento.id}`, movimiento);
   }
 
   eliminarMovimiento(id: number): Observable<void> {
@@ -54,8 +54,8 @@ export class MovimientoInventarioService {
     return this.http.post<void>(`${this.apiUrl}/delete-multiple`, { ids });
   }
 
-  obtenerMovimientosPorInventario(inventarioId: number): Observable<PagedResponse<MovimientoInventario>> {
-    return this.http.get<PagedResponse<MovimientoInventario>>(`${this.apiUrl}/inventario/${inventarioId}`)
+  obtenerMovimientosPorInventario(inventarioId: number): Observable<PagedResponse<MovimientoResponse>> {
+    return this.http.get<PagedResponse<MovimientoResponse>>(`${this.apiUrl}/inventario/${inventarioId}`)
   }
 
   // Método adicional para búsqueda avanzada
@@ -71,7 +71,7 @@ export class MovimientoInventarioService {
     size = 100,
     sortBy = 'fechaMovimiento',
     sortDir = 'desc'
-  ): Observable<PagedResponse<MovimientoInventario>> {
+  ): Observable<PagedResponse<MovimientoResponse>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
@@ -86,7 +86,7 @@ export class MovimientoInventarioService {
     if (fechaInicio) params = params.set('fechaInicio', fechaInicio.toISOString());
     if (fechaFin) params = params.set('fechaFin', fechaFin.toISOString());
 
-    return this.http.get<PagedResponse<MovimientoInventario>>(`${this.apiUrl}/buscar`, { params });
+    return this.http.get<PagedResponse<MovimientoResponse>>(`${this.apiUrl}/buscar`, { params });
   }
 
   // Obtener tipos de movimiento disponibles

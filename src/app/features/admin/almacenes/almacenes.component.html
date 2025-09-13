@@ -273,17 +273,17 @@
                 <i class="pi pi-building text-white text-xl"></i>
               </div>
               <div>
-                <h3 class="font-bold text-lg m-0">{{almacen.nombre}}</h3>
-                <p class="text-sm opacity-90 mt-1">{{almacen.tipoAlmacen || 'SUCURSAL'}}</p>
+                <h3 class="font-bold text-lg m-0">{{almacen?.nombre}}</h3>
+                <p class="text-sm opacity-90 mt-1">{{almacen?.tipoAlmacen || 'SUCURSAL'}}</p>
               </div>
             </div>
             
             <!-- Estado del almacén -->
             <div class="text-right">
               <p-tag 
-                [value]="almacen.estado || 'ACTIVO'"
-                [severity]="getEstadoColor(almacen.estado || 'ACTIVO')"
-                [icon]="getEstadoIcon(almacen.estado || 'ACTIVO')"
+                [value]="almacen?.estado || 'ACTIVO'"
+                [severity]="getEstadoColor(almacen?.estado || 'ACTIVO')"
+                [icon]="getEstadoIcon(almacen?.estado || 'ACTIVO')"
                 styleClass="text-xs font-medium"
               />
             </div>
@@ -292,15 +292,15 @@
           <!-- Métricas del almacén -->
           <div class="grid grid-cols-3 gap-3 text-center">
             <div class="bg-white bg-opacity-10 rounded-lg p-3">
-              <div class="text-2xl font-bold">{{almacen.capacidadMaxima || 0 | number:'1.0-0'}}</div>
+              <div class="text-2xl font-bold">{{almacen?.capacidadMaxima || 0 | number:'1.0-0'}}</div>
               <div class="text-xs opacity-80">Capacidad</div>
             </div>
             <div class="bg-white bg-opacity-10 rounded-lg p-3">
-              <div class="text-2xl font-bold">{{almacen.capacidadUtilizada || 0 | number:'1.0-0'}}</div>
+              <div class="text-2xl font-bold">{{almacen?.capacidadUtilizada || 0 | number:'1.0-0'}}</div>
               <div class="text-xs opacity-80">Utilizada</div>
             </div>
             <div class="bg-white bg-opacity-10 rounded-lg p-3">
-              <div class="text-2xl font-bold">{{almacen.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
+              <div class="text-2xl font-bold">{{almacen?.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
               <div class="text-xs opacity-80">Ocupación</div>
             </div>
           </div>
@@ -314,40 +314,40 @@
               <i class="pi pi-map-marker text-green-600"></i>
               <span class="font-medium text-gray-800">Ubicación</span>
             </div>
-            <p class="text-gray-600 text-sm">{{almacen.ubicacion}}</p>
+            <p class="text-gray-600 text-sm">{{almacen?.ubicacion}}</p>
             
-            <div class="flex items-center gap-2 mt-3" *ngIf="almacen.descripcion">
+            <div class="flex items-center gap-2 mt-3" *ngIf="almacen?.descripcion">
               <i class="pi pi-file-edit text-blue-600"></i>
               <span class="font-medium text-gray-800">Descripción</span>
             </div>
-            <p class="text-gray-600 text-sm mt-1" *ngIf="almacen.descripcion">
-              {{almacen.descripcion.length > 80 ? (almacen.descripcion | slice:0:80) + '...' : almacen.descripcion}}
+            <p class="text-gray-600 text-sm mt-1" *ngIf="almacen?.descripcion">
+              {{(almacen?.descripcion?.length || 0) > 80 ? (almacen?.descripcion | slice:0:80) + '...' : almacen?.descripcion}}
             </p>
           </div>
           
           <!-- Información extendida -->
-          <div class="mb-4" *ngIf="almacen.responsable">
+          <div class="mb-4" *ngIf="almacen?.responsable">
             <div class="flex items-center gap-2 mb-2">
               <i class="pi pi-user text-purple-600"></i>
               <span class="font-medium text-gray-800">Responsable</span>
             </div>
-            <div class="text-sm text-gray-600">{{almacen.responsable}}</div>
-            <div class="text-xs text-gray-500" *ngIf="almacen.telefono">Tel: {{almacen.telefono}}</div>
+            <div class="text-sm text-gray-600">{{almacen?.responsable}}</div>
+            <div class="text-xs text-gray-500" *ngIf="almacen?.telefono">Tel: {{almacen?.telefono}}</div>
           </div>
           
           <!-- Barra de capacidad visual -->
-          <div class="mb-4" *ngIf="almacen.capacidadMaxima">
+          <div class="mb-4" *ngIf="almacen?.capacidadMaxima">
             <div class="flex justify-between text-sm text-gray-600 mb-2">
               <span>Capacidad Utilizada</span>
-              <span>{{almacen.porcentajeOcupacion || 0 | number:'1.0-0'}}%</span>
+              <span>{{almacen?.porcentajeOcupacion || 0 | number:'1.0-0'}}%</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
                 class="h-3 rounded-full transition-all duration-500"
                 [ngClass]="{
-                  'bg-gradient-to-r from-green-400 to-green-600': (almacen.porcentajeOcupacion || 0) < 75,
-                  'bg-gradient-to-r from-yellow-400 to-orange-500': (almacen.porcentajeOcupacion || 0) >= 75 && (almacen.porcentajeOcupacion || 0) < 90,
-                  'bg-gradient-to-r from-red-400 to-red-600': (almacen.porcentajeOcupacion || 0) >= 90
+                  'bg-gradient-to-r from-green-400 to-green-600': (almacen?.porcentajeOcupacion || 0) < 75,
+                  'bg-gradient-to-r from-yellow-400 to-orange-500': (almacen?.porcentajeOcupacion || 0) >= 75 && (almacen?.porcentajeOcupacion || 0) < 90,
+                  'bg-gradient-to-r from-red-400 to-red-600': (almacen?.porcentajeOcupacion || 0) >= 90
                 }"
                 [style.width.%]="almacen.porcentajeOcupacion || 0"
               ></div>
@@ -355,15 +355,15 @@
           </div>
           
           <!-- KPIs del almacén -->
-          <div class="mb-4" *ngIf="almacen.kpis">
+          <div class="mb-4" *ngIf="almacen?.kpis">
             <div class="text-sm font-medium text-gray-700 mb-2">Indicadores</div>
             <div class="grid grid-cols-2 gap-2">
               <div class="bg-blue-50 rounded-lg p-2 text-center">
-                <div class="font-bold text-blue-600">{{almacen.kpis.eficienciaEspacio | number:'1.0-0'}}%</div>
+                <div class="font-bold text-blue-600">{{almacen?.kpis?.eficienciaEspacio | number:'1.0-0'}}%</div>
                 <div class="text-xs text-blue-700">Eficiencia</div>
               </div>
               <div class="bg-green-50 rounded-lg p-2 text-center">
-                <div class="font-bold text-green-600">{{almacen.kpis.preciscionInventario | number:'1.0-0'}}%</div>
+                <div class="font-bold text-green-600">{{almacen?.kpis?.preciscionInventario | number:'1.0-0'}}%</div>
                 <div class="text-xs text-green-700">Precisión</div>
               </div>
             </div>
@@ -371,16 +371,16 @@
           
           <!-- Zonas del almacén -->
           <div class="mb-4" *ngIf="almacen.zonas && almacen.zonas.length > 0">
-            <div class="text-sm font-medium text-gray-700 mb-2">Zonas ({{almacen.zonas.length || 0}})</div>
+            <div class="text-sm font-medium text-gray-700 mb-2">Zonas ({{almacen.zonas.length}})</div>
             <div class="flex flex-wrap gap-1">
               <p-chip 
-                *ngFor="let zona of (almacen.zonas || []).slice(0, 3)" 
+                *ngFor="let zona of almacen.zonas.slice(0, 3)" 
                 [label]="zona?.codigo || 'Sin código'" 
                 size="small"
                 styleClass="bg-gray-100 text-gray-700 text-xs"
               />
               <p-chip 
-                *ngIf="almacen.zonas && almacen.zonas.length > 3"
+                *ngIf="almacen.zonas.length > 3"
                 [label]="'+' + (almacen.zonas.length - 3) + ' más'" 
                 size="small"
                 styleClass="bg-blue-100 text-blue-700 text-xs"
@@ -389,8 +389,8 @@
           </div>
           
           <!-- Fecha de creación -->
-          <div class="text-xs text-gray-500 mb-4" *ngIf="almacen.fechaCreacion">
-            Creado: {{almacen.fechaCreacion | date:'dd/MM/yyyy'}}
+          <div class="text-xs text-gray-500 mb-4" *ngIf="almacen?.fechaCreacion">
+            Creado: {{almacen?.fechaCreacion | date:'dd/MM/yyyy'}}
           </div>
           
           <!-- Acciones del almacén -->
@@ -519,10 +519,10 @@
                 <i class="pi pi-map-marker text-green-600"></i>
               </div>
               <div>
-                <div class="font-medium text-gray-800">{{almacen.nombre}}</div>
-                <div class="text-sm text-gray-600">{{almacen.ubicacion}}</div>
-                <div class="text-xs text-gray-500" *ngIf="almacen.ubicacionGeografica">
-                  {{almacen.ubicacionGeografica.ciudad}}, {{almacen.ubicacionGeografica.pais}}
+                <div class="font-medium text-gray-800">{{almacen?.nombre}}</div>
+                <div class="text-sm text-gray-600">{{almacen?.ubicacion}}</div>
+                <div class="text-xs text-gray-500" *ngIf="almacen?.ubicacionGeografica">
+                  {{almacen?.ubicacionGeografica?.ciudad}}, {{almacen?.ubicacionGeografica?.pais}}
                 </div>
               </div>
             </div>
@@ -652,8 +652,8 @@
                 <i class="pi pi-building text-blue-600"></i>
               </div>
               <div>
-                <div class="font-bold text-gray-900">{{almacen.nombre}}</div>
-                <div class="text-sm text-gray-500">{{almacen.tipoAlmacen || 'SUCURSAL'}}</div>
+                <div class="font-bold text-gray-900">{{almacen?.nombre}}</div>
+                <div class="text-sm text-gray-500">{{almacen?.tipoAlmacen || 'SUCURSAL'}}</div>
                 <div class="text-xs text-gray-400" *ngIf="almacen.id">ID: {{almacen.id}}</div>
               </div>
             </div>
@@ -666,7 +666,7 @@
               <div>
                 <div class="font-medium text-gray-800">{{almacen.ubicacion}}</div>
                 <div class="text-sm text-gray-500" *ngIf="almacen.ubicacionGeografica">
-                  {{almacen.ubicacionGeografica.ciudad}}, {{almacen.ubicacionGeografica.pais}}
+                  {{almacen.ubicacionGeografica?.ciudad}}, {{almacen.ubicacionGeografica?.pais}}
                 </div>
               </div>
             </div>
@@ -683,15 +683,15 @@
                   <div 
                     class="h-2 rounded-full transition-all duration-500"
                     [ngClass]="{
-                      'bg-green-500': (almacen.porcentajeOcupacion || 0) < 75,
-                      'bg-yellow-500': (almacen.porcentajeOcupacion || 0) >= 75 && (almacen.porcentajeOcupacion || 0) < 90,
-                      'bg-red-500': (almacen.porcentajeOcupacion || 0) >= 90
+                      'bg-green-500': (almacen?.porcentajeOcupacion || 0) < 75,
+                      'bg-yellow-500': (almacen?.porcentajeOcupacion || 0) >= 75 && (almacen?.porcentajeOcupacion || 0) < 90,
+                      'bg-red-500': (almacen?.porcentajeOcupacion || 0) >= 90
                     }"
-                    [style.width.%]="almacen.porcentajeOcupacion || 0"
+                    [style.width.%]="almacen?.porcentajeOcupacion || 0"
                   ></div>
                 </div>
               </div>
-              <div class="text-xs text-gray-500">{{almacen.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
+              <div class="text-xs text-gray-500">{{almacen?.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
             </div>
             <div *ngIf="!almacen.capacidadMaxima" class="text-gray-400 text-sm">Sin datos</div>
           </td>
@@ -1286,36 +1286,28 @@
   </div>
 </div>
 
-<!-- Modal para crear/editar almacén modernizado -->
+<!-- Modal para crear/editar almacén simplificado -->
 <p-dialog 
   [(visible)]="almacenDialog" 
-  [style]="{'width': '900px', 'height': 'auto'}" 
+  [style]="{'width': '800px', 'height': 'auto'}" 
   [header]="editMode ? 'Editar Almacén' : 'Nuevo Almacén'" 
   [modal]="true" 
   (onHide)="hideDialog()"
-  [contentStyle]="{'padding':'0'}"
+  [contentStyle]="{'padding':'20px'}"
   styleClass="warehouse-dialog"
 >
-  <ng-template pTemplate="content">
-    <div class="p-6">
-      <!-- Tabs para organizar información -->
-      <p-tabView [(activeIndex)]="activeTab">
-        <!-- Tab: Información Básica -->
-        <p-tabPanel header="Información Básica" leftIcon="pi pi-info-circle">
-          <!-- Indicador de modo -->
-          <div class="mb-4" *ngIf="editMode">
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-              <i class="pi pi-info-circle text-blue-600"></i>
-              <span class="text-blue-800 text-sm">Editando almacén existente</span>
-            </div>
+  <div class="p-4">
+    <!-- Debug info -->
+    <div class="mb-4 p-3 bg-gray-100 rounded text-sm" *ngIf="!editMode">
+      <strong>Debug:</strong> Almacén inicializado - Nombre: "{{almacen.nombre}}", Ubicación: "{{almacen.ubicacion}}"
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Panel izquierdo: Información básica -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Columna izquierda -->
             <div>
-              <!-- Campo Nombre -->
-              <div class="mb-5">
-                <label for="nombre" class="block font-bold mb-3">
+        <!-- Nombre -->
+        <div class="mb-4">
+          <label for="nombre" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-building mr-2 text-blue-600"></i>
                   Nombre del Almacén*
                 </label>
@@ -1324,22 +1316,18 @@
                   pInputText 
                   id="nombre" 
                   [(ngModel)]="almacen.nombre" 
-                  class="w-full h-12"
-                  placeholder="Ej: Almacén Principal, Bodega Norte..."
-                  
-                  [ngClass]="{'ng-invalid': submitted && !almacen.nombre.trim()}" 
+            class="w-full h-12 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Ej: Almacén Principal"
+            [ngClass]="{'border-red-500': submitted && !almacen.nombre.trim()}" 
                 />
                 <small class="text-red-500 block mt-1" *ngIf="submitted && !almacen.nombre?.trim()">
-                  El nombre del almacén es obligatorio.
-                </small>
-                <small class="text-gray-500 block mt-1" *ngIf="!submitted || almacen.nombre?.trim()">
-                  Mínimo 2 caracteres
+            El nombre es obligatorio
                 </small>
               </div>
               
-              <!-- Campo Ubicación -->
-              <div class="mb-5">
-                <label for="ubicacion" class="block font-bold mb-3">
+        <!-- Ubicación -->
+        <div class="mb-4">
+          <label for="ubicacion" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-map-marker mr-2 text-green-600"></i>
                   Ubicación*
                 </label>
@@ -1348,21 +1336,18 @@
                   pInputText 
                   id="ubicacion" 
                   [(ngModel)]="almacen.ubicacion" 
-                  class="w-full h-12"
-                  placeholder="Ej: Sector A, Piso 2, Calle 123..."
-                  [ngClass]="{'ng-invalid': submitted && !almacen.ubicacion?.trim()}" 
+            class="w-full h-12 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Ej: Sector A, Piso 2"
+            [ngClass]="{'border-red-500': submitted && !almacen.ubicacion?.trim()}" 
                 />
                 <small class="text-red-500 block mt-1" *ngIf="submitted && !almacen.ubicacion?.trim()">
-                  La ubicación es obligatoria.
-                </small>
-                <small class="text-gray-500 block mt-1" *ngIf="!submitted || almacen.ubicacion?.trim()">
-                  Mínimo 3 caracteres
+            La ubicación es obligatoria
                 </small>
               </div>
               
               <!-- Tipo de almacén -->
-              <div class="mb-5">
-                <label for="tipoAlmacen" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="tipoAlmacen" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-tag mr-2 text-purple-600"></i>
                   Tipo de Almacén
                 </label>
@@ -1375,23 +1360,17 @@
                   placeholder="Seleccionar tipo"
                   class="w-full"
                   styleClass="h-12"
-                >
-                  <ng-template let-option pTemplate="item">
-                    <div class="flex items-center gap-2">
-                      <i [class]="option.icon" class="text-purple-600"></i>
-                      <span>{{option.label}}</span>
-                    </div>
-                  </ng-template>
-                </p-select>
+          />
               </div>
               
               <!-- Estado -->
-              <div class="mb-5">
-                <label for="estadoAlmacen" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="estadoAlmacen" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-bookmark mr-2 text-indigo-600"></i>
                   Estado
                 </label>
-                <p-select id="estadoAlmacen" 
+          <p-select 
+            id="estadoAlmacen" 
                   [options]="estadosAlmacen" 
                   [(ngModel)]="almacen.estado" 
                   optionLabel="label"
@@ -1399,22 +1378,15 @@
                   placeholder="Seleccionar estado"
                   class="w-full"
                   styleClass="h-12"
-                >
-                  <ng-template let-option pTemplate="item">
-                    <div class="flex items-center gap-2">
-                      <i [class]="option.icon" [ngStyle]="{'color': option.color === 'success' ? '#10b981' : option.color === 'danger' ? '#ef4444' : '#f59e0b'}"></i>
-                      <span>{{option.label}}</span>
-                    </div>
-                  </ng-template>
-                </p-select>
+          />
               </div>
             </div>
             
-            <!-- Panel derecho: Capacidad y responsable -->
+      <!-- Columna derecha -->
             <div>
               <!-- Capacidad máxima -->
-              <div class="mb-5">
-                <label for="capacidadMaxima" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="capacidadMaxima" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-database mr-2 text-blue-600"></i>
                   Capacidad Máxima
                 </label>
@@ -1426,16 +1398,13 @@
                   [max]="999999"
                   suffix=" unidades"
                   class="w-full"
-                  aria-label="Capacidad máxima">
-                </p-inputNumber>
-                <small class="text-gray-500 block mt-1">
-                  Capacidad total de almacenamiento
-                </small>
+            placeholder="1000"
+          />
               </div>
               
               <!-- Responsable -->
-              <div class="mb-5">
-                <label for="responsable" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="responsable" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-user mr-2 text-orange-600"></i>
                   Responsable
                 </label>
@@ -1444,448 +1413,85 @@
                   pInputText 
                   id="responsable" 
                   [(ngModel)]="almacen.responsable" 
-                  class="w-full h-12"
+            class="w-full h-12 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Nombre del responsable"
                 />
               </div>
               
               <!-- Teléfono -->
-              <div class="mb-5">
-                <label for="telefono" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="telefono" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-phone mr-2 text-green-600"></i>
-                  Teléfono de Contacto
+            Teléfono
                 </label>
                 <input 
                   type="tel" 
                   pInputText 
                   id="telefono" 
                   [(ngModel)]="almacen.telefono" 
-                  class="w-full h-12"
+            class="w-full h-12 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="+51 999 999 999"
                 />
               </div>
               
               <!-- Email -->
-              <div class="mb-5">
-                <label for="email" class="block font-bold mb-3">
+        <div class="mb-4">
+          <label for="email" class="block font-bold mb-2 text-gray-700">
                   <i class="pi pi-envelope mr-2 text-blue-600"></i>
-                  Email de Contacto
+            Email
                 </label>
                 <input 
                   type="email" 
                   pInputText 
                   id="email" 
                   [(ngModel)]="almacen.email" 
-                  class="w-full h-12"
+            class="w-full h-12 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="almacen@empresa.com"
                 />
               </div>
             </div>
           </div>
           
-          <!-- Campo Descripción (ancho completo) -->
-          <div class="mb-5">
-            <label for="descripcion" class="block font-bold mb-3">
+    <!-- Descripción (ancho completo) -->
+    <div class="mb-4">
+      <label for="descripcion" class="block font-bold mb-2 text-gray-700">
               <i class="pi pi-file-edit mr-2 text-gray-600"></i>
               Descripción (Opcional)
             </label>
             <textarea 
               id="descripcion" 
               pInputTextarea 
-              class="w-full" 
+        class="w-full h-24 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
               [(ngModel)]="almacen.descripcion" 
-              rows="4" 
-              placeholder="Describe las características, capacidad o uso del almacén..."
+        placeholder="Describe las características del almacén..."
               [maxlength]="500"
             ></textarea>
-            <div class="flex justify-between mt-1">
-              <small class="text-gray-500">Información adicional sobre el almacén</small>
-              <small class="text-gray-400" *ngIf="almacen.descripcion">
-                {{almacen.descripcion.length || 0}}/500
+      <small class="text-gray-500 block mt-1">
+        {{(almacen.descripcion?.length || 0)}}/500 caracteres
               </small>
             </div>
           </div>
-        </p-tabPanel>
-        
-        <!-- Tab: Ubicación Geográfica -->
-        <p-tabPanel header="Ubicación Geográfica" leftIcon="pi pi-map">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Dirección física -->
-            <div>
-              <div class="mb-5">
-                <label for="direccionCompleta" class="block font-bold mb-3">
-                  <i class="pi pi-home mr-2 text-green-600"></i>
-                  Dirección Completa
-                </label>
-                <input id="direccionCompleta" 
-                  type="text" 
-                  pInputText 
-                  [ngModel]="getDireccion()" 
-                  (ngModelChange)="setDireccion($event)"
-                  class="w-full h-12"
-                  placeholder="Av. Industrial 123, Distrito, Provincia"
-                />
-              </div>
-              
-              <div class="mb-5">
-                <label for="ciudad" class="block font-bold mb-3">
-                  <i class="pi pi-building mr-2 text-blue-600"></i>
-                  Ciudad
-                </label>
-                <input id="ciudad" 
-                  type="text" 
-                  pInputText 
-                  [ngModel]="getCiudad()" 
-                  (ngModelChange)="setCiudad($event)"
-                  class="w-full h-12"
-                  placeholder="Lima"
-                />
-              </div>
-              
-              <div class="mb-5">
-                <label for="pais" class="block font-bold mb-3">
-                  <i class="pi pi-flag mr-2 text-red-600"></i>
-                  País
-                </label>
-                <input id="pais" 
-                  type="text" 
-                  pInputText 
-                  [ngModel]="almacen.ubicacionGeografica?.pais || ''" 
-                  (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.pais = $event"
-                  class="w-full h-12"
-                  placeholder="Perú"
-                />
-              </div>
-              
-              <div class="mb-5">
-                <label for="codigoPostal" class="block font-bold mb-3">
-                  <i class="pi pi-envelope mr-2 text-purple-600"></i>
-                  Código Postal
-                </label>
-                <input id="codigoPostal" 
-                  type="text" 
-                  pInputText 
-                  [ngModel]="almacen.ubicacionGeografica?.codigoPostal || ''" 
-                  (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.codigoPostal = $event"
-                  class="w-full h-12"
-                  placeholder="15001"
-                />
-              </div>
-            </div>
-            
-            <!-- Coordenadas -->
-            <div>
-              <div class="mb-5">
-                <label for="latitud" class="block font-bold mb-3">
-                  <i class="pi pi-compass mr-2 text-indigo-600"></i>
-                  Latitud
-                </label>
-                <p-inputNumber id="latitud"
-                  [ngModel]="almacen.ubicacionGeografica?.latitud || 0"
-                  (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.latitud = $event"
-                  [minFractionDigits]="6"
-                  [maxFractionDigits]="6"
-                  [min]="-90"
-                  [max]="90"
-                  class="w-full h-12"
-                  placeholder="-12.0464"
-                />
-              </div>
-              
-              <div class="mb-5">
-                <label for="longitud" class="block font-bold mb-3">
-                  <i class="pi pi-compass mr-2 text-indigo-600"></i>
-                  Longitud
-                </label>
-                <p-inputNumber id="longitud"
-                  [ngModel]="almacen.ubicacionGeografica?.longitud || 0"
-                  (ngModelChange)="initUbicacionGeografica(); almacen.ubicacionGeografica!.longitud = $event"
-                  [minFractionDigits]="6"
-                  [maxFractionDigits]="6"
-                  [min]="-180"
-                  [max]="180"
-                  class="w-full h-12"
-                  placeholder="-77.0428"
-                />
-              </div>
-              
-              <!-- Vista previa del mapa (simulado) -->
-              <div class="bg-gradient-to-br from-green-100 to-blue-100 rounded-xl p-6 text-center">
-                <div class="bg-green-600 p-4 rounded-full inline-block mb-3">
-                  <i class="pi pi-map text-white text-2xl"></i>
-                </div>
-                <h5 class="font-bold text-gray-800 mb-2">Vista Previa del Mapa</h5>
-                <p class="text-sm text-gray-600">Las coordenadas aparecerán en el mapa interactivo</p>
-              </div>
-            </div>
-          </div>
-        </p-tabPanel>
-        
-        <!-- Tab: Configuración Avanzada -->
-        <p-tabPanel header="Configuración" leftIcon="pi pi-cog">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Horarios y operación -->
-            <div>
-              <div class="mb-5">
-                <label for="horarioOperacion" class="block font-bold mb-3">
-                  <i class="pi pi-clock mr-2 text-blue-600"></i>
-                  Horario de Operación
-                </label>
-                <input id="horarioOperacion" 
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="almacen.horarioOperacion" 
-                  class="w-full h-12"
-                  placeholder="Lunes a Viernes 8:00 - 18:00"
-                />
-              </div>
-              
-              <!-- Controles ambientales -->
-              <div class="mb-5">
-                <div class="mb-5">
-                  <h4 class="block font-bold mb-3 text-gray-800">
-                    <i class="pi pi-sun mr-2 text-orange-600"></i>
-                    Control de Temperatura
-                  </h4>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div>
-                      <label for="temperaturaMin" class="text-sm text-gray-600 mb-1 block">Mín °C</label>
-                      <p-inputNumber id="temperaturaMin"
-                        [ngModel]="getTemperaturaMin()"
-                        (ngModelChange)="setTemperaturaMin($event)"
-                        [min]="-50"
-                        [max]="50"
-                        class="w-full"
-                        aria-label="Temperatura mínima">
-                      </p-inputNumber>
-                    </div>
-                    <div>
-                      <label for="temperaturaMax" class="text-sm text-gray-600 mb-1 block">Máx °C</label>
-                      <p-inputNumber
-                        id="temperaturaMax"
-                        [ngModel]="getTemperaturaMax()"
-                        (ngModelChange)="setTemperaturaMax($event)"
-                        [min]="-50"
-                        [max]="100"
-                        suffix="°C"
-                        class="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label for="temperaturaActual" class="text-sm text-gray-600 mb-1 block">Actual °C</label>
-                      <p-inputNumber
-                        id="temperaturaActual"
-                        [ngModel]="getTemperaturaActual()"
-                        (ngModelChange)="setTemperaturaActual($event)"
-                        [min]="-50"
-                        [max]="100"
-                        suffix="°C"
-                        class="w-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="mb-5">
-                  <h4 class="block font-bold mb-3 text-gray-800">
-                    <i class="pi pi-cloud mr-2 text-cyan-600"></i>
-                    Control de Humedad
-                  </h4>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div>
-                      <label for="humedadMin" class="text-sm text-gray-600 mb-1 block">Mín %</label>
-                      <p-inputNumber
-                        id="humedadMin"
-                        [ngModel]="almacen.humedad?.min ?? 40"
-                        (ngModelChange)="initHumedad(); almacen.humedad!.min = $event"
-                        [min]="0"
-                        [max]="100"
-                        suffix="%"
-                        class="w-full"
-                        aria-label="Humedad mínima"
-                      />
-                    </div>
-                    <div>
-                      <label for="humedadMax" class="text-sm text-gray-600 mb-1 block">Máx %</label>
-                      <p-inputNumber
-                        id="humedadMax"
-                        [ngModel]="almacen.humedad?.max ?? 60"
-                        (ngModelChange)="initHumedad(); almacen.humedad!.max = $event"
-                        [min]="0"
-                        [max]="100"
-                        suffix="%"
-                        class="w-full"
-                        aria-label="Humedad máxima"
-                      />
-                    </div>
-                    <div>
-                      <label for="humedadActual" class="text-sm text-gray-600 mb-1 block">Actual %</label>
-                      <p-inputNumber 
-                        id="humedadActual"
-                        [ngModel]="getHumedadActual()" 
-                        (ngModelChange)="setHumedadActual($event)"
-                        [min]="getHumedadMin()" 
-                        [max]="getHumedadMax()" 
-                        suffix="%"
-                        class="w-full"
-                        aria-label="Humedad actual"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Sistemas de seguridad -->
-              <div>
-                <div class="bg-gray-50 rounded-xl p-4">
-                  <h5 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-shield text-red-600"></i>
-                    Sistemas de Seguridad
-                  </h5>
-                  
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                      <span class="text-gray-700">Sistema contra incendios</span>
-                      <p-checkbox
-                        [(ngModel)]="almacen.seguridad!.sistemasIncendio"
-                        [binary]="true"
-                        aria-label="Sistema contra incendios">
-                      </p-checkbox>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                      <span class="text-gray-700">Sistema de alarmas</span>
-                      <p-checkbox
-                        [(ngModel)]="almacen.seguridad!.alarmas"
-                        [binary]="true"
-                        aria-label="Sistema de alarmas">
-                      </p-checkbox>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="camaras" class="block text-gray-700 mb-2">Número de cámaras</label>
-                      <p-inputNumber
-                        inputId="camaras"
-                        [(ngModel)]="almacen.seguridad!.camaras"
-                        [showButtons]="true"
-                        [min]="0"
-                        [max]="100"
-                        class="w-full"
-                        aria-label="Número de cámaras">
-                      </p-inputNumber>
-                    </div>
-                    
-                    <div>
-                      <label for="accesosControlados" class="block text-gray-700 mb-2">Accesos controlados</label>
-                      <p-inputNumber
-                        id="accesosControlados"
-                        [(ngModel)]="almacen.seguridad!.accesosControlados"
-                        [showButtons]="true"
-                        [min]="0"
-                        [max]="50"
-                        class="w-full"
-                        aria-label="Número de accesos controlados">
-                      </p-inputNumber>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </p-tabPanel>
-        
-        <!-- Tab: Información del Sistema (solo en modo edición) -->
-        <p-tabPanel header="Información del Sistema" leftIcon="pi pi-info" *ngIf="editMode">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Fechas del sistema -->
-            <div class="bg-gray-50 rounded-xl p-6">
-              <h5 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="pi pi-calendar text-blue-600"></i>
-                Información del Registro
-              </h5>
-              <div class="space-y-3">
-                <div *ngIf="almacen.fechaCreacion">
-                  <span class="text-sm font-medium text-gray-600">Fecha de Creación</span>
-                  <div class="text-gray-800">{{almacen.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss'}}</div>
-                </div>
-                <div *ngIf="almacen.fechaActualizacion">
-                  <span class="text-sm font-medium text-gray-600">Última Actualización</span>
-                  <div class="text-gray-800">{{almacen.fechaActualizacion | date:'dd/MM/yyyy HH:mm:ss'}}</div>
-                </div>
-                <div *ngIf="almacen.fechaUltimaInspeccion">
-                  <span class="text-sm font-medium text-gray-600">Última Inspección</span>
-                  <div class="text-gray-800">{{almacen.fechaUltimaInspeccion | date:'dd/MM/yyyy'}}</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- KPIs actuales -->
-            <div class="bg-gray-50 rounded-xl p-6" *ngIf="almacen.kpis">
-              <h5 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="pi pi-chart-line text-green-600"></i>
-                Indicadores Actuales
-              </h5>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="text-center bg-white rounded-lg p-3">
-                  <div class="text-xl font-bold text-blue-600">{{almacen.kpis.eficienciaEspacio | number:'1.0-0'}}%</div>
-                  <div class="text-xs text-gray-600">Eficiencia</div>
-                </div>
-                <div class="text-center bg-white rounded-lg p-3">
-                  <div class="text-xl font-bold text-green-600">{{almacen.kpis.preciscionInventario | number:'1.0-0'}}%</div>
-                  <div class="text-xs text-gray-600">Precisión</div>
-                </div>
-                <div class="text-center bg-white rounded-lg p-3">
-                  <div class="text-xl font-bold text-orange-600">{{almacen.kpis.rotacionInventario | number:'1.0-0'}}%</div>
-                  <div class="text-xs text-gray-600">Rotación</div>
-                </div>
-                <div class="text-center bg-white rounded-lg p-3">
-                  <div class="text-xl font-bold text-purple-600">{{almacen.kpis.tiempoPromedioPicking | number:'1.0-0'}} min</div>
-                  <div class="text-xs text-gray-600">Picking</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </p-tabPanel>
-      </p-tabView>
-    </div>
-  </ng-template>
-  
+
+  <!-- Footer con botones -->
   <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center px-6 pb-4">
-      <!-- Info del lado izquierdo -->
-      <div class="text-sm text-gray-600">
-        <i class="pi pi-info-circle mr-1"></i>
-        <span *ngIf="!editMode">Complete la información básica para crear el almacén</span>
-        <span *ngIf="editMode">Última actualización: {{almacen.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</span>
-      </div>
-      
-      <!-- Botones del lado derecho -->
-      <div class="flex gap-3">
+    <div class="flex justify-end gap-3">
         <p-button 
           label="Cancelar" 
           icon="pi pi-times" 
-          class="p-button-text" 
+        severity="secondary" 
           (click)="hideDialog()"
-          (keyup.enter)="hideDialog()"
-          (keyup.space)="hideDialog()"
-          tabindex="0"
-          role="button"
-          aria-label="Cancelar"
           [disabled]="loading"
+        class="shadow-md"
         />
         <p-button 
-          [label]="editMode ? 'Actualizar Almacén' : 'Crear Almacén'" 
+        label="Guardar" 
           icon="pi pi-check" 
+        severity="success" 
           (click)="saveAlmacen()"
-          (keyup.enter)="saveAlmacen()"
-          (keyup.space)="saveAlmacen()"
-          tabindex="0"
-          role="button"
-          aria-label="Guardar cambios"
           [loading]="loading"
+        [disabled]="loading"
           class="shadow-lg"
         />
-      </div>
     </div>
   </ng-template>
 </p-dialog>
@@ -2160,7 +1766,7 @@
                   <!-- Métricas del almacén -->
                   <div class="grid grid-cols-4 gap-4">
                     <div class="text-center bg-white rounded-lg p-3">
-                      <div class="text-lg font-bold text-blue-600">{{almacen.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
+                      <div class="text-lg font-bold text-blue-600">{{almacen?.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
                       <div class="text-xs text-gray-600">Ocupación</div>
                     </div>
                     <div class="text-center bg-white rounded-lg p-3">
@@ -2186,8 +1792,8 @@
                     <div class="w-full bg-gray-200 rounded-full h-3">
                       <div 
                         class="h-3 rounded-full transition-all duration-500"
-                        [ngClass]="getCapacityClass(almacen.porcentajeOcupacion || 0)"
-                        [style.width.%]="almacen.porcentajeOcupacion || 0"
+                        [ngClass]="getCapacityClass(almacen?.porcentajeOcupacion || 0)"
+                        [style.width.%]="almacen?.porcentajeOcupacion || 0"
                       ></div>
                     </div>
                   </div>
@@ -2312,26 +1918,26 @@
                       <span class="font-bold text-gray-800">{{almacen.nombre}}</span>
                     </div>
                     <div class="text-right">
-                      <div class="font-bold text-green-600">${{(Math.random() * 50000 + 20000) | number:'1.0-0'}}</div>
+                      <div class="font-bold text-green-600">${{getValorInventarioAlmacen(almacen) | number:'1.0-0'}}</div>
                       <div class="text-sm text-gray-500">Valor inventario</div>
                     </div>
                   </div>
                   
                   <div class="grid grid-cols-4 gap-3">
                     <div class="text-center bg-white rounded-lg p-2">
-                      <div class="font-bold text-blue-600">${{(Math.random() * 5000 + 2000) | number:'1.0-0'}}</div>
+                      <div class="font-bold text-blue-600">${{getValorOperacion(almacen) | number:'1.0-0'}}</div>
                       <div class="text-xs text-gray-600">Operación</div>
                     </div>
                     <div class="text-center bg-white rounded-lg p-2">
-                      <div class="font-bold text-orange-600">${{(Math.random() * 3000 + 1000) | number:'1.0-0'}}</div>
+                      <div class="font-bold text-orange-600">${{getValorMantenimiento(almacen) | number:'1.0-0'}}</div>
                       <div class="text-xs text-gray-600">Mantenimiento</div>
                     </div>
                     <div class="text-center bg-white rounded-lg p-2">
-                      <div class="font-bold text-purple-600">${{(Math.random() * 2000 + 500) | number:'1.0-0'}}</div>
+                      <div class="font-bold text-purple-600">${{getValorPersonal(almacen) | number:'1.0-0'}}</div>
                       <div class="text-xs text-gray-600">Personal</div>
                     </div>
                     <div class="text-center bg-white rounded-lg p-2">
-                      <div class="font-bold text-green-600">{{(Math.random() * 20 + 10) | number:'1.0-0'}}%</div>
+                      <div class="font-bold text-green-600">{{getROI(almacen) | number:'1.0-0'}}%</div>
                       <div class="text-xs text-gray-600">ROI</div>
                     </div>
                   </div>
@@ -2528,8 +2134,8 @@
             </h4>
             <div class="text-center mb-6">
               <div class="relative inline-block">
-                <div class="capacity-ring w-32 h-32 rounded-full border-8 border-gray-200 flex items-center justify-center mx-auto mb-4"
-                     [style.--percentage]="(almacen.porcentajeOcupacion || 0) * 3.6 + 'deg'">
+                <div class="capacity-ring w-32 h-32 rounded-full border-8 border-gray-200 flex items-center justify-center mx-auto mb-4">
+                     [style.--percentage]="(almacen.porcentajeOcupacion || 0) * 3.6 + 'deg'"
                   <div class="text-center">
                     <div class="text-2xl font-bold text-gray-800">{{almacen.porcentajeOcupacion || 0 | number:'1.0-0'}}%</div>
                     <div class="text-sm text-gray-600">Ocupado</div>
@@ -2575,7 +2181,7 @@
                   <div class="text-gray-800">{{almacen.ubicacionGeografica.codigoPostal || 'No especificado'}}</div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-3" *ngIf="almacen.ubicacionGeografica.latitud && almacen.ubicacionGeografica.longitud">
+              <div class="grid grid-cols-2 gap-3" *ngIf="almacen.ubicacionGeografica?.latitud && almacen.ubicacionGeografica?.longitud">
                 <div>
                   <span class="text-sm font-medium text-gray-600">Latitud</span>
                   <div class="text-gray-800 font-mono text-sm">{{almacen.ubicacionGeografica.latitud | number:'1.6-6'}}</div>
