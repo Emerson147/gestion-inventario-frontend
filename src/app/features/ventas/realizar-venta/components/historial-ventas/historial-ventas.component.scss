@@ -1,198 +1,35 @@
-// Agregar estas animaciones sutiles
-.card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+:root {
+  --brand-primary: #3b82f6;
+  --brand-secondary: #1e40af;
+  --surface-ground: #ffffff;
+  --surface-section: #f8fafc;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-premium: 0 4px 20px -4px rgba(0, 0, 0, 0.1);
+  --gradient-premium: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.card-hover:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+.premium-card {
+  @apply bg-white rounded-xl border border-gray-200 hover:shadow-xl transition-all duration-300 hover:border-gray-300;
 }
 
-.stat-number {
-  animation: countUp 0.8s ease-out;
+.premium-button {
+  @apply transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md;
 }
 
-@keyframes countUp {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+.premium-metric {
+  @apply bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-gray-300;
 }
 
-.badge-pulse {
-  animation: pulse 2s infinite;
+.premium-badge {
+  @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.premium-input {
+  @apply transition-all duration-200 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100;
 }
 
-/* Estilos personalizados para el historial de ventas */
-
-.custom-accordion {
-  .p-accordion-header-link {
-    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300;
-  }
-  
-  .p-accordion-content {
-    @apply border-blue-200;
-  }
-}
-
-.custom-calendar {
-  .p-calendar {
-    @apply shadow-md hover:shadow-lg transition-shadow duration-300;
-  }
-}
-
-.custom-multiselect,
-.custom-dropdown {
-  .p-multiselect,
-  .p-dropdown {
-    @apply shadow-md hover:shadow-lg transition-all duration-300 border-gray-300 hover:border-blue-400;
-  }
-}
-
-.custom-slider {
-  .p-slider-handle {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg transform hover:scale-110 transition-all duration-300;
-  }
-  
-  .p-slider-range {
-    @apply bg-gradient-to-r from-blue-400 to-purple-500;
-  }
-}
-
-.custom-menubar {
-  .p-menubar-root-list {
-    @apply bg-transparent;
-  }
-}
-
-.custom-select-button {
-  .p-button {
-    @apply shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5;
-  }
-}
-
-.custom-dataview {
-  .p-paginator {
-    @apply bg-white bg-opacity-80 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg;
-  }
-}
-
-.custom-dialog {
-  .p-dialog-header {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white;
-  }
-  
-  .p-dialog-content {
-    @apply bg-gray-50;
-  }
-}
-
-.custom-tabview {
-  .p-tabview-nav {
-    @apply bg-white rounded-t-xl shadow-sm;
-  }
-  
-  .p-tabview-panel {
-    @apply bg-white rounded-b-xl shadow-sm;
-  }
-}
-
-.custom-fieldset {
-  .p-fieldset-legend {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg shadow-md;
-  }
-  
-  .p-fieldset-content {
-    @apply bg-gray-50 rounded-b-lg;
-  }
-}
-
-.custom-table {
-  .p-datatable-thead > tr > th {
-    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200;
-  }
-  
-  .p-datatable-tbody > tr:hover {
-    @apply bg-blue-50 transform scale-[1.01] transition-all duration-200;
-  }
-}
-
-.custom-payment-card {
-  @apply shadow-xl border border-gray-200 rounded-2xl overflow-hidden;
-}
-
-.custom-confirm-dialog {
-  .p-dialog-header {
-    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white;
-  }
-}
-
-.custom-context-menu {
-  @apply shadow-2xl border border-gray-200 rounded-xl backdrop-blur-sm bg-white bg-opacity-95;
-  
-  .p-menuitem-link {
-    @apply hover:bg-blue-50 rounded-lg transition-colors duration-200;
-  }
-}
-
-.custom-toast {
-  .p-toast-message {
-    @apply shadow-2xl border border-gray-200 rounded-xl backdrop-blur-sm;
-  }
-}
-
-/* Animaciones adicionales */
-@keyframes slideInFromRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-in {
-  animation: slideInFromRight 0.5s ease-out;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out;
-}
-
-/* Efectos hover mejorados */
-.group:hover .group-hover\:scale-105 {
-  transform: scale(1.05);
-}
-
-.group:hover .group-hover\:shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .custom-accordion .p-accordion-header-link {
-    @apply text-sm px-3 py-2;
-  }
-  
-  .custom-dialog {
-    .p-dialog-content {
-      @apply p-2;
-    }
-  }
+.skeleton-loader {
+  @apply animate-pulse bg-gray-200 rounded;
 }

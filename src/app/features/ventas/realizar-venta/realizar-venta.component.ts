@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, inject, ChangeDetectorRef, ChangeDetectionStrategy, TrackByFunction } from '@angular/core';
 import { VentaRequest, VentaResponse } from '../../../core/models/venta.model';
 import { Cliente } from '../../../core/models/cliente.model';
 import { Producto } from '../../../core/models/product.model';
@@ -45,6 +45,12 @@ import { AvatarModule } from 'primeng/avatar';
 import { KnobModule } from 'primeng/knob';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageModule } from 'primeng/message';
+import { InputMaskModule } from 'primeng/inputmask';
+
+
+// Componentes modulares
+import { HeaderVentasComponent } from './components/header-ventas/header-ventas.component';
+import { SkeletonLoaderComponent } from './components/skeleton-loader/skeleton-loader.component';
 
 import { MetricaVenta } from './components/metrics/metric-card.interface';
 import { UserInfo } from './components/user-info/user-info-card.component';
@@ -56,6 +62,8 @@ import { environment } from '../../../../environments/environment';
 import { Color, Talla } from '../../../core/models/colors.model';
 import { ChartData, ChartOptions } from 'chart.js';
 import { PosVentasComponent } from './components/pos-ventas/pos-ventas.component';
+import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 
 interface OpcionSelect {
@@ -144,28 +152,42 @@ interface Tendencia {
     KnobModule,
     ProgressBarModule,
     MessageModule,
-    FloatLabelModule,
+    InputMaskModule,
+    InputTextModule,
+    // Componentes modulares
+    HeaderVentasComponent,
+    SkeletonLoaderComponent,
     PosVentasComponent,
     HistorialVentasComponent,
     ReportesComponent,
-    ConfiguracionComponent,
-    FloatLabelModule
+    ToastNotificationComponent,
+    ConfiguracionComponent
 ],
   templateUrl: './realizar-venta.component.html',
   styleUrls: ['./realizar-venta.component.scss'],
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RealizarVentaComponent implements OnInit, OnDestroy {
+
   @ViewChild('codigoInput') codigoInput!: ElementRef;
   @ViewChild('menuAcciones') menuAcciones!: ElementRef;
 
-    // Nueva propiedad para las métricas
-    metricas: MetricaVenta[] = [];
-    showDashboard = false;
+  // Inyección de servicios modernos
+  public toastService = inject(ToastService);
 
-    // Mini gráficos de ejemplo (ya los tienes)
-    miniGraficoVentas = [65, 78, 82, 90, 75, 88, 92];
-    // Métodos para TabView optimizado
+   private cdr = inject(ChangeDetectorRef);
+
+  // Estados de carga
+  isLoading: boolean = false;
+  loadingReportes: boolean = false;
+
+  // Nueva propiedad para las métricas
+  metricas: MetricaVenta[] = [];
+  showDashboard = false;
+
+
+  // Métodos para TabView optimizado
     abrirSelectorCliente(): void {
       this.mostrarInfo('Selector de cliente', 'Abriendo selector de clientes...');
       // Aquí podrías abrir un modal o enfocar el input de búsqueda
@@ -334,10 +356,10 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   pasoActual = 0;
 
   tabsInfo = [
-    { icon: 'pi pi-shopping-cart', label: 'POS' },
-    { icon: 'pi pi-history', label: 'Historial' },
-    { icon: 'pi pi-chart-bar', label: 'Reportes' },
-    { icon: 'pi pi-cog', label: 'Config' }
+    { icon: 'pi pi-shopping-cart', label: 'Punto de Venta', shortLabel: 'POS' },
+    { icon: 'pi pi-history', label: 'Historial de Ventas', shortLabel: 'Historial' },
+    { icon: 'pi pi-chart-bar', label: 'Reportes y Analytics', shortLabel: 'Reportes' },
+    { icon: 'pi pi-cog', label: 'Configuración', shortLabel: 'Config' }
   ];
 
   
@@ -346,7 +368,6 @@ export class RealizarVentaComponent implements OnInit, OnDestroy {
   ventasPendientesCount = 0;
   ventasHoyCount = 0;
   montoTotalHoy = 0;
-  loadingReportes = false;
   configPendientes = 2;
   isFullscreen = false;
 
@@ -575,16 +596,25 @@ toggleTipoDescuento(): void {
 calcularDescuento(): void {
   if (!this.aplicarDescuento || this.carrito.length === 0) {
     this.descuentoVenta = 0;
-    return;
-  }
-  
-  if (this.tipoDescuento === 'porcentaje') {
-    this.descuentoVenta = (this.subtotalVenta * this.porcentajeDescuento) / 100;
   } else {
-    this.descuentoVenta = this.porcentajeDescuento;
+    if (this.tipoDescuento === 'porcentaje') {
+      this.descuentoVenta = (this.subtotalVenta * this.porcentajeDescuento) / 100;
+    } else {
+      this.descuentoVenta = this.porcentajeDescuento;
+    }
   }
   
-  this.calcularTotales();
+  console.log('💰 CÁLCULO DE DESCUENTO:', {
+    aplicarDescuento: this.aplicarDescuento,
+    tipoDescuento: this.tipoDescuento,
+    porcentajeDescuento: this.porcentajeDescuento,
+    subtotalVenta: this.subtotalVenta,
+    descuentoCalculado: this.descuentoVenta
+  });
+  
+  // Recalcular totales con el nuevo descuento
+  const totalAntesDescuento = this.subtotalVenta + this.igvVenta;
+  this.totalVenta = totalAntesDescuento - this.descuentoVenta;
 }
 
 canProcessPayment(): boolean {
@@ -704,37 +734,6 @@ isPagoValid(): boolean {
   
   return true;
 }
-
-// procesarVenta(): void {
-//   if (!this.isPagoValid()) return;
-  
-//   this.procesandoPago = true;
-//   this.pasoPagoActual = 2;
-  
-//   // Preparar detalles de la venta
-//   this.nuevaVenta.detalles = this.carrito.map(item => ({
-//     inventarioId: item.inventarioId,
-//     cantidad: item.cantidad
-//   }));
-
-//   // Simular llamada al API
-//   setTimeout(() => {
-//     this.ventasService.registrarVenta(this.nuevaVenta)
-//       .pipe(takeUntil(this.destroy$))
-//       .subscribe({
-//         next: (venta) => {
-//           // Procesar pago
-//           this.pagoActual.ventaId = venta.id;
-//           this.procesarPago(venta);
-//         },
-//         error: (error) => {
-//           this.mostrarError('Error al procesar venta', error.message);
-//           this.procesandoPago = false;
-//           this.pasoPagoActual = 1;
-//         }
-//       });
-//   }, 1500);
-// }
 
 cerrarComprobante(): void {
   this.comprobanteDialog = false;
@@ -1521,7 +1520,36 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
   private calcularTotales(): void {
     this.subtotalVenta = this.carrito.reduce((sum, item) => sum + item.subtotal, 0);
     this.igvVenta = this.subtotalVenta * this.igvPorcentaje;
-    this.totalVenta = this.subtotalVenta + this.igvVenta;
+    
+    // Calcular descuento si está habilitado
+    if (this.aplicarDescuento && this.carrito.length > 0) {
+      if (this.tipoDescuento === 'porcentaje') {
+        this.descuentoVenta = (this.subtotalVenta * this.porcentajeDescuento) / 100;
+      } else {
+        this.descuentoVenta = this.porcentajeDescuento;
+      }
+    } else {
+      this.descuentoVenta = 0;
+    }
+    
+    // Aplicar descuento si existe
+    const totalAntesDescuento = this.subtotalVenta + this.igvVenta;
+    this.totalVenta = totalAntesDescuento - this.descuentoVenta;
+    
+    console.log('🧮 CÁLCULO DE TOTALES:', {
+      'Subtotal (sin IGV)': this.subtotalVenta,
+      'IGV (18%)': this.igvVenta,
+      'Total antes descuento': totalAntesDescuento,
+      'Descuento aplicado': this.descuentoVenta,
+      'Total final': this.totalVenta,
+      'Carrito items': this.carrito.length,
+      'Detalle carrito': this.carrito.map(item => ({
+        producto: item.producto.nombre,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        subtotal: item.subtotal
+      }))
+    });
     
     if (this.carrito.length > 0) {
       this.pasoActual = 2;
@@ -1552,6 +1580,37 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
     this.pagoDialog = true;
   }
 
+  // Método para manejar el evento de procesar pago desde el componente POS
+  onProcesarPagoDesdePOS(datosPago: {
+    carrito: any[];
+    cliente: any;
+    totalVenta: number;
+    subtotalVenta: number;
+    igvVenta: number;
+    descuentoVenta: number;
+  }): void {
+    console.log('💳 Recibiendo datos de pago desde POS:', datosPago);
+    
+    // Actualizar los datos del componente padre con los datos del POS
+    this.carrito = datosPago.carrito;
+    this.clienteSeleccionado = datosPago.cliente;
+    this.totalVenta = datosPago.totalVenta;
+    this.subtotalVenta = datosPago.subtotalVenta;
+    this.igvVenta = datosPago.igvVenta;
+    this.descuentoVenta = datosPago.descuentoVenta;
+    
+    // Inicializar el pago
+    this.pagoActual = this.initPago();
+    this.pagoActual.monto = this.totalVenta;
+    this.montoPagado = this.totalVenta;
+    this.calcularVuelto();
+    
+    // Abrir el diálogo de pago
+    this.pagoDialog = true;
+    
+    console.log('✅ Diálogo de pago abierto desde POS');
+  }
+
   calcularVuelto(): void {
     this.vuelto = Math.max(0, this.montoPagado - this.totalVenta);
   }
@@ -1559,35 +1618,249 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
   procesarVenta(): void {
     if (!this.validarVenta()) return;
     
+    console.log('🚀 PROCESAR VENTA - INICIO:');
+    console.log('👤 clienteSeleccionado:', this.clienteSeleccionado);
+    console.log('🆔 clienteSeleccionado?.id:', this.clienteSeleccionado?.id);
+    console.log('📋 nuevaVenta.clienteId ANTES:', this.nuevaVenta.clienteId);
+    
+    // Verificación adicional por si acaso
+    if (this.clienteSeleccionado?.id && this.nuevaVenta.clienteId === 0) {
+      console.log('🔧 CORRIGIENDO clienteId...');
+      this.nuevaVenta.clienteId = this.clienteSeleccionado.id;
+      console.log('✅ clienteId corregido a:', this.nuevaVenta.clienteId);
+    }
+
     this.procesandoPago = true;
     
-    // Preparar detalles de la venta
-    this.nuevaVenta.detalles = this.carrito.map(item => ({
-      inventarioId: item.inventarioId,
-      cantidad: item.cantidad
-    }));
+    console.log('📋 nuevaVenta FINAL a enviar:', this.nuevaVenta);
+
+    // Verificar stock en tiempo real antes de procesar
+    this.verificarStockTiempoReal()
+      .then((stockValido) => {
+        if (!stockValido) {
+          this.procesandoPago = false;
+          return;
+        }
+        
+        // Preparar detalles de la venta con logs detallados
+        console.log('🛒 Preparando detalles del carrito:');
+        console.log('📦 Carrito actual:', this.carrito);
+        
+        this.nuevaVenta.detalles = this.carrito.map((item, index) => {
+          console.log(`📋 Item ${index + 1}:`, {
+            inventarioId: item.inventarioId,
+            cantidad: item.cantidad,
+            producto: item.producto.nombre,
+            stockDisponible: item.stock,
+            precio: item.precioUnitario
+          });
+          
+          return {
+            inventarioId: item.inventarioId,
+            cantidad: item.cantidad
+          };
+        });
+
+        // Logs de depuración para ver qué se está enviando
+        console.log('🔍 Datos de la venta a enviar:');
+        console.log('📋 nuevaVenta:', this.nuevaVenta);
+        console.log('🛒 carrito:', this.carrito);
+        console.log('👤 clienteSeleccionado:', this.clienteSeleccionado);
+        console.log('💰 Cálculos finales antes del envío:', {
+          subtotalVenta: this.subtotalVenta,
+          igvVenta: this.igvVenta,
+          descuentoVenta: this.descuentoVenta,
+          totalVenta: this.totalVenta,
+          montoPago: this.pagoActual.monto
+        });
+        console.log('📊 detalles mapeados:', this.nuevaVenta.detalles);
+        console.log('🕐 Timestamp:', new Date().toISOString());
+
+        // Proceder con el registro de la venta
+        this.registrarVenta();
+      })
+      .catch((error) => {
+        console.error('❌ Error al verificar stock:', error);
+        this.mostrarError('Error de validación', 'No se pudo verificar el stock actual');
+        this.procesandoPago = false;
+      });
+  }
+
+  private async verificarStockTiempoReal(): Promise<boolean> {
+    console.log('🔍 Verificando stock en tiempo real...');
+    
+    try {
+      const verificaciones = this.carrito.map(async (item) => {
+        const inventario = await this.inventarioService.obtenerInventarioPorId(item.inventarioId).toPromise();
+        
+        console.log(`📊 Stock verificado para ${item.producto.nombre}:`, {
+          stockCarrito: item.stock,
+          stockActual: inventario?.cantidad,
+          cantidadSolicitada: item.cantidad
+        });
+        
+        if (!inventario) {
+          console.error(`❌ Inventario no encontrado para ID: ${item.inventarioId}`);
+          this.mostrarError('Producto no disponible', `El producto "${item.producto.nombre}" ya no está disponible`);
+          return false;
+        }
+        
+        if (inventario.cantidad < item.cantidad) {
+          console.error(`❌ Stock insuficiente para ${item.producto.nombre}:`, {
+            solicitado: item.cantidad,
+            disponible: inventario.cantidad
+          });
+          this.mostrarError('Stock insuficiente', 
+            `El producto "${item.producto.nombre}" solo tiene ${inventario.cantidad} unidades disponibles (solicitado: ${item.cantidad})`);
+          
+          // Actualizar el stock en el carrito con el valor actual
+          item.stock = inventario.cantidad;
+          this.changeDetectorRef.detectChanges();
+          
+          return false;
+        }
+        
+        // Actualizar stock en el carrito si cambió
+        if (item.stock !== inventario.cantidad) {
+          console.log(`� Actualizando stock de ${item.producto.nombre}: ${item.stock} → ${inventario.cantidad}`);
+          item.stock = inventario.cantidad;
+          this.changeDetectorRef.detectChanges();
+        }
+        
+        return true;
+      });
+      
+      const resultados = await Promise.all(verificaciones);
+      const todoValido = resultados.every(resultado => resultado);
+      
+      console.log('✅ Verificación de stock completada:', todoValido ? 'EXITOSA' : 'FALLIDA');
+      
+      return todoValido;
+    } catch (error) {
+      console.error('❌ Error durante verificación de stock:', error);
+      return false;
+    }
+  }
+
+  private registrarVenta(): void {
 
     this.ventasService.registrarVenta(this.nuevaVenta)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (venta) => {
-          // Procesar pago
-          this.pagoActual.ventaId = venta.id;
-          this.procesarPago(venta);
+          console.log('✅ Venta registrada exitosamente:', venta);
+          console.log('📊 ID de venta creada:', venta.id);
+          console.log('📋 Número de venta:', venta.numeroVenta);
+          
+          // Verificar si la venta realmente se creó
+          if (venta.id && venta.numeroVenta) {
+            console.log('✅ Venta confirmada, procediendo con el pago...');
+            // Procesar pago
+            this.pagoActual.ventaId = venta.id;
+            
+            // Validar datos del pago antes de enviar
+            if (!this.validarDatosPago()) {
+              this.procesandoPago = false;
+              return;
+            }
+            
+            this.procesarPago(venta);
+          } else {
+            console.error('❌ Venta registrada pero sin datos válidos:', venta);
+            this.mostrarError('Error inesperado', 'La venta no se completó correctamente');
+            this.procesandoPago = false;
+          }
         },
         error: (error) => {
-          this.mostrarError('Error al procesar venta', error.message);
+          console.error('❌ Error al registrar venta:', error);
+          console.error('❌ Status del error:', error.status);
+          console.error('❌ Mensaje del error:', error.error?.message);
+          console.error('❌ Error completo:', error);
+          
+          // Analizar el tipo de error específico
+          let errorMessage = 'Error desconocido';
+          let shouldReload = false;
+          
+          if (error.status === 400 && error.error?.message) {
+            if (error.error.message.includes('Stock insuficiente')) {
+              errorMessage = `⚠️ ${error.error.message}`;
+              shouldReload = true; // Recargar para actualizar el stock
+              console.warn('🔄 Se recargará el inventario debido a conflicto de stock');
+            } else {
+              errorMessage = error.error.message;
+            }
+          } else if (error.status === 409) {
+            errorMessage = 'Conflicto de inventario. Verificando estado actual...';
+            shouldReload = true;
+          } else {
+            errorMessage = error.message || 'Error al procesar la venta';
+          }
+          
+          this.mostrarError('Error al procesar venta', errorMessage);
           this.procesandoPago = false;
+          
+          // Recargar datos si es necesario
+          if (shouldReload) {
+            setTimeout(() => {
+              console.log('🔄 Recargando datos del inventario...');
+              this.cargarProductos();
+              this.cargarVentas();
+            }, 2000);
+          }
         }
       });
   }
 
   private procesarPago(venta: VentaResponse): void {
+    console.log('💳 PROCESANDO PAGO - INICIO:');
+    console.log('📋 Venta a pagar:', {
+      id: venta.id,
+      numeroVenta: venta.numeroVenta,
+      subtotal: venta.subtotal,
+      igv: venta.igv,
+      total: venta.total,
+      cliente: venta.cliente.nombres + ' ' + venta.cliente.apellidos
+    });
+    
+    console.log('💰 Comparación de montos:', {
+      'Total venta (backend)': venta.total,
+      'Total venta (frontend)': this.totalVenta,
+      'Subtotal venta (frontend)': this.subtotalVenta,
+      'IGV venta (frontend)': this.igvVenta,
+      'Descuento venta (frontend)': this.descuentoVenta,
+      'Monto a pagar': this.pagoActual.monto,
+      'Diferencia': this.pagoActual.monto - venta.total
+    });
+    
+    // Verificar si hay discrepancia entre los montos
+    if (Math.abs(this.pagoActual.monto - venta.total) > 0.01) {
+      console.warn('⚠️ DISCREPANCIA DETECTADA EN MONTOS:');
+      console.warn('Frontend calcula:', this.pagoActual.monto);
+      console.warn('Backend registró:', venta.total);
+      console.warn('Diferencia:', this.pagoActual.monto - venta.total);
+      
+      // Ajustar el monto del pago al total real de la venta
+      console.log('🔧 Ajustando monto del pago al total real de la venta...');
+      this.pagoActual.monto = venta.total;
+    }
+    
+    console.log('💰 Datos del pago a enviar:', this.pagoActual);
+    console.log('🔍 Estado del pago antes del envío:', {
+      ventaId: this.pagoActual.ventaId,
+      usuarioId: this.pagoActual.usuarioId,
+      monto: this.pagoActual.monto,
+      metodoPago: this.pagoActual.metodoPago,
+      numeroReferencia: this.pagoActual.numeroReferencia,
+      nombreTarjeta: this.pagoActual.nombreTarjeta,
+      ultimos4Digitos: this.pagoActual.ultimos4Digitos,
+      observaciones: this.pagoActual.observaciones
+    });
+
     this.pagosService.registrarPago(this.pagoActual)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (pago) => {
-          console.log('Pago procesado:', pago.id);
+          console.log('✅ Pago procesado exitosamente:', pago);
           this.mostrarExito('Venta procesada', `Venta ${venta.numeroVenta} creada exitosamente`);
           this.pagoDialog = false;
           this.procesandoPago = false;
@@ -1605,8 +1878,26 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
           this.cargarEstadisticas();
         },
         error: (error) => {
-          this.mostrarError('Error al procesar pago', error.message);
+          console.error('❌ Error al procesar pago:', error);
+          console.error('❌ Status del error:', error.status);
+          console.error('❌ Mensaje del error:', error.error?.message);
+          console.error('❌ Error completo:', error);
+          
+          let errorMessage = 'Error desconocido al procesar pago';
+          if (error.status === 400 && error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.error && typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          this.mostrarError('Error al procesar pago', errorMessage);
           this.procesandoPago = false;
+          
+          // Informar que la venta está creada pero el pago falló
+          this.mostrarAdvertencia('Venta registrada', 
+            `La venta ${venta.numeroVenta} se registró correctamente pero hubo un problema con el pago. Puede procesarlo manualmente.`);
         }
       });
   }
@@ -1632,6 +1923,51 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
       return false;
     }
     
+    return true;
+  }
+
+  private validarDatosPago(): boolean {
+    console.log('🔍 Validando datos del pago...');
+    
+    if (!this.pagoActual.ventaId || this.pagoActual.ventaId <= 0) {
+      this.mostrarError('Error de pago', 'ID de venta inválido');
+      console.error('❌ ID de venta inválido:', this.pagoActual.ventaId);
+      return false;
+    }
+    
+    if (!this.pagoActual.usuarioId || this.pagoActual.usuarioId <= 0) {
+      this.mostrarError('Error de pago', 'ID de usuario inválido');
+      console.error('❌ ID de usuario inválido:', this.pagoActual.usuarioId);
+      return false;
+    }
+    
+    if (!this.pagoActual.monto || this.pagoActual.monto <= 0) {
+      this.mostrarError('Error de pago', 'Monto inválido');
+      console.error('❌ Monto inválido:', this.pagoActual.monto);
+      return false;
+    }
+    
+    if (!this.pagoActual.metodoPago || this.pagoActual.metodoPago.trim() === '') {
+      this.mostrarError('Error de pago', 'Método de pago requerido');
+      console.error('❌ Método de pago inválido:', this.pagoActual.metodoPago);
+      return false;
+    }
+    
+    // Limpiar campos opcionales que podrían causar problemas si están vacíos
+    if (this.pagoActual.numeroReferencia === '') {
+      this.pagoActual.numeroReferencia = undefined;
+    }
+    if (this.pagoActual.nombreTarjeta === '') {
+      this.pagoActual.nombreTarjeta = undefined;
+    }
+    if (this.pagoActual.ultimos4Digitos === '') {
+      this.pagoActual.ultimos4Digitos = undefined;
+    }
+    if (this.pagoActual.observaciones === '') {
+      this.pagoActual.observaciones = undefined;
+    }
+    
+    console.log('✅ Datos del pago validados correctamente');
     return true;
   }
 
@@ -1825,6 +2161,25 @@ seleccionarProductoAutoComplete(event: { value?: Inventario } | Inventario): voi
       summary, 
       detail,
       life: 4000
+    });
+  }
+
+
+  private mostrarVentaInfo(venta: VentaResponse, mensaje: string): void {
+    const detail = `
+      Número: ${venta.numeroVenta}
+      Cliente: ${venta.cliente.nombres} ${venta.cliente.apellidos}
+      Total: S/ ${venta.total.toFixed(2)}
+      Estado: ${venta.estado}
+      ${mensaje}
+    `;
+    
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Información de Venta',
+      detail: detail.trim(),
+      life: 8000,
+      sticky: true
     });
   }
 
@@ -2962,6 +3317,37 @@ resetearEstadoPago(): void {
       { hora: '11:00', ventas: 25 },
       { hora: '12:00', ventas: 30 }
     ];
+  }
+
+ /**
+   * Maneja el evento de dismissal de toasts
+   */
+  onToastDismissed(toastId: string): void {
+    this.toastService.dismiss(toastId);
+    this.cdr.markForCheck();
+  }
+
+
+  // === FUNCIONES TRACKBY PARA OPTIMIZACIÓN ===
+  
+  trackByMetodoPago: TrackByFunction<any> = (index: number, metodo: any) => {
+    return metodo.value || index;
+  }
+
+  trackByCarrito: TrackByFunction<any> = (index: number, item: any) => {
+    return item.id || index;
+  }
+
+  trackByVenta: TrackByFunction<VentaResponse> = (index: number, venta: VentaResponse) => {
+    return venta.id || index;
+  }
+
+  trackByProducto: TrackByFunction<Producto> = (index: number, producto: Producto) => {
+    return producto.id || index;
+  }
+
+  trackByCliente: TrackByFunction<Cliente> = (index: number, cliente: Cliente) => {
+    return cliente.id || index;
   }
 
 }

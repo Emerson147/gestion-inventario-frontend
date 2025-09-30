@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -34,6 +34,8 @@ import { finalize, forkJoin, catchError, of, firstValueFrom, switchMap, tap } fr
 import { AlertaNegocio, AnalyticsService, KPIMetrics, OptimizacionPrecio } from '../../../core/services/analytics.service';
 import { EnterpriseIntegrationService, SincronizacionResult } from '../../../core/services/enterprise-integration.service';
 import { MenuModule } from 'primeng/menu';
+import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 interface ViewOption {
   label: string;
@@ -107,7 +109,8 @@ interface TableFilter {
     TooltipModule, // 👈 Nuevo
     ToolbarModule,
     MenuModule,
-    HasPermissionDirective
+    HasPermissionDirective,
+    ToastNotificationComponent
   ],
   providers: [MessageService, ConfirmationService, CurrencyPipe],
   templateUrl: './productos.component.html',
@@ -262,7 +265,9 @@ export class ProductosComponent implements OnInit {
   private readonly analyticsService: AnalyticsService = inject(AnalyticsService);
   private readonly enterpriseService: EnterpriseIntegrationService = inject(EnterpriseIntegrationService);
   private readonly currencyPipe: CurrencyPipe = inject(CurrencyPipe);
-  
+  public readonly toastService: ToastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
+
   ngOnInit(): void {
     this.inicializarAccionesMasivas();
     this.loadProductos();
@@ -1264,42 +1269,22 @@ onImageError(event: ErrorEvent): void {
     };
   }
 
-  // ========== MENSAJES (Manteniendo funcionalidad original) ==========
+  // ========== MENSAJES (Usando ToastService personalizado) ==========
 
   private showSuccess(message: string): void {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Éxito',
-      detail: message,
-      life: 3000
-    });
+    this.toastService.success('Éxito', message);
   }
 
   private showInfo(message: string): void {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Información',
-      detail: message,
-      life: 3000
-    });
+    this.toastService.info('Información', message);
   }
 
   private showWarning(message: string): void {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Advertencia',
-      detail: message,
-      life: 3000
-    });
+    this.toastService.warning('Advertencia', message);
   }
 
   private showError(message: string): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: message,
-      life: 5000
-    });
+    this.toastService.error('Error', message);
   }
 
   private handleError(error: unknown, defaultMessage: string): void {
@@ -1308,18 +1293,13 @@ onImageError(event: ErrorEvent): void {
                         typeof error === 'object' && error !== null && 'message' in error ? 
                         (error as { message: string }).message : defaultMessage;
     
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: errorMessage,
-      life: 5000
-    });
+    this.toastService.error('Error', errorMessage);
   }
 
   /**
- * Exporta las estadísticas del inventario a Excel
- */
-async exportarEstadisticas(): Promise<void> {
+   * Exporta las estadísticas del inventario a Excel
+   */
+  async exportarEstadisticas(): Promise<void> {
   if (!this.productos?.length) {
     this.showWarning('No hay datos para exportar estadísticas');
     return;
@@ -1682,6 +1662,18 @@ getPrecioPromedio(): number {
     if (margen >= 25) return 'Bueno';
     if (margen >= 15) return 'Regular';
     return 'Bajo';
+  }
+
+    // ========================================
+  // MÉTODOS DE NOTIFICACIONES MODERNAS
+  // ========================================
+
+  /**
+   * Maneja el evento de dismissal de toasts
+   */
+  onToastDismissed(toastId: string): void {
+    this.toastService.dismiss(toastId);
+    this.cdr.markForCheck();
   }
 
 }

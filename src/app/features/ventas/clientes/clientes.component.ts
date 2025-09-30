@@ -29,6 +29,7 @@ import { PermissionService, PermissionType } from '../../../core/services/permis
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ChipModule } from 'primeng/chip';
 
 interface ViewOption {
   label: string;
@@ -97,11 +98,11 @@ interface AnalisisValorCliente {
     DropdownModule,
     AutoCompleteModule,
     PanelModule,
+    ChipModule,
     TooltipModule,
     HasPermissionDirective
   ],
   templateUrl: './clientes.component.html',
-  styleUrls: ['./clientes.component.scss'],
   providers: [MessageService, ConfirmationService]
 })
 export class ClientesComponent implements OnInit, OnDestroy {
@@ -208,6 +209,7 @@ export class ClientesComponent implements OnInit, OnDestroy {
   private permissionService: PermissionService = inject(PermissionService);
   private fb: FormBuilder = inject(FormBuilder);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+Math: any;
 
   constructor() {
     this.initializeForm();
@@ -240,9 +242,9 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.clienteForm = this.fb.group({
       nombres: ['', [Validators.required, Validators.minLength(2), this.noWhitespaceValidator]],
       apellidos: ['', [Validators.required, Validators.minLength(2), this.noWhitespaceValidator]],
-      dni: ['', [this.dniValidator]],
-      ruc: ['', [this.rucValidator]],
-      telefono: ['', [this.telefonoValidator]],
+      dni: ['', [this.dniSimpleValidator]],
+      ruc: ['', [this.rucSimpleValidator]],
+      telefono: ['', [this.telefonoSimpleValidator]],
       email: ['', [Validators.email]],
       direccion: [''],
       fechaNacimiento: ['', [this.fechaNacimientoValidator]],
@@ -394,6 +396,62 @@ export class ClientesComponent implements OnInit, OnDestroy {
     return null;
   };
 
+  private dniSimpleValidator = (control: AbstractControl): Record<string, boolean> | null => {
+    if (!control.value) return null;
+    
+    const dni = control.value.toString();
+    // Solo validar que tenga hasta 8 dígitos, sin validar dígito verificador
+    if (dni.length > 0 && !/^\d{0,8}$/.test(dni)) {
+      return { 'dniInvalido': true };
+    }
+    
+    // Verificar si el DNI ya existe en otros clientes (solo para edición)
+    if (dni.length === 8 && this.editMode && this.cliente.id) {
+      const existeOtroDni = this.clientes.some(cliente => 
+        cliente.dni === dni && cliente.id !== this.cliente.id
+      );
+      if (existeOtroDni) {
+        return { 'dniDuplicado': true };
+      }
+    }
+    
+    return null;
+  };
+
+  private rucSimpleValidator = (control: AbstractControl): Record<string, boolean> | null => {
+    if (!control.value) return null;
+    
+    const ruc = control.value.toString();
+    // Solo validar que tenga hasta 11 dígitos, sin validar dígito verificador
+    if (ruc.length > 0 && !/^\d{0,11}$/.test(ruc)) {
+      return { 'rucInvalido': true };
+    }
+    
+    // Verificar si el RUC ya existe en otros clientes (solo para edición)
+    if (ruc.length === 11 && this.editMode && this.cliente.id) {
+      const existeOtroRuc = this.clientes.some(cliente => 
+        cliente.ruc === ruc && cliente.id !== this.cliente.id
+      );
+      if (existeOtroRuc) {
+        return { 'rucDuplicado': true };
+      }
+    }
+    
+    return null;
+  };
+
+  private telefonoSimpleValidator = (control: AbstractControl): Record<string, boolean> | null => {
+    if (!control.value) return null;
+    
+    const telefono = control.value.toString().replace(/\D/g, '');
+    // Validación más permisiva para teléfonos
+    if (telefono.length > 0 && (telefono.length < 7 || telefono.length > 15)) {
+      return { 'telefonoInvalido': true };
+    }
+    
+    return null;
+  };
+
   private fechaNacimientoValidator = (control: AbstractControl): Record<string, boolean> | null => {
     if (!control.value) return null;
     
@@ -449,9 +507,11 @@ export class ClientesComponent implements OnInit, OnDestroy {
     if (field && field.errors && (field.dirty || field.touched)) {
       if (field.errors['required']) return `${fieldName} es obligatorio`;
       if (field.errors['email']) return 'Email inválido';
-      if (field.errors['dniInvalido']) return 'DNI inválido (8 dígitos)';
-      if (field.errors['rucInvalido']) return 'RUC inválido (11 dígitos)';
-      if (field.errors['telefonoInvalido']) return 'Teléfono inválido';
+      if (field.errors['dniInvalido']) return 'DNI debe contener solo números (máximo 8 dígitos)';
+      if (field.errors['dniDuplicado']) return 'Este DNI ya está registrado por otro cliente';
+      if (field.errors['rucInvalido']) return 'RUC debe contener solo números (máximo 11 dígitos)';
+      if (field.errors['rucDuplicado']) return 'Este RUC ya está registrado por otro cliente';
+      if (field.errors['telefonoInvalido']) return 'Teléfono inválido (7-15 dígitos)';
       if (field.errors['fechaNacimientoInvalida']) return 'Fecha de nacimiento inválida';
       if (field.errors['whitespace']) return 'No puede estar vacío';
       if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
@@ -637,20 +697,83 @@ export class ClientesComponent implements OnInit, OnDestroy {
     this.cliente = { ...this.cliente, ...this.clienteForm.value };
     this.cliente.fechaActualizacion = this.currentDateTime.toISOString();
     
+    // Limpiar campos vacíos opcionales para evitar problemas en el backend
+    const clienteToSend = { ...this.cliente };
+    
+    // Si campos opcionales están vacíos, enviarlos como undefined
+    if (!clienteToSend.dni || (typeof clienteToSend.dni === 'string' && clienteToSend.dni.trim() === '')) {
+      clienteToSend.dni = undefined;
+    }
+    if (!clienteToSend.ruc || (typeof clienteToSend.ruc === 'string' && clienteToSend.ruc.trim() === '')) {
+      clienteToSend.ruc = undefined;
+    }
+    if (!clienteToSend.telefono || (typeof clienteToSend.telefono === 'string' && clienteToSend.telefono.trim() === '')) {
+      clienteToSend.telefono = undefined;
+    }
+    if (!clienteToSend.direccion || (typeof clienteToSend.direccion === 'string' && clienteToSend.direccion.trim() === '')) {
+      clienteToSend.direccion = undefined;
+    }
+    if (!clienteToSend.email || (typeof clienteToSend.email === 'string' && clienteToSend.email.trim() === '')) {
+      clienteToSend.email = undefined;
+    }
+    // Manejo especial para fechaNacimiento
+    if (!clienteToSend.fechaNacimiento) {
+      clienteToSend.fechaNacimiento = undefined;
+    } else if (typeof clienteToSend.fechaNacimiento === 'string' && clienteToSend.fechaNacimiento.trim() === '') {
+      clienteToSend.fechaNacimiento = undefined;
+    } else if (typeof clienteToSend.fechaNacimiento === 'object' && clienteToSend.fechaNacimiento !== null) {
+      // Si es un objeto Date, convertir a ISO string
+      const fecha = clienteToSend.fechaNacimiento as any;
+      if (fecha.toISOString && typeof fecha.toISOString === 'function') {
+        clienteToSend.fechaNacimiento = fecha.toISOString();
+      }
+    }
+    
+    // Para creación, eliminar campos que el backend no espera
+    if (!this.editMode) {
+      delete clienteToSend.id;
+      delete clienteToSend.compras;
+      delete clienteToSend.totalCompras;
+      delete clienteToSend.ultimaCompra;
+    }
+    
+    // Log para debugging
+    console.log('=== DEBUG GUARDAR CLIENTE ===');
+    console.log('Datos originales del cliente:', this.cliente);
+    console.log('Datos después de merge con formulario:', { ...this.cliente, ...this.clienteForm.value });
+    console.log('Datos finales a enviar al servidor:', clienteToSend);
+    console.log('Formulario válido:', this.clienteForm.valid);
+    console.log('Valores del formulario:', this.clienteForm.value);
+    console.log('Modo edición:', this.editMode);
+    console.log('Estado del formulario:', {
+      dirty: this.clienteForm.dirty,
+      touched: this.clienteForm.touched,
+      valid: this.clienteForm.valid,
+      errors: this.clienteForm.errors
+    });
+    console.log('================================');
+    
     const operacion = this.editMode && this.cliente.id
-      ? this.clienteService.actualizar(this.cliente.id, this.cliente)
-      : this.clienteService.crear(this.cliente);
+      ? this.clienteService.actualizar(this.cliente.id, clienteToSend)
+      : this.clienteService.crear(clienteToSend);
 
     operacion.pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Respuesta exitosa del servidor:', response);
         const mensaje = this.editMode ? 'Cliente actualizado correctamente' : 'Cliente creado correctamente';
         this.mostrarExito(this.editMode ? 'Actualizado' : 'Creado', mensaje);
         
         if (!this.editMode && this.crearYAgregar) {
+          // Reset completo para crear otro cliente
+          console.log('Reseteando formulario para crear otro cliente...');
           this.cliente = this.initCliente();
           this.clienteForm.reset();
           this.clienteForm.patchValue(this.cliente);
+          this.clienteForm.markAsUntouched();
+          this.clienteForm.markAsPristine();
           this.submitted = false;
+          console.log('Cliente después del reset:', this.cliente);
+          console.log('Formulario después del reset:', this.clienteForm.value);
         } else {
           this.hideDialog();
         }
@@ -658,7 +781,33 @@ export class ClientesComponent implements OnInit, OnDestroy {
         this.cargarClientes();
       },
       error: (error) => {
-        this.mostrarError('Error al guardar', error.message);
+        console.error('Error completo del servidor:', error);
+        console.error('Status:', error.status);
+        console.error('Error message:', error.message);
+        console.error('Error details:', error.error);
+        
+        let errorMessage = 'Error desconocido';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        }
+        
+        // Resetear estados de loading cuando hay error
+        this.loading = false;
+        this.uiState.isFormSaving = false;
+        
+        // Mostrar mensaje de error más específico
+        if (error.status === 409 || (errorMessage && errorMessage.includes('Ya existe'))) {
+          this.mostrarError('Cliente duplicado', errorMessage);
+        } else {
+          this.mostrarError('Error al guardar', errorMessage);
+        }
+        
+        // Actualizar la vista
+        this.cdr.markForCheck();
       },
       complete: () => {
         this.loading = false;
@@ -996,18 +1145,6 @@ export class ClientesComponent implements OnInit, OnDestroy {
     });
   }
 
-  getSaludoPersonalizado(): string {
-    const hora = this.currentDateTime.getUTCHours(); // 14 = 2 PM
-    
-    if (hora >= 5 && hora < 12) {
-      return `¡Buenos días, ${this.currentUser}!`;
-    } else if (hora >= 12 && hora < 18) {
-      return `¡Buenas tardes, ${this.currentUser}!`;
-    } else {
-      return `¡Buenas noches, ${this.currentUser}!`;
-    }
-  }
-
   getFechaFormateada(): string {
     return this.currentDateTime.toLocaleDateString('es-PE', {
       weekday: 'long',
@@ -1147,6 +1284,15 @@ export class ClientesComponent implements OnInit, OnDestroy {
     });
   }
 
+  private mostrarAdvertencia(summary: string, detail: string): void {
+    this.messageService.add({ 
+      severity: 'warn', 
+      summary, 
+      detail,
+      life: 4000
+    });
+  }
+
   private mostrarInfo(summary: string, detail: string): void {
     this.messageService.add({ 
       severity: 'info', 
@@ -1184,8 +1330,8 @@ export class ClientesComponent implements OnInit, OnDestroy {
 
   // ==================== FUNCIONES DE TABLA ====================
   
-  onGlobalFilter(table: Table, event: Event): void {
-    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  onGlobalFilter(event: Event): void {
+    this.dataTable.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   trackByCliente(index: number, cliente: Cliente): number | null {

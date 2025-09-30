@@ -1,4 +1,8 @@
-<p-toast position="top-right" [life]="4000" />
+ <app-toast-notification 
+    [toasts]="toastService.getCurrentToasts()"
+    (toastDismissed)="onToastDismissed($event)"
+  ></app-toast-notification>
+  
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
 <!-- Header corporativo con mejor jerarquía visual -->

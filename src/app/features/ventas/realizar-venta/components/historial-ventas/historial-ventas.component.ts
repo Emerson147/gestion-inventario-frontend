@@ -45,6 +45,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { VentasService } from '../../../../../core/services/ventas.service';
 import { EstadisticasVentasService } from '../../../../../core/services/estadisticas-ventas.service';
 import { VentaResponse } from '../../../../../core/models/venta.model';
+import { PaginatorModule } from 'primeng/paginator';
 
 // Interfaces
 interface Venta {
@@ -246,6 +247,7 @@ interface EventoAutoComplete {
     ProgressSpinnerModule,
     ListboxModule,
     ButtonGroupModule,
+    PaginatorModule,
     TooltipModule
   ],
   templateUrl: './historial-ventas.component.html',

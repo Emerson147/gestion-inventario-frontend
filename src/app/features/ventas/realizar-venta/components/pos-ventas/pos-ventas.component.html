@@ -1,169 +1,197 @@
 <!-- Contenido de POS -->
-<div class="h-screen bg-gray-50 flex flex-col">
-  <!-- Header Profesional Optimizado -->
-  <header class="bg-slate-800 text-white shadow-xl border-b-4 border-blue-500">
-    <div class="flex justify-between items-center p-4">
-      <!-- SECCIÓN IZQUIERDA: Branding + Info Sistema -->
-      <div class="flex items-center gap-6">
-        <!-- Logo y Empresa -->
+<div class="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
+  <!-- Sistema de Notificaciones Toast Modernas -->
+  <app-toast-notification 
+    [toasts]="toastService.getCurrentToasts()"
+    (toastDismissed)="onToastDismissed($event)"
+  ></app-toast-notification>
+
+  <!-- Header POS Moderno - Estilo Square/Stripe (Azul Premium) -->
+  <header class="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-white shadow-2xl border-b-2 border-blue-400/40 dark:border-gray-600/40 relative overflow-hidden transition-all duration-300">
+    <!-- Efectos visuales premium inspirados en Square POS -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-500/8 to-blue-600/10"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(59,130,246,0.15),transparent_70%)]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(14,165,233,0.12),transparent_70%)]"></div>
+    
+    <!-- Contenido principal del header -->
+    <div class="relative z-10 flex justify-between items-center p-6">
+      <!-- ZONA IZQUIERDA: Branding y Estado del Sistema -->
+      <div class="flex items-center gap-8">
+        <!-- Branding Principal -->
         <div class="flex items-center gap-4">
-          <div class="relative">
-            <div
-              class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors"
-            >
-              <i class="pi pi-shop text-white text-3xl"></i>
+          <div class="relative group">
+            <!-- Logo principal con gradiente Square-style -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:from-blue-400 group-hover:to-blue-600">
+              <i class="pi pi-shop text-white text-2xl"></i>
             </div>
-            <!-- Indicador online -->
-            <div
-              class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"
-            ></div>
+            <!-- Indicador de conexión con color accent -->
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full border-2 border-white animate-pulse shadow-md"></div>
           </div>
 
-          <div>
-            <h1 class="text-2xl font-bold tracking-wide">
-              SISTEMA EMPRESARIAL POS
-            </h1>
-            <div class="flex items-center gap-4 text-sm text-slate-300">
+          <!-- Información empresarial -->
+          <div class="space-y-1">
+            <h1 class="text-xl font-bold text-white tracking-wide">SISTEMA POS EMPRESARIAL</h1>
+            <div class="flex items-center gap-4 text-xs text-slate-300">
+              <span class="flex items-center gap-1.5 bg-slate-800/60 px-2 py-1 rounded-md border border-blue-400/20">
+                <i class="pi pi-building text-blue-400"></i>
+                <span>RUC: 20123456789</span>
+              </span>
+              <span class="flex items-center gap-1.5 bg-slate-800/60 px-2 py-1 rounded-md border border-cyan-400/20">
+                <i class="pi pi-desktop text-cyan-400"></i>
+                <span>Terminal: POS-001</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estados del Sistema con colores Square -->
+        <div class="flex items-center gap-3">
+          <!-- Estado SUNAT -->
+          <div class="flex items-center gap-2 bg-cyan-600/90 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-cyan-400/30">
+            <div class="w-2 h-2 bg-cyan-300 rounded-full animate-pulse"></div>
+            <span class="text-xs font-medium text-white">SUNAT</span>
+          </div>
+          
+          <!-- Usuario activo -->
+          <div class="flex items-center gap-2 bg-blue-600/90 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-blue-400/30">
+            <i class="pi pi-user text-xs text-white"></i>
+            <span class="text-xs font-medium text-white">Emerson147</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA CENTRAL: Panel de Venta Activa -->
+      <div class="flex-1 max-w-md mx-8">
+        <div class="bg-slate-800/80 backdrop-blur rounded-2xl p-6 border border-blue-400/20 shadow-xl">
+          <!-- Header del panel de venta -->
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2 text-sm text-slate-300">
+              <i class="pi pi-user-plus text-cyan-400"></i>
+              <span>{{ clienteSeleccionado?.nombres || "Cliente General" }}</span>
+            </div>
+            <button
+              *ngIf="!clienteSeleccionado"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 shadow-md border border-blue-400/30"
+              (click)="openClientModal()"
+            >
+              <i class="pi pi-plus mr-1"></i>Asignar
+            </button>
+          </div>
+
+          <!-- Total de venta destacado con color Square -->
+          <div class="text-center space-y-2">
+            <div class="text-3xl font-mono font-bold text-cyan-400 tracking-wider">
+              {{ formatearMoneda(totalVenta) }}
+            </div>
+            <div class="flex justify-center items-center gap-4 text-xs text-slate-400">
               <span class="flex items-center gap-1">
-                <i class="pi pi-building text-xs"></i>
-                RUC: 20123456789
+                <i class="pi pi-hashtag"></i>
+                {{ getNumeroVenta() }}
               </span>
               <span>•</span>
               <span class="flex items-center gap-1">
-                <i class="pi pi-desktop text-xs"></i>
-                Caja: POS-001
+                <i class="pi pi-shopping-cart"></i>
+                {{ carrito.length }} items
               </span>
+              <span>•</span>
+              <span>{{ getCurrentDateTime() }}</span>
             </div>
           </div>
         </div>
-
-        <!-- Estado del Sistema -->
-        <div class="flex items-center gap-3">
-          <div
-            class="flex items-center gap-2 bg-green-600 px-3 py-2 rounded-full shadow-md"
-          >
-            <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-            <span class="text-sm font-medium text-white">SUNAT Online</span>
-          </div>
-
-          <div
-            class="flex items-center gap-2 bg-blue-600 px-3 py-2 rounded-full shadow-md"
-          >
-            <i class="pi pi-user text-sm text-white"></i>
-            <span class="text-sm font-medium text-white">Emerson147</span>
-          </div>
-        </div>
       </div>
 
-      <!-- SECCIÓN CENTRO: Información de Venta Actual -->
-      <div class="text-center px-6">
-        <div
-          class="bg-slate-700 rounded-xl p-4 border border-slate-600 shadow-lg"
-        >
-          <div class="text-sm text-slate-300 mb-1">
-            Cliente: {{ clienteSeleccionado?.nombres || "Público General" }}
+      <!-- ZONA DERECHA: Métricas y Controles -->
+      <div class="flex items-center gap-4">
+        <!-- Métricas del día con estilo Square -->
+        <div class="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-blue-400/20 shadow-lg">
+          <div class="text-center space-y-1">
+            <div class="text-xs text-slate-400">Ventas Hoy</div>
+            <div class="text-lg font-bold text-cyan-400">{{ formatearMoneda(ventasHoy) }}</div>
+            <div class="text-xs text-slate-500">{{ transaccionesHoy }} transacciones</div>
+          </div>
+        </div>
+
+        <!-- Panel de controles -->
+        <div class="flex items-center gap-2">
+          <!-- Botones de navegación con colores temáticos -->
+          <div class="flex gap-1">
             <button
-              *ngIf="!clienteSeleccionado"
-              class="ml-2 bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs transition-colors"
-              (click)="openClientModal()"
+              class="group p-3 bg-slate-700/70 hover:bg-slate-600 rounded-xl transition-all duration-200 hover:scale-105 shadow-md border border-slate-600/50 hover:border-cyan-400/30"
+              title="Analytics Dashboard"
+              (click)="abrirDashboard()"
             >
-              <i class="pi pi-plus mr-1"></i>Seleccionar
+              <i class="pi pi-chart-line text-slate-300 group-hover:text-cyan-400 text-lg transition-colors"></i>
+            </button>
+
+            <button
+              class="group p-3 bg-slate-700/70 hover:bg-slate-600 rounded-xl transition-all duration-200 hover:scale-105 shadow-md border border-slate-600/50 hover:border-blue-400/30"
+              title="Reportes Avanzados"
+              (click)="abrirReportes()"
+            >
+              <i class="pi pi-chart-bar text-slate-300 group-hover:text-blue-400 text-lg transition-colors"></i>
+            </button>
+
+            <button
+              class="group p-3 bg-slate-700/70 hover:bg-slate-600 rounded-xl transition-all duration-200 hover:scale-105 shadow-md border border-slate-600/50 hover:border-yellow-400/30"
+              title="Configuración del Sistema"
+              (click)="abrirConfiguracion()"
+            >
+              <i class="pi pi-cog text-slate-300 group-hover:text-yellow-400 text-lg transition-colors"></i>
+            </button>
+
+            <!-- 🧪 Botón de prueba de Toast (temporal para desarrollo) -->
+            <button
+              class="group p-3 bg-purple-600/80 hover:bg-purple-700 rounded-xl transition-all duration-200 hover:scale-105 shadow-md border border-purple-500/50"
+              title="Probar Notificaciones Toast"
+              (click)="mostrarToastEjemplos()"
+            >
+              <i class="pi pi-bell text-white text-lg group-hover:animate-bounce transition-transform"></i>
             </button>
           </div>
-          <div class="text-4xl font-mono font-bold text-green-400 mb-1">
-            {{ formatearMoneda(totalVenta) }}
-          </div>
-          <div class="text-xs text-slate-400">
-            Venta #{{ getNumeroVenta() }} • {{ carrito.length }} productos •
-            {{ getCurrentDateTime() }}
-          </div>
-        </div>
-      </div>
 
-      <!-- SECCIÓN DERECHA: Panel de Control -->
-      <div class="flex items-center gap-3">
-        <!-- Métricas Rápidas -->
-        <div class="text-right mr-4 bg-slate-700 rounded-lg p-3">
-          <div class="text-xs text-slate-400">Ventas Hoy</div>
-          <div class="text-lg font-bold text-blue-400">
-            {{ formatearMoneda(ventasHoy) }}
-          </div>
-          <div class="text-xs text-slate-400">
-            {{ transaccionesHoy }} transacciones
-          </div>
-        </div>
+          <!-- Separador visual -->
+          <div class="w-px h-8 bg-slate-600 dark:bg-gray-600"></div>
 
-        <!-- Botones de Acción -->
-        <div class="flex gap-2">
+          <!-- Botón de salida -->
           <button
-            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
-            title="Dashboard Gerencial"
-            (click)="abrirDashboard()"
-          >
-            <i
-              class="pi pi-chart-line text-slate-300 group-hover:text-white text-lg"
-            ></i>
-          </button>
-
-          <button
-            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
-            title="Reportes"
-            (click)="abrirReportes()"
-          >
-            <i
-              class="pi pi-chart-bar text-slate-300 group-hover:text-white text-lg"
-            ></i>
-          </button>
-
-          <button
-            class="group p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-105"
-            title="Configuración"
-            (click)="abrirConfiguracion()"
-          >
-            <i
-              class="pi pi-cog text-slate-300 group-hover:text-white text-lg"
-            ></i>
-          </button>
-
-          <div class="w-px h-8 bg-slate-600 mx-1"></div>
-
-          <button
-            class="group p-3 bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-200 hover:scale-105"
-            title="Cerrar Sesión"
+            class="group p-3 bg-red-600/80 hover:bg-red-700 dark:bg-red-500/80 dark:hover:bg-red-600 rounded-xl transition-all duration-200 hover:scale-105 shadow-md border border-red-500/50 dark:border-red-400/50"
+            title="Cerrar Sesión Segura"
             (click)="cerrarSesion()"
           >
-            <i class="pi pi-sign-out text-white text-lg"></i>
+            <i class="pi pi-sign-out text-white text-lg group-hover:rotate-12 transition-transform"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Barra de Estado Inferior -->
-    <div
-      class="bg-slate-900 px-4 py-2 text-xs flex justify-between items-center border-t border-slate-700"
-    >
-      <div class="flex items-center gap-6">
-        <span class="flex items-center gap-1">
-          <i class="pi pi-calendar text-blue-400"></i>
-          {{ getCurrentTime() }}
-        </span>
-        <span class="flex items-center gap-1">
-          <i class="pi pi-clock text-green-400"></i>
-          Turno iniciado: {{ horaInicioTurno }}
-        </span>
-      </div>
+    <!-- Barra de Estado Inteligente -->
+    <div class="relative z-10 bg-slate-950/80 backdrop-blur px-6 py-2 border-t border-slate-700/50">
+      <div class="flex justify-between items-center text-xs">
+        <!-- Información temporal con iconos temáticos -->
+        <div class="flex items-center gap-6">
+          <span class="flex items-center gap-2 text-slate-300">
+            <i class="pi pi-calendar text-cyan-400"></i>
+            <span class="font-medium">{{ getCurrentTime() }}</span>
+          </span>
+          <span class="flex items-center gap-2 text-slate-300">
+            <i class="pi pi-clock text-blue-400"></i>
+            <span>Turno: {{ horaInicioTurno }}</span>
+          </span>
+        </div>
 
-      <div class="flex items-center gap-4">
-        <span class="bg-green-600 text-green-100 px-2 py-1 rounded">
-          <i class="pi pi-check-circle mr-1"></i>
-          Sistema Operativo
-        </span>
-        <span class="text-slate-400"> v2.1.0 • Build 2025-07-13 </span>
+        <!-- Estado del sistema con colores Square -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-400/30">
+            <i class="pi pi-check-circle text-xs"></i>
+            <span class="font-medium">Sistema Operativo</span>
+          </div>
+          <span class="text-slate-500 font-mono">v2.1.0 • Build 2025-09-15</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Contenido Principal -->
+  <!-- Contenido Principal Moderno - Layout móvil optimizado según requerimientos -->
   <main class="flex-1 flex overflow-hidden">
     <!-- Panel Izquierdo: Productos (65%) -->
     <section class="w-[65%] flex flex-col p-4 space-y-4">
@@ -238,13 +266,26 @@
 
         <!-- Búsqueda avanzada optimizada -->
         <div class="mt-6">
-          <label
-            for="autoComplete"
-            class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
-          >
-            <i class="pi pi-search text-indigo-600"></i>
-            Búsqueda Avanzada
-          </label>
+          <div class="flex items-center justify-between mb-3">
+            <label
+              for="autoComplete"
+              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+            >
+              <i class="pi pi-search text-indigo-600"></i>
+              Búsqueda Avanzada
+            </label>
+            
+            <!-- Botón de refrescar inventarios -->
+            <button
+              type="button"
+              class="flex items-center gap-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 shadow-md"
+              (click)="refrescarDatos()"
+              title="Refrescar inventarios disponibles"
+            >
+              <i class="pi pi-refresh text-xs"></i>
+              <span>Actualizar</span>
+            </button>
+          </div>
           <p-autoComplete
             [(ngModel)]="productoBusqueda"
             [suggestions]="productosAutoComplete"
@@ -254,53 +295,20 @@
             placeholder="Buscar por nombre, código o descripción..."
             styleClass="w-full"
             [dropdown]="true"
-            scrollHeight="400px"
-            [virtualScroll]="true"
-            [itemSize]="80"
+            scrollHeight="300px"
             [showClear]="true"
-            [minLength]="0"
+            [minLength]="1"
+            [delay]="300"
+            [forceSelection]="false"
           >
             <ng-template let-producto pTemplate="item">
-              <div
-                class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-              >
-                <div class="flex-shrink-0">
-                  <img
-                    *ngIf="producto?.imagen"
-                    [src]="getImageUrl(producto.producto.imagen)"
-                    [alt]="producto.producto.nombre"
-                    class="w-12 h-12 object-cover rounded-lg border border-gray-200"
-                  />
-                  <div
-                    *ngIf="!producto.producto?.imagen"
-                    class="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-lg"
-                  >
-                    <i class="pi pi-image text-gray-400"></i>
-                  </div>
-                </div>
+              <div class="flex items-center gap-3 p-2">
                 <div class="flex-1">
-                  <div class="font-semibold text-gray-900">
-                    {{ producto.producto?.codigo }} •
-                    {{ producto.producto?.nombre }}
+                  <div class="font-medium text-gray-900">
+                    {{ producto.producto?.codigo }} - {{ producto.producto?.nombre }}
                   </div>
                   <div class="text-sm text-gray-600">
-                    {{ producto.color?.nombre }} •
-                    {{ producto.talla?.numero }} • {{ producto.serie }}
-                  </div>
-                  <div class="text-lg font-bold text-blue-600">
-                    {{
-                      formatearMoneda(
-                        obtenerPrecioProducto(producto.producto?.id || 0)
-                      )
-                    }}
-                  </div>
-                </div>
-                <div class="text-right">
-                  <div
-                    [class]="getStockClass(producto.cantidad)"
-                    class="font-medium"
-                  >
-                    Stock: {{ producto.cantidad }}
+                    {{ producto.color?.nombre }} • {{ producto.talla?.numero }} • Stock: {{ producto.cantidad }}
                   </div>
                 </div>
               </div>
@@ -346,7 +354,7 @@
       </div>
 
       <!-- Productos Populares Optimizado -->
-      <div
+      <!-- <div
         *ngIf="productosPopulares.length > 0 && !scannerActive"
         class="flex-1"
       >
@@ -388,11 +396,11 @@
                   <img
                     [src]="
                       producto.producto.imagen ||
-                      '/assets/images/product-placeholder.jpg'
+                      '/assets/images/product-placeholder.svg'
                     "
                     [alt]="producto.producto.nombre"
                     class="w-full h-20 object-cover rounded-lg border border-gray-200"
-                    onerror="this.src='/assets/images/product-placeholder.jpg'"
+                    onerror="this.src='/assets/images/product-placeholder.svg'"
                   />
                   <span
                     class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md"
@@ -417,7 +425,8 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
+
     </section>
 
     <!-- Panel Derecho: Carrito y Pago (35%) -->
@@ -509,7 +518,7 @@
             <div
               *ngFor="
                 let item of carrito;
-                trackBy: trackByInventarioId;
+                trackBy: trackByItemCarritoId;
                 let i = index
               "
               class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow"
@@ -824,7 +833,6 @@
     </aside>
   </main>
 
-  <!-- Loading States Optimizados -->
 
   <!-- 💳 Loading de Procesamiento de Pago -->
   <div
@@ -890,86 +898,10 @@
     </div>
   </div>
 
-  <!-- Loading States Adicionales -->
-  <div
-    *ngIf="searchingProducts"
-    class="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border-l-4 border-blue-500 z-50"
-  >
-    <div class="flex items-center gap-3">
-      <div
-        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
-      >
-        <i class="pi pi-spin pi-spinner text-blue-600"></i>
-      </div>
-      <div>
-        <div class="font-semibold text-gray-800">{{ loadingMessage }}</div>
-        <div class="text-xs text-gray-500">Buscando en inventario...</div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    *ngIf="addingToCart"
-    class="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border-l-4 border-green-500 z-50"
-  >
-    <div class="flex items-center gap-3">
-      <div
-        class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"
-      >
-        <i class="pi pi-spin pi-spinner text-green-600"></i>
-      </div>
-      <div>
-        <div class="font-semibold text-gray-800">{{ loadingMessage }}</div>
-        <div class="text-xs text-gray-500">Validando stock...</div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    *ngIf="loadingClient"
-    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-xl z-50"
-  >
-    <div class="flex items-center gap-4">
-      <div
-        class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center"
-      >
-        <i class="pi pi-spin pi-spinner text-purple-600"></i>
-      </div>
-      <div>
-        <div class="font-bold text-gray-800">{{ loadingMessage }}</div>
-        <div class="text-sm text-gray-500">Obteniendo historial...</div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    *ngIf="connectingScanner"
-    class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-50"
-  >
-    <div class="flex items-center gap-3">
-      <div class="relative">
-        <i class="pi pi-camera text-xl"></i>
-        <div
-          class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"
-        ></div>
-      </div>
-      <div>
-        <div class="font-semibold">{{ loadingMessage }}</div>
-        <div class="text-xs text-gray-300">Inicializando cámara...</div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    *ngIf="savingData"
-    class="fixed bottom-4 left-4 bg-blue-600 text-white p-3 rounded-lg shadow-lg z-50 flex items-center gap-3"
-  >
-    <i class="pi pi-spin pi-spinner"></i>
-    <span class="text-sm font-semibold">{{ loadingMessage }}</span>
-  </div>
+ 
 </div>
 
-<!-- Modal de Cliente Optimizado -->
+<!-- Modal de Cliente - Estilo Empresarial Optimizado -->
 <p-dialog
   [(visible)]="showClientModal"
   [modal]="true"
@@ -1743,6 +1675,41 @@
   
   <div class="dashboard-content p-6 h-full overflow-auto">
     
+    <!-- Header con controles -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <h2 class="text-2xl font-bold text-gray-800">Métricas en Tiempo Real</h2>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full border border-green-200">
+            <i class="pi pi-database text-green-600"></i>
+            Datos Reales del Sistema
+          </span>
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <i class="pi pi-clock"></i>
+            <span>Actualizado: {{getCurrentTime()}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button 
+          class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          (click)="actualizarDashboardManual()"
+          title="Actualizar datos">
+          <i class="pi pi-refresh text-sm"></i>
+          <span>Actualizar</span>
+        </button>
+        
+        <button 
+          class="flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+          (click)="cerrarDashboard()"
+          title="Cerrar dashboard">
+          <i class="pi pi-times text-sm"></i>
+          <span>Cerrar</span>
+        </button>
+      </div>
+    </div>
+    
     <!-- KPIs Principales usando tu interfaz -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       
@@ -1918,4 +1885,174 @@
     </div>
   </ng-template>
 </p-dialog>
+
+<!-- Modal de Carrito para Móvil/Tablet -->
+<div 
+  *ngIf="showMobileCart"
+  class="fixed inset-0 z-50 lg:hidden"
+  (click)="closeMobileCart()"
+>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"></div>
+  
+  <!-- Modal deslizante desde abajo -->
+  <div 
+    class="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-2xl shadow-2xl mobile-cart-modal max-h-[85vh] flex flex-col"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Handle para arrastrar -->
+    <div class="flex justify-center py-3">
+      <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full drag-handle"></div>
+    </div>
+    
+    <!-- Header del modal -->
+    <div class="flex items-center justify-between px-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+          <i class="pi pi-shopping-cart text-white text-base"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Mi Carrito</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ carrito.length }} productos</p>
+        </div>
+      </div>
+      <button 
+        (click)="closeMobileCart()"
+        class="w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors"
+      >
+        <i class="pi pi-times text-gray-600 dark:text-gray-300 text-base"></i>
+      </button>
+    </div>
+    
+    <!-- Contenido del carrito -->
+    <div class="flex-1 overflow-y-auto p-4 mobile-cart-content">
+      <div class="space-y-3">
+        <div
+          *ngFor="let item of carrito; trackBy: trackByItemCarritoId"
+          class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-600 mobile-cart-item"
+        >
+          <div class="flex items-center gap-4">
+            <!-- Imagen -->
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-600 flex-shrink-0">
+              <img
+                [src]="item.producto.imagen || '/assets/images/product-placeholder.jpg'"
+                [alt]="item.producto.nombre"
+                class="w-full h-full object-cover"
+                onerror="this.src='/assets/images/product-placeholder.jpg'"
+              />
+            </div>
+            
+            <!-- Info del producto -->
+            <div class="flex-1 min-w-0">
+              <div class="text-base font-semibold text-gray-900 dark:text-white truncate">
+                {{ item.producto.nombre }}
+              </div>
+              <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {{ formatearMoneda(item.precioUnitario) }} c/u
+              </div>
+              <div class="text-xs text-gray-400 dark:text-gray-500">
+                Stock: {{ item.cantidad }}
+              </div>
+            </div>
+            
+            <!-- Controles de cantidad -->
+            <div class="flex items-center gap-3 quantity-controls">
+              <button
+                (click)="decrementarCantidadItem(item)"
+                class="w-10 h-10 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500 rounded-xl flex items-center justify-center border border-gray-200 dark:border-gray-500 transition-colors"
+                [disabled]="(item.cantidad || 1) <= 1"
+              >
+                <i class="pi pi-minus text-sm text-gray-600 dark:text-gray-300"></i>
+              </button>
+              
+              <span class="text-lg font-bold text-gray-900 dark:text-white min-w-[30px] text-center">
+                {{ item.cantidad || 1 }}
+              </span>
+              
+              <button
+                (click)="incrementarCantidadItem(item)"
+                class="w-10 h-10 bg-emerald-500 hover:bg-emerald-600 rounded-xl flex items-center justify-center text-white transition-colors"
+                [disabled]="(item.cantidad || 1) >= item.cantidad"
+              >
+                <i class="pi pi-plus text-sm"></i>
+              </button>
+            </div>
+            
+            <!-- Precio total y eliminar -->
+            <div class="text-right">
+              <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                {{ formatearMoneda(item.precioUnitario * (item.cantidad || 1)) }}
+              </div>
+              <button
+                (click)="eliminarItemCarrito(item)"
+                class="text-red-500 hover:text-red-700 mt-2 p-1"
+                title="Eliminar producto"
+              >
+                <i class="pi pi-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Estado vacío -->
+        <div *ngIf="carrito.length === 0" class="text-center py-12">
+          <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="pi pi-shopping-cart text-gray-400 dark:text-gray-500 text-2xl"></i>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Tu carrito está vacío</p>
+          <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Agrega productos para comenzar</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer con totales -->
+    <div *ngIf="carrito.length > 0" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+      <!-- Resumen de totales -->
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between text-base text-gray-600 dark:text-gray-400">
+          <span>Subtotal:</span>
+          <span>{{ formatearMoneda(calcularSubtotal()) }}</span>
+        </div>
+        <div class="flex justify-between text-base text-gray-600 dark:text-gray-400">
+          <span>Descuento:</span>
+          <span>-{{ formatearMoneda(descuentoVenta) }}</span>
+        </div>
+        <div class="flex justify-between text-xl font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2">
+          <span>Total:</span>
+          <span class="text-emerald-600 dark:text-emerald-400">{{ formatearMoneda(calcularTotal()) }}</span>
+        </div>
+      </div>
+      
+      <!-- Botones de acción -->
+      <div class="space-y-3">
+        <button
+          (click)="procesarVentaDesdeCarrito(); closeMobileCart()"
+          class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all shadow-lg active:scale-95"
+          [disabled]="carrito.length === 0 || procesandoVenta"
+        >
+          <i class="pi pi-check mr-2"></i>
+          {{ procesandoVenta ? 'Procesando...' : 'Procesar Venta' }}
+        </button>
+        
+        <div class="flex gap-3">
+          <button
+            (click)="abrirModalDescuento()"
+            class="flex-1 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 py-3 px-4 rounded-xl font-semibold transition-colors"
+          >
+            <i class="pi pi-percentage mr-2"></i>
+            Descuento
+          </button>
+          
+          <button
+            (click)="limpiarCarrito()"
+            class="flex-1 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/40 text-red-600 dark:text-red-400 py-3 px-4 rounded-xl font-semibold transition-colors"
+          >
+            <i class="pi pi-trash mr-2"></i>
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 

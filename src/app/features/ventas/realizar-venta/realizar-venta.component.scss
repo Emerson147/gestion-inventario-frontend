@@ -1,1382 +1,181 @@
-/* Variables CSS para mejor mantenimiento */
-:root {
-  --hero-border-radius: 2rem;
-  --hero-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
-  --hero-transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  --hero-blur: 2rem;
-  
-  /* Colores del tema */
-  --primary-gradient: linear-gradient(135deg, rgb(59 130 246 / 0.9), rgb(139 92 246 / 0.8), rgb(168 85 247 / 0.9));
-  --glass-bg: linear-gradient(135deg, rgb(239 246 255 / 0.9), rgb(238 242 255 / 0.8), rgb(250 245 255 / 0.9));
-  --border-gradient: linear-gradient(90deg, rgb(59 130 246 / 0.2), rgb(139 92 246 / 0.2), rgb(236 72 153 / 0.2));
-}
-
-/* Contenedor principal */
-.hero-container {
-  position: relative;
-  margin: -1rem -1rem 2rem -1rem;
-  overflow: hidden;
-}
-
-/* Tarjeta de cristal principal */
-.hero-glass-card {
-  position: relative;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--hero-blur));
-  border: 1px solid rgb(255 255 255 / 0.4);
-  border-radius: var(--hero-border-radius);
-  box-shadow: var(--hero-shadow);
-  transition: var(--hero-transition);
-  overflow: hidden;
-}
-
-.hero-glass-card:hover {
-  box-shadow: 0 45px 80px -20px rgba(0, 0, 0, 0.4);
-  transform: translateY(-2px);
-}
-
-.hero-glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--primary-gradient);
-  border-radius: var(--hero-border-radius);
-  filter: blur(3rem);
-  z-index: -1;
-  opacity: 0.1;
-}
-
-/* Patrón de fondo animado */
-.hero-bg-pattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.03;
-  pointer-events: none;
-}
-
-.hero-bg-dots {
-  position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.4) 1.5px, transparent 0),
-    radial-gradient(circle at 15px 15px, rgb(139 92 246 / 0.3) 1px, transparent 0);
-  background-size: 40px 40px, 60px 60px;
-  animation: backgroundShift 20s ease-in-out infinite;
-}
-
-/* Contenedor de orbes */
-.hero-orbs {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-/* Estilos base para orbes */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(1.5rem);
-}
-
-.orb-primary {
-  top: 2rem;
-  left: 4rem;
-  width: 8rem;
-  height: 8rem;
-  background: linear-gradient(45deg, rgb(59 130 246 / 0.3), rgb(34 211 238 / 0.3));
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-.orb-secondary {
-  top: 5rem;
-  right: 5rem;
-  width: 6rem;
-  height: 6rem;
-  background: linear-gradient(45deg, rgb(139 92 246 / 0.25), rgb(236 72 153 / 0.25));
-  animation: pulse-glow 4s ease-in-out infinite;
-}
-
-.orb-accent {
-  bottom: 4rem;
-  left: 33.333333%;
-  width: 4rem;
-  height: 4rem;
-  background: linear-gradient(45deg, rgb(52 211 153 / 0.3), rgb(45 212 191 / 0.3));
-  animation: bounce-gentle 6s ease-in-out infinite;
-}
-
-.orb-highlight {
-  bottom: 8rem;
-  right: 25%;
-  width: 5rem;
-  height: 5rem;
-  background: linear-gradient(45deg, rgb(251 191 36 / 0.2), rgb(251 146 60 / 0.2));
-  animation: drift 10s ease-in-out infinite;
-}
-
-/* Contenedor de partículas */
-.particles-container {
-  position: absolute;
-  inset: 0;
-}
-
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgb(59 130 246 / 0.6);
-  border-radius: 50%;
-  animation: float-particle 15s linear infinite;
-}
-
-.particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
-.particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 3s; }
-.particle:nth-child(3) { top: 80%; left: 20%; animation-delay: 6s; }
-.particle:nth-child(4) { top: 30%; left: 70%; animation-delay: 9s; }
-.particle:nth-child(5) { top: 50%; left: 50%; animation-delay: 12s; }
-
-/* Efecto de brillo en bordes */
-.hero-border-glow {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--hero-border-radius);
-  background: var(--border-gradient);
-  opacity: 0;
-  filter: blur(1rem);
-  transition: opacity 1s ease;
-}
-
-.group:hover .hero-border-glow {
-  opacity: 1;
-}
-
-/* Contenido principal */
-.hero-content {
-  position: relative;
-  z-index: 10;
-  padding: 2.5rem;
-}
-
-.hero-header {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-@media (min-width: 1280px) {
-  .hero-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-}
-
-/* Sección del título */
-.hero-title-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  position: relative;
-}
-
-.hero-icon-title {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-/* Contenedor del ícono */
-.hero-icon-container {
-  position: relative;
-  cursor: pointer;
-}
-
-.hero-icon {
-  width: 6rem;
-  height: 6rem;
-  background: linear-gradient(135deg, rgb(37 99 235), rgb(139 92 246), rgb(67 56 202));
-  border-radius: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: rotate(3deg);
-  transition: var(--hero-transition);
-}
-
-.hero-icon:hover {
-  transform: rotate(6deg) scale(1.1);
-}
-
-.hero-icon::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.2), transparent);
-  border-radius: 1.5rem;
-}
-
-.hero-icon i {
-  color: white;
-  font-size: 2.5rem;
-  transition: transform 0.3s ease;
-}
-
-.hero-icon-container:hover .hero-icon i {
-  transform: scale(1.1);
-}
-
-/* Anillos de pulso */
-.pulse-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
-  transform: rotate(3deg);
-  pointer-events: none;
-}
-
-.pulse-ring-1 {
-  border: 2px solid rgb(59 130 246 / 0.4);
-  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-.pulse-ring-2 {
-  border: 1px solid rgb(139 92 246 / 0.3);
-  animation: ping-slower 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-  animation-delay: 1s;
-}
-
-/* Efecto de resplandor del ícono */
-.icon-glow {
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
-  background: linear-gradient(90deg, rgb(37 99 235 / 0.3), rgb(139 92 246 / 0.3));
-  filter: blur(1rem);
-  transform: scale(1.5);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.hero-icon-container:hover .icon-glow {
-  opacity: 1;
-}
-
-/* Badge de estado */
-.status-badge {
-  position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
-  width: 2rem;
-  height: 2rem;
-  background: linear-gradient(45deg, rgb(34 197 94), rgb(16 185 129));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
-  animation: pulse-gentle 2s ease-in-out infinite;
-}
-
-.status-badge i {
-  color: white;
-  font-size: 0.875rem;
-  font-weight: bold;
-}
-
-/* Contenido del título */
-.title-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Título principal */
-.main-title {
-  font-size: 3rem;
-  font-weight: 900;
-  line-height: 1.2;
-  margin: 0;
-}
-
-@media (min-width: 1280px) {
-  .main-title {
-    font-size: 3.75rem;
-  }
-}
-
-.title-gradient {
-  background: linear-gradient(135deg, rgb(17 24 39), rgb(55 65 81), rgb(31 41 55));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: text-shimmer 3s ease-in-out infinite;
-}
-
-/* Subtítulo */
-.subtitle {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: rgb(75 85 99);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
-  animation: fade-in-up 1s ease-out;
-}
-
-.status-dot {
-  display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: linear-gradient(45deg, rgb(251 191 36), rgb(251 146 60));
-  border-radius: 50%;
-  animation: pulse-fast 1.5s ease-in-out infinite;
-}
-
-.subtitle-text {
-  background: linear-gradient(45deg, rgb(75 85 99), rgb(107 114 128));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.emoji-rocket {
-  display: inline-block;
-  animation: wiggle 2s ease-in-out infinite;
-}
-
-/* Posición de la tarjeta de usuario */
-.user-info-position {
-  position: absolute;
-  top: 0.5rem;
-  right: 3rem;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
-/* Animaciones mejoradas */
-@keyframes backgroundShift {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(10px, -10px); }
-  50% { transform: translate(-5px, 15px); }
-  75% { transform: translate(15px, 5px); }
-}
-
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(180deg); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.25; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.1); }
-}
-
-@keyframes bounce-gentle {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
-}
-
-@keyframes drift {
-  0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-  33% { transform: translate(30px, -30px) rotate(120deg); }
-  66% { transform: translate(-20px, 20px) rotate(240deg); }
-}
-
-@keyframes float-particle {
-  0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-100px) translateX(100px) rotate(360deg); opacity: 0; }
-}
-
-@keyframes ping-slow {
-  75%, 100% { transform: rotate(3deg) scale(1.1); opacity: 0; }
-}
-
-@keyframes ping-slower {
-  75%, 100% { transform: rotate(3deg) scale(1.15); opacity: 0; }
-}
-
-@keyframes pulse-gentle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes pulse-fast {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-@keyframes text-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-5deg); }
-  75% { transform: rotate(5deg); }
-}
-
-/* Optimizaciones de rendimiento */
-.hero-glass-card,
-.orb,
-.particle,
-.pulse-ring {
-  will-change: transform;
-}
-
-/* Accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Estados de enfoque para accesibilidad */
-.hero-icon-container:focus-visible {
-  outline: 2px solid rgb(59 130 246);
-  outline-offset: 4px;
-  border-radius: 1.5rem;
-}
-
-/* Responsive mejorado */
-@media (max-width: 768px) {
-  .hero-content {
-    padding: 1.5rem;
-  }
-  
-  .hero-icon-title {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
-  }
-  
-  .main-title {
-    font-size: 2.5rem;
-  }
-  
-  .user-info-position {
-    position: static;
-    align-self: center;
-    margin-top: 1rem;
-  }
-}
-
-// ============ PESTAÑAS ULTRA PREMIUM ============
-
-//  =========================  Pestañas ===========
-
-// Override de PrimeNG TabView
-::ng-deep .premium-tabview-custom {
-  .p-tabview-nav {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
- }
-  
-  .p-tabview-nav-link {
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    
-    &:focus {
-      box-shadow: none !important;
+/* Estilos principales del TabView */
+  ::ng-deep .modern-tabs-enhanced {
+    .p-tabview-nav {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: none;
+      border-radius: 1rem 1rem 0 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     
-    &.p-highlight {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)) !important;
-      border-left: 4px solid #3b82f6 !important;
-    }
-  }
-  
-  .p-tabview-panels {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-  
-  .p-tabview-panel {
-    background: transparent !important;
-  }
-}
-
-// // Estilos para los headers de pestañas
-.tab-header-premium {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  min-height: 120px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-left: 4px solid transparent;
-  
-  &:hover {
-    background: linear-gradient(to right, #eff6ff, #f5f3ff);
-  }
-  
-  .tab-icon-container {
-    position: relative;
-    width: 4rem;
-    height: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    .tab-icon-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, #3b82f6, #9333ea);
-      border-radius: 1rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-  }
-  
-  .tab-content {
-    flex: 1;
-    min-width: 0;
-    
-    .tab-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 0.25rem;
+    .p-tabview-nav::-webkit-scrollbar {
+      display: none;
     }
     
-    .tab-subtitle {
-      font-size: 0.875rem;
-      color: #4b5563;
-      margin-bottom: 0.75rem;
-    }
-  }
-}
-
-
-// Override de PrimeNG TabView
-.premium-tabview-custom {
-  .p-tabview-nav {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    display: flex;
-    gap: 0.5rem;
-    
-    .p-tabview-nav-content {
-      background: transparent !important;
-      
-      .p-tabview-nav-link {
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-        
-        &:focus {
-          box-shadow: none !important;
-        }
-      }
-    }
-  }
-  
-  .p-tabview-panels {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    
-    .p-tabview-panel {
+    .p-tabview-nav-link {
       background: transparent !important;
       border: none !important;
       padding: 0 !important;
-    }
-  }
-}
-
-// ============ HEADER DE PESTAÑAS ULTRA ============
-
-.tab-header-premium {
-  position: relative;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  overflow: hidden;
-  min-width: 280px;
-  
-  // Efecto de brillo animado
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(59, 130, 246, 0.8), 
-      transparent
-    );
-    transition: left 0.6s ease;
-  }
-  
-  // Efecto de resplandor en hover
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, 
-      rgba(59, 130, 246, 0.1) 0%, 
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    border-radius: 1.5rem;
-  }
-  
-  &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 
-      0 20px 40px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(59, 130, 246, 0.2) inset;
-    
-    &::before {
-      left: 100%;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      position: relative;
+      overflow: hidden;
     }
     
-    &::after {
-      opacity: 1;
+    .p-tabview-nav-link:not(.p-disabled):focus {
+      box-shadow: none !important;
     }
     
-    .tab-icon-container {
-      transform: scale(1.1) rotate(5deg);
+    .p-tabview-panels {
+      background: white;
+      border: none;
+      border-radius: 0 0 1rem 1rem;
+      overflow: hidden;
     }
     
-    .tab-title {
-      color: #3b82f6;
+    .p-tabview-panel {
+      padding: 0 !important;
     }
   }
   
-  // Estado activo
-  &.active {
-    background: rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.3);
-    box-shadow: 
-      0 15px 35px rgba(59, 130, 246, 0.2),
-      0 0 0 1px rgba(59, 130, 246, 0.3) inset;
-    
-    &::after {
-      opacity: 1;
-    }
-    
-    .tab-icon-bg {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-      box-shadow: 
-        0 8px 25px rgba(59, 130, 246, 0.4),
-        0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-    
-    .tab-title {
-      color: #1d4ed8;
-      font-weight: 800;
-    }
-    
-    .tab-progress .progress-fill {
-      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-    }
-  }
-}
-
-// ============ ÍCONO DE PESTAÑA ULTRA ============
-
-.tab-icon-container {
-  position: relative;
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 1rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  .tab-icon-bg {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #6b7280, #4b5563);
-    border-radius: 1.25rem;
-    transition: all 0.4s ease;
-    
-    // Efecto de brillo interno
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 50%;
-      background: linear-gradient(to bottom, 
-        rgba(255, 255, 255, 0.3), 
-        transparent
-      );
-      border-radius: 1.25rem 1.25rem 0 0;
-    }
-    
-    // Efecto de sombra interna
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 30%;
-      background: linear-gradient(to top, 
-        rgba(0, 0, 0, 0.2), 
-        transparent
-      );
-      border-radius: 0 0 1.25rem 1.25rem;
-    }
+  /* Estilos para headers de pestañas modernos */
+  .tab-header-modern {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    border-radius: 1rem 1rem 0 0;
+    overflow: hidden;
   }
   
-  i {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  .tab-header-modern:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+    transform: translateY(-1px);
   }
   
-  // Badges dinámicos
-  .absolute {
-    animation: badgePulse 2s ease-in-out infinite;
+  /* Estilos para contenedores de iconos */
+  .tab-icon-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-}
-
-@keyframes badgePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-// ============ CONTENIDO DE PESTAÑA ============
-
-.tab-content {
-  flex: 1;
-  text-align: left;
   
+  .tab-icon-container.active {
+    transform: scale(1.1);
+  }
+  
+  /* Estilos para títulos de pestañas */
   .tab-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1f2937;
-    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, #1f2937, #374151);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.25rem;
+  }
+  
+  .tab-title.active {
+    color: #1f2937;
+    font-weight: 700;
   }
   
   .tab-subtitle {
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-weight: 500;
-    margin-bottom: 1rem;
-  }
-}
-
-// ============ INDICADORES DE ESTADO ============
-
-.tab-indicators {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  
-  .indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.75rem;
     font-size: 0.75rem;
-    font-weight: 600;
+    color: #6b7280;
     transition: all 0.3s ease;
-    
-    &.success {
-      background: linear-gradient(135deg, 
-        rgba(16, 185, 129, 0.1), 
-        rgba(5, 150, 105, 0.1)
-      );
-      color: #059669;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      
-      &:hover {
-        background: linear-gradient(135deg, 
-          rgba(16, 185, 129, 0.2), 
-          rgba(5, 150, 105, 0.2)
-        );
-        transform: scale(1.05);
-      }
-    }
-    
-    &.info {
-      background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.1), 
-        rgba(29, 78, 216, 0.1)
-      );
-      color: #1d4ed8;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      
-      &:hover {
-        background: linear-gradient(135deg, 
-          rgba(59, 130, 246, 0.2), 
-          rgba(29, 78, 216, 0.2)
-        );
-        transform: scale(1.05);
-      }
-    }
-    
-    &.warning {
-      background: linear-gradient(135deg, 
-        rgba(245, 158, 11, 0.1), 
-        rgba(217, 119, 6, 0.1)
-      );
-      color: #d97706;
-      border: 1px solid rgba(245, 158, 11, 0.2);
-      
-      &:hover {
-        background: linear-gradient(135deg, 
-          rgba(245, 158, 11, 0.2), 
-          rgba(217, 119, 6, 0.2)
-        );
-        transform: scale(1.05);
-      }
-    }
-    
-    &.danger {
-      background: linear-gradient(135deg, 
-        rgba(239, 68, 68, 0.1), 
-        rgba(220, 38, 38, 0.1)
-      );
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      animation: dangerPulse 2s ease-in-out infinite;
-      
-      &:hover {
-        background: linear-gradient(135deg, 
-          rgba(239, 68, 68, 0.2), 
-          rgba(220, 38, 38, 0.2)
-        );
-        transform: scale(1.05);
-      }
-    }
-  }
-}
-
-@keyframes dangerPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-}
-
-// ============ PROGRESO DE PESTAÑA ============
-
-.tab-progress {
-  margin-top: 1rem;
-  
-  .progress-track {
-    height: 0.5rem;
-    background: rgba(107, 114, 128, 0.2);
-    border-radius: 0.25rem;
-    overflow: hidden;
-    position: relative;
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #6b7280, #4b5563);
-      border-radius: 0.25rem;
-      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      
-      // Efecto de brillo deslizante
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, 
-          transparent, 
-          rgba(255, 255, 255, 0.4), 
-          transparent
-        );
-        animation: progressShine 2s ease-in-out infinite;
-      }
-    }
+    font-weight: 500;
   }
   
-  .progress-label {
-    font-size: 0.75rem;
-    color: #6b7280;
+  .tab-subtitle.active {
+    color: #4b5563;
     font-weight: 600;
-    margin-top: 0.5rem;
-    text-align: center;
   }
-}
-
-@keyframes progressShine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-// ============ ESTADÍSTICAS RÁPIDAS ============
-
-.tab-stats {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(107, 114, 128, 0.2);
   
-  .stat-item {
-    text-align: center;
+  /* Indicadores de estado */
+  .status-indicator {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+  }
+  
+  .status-indicator.active {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  
+  /* Animación de línea de activación */
+  @keyframes tab-slide {
+    from {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+  
+  .animate-tab-slide {
+    animation: tab-slide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Contenedores de contenido */
+  .tab-content-container {
+    padding: 1.5rem;
+    background: white;
+    min-height: 400px;
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Mejoras para móvil */
+  @media (max-width: 768px) {
+    .tab-content-container {
+      padding: 1rem;
+      min-height: calc(100vh - 200px);
+    }
     
-    .stat-value {
-      font-size: 1rem;
-      font-weight: 800;
+    /* Asegurar que el contenido no se superponga con la navegación flotante */
+    .p-tabview-panels {
+      padding-bottom: 120px !important;
+    }
+  }
+  
+  /* Estados de hover para escritorio */
+  @media (min-width: 769px) {
+    .tab-header-modern:hover .tab-icon-container {
+      transform: scale(1.05);
+    }
+    
+    .tab-header-modern:hover .tab-title {
       color: #1f2937;
-      font-family: 'JetBrains Mono', monospace;
     }
     
-    .stat-label {
-      font-size: 0.625rem;
-      color: #6b7280;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    .tab-header-modern:hover .tab-subtitle {
+      color: #4b5563;
     }
   }
   
-  .stat-divider {
-    width: 1px;
-    height: 2rem;
-    background: linear-gradient(to bottom, 
-      transparent, 
-      rgba(107, 114, 128, 0.3), 
-      transparent
-    );
+  /* Transiciones suaves para badges */
+  .tab-header-modern .animate-pulse,
+  .tab-header-modern .animate-bounce {
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
   }
-}
-
-// ============ CHART PREVIEW MINI ============
-
-.tab-chart-preview {
-  margin-top: 1rem;
   
-  .chart-mini {
-    display: flex;
-    align-items: end;
-    gap: 0.125rem;
-    height: 2rem;
-    
-    .chart-bar {
-      flex: 1;
-      background: linear-gradient(to top, 
-        rgba(16, 185, 129, 0.6), 
-        rgba(5, 150, 105, 0.8)
-      );
-      border-radius: 0.125rem;
-      transition: all 0.3s ease;
-      animation: barGrow 1.5s ease forwards;
-      transform-origin: bottom;
-      
-      &:hover {
-        transform: scaleY(1.2);
-        background: linear-gradient(to top, 
-          rgba(16, 185, 129, 0.8), 
-          rgba(5, 150, 105, 1)
-        );
+  /* Efectos de glassmorphism para móvil */
+  @supports (backdrop-filter: blur(10px)) {
+    @media (max-width: 768px) {
+      .bg-white\/90 {
+        background: rgba(255, 255, 255, 0.9);
       }
     }
   }
-}
-
-@keyframes barGrow {
-  0% { transform: scaleY(0); }
-  100% { transform: scaleY(1); }
-}
-
-// ============ SETTINGS PREVIEW ============
-
-.tab-settings-preview {
-  margin-top: 1rem;
-  
-  .settings-dots {
-    display: flex;
-    gap: 0.375rem;
-    justify-content: center;
-    
-    .dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 50%;
-      background: rgba(107, 114, 128, 0.3);
-      transition: all 0.3s ease;
-      
-      &.active {
-        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
-        transform: scale(1.2);
-      }
-    }
-  }
-}
-
-// ============ CONTENIDO DE PESTAÑAS ============
-
-.tab-content-container {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 1.5rem;
-  margin-top: 1rem;
-  overflow: hidden;
-  
-  &.pos-content {
-    border: 2px solid rgba(59, 130, 246, 0.2);
-    background: rgba(59, 130, 246, 0.05);
-  }
-  
-  &.historial-content {
-    border: 2px solid rgba(99, 102, 241, 0.2);
-    background: rgba(99, 102, 241, 0.05);
-  }
-  
-  &.reportes-content {
-    border: 2px solid rgba(16, 185, 129, 0.2);
-    background: rgba(16, 185, 129, 0.05);
-  }
-  
-  &.config-content {
-    border: 2px solid rgba(139, 92, 246, 0.2);
-    background: rgba(139, 92, 246, 0.05);
-  }
-}
-
-// ============ FLOATING TAB SWITCHER (MOBILE) ============
-
-.fixed.bottom-4 {
-  .bg-white\/90 {
-    animation: floatUp 0.6s ease-out;
-  }
-  
-  button {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    &:hover {
-      transform: scale(1.1);
-    }
-    
-    &.bg-blue-500 {
-      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-    }
-  }
-}
-
-@keyframes floatUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// ============ RESPONSIVE MEJORADO ============
-
-@media (max-width: 1024px) {
-  .tab-header-premium {
-    min-width: 240px;
-    padding: 1.25rem;
-    
-    .tab-icon-container {
-      width: 3rem;
-      height: 3rem;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .premium-tabview-custom .p-tabview-nav {
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    
-    &::-webkit-scrollbar {
-      height: 4px;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: rgba(107, 114, 128, 0.1);
-      border-radius: 2px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-      border-radius: 2px;
-    }
-  }
-  
-  .tab-header-premium {
-    min-width: 200px;
-    padding: 1rem;
-    
-    .tab-stats {
-      flex-direction: column;
-      gap: 0.5rem;
-      
-      .stat-divider {
-        width: 100%;
-        height: 1px;
-      }
-    }
-  }
-}
-
-
-// ============ ANIMACIONES ADICIONALES ============
-
-.tab-enter {
-  animation: tabSlideIn 0.5s ease-out;
-}
-
-.tab-leave {
-  animation: tabSlideOut 0.3s ease-in;
-}
-
-@keyframes tabSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes tabSlideOut {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-}
-
-// ============ PERFORMANCE OPTIMIZATIONS ============
-
-.tab-header-premium {
-  will-change: transform;
-  
-  &:hover {
-    will-change: auto;
-  }
-}
-
-.progress-fill {
-  will-change: width;
-}
-
-/* Animaciones optimizadas */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 0.4; }
-}
-
-@keyframes pulse-gentle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-@keyframes bounce-gentle {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-5px); }
-  60% { transform: translateY(-3px); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes ping-slow {
-  75%, 100% {
-    transform: scale(1.1);
-    opacity: 0;
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
-}
-
-.animate-pulse-gentle {
-  animation: pulse-gentle 2s ease-in-out infinite;
-}
-
-.animate-bounce-gentle {
-  animation: bounce-gentle 2s infinite;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-ping-slow {
-  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* Sombras optimizadas */
-.shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-.shadow-3xl {
-  box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
-}
-
-/* Estados hover optimizados */
-.hover\:scale-110:hover {
-  transform: scale(1.1);
-}
-
-.hover\:bg-blue-700:hover {
-  background-color: #1d4ed8;
-}
-
-.hover\:bg-green-700:hover {
-  background-color: #15803d;
-}
-
-.hover\:bg-purple-700:hover {
-  background-color: #7c3aed;
-}
-
-.hover\:bg-orange-700:hover {
-  background-color: #c2410c;
-}
-
-.hover\:bg-gray-300:hover {
-  background-color: #d1d5db;
-}
-
-/* Transiciones optimizadas */
-.transition-all {
-  transition: all 0.3s ease;
-}
-
-.transition-colors {
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.transition-opacity {
-  transition: opacity 0.5s ease;
-}
-
-/* Responsive optimizations */
-@media (max-width: 1280px) {
-  .xl\:text-6xl {
-    font-size: 3rem !important;
-    line-height: 1 !important;
-  }
-  
-  .xl\:w-80 {
-    width: 100% !important;
-  }
-  
-  .xl\:flex-row {
-    flex-direction: column !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .text-5xl {
-    font-size: 2.5rem !important;
-  }
-  
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-}
-
-/* Focus states */
-button:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Optimizaciones de performance */
-.gpu-accelerated {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Loading states */
-.loading-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* Scrollbar personalizado */
-.overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f7fafc;
-  
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f7fafc;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 3px;
-    
-    &:hover {
-      background: #a0aec0;
-    }
-  }
-}
-

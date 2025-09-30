@@ -1,0 +1,218 @@
+<!-- Header Moderno - Diseño Clean & Minimalista -->
+<div class="relative -mx-4 -mt-4 mb-6 overflow-hidden">
+  <!-- Container Principal con diseño moderno -->
+  <div class="relative bg-white border border-gray-200/70 rounded-2xl shadow-sm 
+              hover:shadow-md transition-all duration-300">
+    
+    <!-- Accent Line Superior -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-t-2xl"></div>
+    
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0 opacity-[0.02]">
+      <div class="absolute inset-0" 
+           style="background-image: 
+                  radial-gradient(circle at 40px 40px, #6366f1 1px, transparent 0); 
+                  background-size: 80px 80px;">
+      </div>
+    </div>
+    
+    <div class="relative z-10 p-6">
+      <!-- Header Principal Clean -->
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
+        
+        <!-- Sección del Título Modernizada -->
+        <div class="flex-1 space-y-6">
+          <div class="flex items-center gap-6">
+            <!-- Ícono Principal Moderno -->
+            <div class="relative">
+              <!-- Ícono Principal -->
+              <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 
+                          rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20
+                          hover:shadow-blue-500/30 transition-all duration-300">
+                <i class="pi pi-shopping-cart text-white text-xl"></i>
+              </div>
+              
+              <!-- Status Indicator -->
+              <div class="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 
+                          rounded-full flex items-center justify-center shadow-md">
+                <div class="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+            </div>
+            
+            <!-- Títulos Clean -->
+            <div class="space-y-1">
+              <!-- Título Principal -->
+              <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">
+                Gestión de Ventas
+              </h1>
+              
+              <!-- Subtítulo -->
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                <span class="font-medium">Sistema activo y operativo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Clean - Métricas cuando caja está abierta -->
+          <div *ngIf="cajaAbierta" class="space-y-4">
+            <!-- Tarjeta principal de ventas -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 
+                        rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <i class="pi pi-chart-line text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-gray-900">Ventas de Hoy</h3>
+                    <p class="text-xs text-gray-600">{{ currentTime | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-gray-900">S/ {{ totalVentasDelDia | number:'1.2-2' }}</div>
+                </div>
+              </div>
+              
+              <!-- Métricas en grid -->
+              <div class="grid grid-cols-3 gap-3">
+                <div class="bg-white/80 rounded-lg p-3 text-center border border-white/50">
+                  <div class="text-lg font-bold text-gray-900">{{ contarVentasDelDia }}</div>
+                  <div class="text-xs text-gray-600 font-medium">Transacciones</div>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3 text-center border border-white/50">
+                  <div class="text-lg font-bold text-gray-900">S/ {{ promedioVenta | number:'1.0-0' }}</div>
+                  <div class="text-xs text-gray-600 font-medium">Promedio</div>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3 text-center border border-white/50">
+                  <div class="text-lg font-bold text-gray-900">{{ currentTime | date:'HH:mm' }}</div>
+                  <div class="text-xs text-gray-600 font-medium">Hora actual</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Estado del sistema -->
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <i class="pi pi-check text-white text-xs"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-emerald-900">Sistema operativo</p>
+                  <p class="text-xs text-emerald-700">Caja abierta - Listo para procesar ventas</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje de bienvenida cuando la caja está cerrada -->
+          <div *ngIf="!cajaAbierta" class="text-center py-6">
+            <div class="max-w-sm mx-auto">
+              <div class="bg-gray-50 border border-gray-200 rounded-xl p-6">
+                <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-r from-gray-400 to-gray-500 
+                           rounded-xl flex items-center justify-center">
+                  <i class="pi pi-lock text-white text-lg"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Caja Cerrada</h3>
+                <p class="text-gray-600 text-sm mb-4">
+                  Para comenzar a procesar ventas, debe abrir una nueva sesión de caja.
+                </p>
+                <div class="text-xs text-gray-500">
+                  Una vez abierta, tendrá acceso completo al sistema
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Panel lateral moderno - Solo información del usuario cuando caja está abierta -->
+        <div *ngIf="cajaAbierta" class="lg:w-72 flex-shrink-0">
+          <!-- Panel de usuario clean -->
+          <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4">
+            <!-- Usuario actual -->
+            <div class="flex items-center gap-3 pb-4 border-b border-gray-200">
+              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full 
+                         flex items-center justify-center">
+                <i class="pi pi-user text-white text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-semibold text-gray-900">Usuario Activo</div>
+                <div class="text-xs text-gray-600">Sesión iniciada</div>
+              </div>
+              <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+            </div>
+            
+            <!-- Acciones principales -->
+            <div class="space-y-3">
+              <!-- Cerrar sesión -->
+              <button class="w-full bg-gradient-to-r from-red-500 to-red-600 
+                             hover:from-red-600 hover:to-red-700 
+                             text-white font-medium py-2.5 px-4 rounded-lg shadow-sm 
+                             hover:shadow-md transition-all duration-200 
+                             flex items-center justify-center gap-2"
+                      (click)="onCerrarCaja()">
+                <i class="pi pi-sign-out text-sm"></i>
+                <span>Cerrar Sesión</span>
+              </button>
+              
+              <!-- Exportar reporte -->
+              <button class="w-full bg-white hover:bg-gray-50 
+                             text-gray-700 font-medium py-2.5 px-4 rounded-lg 
+                             border border-gray-300 hover:border-gray-400
+                             transition-all duration-200 flex items-center justify-center gap-2"
+                      (click)="onImprimirReporteCaja()">
+                <i class="pi pi-download text-sm"></i>
+                <span>Exportar Reporte</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de Abrir Caja moderno cuando NO está abierta -->
+        <div *ngIf="!cajaAbierta" class="lg:w-80 flex-shrink-0">
+          <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+            
+            <!-- Icono de caja moderno -->
+            <div class="relative mb-6">
+              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-blue-600 
+                          rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <i class="pi pi-box text-white text-2xl"></i>
+              </div>
+              
+              <!-- Indicador de estado -->
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 
+                          rounded-full flex items-center justify-center shadow-md 
+                          border-2 border-white">
+                <i class="pi pi-lock text-white text-xs"></i>
+              </div>
+            </div>
+            
+            <!-- Título y descripción -->
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Iniciar Sesión de Caja</h2>
+            <p class="text-gray-600 mb-6 text-sm leading-relaxed">
+              Abra una nueva sesión para comenzar a procesar ventas y acceder a todas las funciones del sistema.
+            </p>
+            
+            <!-- Botón de abrir caja moderno -->
+            <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 
+                           hover:from-blue-600 hover:to-blue-700 
+                           text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20
+                           hover:shadow-blue-500/30 transition-all duration-300 
+                           flex items-center justify-center gap-2"
+                    (click)="onAbrirCaja()">
+              <i class="pi pi-unlock"></i>
+              <span>Abrir Caja</span>
+            </button>
+            
+            <!-- Información adicional -->
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <div class="text-xs text-gray-500">
+                Una vez abierta, podrá gestionar ventas, consultar reportes y más
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

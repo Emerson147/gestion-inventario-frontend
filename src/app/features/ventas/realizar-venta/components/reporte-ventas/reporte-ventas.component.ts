@@ -12,7 +12,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 // ✅ IMPORTS DE PRIMENG COMPONENTS
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CalendarModule } from 'primeng/calendar';
@@ -96,7 +96,7 @@ interface TipoReporte {
   icono: string;
   iconoAccion: string;
   clase: string;
-  severidad: string;
+  severidad: ButtonSeverity;
   generando: boolean;
   progreso: number;
 }
@@ -479,7 +479,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ✅ MÉTODOS DE INICIALIZACIÓN
+  // ✅ MÉTODOS DE INICIALIZACIÓNget
   private inicializarComponente(): void {
     this.currentUser = 'Emerson147';
     this.tabActivo = 0;
@@ -522,7 +522,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         icono: 'pi pi-file',
         iconoAccion: 'pi pi-download',
         clase: 'ppt-card',
-        severidad: 'warning',
+        severidad: 'danger',
         generando: false,
         progreso: 0
       },
