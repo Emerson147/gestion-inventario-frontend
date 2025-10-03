@@ -168,10 +168,6 @@ export interface CarritoItem {
             <span class="text-gray-600">Subtotal:</span>
             <span class="font-medium">{{ formatCurrency(subtotal) }}</span>
           </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-600">IGV (18%):</span>
-            <span class="font-medium">{{ formatCurrency(igv) }}</span>
-          </div>
           <div *ngIf="descuento > 0" class="flex justify-between text-sm">
             <span class="text-gray-600">Descuento:</span>
             <span class="font-medium text-red-600">-{{ formatCurrency(descuento) }}</span>
@@ -240,7 +236,6 @@ export interface CarritoItem {
 export class CarritoComponent {
   @Input() items: CarritoItem[] = [];
   @Input() subtotal: number = 0;
-  @Input() igv: number = 0;
   @Input() descuento: number = 0;
   @Input() total: number = 0;
   @Input() canProceed: boolean = false;

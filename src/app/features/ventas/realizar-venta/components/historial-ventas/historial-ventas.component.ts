@@ -44,6 +44,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { VentasService } from '../../../../../core/services/ventas.service';
 import { EstadisticasVentasService } from '../../../../../core/services/estadisticas-ventas.service';
+import { ComprobantesService } from '../../../../../core/services/comprobantes.service';
 import { VentaResponse } from '../../../../../core/models/venta.model';
 import { PaginatorModule } from 'primeng/paginator';
 
@@ -56,7 +57,6 @@ interface Venta {
   usuario?: Usuario;
   total: number;
   subtotal: number;
-  igv: number;
   estado: EstadoVenta;
   tipoComprobante: string;
   serieComprobante: string;
@@ -415,6 +415,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private ventasService: VentasService = inject(VentasService); // Reemplazar con tu servicio real
     // private exportService: any   // Reemplazar con tu servicio de exportación
   private estadisticasVentasService = inject(EstadisticasVentasService);
+  private comprobantesService = inject(ComprobantesService);
 
   // Agregar estas propiedades para el estado de carga:
   cargandoEstadisticas = false;
@@ -489,26 +490,16 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       fechaHasta: this.rangoFechas[1]
     };
     
-    console.log('📋 [FILTROS] Filtros para API:', filtrosApi);
-    
     this.ventasService.obtenerVentas(filtrosApi)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          console.log('✅ [API SUCCESS] Datos recibidos:', {
-            cantidad: data?.length || 0,
-            ejemplo: data?.[0] || 'Sin datos'
-          });
-          
           if (data && data.length > 0) {
             this.procesarVentasAPI(data);
-          } else {
-            console.log('⚠️ [API] No hay datos, manteniendo ejemplos');
           }
         },
         error: (error) => {
           console.error('❌ [API ERROR] Error al cargar ventas:', error);
-          console.log('📝 [FALLBACK] Manteniendo datos de ejemplo');
           
           this.messageService.add({
             severity: 'warn',
@@ -712,7 +703,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
             } : undefined,
             total: venta.total,
             subtotal: venta.subtotal,
-            igv: venta.igv,
             estado: venta.estado as EstadoVenta,
             tipoComprobante: venta.tipoComprobante,
             serieComprobante: venta.serieComprobante,
@@ -799,7 +789,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           // Montos
           total: venta.total,
           subtotal: venta.subtotal,
-          igv: venta.igv,
           
           // Estado y comprobante
           estado: this.mapearEstado(venta.estado),
@@ -860,14 +849,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   
 
   private cargarEstadisticas(): void {
-    console.log('📊 [ESTADISTICAS] Solicitando estadísticas del API...');
-    
     this.ventasService.obtenerResumenDiario()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (resumen) => {
-          console.log('✅ [ESTADISTICAS] Resumen recibido del API:', resumen);
-          
           // ✅ MAPEO CORREGIDO según la estructura real del API
           this.estadisticas = {
             ventasHoy: resumen.cantidadVentas || 0, // Usar cantidadVentas, no totalVentas
@@ -885,8 +870,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           
           // Actualizar progreso de meta
           this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
-          
-          console.log('📊 [ESTADISTICAS] Estadísticas procesadas CORREGIDAS:', this.estadisticas);
           
           // Generar datos complementarios desde el API
           this.generarDatosComplementariosDesdeAPI();
@@ -913,8 +896,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
   
   private generarDatosComplementariosDesdeAPI(): void {
-    console.log('🔄 [COMPLEMENTARIOS] Generando datos complementarios...');
-    
     // Generar distribución de pagos por defecto ya que ResumenDiarioResponse no incluye esta info
     this.distribucionPagos = [
       { nombre: 'Efectivo', cantidad: 25, porcentaje: 55, color: '#10b981' },
@@ -928,11 +909,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       { nombre: 'Producto B', cantidad: 18 },
       { nombre: 'Producto C', cantidad: 12 }
     ];
-    
-    console.log('✅ [COMPLEMENTARIOS] Datos generados:', {
-      distribucionPagos: this.distribucionPagos.length,
-      topProductos: this.topProductos.length
-    });
     
     // Actividad reciente
     this.actividadReciente = [
@@ -952,16 +928,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         tiempo: 'hace 3 min' 
       }
     ];
-    
-    console.log('📊 [COMPLEMENTARIOS] Datos generados:', {
-      distribucionPagos: this.distribucionPagos,
-      topProductos: this.topProductos
-    });
   }
 
   private cargarEstadisticasPorDefecto(): void {
-    console.log('🔄 [ESTADISTICAS] Cargando estadísticas por defecto...');
-    
     this.estadisticas = {
       ventasHoy: 12,
       totalVentasHoy: 2450.75,
@@ -977,8 +946,6 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
     
     this.generarDatosComplementarios();
-    
-    console.log('✅ [ESTADISTICAS] Estadísticas por defecto cargadas:', this.estadisticas);
   }
   
   
@@ -1267,12 +1234,250 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   imprimirComprobante(venta: Venta): void {
     console.log('🖨️ Imprimir comprobante:', venta);
     
-    // TODO: Implementar lógica de impresión
+    if (!venta?.id) {
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se puede imprimir: Venta inválida',
+        life: 4000
+      });
+      return;
+    }
+
+    // Mostrar opciones de impresión
+    this.mostrarOpcionesImpresion(venta);
+  }
+
+  /**
+   * Muestra opciones de impresión al usuario
+   */
+  private mostrarOpcionesImpresion(venta: Venta): void {
+    this.confirmationService.confirm({
+      header: '🖨️ Opciones de Impresión',
+      message: `¿Cómo deseas imprimir el comprobante de la venta ${venta.numeroVenta}?`,
+      icon: 'pi pi-print',
+      acceptLabel: '🎫 Ticket + PDF',
+      rejectLabel: '🖨️ Solo PDF',
+      acceptButtonStyleClass: 'p-button-success p-button-sm',
+      rejectButtonStyleClass: 'p-button-secondary p-button-sm',
+      accept: () => {
+        this.imprimirTicketYPDF(venta);
+      },
+      reject: () => {
+        this.imprimirSoloPDF(venta);
+      }
+    });
+  }
+
+
+
+  /**
+   * Imprime en ticketera Y descarga PDF automáticamente
+   */
+  private imprimirTicketYPDF(venta: Venta): void {
     this.messageService.add({
       severity: 'info',
-      summary: '🖨️ Imprimiendo',
-      detail: `Generando comprobante de venta ${venta.numeroVenta}`,
+      summary: '⏳ Procesando',
+      detail: 'Imprimiendo ticket y generando PDF...',
       life: 3000
+    });
+
+    // Ejecutar ambas operaciones en paralelo
+    // Ticket directo desde venta, PDF requiere comprobante
+    Promise.all([
+      this.enviarTicketDesdeVenta(venta.id, venta.numeroVenta),
+      this.asegurarComprobante(venta).then(comprobante => 
+        this.descargarPDFComprobante(comprobante.id, venta.numeroVenta)
+      )
+    ]).then((resultados) => {
+      const [ticketResult, pdfResult] = resultados;
+      
+      // Mostrar resultado combinado
+      if (ticketResult && pdfResult) {
+        this.messageService.add({
+          severity: 'success',
+          summary: '✅ Impresión Completa',
+          detail: `Ticket enviado a ticketera y PDF descargado para venta ${venta.numeroVenta}`,
+          life: 5000
+        });
+      } else {
+        this.messageService.add({
+          severity: 'warn',
+          summary: '⚠️ Parcialmente Completado',
+          detail: `${ticketResult ? 'Ticket enviado' : 'Error en ticket'} - ${pdfResult ? 'PDF descargado' : 'Error en PDF'}`,
+          life: 4000
+        });
+      }
+    }).catch((error) => {
+      console.error('❌ Error en impresión dual:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error en Impresión',
+        detail: error.message || 'Ocurrió un error durante la impresión',
+        life: 4000
+      });
+    });
+  }
+
+  /**
+   * Solo descarga PDF (opción alternativa)
+   */
+  private imprimirSoloPDF(venta: Venta): void {
+    this.messageService.add({
+      severity: 'info',
+      summary: '📄 Generando PDF',
+      detail: 'Preparando comprobante PDF...',
+      life: 2000
+    });
+
+    this.asegurarComprobante(venta).then((comprobante) => {
+      this.descargarPDFComprobante(comprobante.id, venta.numeroVenta).then((exito) => {
+        if (exito) {
+          this.messageService.add({
+            severity: 'success',
+            summary: '📄 PDF Descargado',
+            detail: `Comprobante PDF de venta ${venta.numeroVenta} descargado`,
+            life: 4000
+          });
+        }
+      });
+    }).catch((error) => {
+      console.error('❌ Error generando PDF:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se pudo generar el PDF',
+        life: 4000
+      });
+    });
+  }
+
+  /**
+   * Asegura que existe un comprobante para la venta (lo genera si no existe)
+   */
+  private async asegurarComprobante(venta: Venta): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Primero intentar obtener comprobante existente
+      this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
+        next: (comprobante: any) => {
+          console.log('✅ Comprobante existente encontrado:', comprobante.id);
+          resolve(comprobante);
+        },
+        error: (error: any) => {
+          if (error.status === 404) {
+            console.log('🔄 Comprobante no existe, generando nuevo...');
+            // Generar comprobante nuevo
+            this.generarComprobanteCompleto(venta).then(resolve).catch(reject);
+          } else {
+            console.error('❌ Error obteniendo comprobante:', error);
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Genera un comprobante completo (BOLETA o FACTURA según cliente)
+   */
+  private async generarComprobanteCompleto(venta: Venta): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Determinar tipo de comprobante según cliente
+      const tipoDocumento = venta.cliente?.ruc && venta.cliente.ruc.length > 8 ? 'FACTURA' : 'BOLETA';
+      const serie = tipoDocumento === 'FACTURA' ? 'F001' : 'B001';
+
+      const comprobanteRequest = {
+        ventaId: venta.id,
+        tipoDocumento: tipoDocumento as any,
+        serie: serie,
+        observaciones: `Comprobante generado para impresión - ${venta.numeroVenta}`
+      };
+
+      this.comprobantesService.generarComprobante(comprobanteRequest).subscribe({
+        next: (comprobante: any) => {
+          console.log(`✅ ${tipoDocumento} generado:`, comprobante.id);
+          resolve(comprobante);
+        },
+        error: (error: any) => {
+          console.error('❌ Error generando comprobante:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  /**
+   * Envía ticket directo desde venta (sin necesidad de comprobante)
+   */
+  private async enviarTicketDesdeVenta(ventaId: number, numeroVenta: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.comprobantesService.imprimirTicketDesdeVenta(ventaId).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            console.log('✅ Ticket enviado exitosamente desde venta');
+            resolve(true);
+          } else {
+            console.warn('⚠️ Error en ticketera:', response.message);
+            resolve(false);
+          }
+        },
+        error: (error: any) => {
+          console.error('❌ Error enviando ticket desde venta:', error);
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  /**
+   * Envía comprobante a la ticketera (retorna Promise)
+   * @deprecated Usar enviarTicketDesdeVenta para imprimir directo desde venta
+   */
+  private async enviarATicketera(comprobanteId: number, numeroVenta: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.comprobantesService.imprimirEnTicketera(comprobanteId).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            console.log('✅ Ticket enviado exitosamente');
+            resolve(true);
+          } else {
+            console.warn('⚠️ Error en ticketera:', response.message);
+            resolve(false);
+          }
+        },
+        error: (error: any) => {
+          console.error('❌ Error enviando a ticketera:', error);
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  /**
+   * Descarga PDF del comprobante (retorna Promise)
+   */
+  private async descargarPDFComprobante(comprobanteId: number, numeroVenta: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.comprobantesService.descargarPDF(comprobanteId).subscribe({
+        next: (pdfBlob: any) => {
+          // Crear enlace de descarga
+          const url = window.URL.createObjectURL(pdfBlob);
+          const enlace = document.createElement('a');
+          enlace.href = url;
+          enlace.download = `Comprobante_${numeroVenta}.pdf`;
+          document.body.appendChild(enlace);
+          enlace.click();
+          document.body.removeChild(enlace);
+          window.URL.revokeObjectURL(url);
+          
+          console.log('✅ PDF descargado exitosamente');
+          resolve(true);
+        },
+        error: (error: any) => {
+          console.error('❌ Error descargando PDF:', error);
+          resolve(false);
+        }
+      });
     });
   }
 
@@ -1506,8 +1711,7 @@ getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' |
       fechaBase.setDate(fechaBase.getDate() - Math.floor(Math.random() * 30));
       
       const total = Math.random() * 500 + 50;
-      const subtotal = total / 1.18;
-      const igv = total - subtotal;
+      const subtotal = total;
       
       ventas.push({
         id: i,
@@ -1530,7 +1734,6 @@ getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' |
         },
         total: total,
         subtotal: subtotal,
-        igv: igv,
         estado: estados[Math.floor(Math.random() * estados.length)],
         tipoComprobante: Math.random() > 0.5 ? 'BOLETA' : 'FACTURA',
         serieComprobante: Math.random() > 0.5 ? 'B001' : 'F001',

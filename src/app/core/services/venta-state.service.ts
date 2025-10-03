@@ -13,7 +13,6 @@ export interface VentaState {
   
   // Cálculos
   subtotal: number;
-  igv: number;
   total: number;
   descuento: number;
   
@@ -34,7 +33,6 @@ const initialState: VentaState = {
   clienteSeleccionado: null,
   carrito: [],
   subtotal: 0,
-  igv: 0,
   total: 0,
   descuento: 0,
   activeTabIndex: 0,
@@ -50,11 +48,11 @@ const initialState: VentaState = {
   providedIn: 'root'
 })
 export class VentaStateService {
-  private state$ = new BehaviorSubject<VentaState>(initialState);
+  private stateSubject$ = new BehaviorSubject<VentaState>(initialState);
   private actions$ = new Subject<{ type: string; payload?: any }>();
 
   // Observables públicos
-  public state$ = this.state$.asObservable();
+  public state$ = this.stateSubject$.asObservable();
   public ventaActual$ = this.select(state => state.ventaActual);
   public clienteSeleccionado$ = this.select(state => state.clienteSeleccionado);
   public carrito$ = this.select(state => state.carrito);
@@ -77,11 +75,11 @@ export class VentaStateService {
 
   private setupActions() {
     this.actions$.subscribe(action => {
-      const currentState = this.state$.value;
+      const currentState = this.stateSubject$.value;
       
       switch (action.type) {
         case 'SET_CLIENTE':
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             clienteSeleccionado: action.payload
           });
@@ -89,7 +87,7 @@ export class VentaStateService {
           
         case 'ADD_TO_CART':
           const newCarrito = [...currentState.carrito, action.payload];
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             carrito: newCarrito
           });
@@ -98,9 +96,9 @@ export class VentaStateService {
           
         case 'REMOVE_FROM_CART':
           const filteredCarrito = currentState.carrito.filter(
-            item => item.id !== action.payload
+            (item: any) => item.id !== action.payload
           );
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             carrito: filteredCarrito
           });
@@ -108,34 +106,33 @@ export class VentaStateService {
           break;
           
         case 'SET_ACTIVE_TAB':
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             activeTabIndex: action.payload
           });
           break;
           
         case 'SET_LOADING':
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             loading: action.payload
           });
           break;
           
         case 'SET_VENTAS':
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             ventas: action.payload
           });
           break;
           
         case 'CLEAR_VENTA':
-          this.state$.next({
+          this.stateSubject$.next({
             ...currentState,
             ventaActual: null,
             clienteSeleccionado: null,
             carrito: [],
             subtotal: 0,
-            igv: 0,
             total: 0,
             descuento: 0,
             pasoActual: 0
@@ -175,37 +172,35 @@ export class VentaStateService {
   }
 
   private calcularTotales() {
-    const currentState = this.state$.value;
-    const subtotal = currentState.carrito.reduce((sum, item) => sum + item.subtotal, 0);
-    const igv = subtotal * 0.18;
-    const total = subtotal + igv - currentState.descuento;
+    const currentState = this.stateSubject$.value;
+    const subtotal = currentState.carrito.reduce((sum: number, item: any) => sum + item.subtotal, 0);
+    const total = subtotal - currentState.descuento;
 
-    this.state$.next({
+    this.stateSubject$.next({
       ...currentState,
       subtotal,
-      igv,
       total
     });
   }
 
   // Getters para acceso directo
   get currentState(): VentaState {
-    return this.state$.value;
+    return this.stateSubject$.value;
   }
 
   get ventaActual(): VentaRequest | null {
-    return this.state$.value.ventaActual;
+    return this.stateSubject$.value.ventaActual;
   }
 
   get clienteSeleccionado(): Cliente | null {
-    return this.state$.value.clienteSeleccionado;
+    return this.stateSubject$.value.clienteSeleccionado;
   }
 
   get carrito(): any[] {
-    return this.state$.value.carrito;
+    return this.stateSubject$.value.carrito;
   }
 
   get total(): number {
-    return this.state$.value.total;
+    return this.stateSubject$.value.total;
   }
 }

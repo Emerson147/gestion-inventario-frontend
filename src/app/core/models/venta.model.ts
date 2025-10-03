@@ -76,7 +76,6 @@ export interface ReporteVentasResponse {
   fechaInicio: string;      // ISO string de fecha
   fechaFin: string;         // ISO string de fecha
   totalVentas: number;
-  totalIgv: number;
   cantidadVentas: number;
   topClientes: ClienteVentas[];
   topProductos: ProductoVendido[];

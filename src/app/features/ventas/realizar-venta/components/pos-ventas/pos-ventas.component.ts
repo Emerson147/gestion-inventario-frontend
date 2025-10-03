@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, inject, Output, EventEmitter, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService, MenuItem } from 'primeng/api';
 import { VentaRequest, VentaResponse } from '../../../../../core/models/venta.model';
 import { PagoRequest, PagoResponse } from '../../../../../core/models/pago.model';
 import { MetricaVenta } from '../metrics/metric-card.interface';
@@ -29,9 +29,13 @@ import { AuthService } from '../../../../../core/services/auth.service';
 import { VentasService } from '../../../../../core/services/ventas.service';
 import { EstadisticasVentasService } from '../../../../../core/services/estadisticas-ventas.service';
 import { AnalyticsService } from '../../../../../core/services/analytics.service';
+import { ComprobantesService } from '../../../../../core/services/comprobantes.service';
+import { PagosService } from '../../../../../core/services/pagos.service';
 import { Cliente } from '../../../../../core/models/cliente.model';
 import { Producto } from '../../../../../core/models/product.model';
 import { Inventario } from '../../../../../core/models/inventario.model';
+import { ProductoService } from '../../../../../core/services/producto.service';
+import { PermissionService, PermissionType } from '../../../../../core/services/permission.service';
 
 // Interface extendido para POS que incluye propiedades adicionales
 interface InventarioPOS extends Inventario {
@@ -69,7 +73,6 @@ export interface Venta {
   serieComprobante: string;
   observaciones?: string;
   subtotal: number;
-  igv: number;
   total: number;
   descuento: number;
   metodoPago?: string;
@@ -101,7 +104,8 @@ interface OpcionSelect {
     ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './pos-ventas.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // 🔧 TEMPORAL: Cambiar a Default para que los diálogos funcionen
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PosVentasComponent implements OnInit, OnDestroy {
 
@@ -109,22 +113,47 @@ export class PosVentasComponent implements OnInit, OnDestroy {
   public toastService = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
   private authService = inject(AuthService);
+  private pagosService = inject(PagosService);
+  private productoService = inject(ProductoService);
+  private permissionService = inject(PermissionService);
   
   // Output para comunicarse con el componente padre
-  @Output() procesarPago = new EventEmitter<{
-    carrito: ItemCarrito[];
-    cliente: Cliente | null;
-    totalVenta: number;
-    subtotalVenta: number;
-    igvVenta: number;
-    descuentoVenta: number;
-  }>();
-  
   @Output() cerrarCajaEvent = new EventEmitter<void>();
 
   private destroy$ = new Subject<void>();
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('codigoInput') codigoInput!: ElementRef<HTMLInputElement>;
+
+
+  // ==================== DATOS PRINCIPALES ====================
+  ventas: VentaResponse[] = [];
+  ventasFiltradas: VentaResponse[] = [];
+  clientes: Cliente[] = [];
+  productos: Producto[] = [];
+  inventarios: Inventario[] = [];
+
+  
+   // Variables para menú contextual
+ itemsMenuAcciones: MenuItem[] = [];
+  
+  // ==================== POS - NUEVA VENTA ====================
+  nuevaVenta: VentaRequest = this.initNuevaVenta();
+  clienteSeleccionado: Cliente | null = null;
+  clientesFiltrados: Cliente[] = [];
+  productosAutoComplete: Inventario[] = [];
+  carrito: ItemCarrito[] = [];
+
+  // ==================== PAGO ====================
+  procesandoPago = false;
+  pagoDialog = false;
+  pagoActual: PagoRequest = this.initPago();
+  montoPagado = 0;
+  vuelto = 0;
+  pagosPendientes: PagoResponse[] = [];
+
+  // ==================== COMPROBANTES ====================
+  comprobanteDialog = false;
+  ventaParaComprobante: VentaResponse | null = null;
 
   // Usuario y Sistema
   currentUser = 'Emerson147';
@@ -132,29 +161,39 @@ export class PosVentasComponent implements OnInit, OnDestroy {
   transaccionesHoy = 147;
   horaInicioTurno = '08:00';
 
+  // Control de permisos
+  permissionTypes = PermissionType;
+  canCreate = false;
+  canEdit = false;
+  canDelete = false;
+  canViewReports = false;
+  isDarkMode = false;
+  currentTime = new Date();
+  clientesRecientes: Cliente[] = [];
+
   // Estados de loading
-  procesandoPago = false;
+  processingPayment = false;
   searchingProducts = false;
   addingToCart = false;
   loadingClient = false;
   connectingScanner = false;
   savingData = false;
+  loadingImpresion = false;
   progressPercentage = 0;
   loadingMessage = '';
+  loading = false;
 
-  // Variables principales
-  carrito: ItemCarrito[] = [];
-  clienteSeleccionado: Cliente | null = null;
+
   totalVenta = 0;
   subtotalVenta = 0;
-  igvVenta = 0;
   descuentoVenta = 0;
+  igvVenta = 0; // IGV calculado (18%)
+  operacionGravada = 0; // Base imponible sin IGV
 
   // Búsqueda y productos
   codigoBusqueda = '';
   cantidadInput = 1;
   productoBusqueda: InventarioPOS | null = null;
-  productosAutoComplete: InventarioPOS[] = [];
   productosPopulares: InventarioPOS[] = [];
 
   // Scanner
@@ -168,106 +207,19 @@ export class PosVentasComponent implements OnInit, OnDestroy {
 
   showDashboard = false;
 
-  // Venta
-  nuevaVenta: VentaRequest = {
-    clienteId: 0,
-    usuarioId: 1,
-    tipoComprobante: 'BOLETA',
-    serieComprobante: 'B001',
-    observaciones: '',
-    detalles: []
-  };
-
   // Descuentos y crédito
   aplicarDescuento = false;
   porcentajeDescuento = 0;
   esVentaCredito = false;
   cuotasCredito = 1;
 
-  metricas: MetricaVenta[] = [
-    {
-      id: 'ventas-dia',
-      titulo: 'Ventas del Día',
-      valor: 15420.50,
-      categoria: 'ventas',
-      color: 'success',
-      icono: 'pi-dollar',
-      tendencia: {
-        direccion: 'up',
-        porcentaje: 12.5,
-        periodo: 'vs ayer'
-      },
-      objetivo: {
-        valor: 18000,
-        progreso: 85.7
-      },
-      ultimaActualizacion: new Date(),
-      loading: false
-    },
-    {
-      id: 'transacciones',
-      titulo: 'Transacciones',
-      valor: 147,
-      categoria: 'operaciones',
-      color: 'info',
-      icono: 'pi-shopping-cart',
-      tendencia: {
-        direccion: 'up',
-        porcentaje: 8.3,
-        periodo: 'vs ayer'
-      },
-      ultimaActualizacion: new Date(),
-      loading: false
-    },
-    {
-      id: 'ticket-promedio',
-      titulo: 'Ticket Promedio',
-      valor: 104.90,
-      categoria: 'ventas',
-      color: 'warning',
-      icono: 'pi-chart-line',
-      tendencia: {
-        direccion: 'up',
-        porcentaje: 3.2,
-        periodo: 'vs ayer'
-      },
-      ultimaActualizacion: new Date(),
-      loading: false
-    },
-    {
-      id: 'stock-critico',
-      titulo: 'Stock Crítico',
-      valor: 23,
-      categoria: 'operaciones',
-      color: 'danger',
-      icono: 'pi-exclamation-triangle',
-      tendencia: {
-        direccion: 'up',
-        porcentaje: 15.0,
-        periodo: 'productos'
-      },
-      alertaCritica: {
-        activa: true,
-        mensaje: 'Requiere reposición urgente',
-        nivel: 'alta'
-      },
-      ultimaActualizacion: new Date(),
-      loading: false
-    }
-  ];
-
-    // ==================== COMPROBANTES ====================
-  comprobanteDialog = false;
-  ventaParaComprobante: VentaResponse | null = null;
-
   // Modales
   showClientModal = false;
   showKeyboardHelp = false;
+  mostrarCarritoExpandido = false;
 
   // Cliente modal
   clienteBusqueda: Cliente | null = null;
-  clientesFiltrados: Cliente[] = [];
-  clientesRecientes: Cliente[] = [];
 
   // ==================== CONFIGURACIONES ====================
   metodosPago: OpcionSelect[] = [
@@ -295,6 +247,22 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     { label: 'Devuelta', value: 'DEVUELTA' }
   ];
 
+// ==================== PASOS DEL PROCESO ====================
+  pasos: MenuItem[] = [
+    { label: 'Cliente', icon: 'pi pi-user' },
+    { label: 'Productos', icon: 'pi pi-shopping-cart' },
+    { label: 'Pago', icon: 'pi pi-credit-card' },
+    { label: 'Comprobante', icon: 'pi pi-file' }
+  ];
+  pasoActual = 0;
+
+  tabsInfo = [
+    { icon: 'pi pi-shopping-cart', label: 'Punto de Venta', shortLabel: 'POS' },
+    { icon: 'pi pi-history', label: 'Historial de Ventas', shortLabel: 'Historial' },
+    { icon: 'pi pi-chart-bar', label: 'Reportes y Analytics', shortLabel: 'Reportes' },
+    { icon: 'pi pi-cog', label: 'Configuración', shortLabel: 'Config' }
+  ];
+
 
   getColorMetrica(color: 'success' | 'info' | 'warning' | 'danger' | 'secondary'): string {
     const colores: Record<'success' | 'info' | 'warning' | 'danger' | 'secondary', string> = {
@@ -317,19 +285,14 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     }
   }
   
-  // ==================== PAGO ====================
-
-  pagoDialog = false;
-  pagoActual: PagoRequest = this.initPago();
-  montoPagado = 0;
-  vuelto = 0;
-  pagosPendientes: PagoResponse[] = [];
-
-  seriesComprobante = [
-    { label: 'B001', value: 'B001' },
-    { label: 'F001', value: 'F001' },
-    { label: 'N001', value: 'N001' }
-  ];
+  // Series de comprobantes
+seriesComprobante: { label: string, value: string }[] = [
+  { label: 'B001', value: 'B001' },
+  { label: 'B002', value: 'B002' },
+  { label: 'F001', value: 'F001' },
+  { label: 'F002', value: 'F002' },
+  { label: 'NV001', value: 'NV001' },
+];
 
   opcionesCuotas = [
     { label: '2 cuotas', value: 2 },
@@ -338,14 +301,48 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     { label: '6 cuotas', value: 6 }
   ];
 
+
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);
   private inventarioService = inject(InventarioService);
   private clienteService = inject(ClienteService);
   private ventasService = inject(VentasService);
-  private estadisticasService = inject(EstadisticasVentasService);
-  private analyticsService = inject(AnalyticsService);
+  private comprobantesService = inject(ComprobantesService);
   private http = inject(HttpClient);
+
+  // ========================================
+  // PROPIEDADES PARA PANEL DE PRUEBAS TICKETERA
+  // ========================================
+  
+  // Control del panel de pruebas
+  mostrarBotonPruebas = false; // 🔥 DESACTIVADO: Causaba conflicto con botón PROCESAR PAGO
+  panelPruebasVisible = false;
+  
+  // Estado de la ticketera
+  estadoConexion = {
+    conectada: false,
+    puerto: '',
+    estado: 'Desconocido'
+  };
+  
+  // Controles de verificación
+  verificandoConexion = false;
+  detectandoPuertos = false;
+
+
+  // Control de estado de caja
+  cajaAbierta = false;
+  
+  // Configuración de puertos
+  puertosDisponibles: string[] = [];
+  puertoSeleccionado = '';
+  
+  // Log de pruebas
+  logPruebas: Array<{
+    timestamp: string;
+    tipo: 'info' | 'success' | 'warning' | 'error';
+    mensaje: string;
+  }> = [];
 
   // ========================================
   // MÉTODOS DE NOTIFICACIONES MODERNAS
@@ -394,6 +391,31 @@ export class PosVentasComponent implements OnInit, OnDestroy {
    */
   onToastDismissed(toastId: string): void {
     this.toastService.dismiss(toastId);
+    this.cdr.markForCheck();
+  }
+
+  // ========================================
+  // MÉTODO PÚBLICO PARA RECIBIR VENTA COMPLETADA DESDE EL PADRE
+  // ========================================
+  
+  /**
+   * Método público que el componente padre llama cuando se completa una venta
+   * para abrir el diálogo de comprobante en el POS
+   */
+  public mostrarComprobanteVentaCompletada(venta: VentaResponse): void {
+    // Asignar la venta al diálogo de comprobante
+    this.ventaParaComprobante = venta;
+    
+    // Abrir el diálogo de comprobante
+    this.comprobanteDialog = true;
+    
+    // Limpiar el carrito y resetear el formulario
+    this.limpiarFormularioVenta();
+    
+    // Actualizar inventarios después de la venta
+    this.actualizarInventariosDespuesDeVenta();
+    
+    // Forzar detección de cambios
     this.cdr.markForCheck();
   }
 
@@ -496,11 +518,27 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     // Marcar que es un refresh manual
     window.location.hash = 'refresh';
 
-    // Limpiar todos los cachés
-    this.limpiarCacheBusqueda();
+    // 🔄 FORZAR ACTUALIZACIÓN INMEDIATA (ignorar throttling para refrescos manuales)
+    this.ultimaActualizacion = 0; // Reset del throttling
+    this.actualizacionEnProgreso = false; // Reset del flag de progreso
     
-    // Recargar productos populares (esto también notificará el éxito)
-    // this.cargarProductosPopulares();
+    this.forzarActualizacionInventario();
+    
+    // Actualización forzada de cantidades
+    if (this.productosAutoComplete.length > 0) {
+      setTimeout(() => {
+        this.actualizarCantidadesEnTiempoReal();
+      }, 500);
+    }
+    
+    // Confirmación de actualización después de 3 segundos
+    setTimeout(() => {
+      this.toastService.success(
+        '✅ Inventario Actualizado',
+        'Los datos han sido sincronizados correctamente',
+        { duration: 2000 }
+      );
+    }, 3000);
     
     // Limpiar el flag de refresh después de un tiempo
     setTimeout(() => {
@@ -519,6 +557,89 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     this.productosAutoComplete = [];
     this.productoBusqueda = null;
     this.cdr.markForCheck();
+  }
+
+  /**
+   * Fuerza la actualización del inventario limpiando cache y recargando datos
+   */
+  private forzarActualizacionInventario(): void {
+    // Limpiar cache del servicio de inventario
+    this.inventarioService['clearInventariosCache']();
+    
+    // Limpiar cache local
+    this.limpiarCacheBusqueda();
+    
+    // Recargar productos populares para tener datos frescos
+    this.cargarProductosPopulares();
+  }
+
+  // 🔄 VARIABLES PARA CONTROL DE RENDIMIENTO Y ACTUALIZACIONES EN TIEMPO REAL
+  private ultimaActualizacion = 0;
+  private actualizacionEnProgreso = false;
+  private readonly INTERVALO_MINIMO_ACTUALIZACION = 5000; // 5 segundos entre actualizaciones
+  public ultimaActualizacionInventario = new Date(); // Para mostrar al usuario
+  
+  // 🔒 VARIABLES PARA CONTROL DE MÚLTIPLES CLICS
+  private nuevaVentaEnProceso = false;
+
+  /**
+   * Actualiza las cantidades de productos en el autoComplete con datos frescos
+   * Incluye optimizaciones de rendimiento para evitar actualizaciones excesivas
+   */
+  private actualizarCantidadesEnTiempoReal(query?: string): void {
+    const ahora = Date.now();
+    
+    // 🚀 OPTIMIZACIÓN: Evitar actualizaciones muy frecuentes
+    if (ahora - this.ultimaActualizacion < this.INTERVALO_MINIMO_ACTUALIZACION) {
+      console.log('⏳ Actualizacion omitida - muy frecuente');
+      return;
+    }
+    
+    // 🚀 OPTIMIZACIÓN: Evitar actualizaciones paralelas
+    if (this.actualizacionEnProgreso) {
+      console.log('⏳ Actualizacion omitida - ya en progreso');
+      return;
+    }
+    
+    if (this.productosAutoComplete.length === 0) return;
+    
+    // Obtener IDs de productos actualmente mostrados
+    const inventarioIds = this.productosAutoComplete.map(p => p.id).filter((id): id is number => typeof id === 'number' && id > 0);
+    
+    if (inventarioIds.length === 0) return;
+    
+    this.actualizacionEnProgreso = true;
+    this.ultimaActualizacion = ahora;
+    
+    // Hacer una búsqueda fresca sin cache
+    const filtros = query ? { producto: query } : { soloAgotados: false };
+    
+    this.inventarioService.obtenerInventarios(0, 30, 'producto.nombre', 'asc', filtros).subscribe({
+      next: (response) => {
+        // Actualizar cantidades de productos existentes en la lista
+        this.productosAutoComplete = this.productosAutoComplete.map(producto => {
+          const inventarioActualizado = response.contenido.find(inv => inv.id === producto.id);
+          if (inventarioActualizado) {
+            return {
+              ...producto,
+              cantidad: inventarioActualizado.cantidad,
+              stock: inventarioActualizado.cantidad,
+              estado: inventarioActualizado.estado
+            };
+          }
+          return producto;
+        }).filter(p => p.cantidad > 0); // Filtrar productos sin stock
+        
+        this.actualizacionEnProgreso = false;
+        this.ultimaActualizacionInventario = new Date(); // Actualizar timestamp
+        this.cdr.markForCheck();
+        console.log('🔄 Cantidades actualizadas en tiempo real');
+      },
+      error: (error) => {
+        console.error('Error al actualizar cantidades:', error);
+        this.actualizacionEnProgreso = false;
+      }
+    });
   }
 
   /**
@@ -586,11 +707,6 @@ export class PosVentasComponent implements OnInit, OnDestroy {
                   0;
     
     const precioFinal = Number(precio);
-    
-    // Solo log de warning si no se encuentra precio
-    if (precioFinal === 0) {
-      console.warn(`⚠️ Precio no encontrado para producto: ${inventario.producto?.nombre || 'Desconocido'}`);
-    }
     
     return precioFinal;
   }
@@ -727,6 +843,33 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     );
   }
 
+  
+
+  ngOnInit() {
+    this.loadPermissions();
+    this.inicializarEstadoCaja(); // Nuevo método para gestionar estado de caja
+    this.cargarDatosIniciales();
+      // ✅ FORZAR CARGA DE PRODUCTOS DIRECTAMENTE
+    setTimeout(() => {
+      this.cargarProductos();
+    }, 1000);
+  
+    this.cargarProductosPopulares();
+    this.cargarClientesRecientes();
+    // this.initAudio(); // Lo agregaremos después
+    this.inicializarComponente();
+  }
+
+    // ==================== INICIALIZACIÓN ====================
+  
+  private loadPermissions(): void {
+    this.canCreate = this.permissionService.canCreate('ventas');
+    this.canEdit = this.permissionService.canEdit('ventas');
+    this.canDelete = this.permissionService.canDelete('ventas');
+    this.canViewReports = this.permissionService.canView('reportes');
+  }
+
+  
   private initPago(): PagoRequest {
     return {
       ventaId: 0,
@@ -740,63 +883,40 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     };
   }
   
+  
 
-  ngOnInit() {
-    this.inicializarComponente();
-    this.configurarShortcuts();
-  }
-
-
-
-  // 🚀 MÉTODO TEMPORAL PARA OBTENER PRECIOS DIRECTAMENTE
-  private async obtenerPrecioProducto(productoId: number): Promise<number> {
-    try {
-      // Consultar directamente el endpoint de productos para obtener los precios
-      const producto$ = this.http.get<any>(`http://localhost:8080/api/productos/${productoId}`);
-      
-      return new Promise((resolve) => {
-        producto$.subscribe({
-          next: (producto) => {
-            const precio = producto.precioVenta || producto.precio_venta || 0;
-            resolve(precio);
-          },
-          error: (error) => {
-            console.error(`Error al obtener precio del producto ${productoId}:`, error);
-            resolve(0);
-          }
-        });
+  /**
+   * Inicializar actualización automática del inventario
+   */
+  private inicializarActualizacionInventario(): void {
+    // 🔄 ACTUALIZACIÓN AUTOMÁTICA INTELIGENTE
+    // Actualización periódica cada 60 segundos para mantener datos frescos
+    interval(60000) // 1 minuto
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Solo actualizar si hay productos en la lista de búsqueda Y no hay actualización en progreso
+        if (this.productosAutoComplete.length > 0 && !this.actualizacionEnProgreso) {
+          console.log('🔄 Actualización periódica del inventario...');
+          this.actualizarCantidadesEnTiempoReal();
+        }
       });
-    } catch (error) {
-      console.error(`Error en obtenerPrecioProducto:`, error);
-      return 0;
-    }
+
+    // 🔄 ACTUALIZACIÓN MÁS FRECUENTE DURANTE ACTIVIDAD INTENSA
+    // Actualizar cada 20 segundos si hay carrito activo (pero respetando el throttling)
+    interval(20000) // 20 segundos
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.carrito.length > 0 && 
+            this.productosAutoComplete.length > 0 && 
+            !this.actualizacionEnProgreso) {
+          console.log('🔄 Actualización durante actividad...');
+          this.actualizarCantidadesEnTiempoReal();
+        }
+      });
+      
+    console.log('✅ Sistema de actualización automática de inventario iniciado con optimizaciones');
   }
 
-  // 🔄 MÉTODO PARA ENRIQUECER PRODUCTOS CON PRECIOS
-  private enriquecerProductoConPrecio(productoId: number, inventarioId: number): void {
-    this.obtenerPrecioProducto(productoId).then(precio => {
-      if (precio > 0) {
-
-        
-        // Actualizar en productosAutoComplete
-        const itemAutoComplete = this.productosAutoComplete.find(p => p.id === inventarioId);
-        if (itemAutoComplete && itemAutoComplete.producto) {
-          itemAutoComplete.producto.precioVenta = precio;
-          itemAutoComplete.precioUnitario = precio;
-        }
-
-        // Actualizar en productosPopulares
-        const itemPopular = this.productosPopulares.find(p => p.id === inventarioId);
-        if (itemPopular && itemPopular.producto) {
-          itemPopular.producto.precioVenta = precio;
-          itemPopular.precioUnitario = precio;
-        }
-
-        // Marcar para cambio de detección
-        this.cdr.markForCheck();
-      }
-    });
-  }
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -830,16 +950,442 @@ getMetodoPagoIcon(tipo: string): string {
   }
 }
 
-// Función para imprimir comprobante
+// Función para imprimir comprobante directamente en ticketera
 imprimirComprobante(venta: VentaResponse): void {
-  const nombreArchivo = `comprobante-${venta.numeroVenta}.pdf`;
-  this.mostrarInfo('Imprimiendo', `Enviando ${nombreArchivo} a la impresora...`);
+  console.log('═══════════════════════════════════════════════════════════');
+  console.log('🖨️ [INICIO] imprimirComprobante() - Impresión directa en ticketera');
+  console.log('📦 Datos de venta recibidos:', venta);
+  
+  if (!venta) {
+    console.error('❌ ERROR: venta es null o undefined');
+    this.toastService.error('❌ Error', 'No se puede imprimir: Venta no proporcionada');
+    return;
+  }
+  
+  if (!venta.id) {
+    console.error('❌ ERROR: venta.id es null o undefined. Venta completa:', venta);
+    this.toastService.error('❌ Error', 'No se puede imprimir: Venta sin ID');
+    return;
+  }
+
+  console.log('✅ Validación exitosa - Venta ID:', venta.id);
+  console.log('📋 Tipo de comprobante:', venta.tipoComprobante);
+  console.log('📋 Serie:', venta.serieComprobante);
+  console.log('💰 Total:', venta.total);
+  console.log('👤 Cliente:', venta.cliente?.nombres, venta.cliente?.apellidos);
+  console.log('🛒 Cantidad de productos:', venta.detalles?.length);
+  
+  console.log('➡️ Imprimiendo en ticketera...');
+  
+  // Imprimir directamente en la ticketera
+  this.imprimirSoloTicket(venta);
+  
+  console.log('✅ Solicitud de impresión enviada');
+  console.log('═══════════════════════════════════════════════════════════');
+}
+
+/**
+ * Muestra opciones de impresión al usuario
+ */
+private mostrarOpcionesImpresion(venta: VentaResponse): void {
+  console.log('───────────────────────────────────────────────────────────');
+  console.log('📋 [INICIO] mostrarOpcionesImpresion()');
+  console.log('🔍 Venta recibida:', venta);
+  console.log('🔍 confirmationService disponible:', !!this.confirmationService);
+  
+  try {
+    this.confirmationService.confirm({
+      header: '🖨️ Opciones de Impresión',
+      message: '¿Cómo deseas imprimir el comprobante?',
+      icon: 'pi pi-print',
+      acceptLabel: '🎫 Ticket + PDF',
+      rejectLabel: '📄 Solo PDF',
+      acceptButtonStyleClass: 'p-button-success p-button-sm',
+      rejectButtonStyleClass: 'p-button-secondary p-button-sm',
+      accept: () => {
+        console.log('✅ Usuario seleccionó: Ticket + PDF');
+        console.log('➡️ Llamando a imprimirTicketYPDF()...');
+        this.imprimirTicketYPDF(venta);
+      },
+      reject: () => {
+        console.log('✅ Usuario seleccionó: Solo PDF');
+        console.log('➡️ Llamando a imprimirSoloPDF()...');
+        this.imprimirSoloPDF(venta);
+      }
+    });
+    
+    console.log('✅ Diálogo de confirmación creado exitosamente');
+    console.log('⏳ Esperando selección del usuario...');
+    console.log('───────────────────────────────────────────────────────────');
+  } catch (error) {
+    console.error('❌ ERROR creando diálogo de confirmación:', error);
+    this.toastService.error('❌ Error', 'No se pudo mostrar opciones de impresión');
+  }
+}
+
+testImpresion(): void {
+  console.log('🔥🔥🔥 TEST IMPRESION LLAMADO 🔥🔥🔥');
+  console.log('ventaParaComprobante:', this.ventaParaComprobante);
+  alert('¡Botón funciona! ventaParaComprobante: ' + (this.ventaParaComprobante ? 'EXISTE' : 'NULL'));
+}
+
+/**
+ * Imprime en ticketera usando formato específico
+ */
+private async imprimirEnTicketera(venta: VentaResponse): Promise<void> {
+  try {
+    console.log('🎫 Preparando impresión en ticketera...');
+    
+    this.toastService.info('⏳ Preparando', 'Generando ticket para impresión...', { duration: 2000 });
+
+    // Opción 1: Usar servicio backend para impresión directa
+    await this.enviarATicketeraViaBackend(venta);
+    
+    // Opción 2: Generar HTML y usar window.print() (fallback)
+    // this.generarTicketHTML(venta);
+    
+  } catch (error) {
+    console.error('❌ Error imprimiendo en ticketera:', error);
+    this.toastService.error('❌ Error de Impresión', 'No se pudo imprimir en ticketera');
+    
+    // Fallback a impresión normal
+    this.imprimirEnImpresoraNormal(venta);
+  }
+}
+
+/**
+ * Envía la venta al backend para impresión directa en ticketera
+ */
+private async enviarATicketeraViaBackend(venta: VentaResponse): Promise<void> {
+  try {
+    // Primero verificar conexión con ticketera
+    console.log('📡 Verificando conexión con ticketera XPrinter XP-V320M...');
+    
+    this.comprobantesService.verificarConexionTicketera().subscribe({
+      next: (conexion) => {
+        if (conexion.success && conexion.conectada) {
+          console.log('✅ Ticketera conectada, procediendo con impresión');          
+          this.continuarConImpresion(venta);
+        } else {
+          console.warn('⚠️ Ticketera no conectada:', conexion.message);
+          this.toastService.warning(
+            '⚠️ Ticketera Desconectada',
+            'No se pudo conectar con la ticketera. Verificando...',
+            { duration: 3000 }
+          );
+          
+          // Intentar de todas formas (quizás la verificación falló pero la impresora funciona)
+          this.continuarConImpresion(venta);
+        }
+      },
+      error: (error) => {
+        console.warn('⚠️ Error verificando conexión, intentando impresión:', error);
+        // Continuar con la impresión aunque la verificación falle
+        this.continuarConImpresion(venta);
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error en envío a ticketera via backend:', error);
+    throw error;
+  }
+}
+
+/**
+ * Continúa con el proceso de impresión después de verificar conexión
+ */
+private continuarConImpresion(venta: VentaResponse): void {
+  // Obtener o generar el comprobante
+  this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
+    next: (comprobante) => {
+      console.log('✅ Comprobante encontrado, enviando a ticketera:', comprobante.id);
+      this.enviarComprobanteATicketera(comprobante.id);
+    },
+    error: (error) => {
+      if (error.status === 404) {
+        console.log('🔄 Comprobante no existe, generando para ticketera...');
+        this.generarYEnviarATicketera(venta);
+      } else {
+        console.error('❌ Error obteniendo comprobante:', error);
+        this.toastService.error('❌ Error', 'No se pudo obtener el comprobante para impresión');
+      }
+    }
+  });
+}
+
+/**
+ * Genera comprobante y lo envía a ticketera
+ */
+private generarYEnviarATicketera(venta: VentaResponse): void {
+  const comprobanteRequest = {
+    ventaId: venta.id,
+    tipoDocumento: 'TICKET' as const, // Para ticketera usar tipo TICKET
+    serie: 'T001', // Serie específica para tickets
+    observaciones: `Ticket generado para impresión en ticketera`
+  };
+
+  this.comprobantesService.generarComprobante(comprobanteRequest).subscribe({
+    next: (comprobante) => {
+      console.log('✅ Comprobante tipo TICKET generado:', comprobante.id);
+      this.enviarComprobanteATicketera(comprobante.id);
+    },
+    error: (error) => {
+      console.error('❌ Error generando comprobante para ticketera:', error);
+      this.toastService.error('❌ Error', 'No se pudo generar el ticket');
+    }
+  });
+}
+
+/**
+ * Envía comprobante específico a la ticketera
+ */
+private enviarComprobanteATicketera(comprobanteId: number): void {
+  this.toastService.info('🎫 Enviando', 'Enviando ticket a XPrinter XP-V320M...', { duration: 2000 });
+  
+  this.comprobantesService.imprimirEnTicketera(comprobanteId).subscribe({
+    next: (response) => {
+      console.log('✅ Respuesta de ticketera:', response);
+      
+      if (response.success) {
+        this.toastService.success(
+          '✅ Impreso en Ticketera',
+          response.message || 'El ticket se ha enviado correctamente a la XPrinter XP-V320M',
+          { duration: 4000 }
+        );
+        
+        // Opcional: ofrecer cortar papel
+        this.ofrecerCortarPapel();
+        
+      } else {
+        console.warn('⚠️ Impresión falló según backend:', response.message);
+        this.toastService.error(
+          '❌ Error de Impresión',
+          response.message || 'No se pudo imprimir en la ticketera',
+          { duration: 4000 }
+        );
+        
+        // Fallback: mostrar vista previa
+        this.mostrarVistaPreviaComoFallback(comprobanteId);
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error enviando a ticketera:', error);
+      
+      let mensaje = 'No se pudo enviar a la ticketera';
+      if (error.message?.includes('conectar')) {
+        mensaje = 'Verifique que la XPrinter XP-V320M esté conectada y encendida';
+      }
+      
+      this.toastService.error('❌ Error de Conexión', mensaje, { duration: 5000 });
+      
+      // Fallback: mostrar vista previa
+      this.mostrarVistaPreviaComoFallback(comprobanteId);
+    }
+  });
+}
+
+/**
+ * Ofrece al usuario cortar el papel después de imprimir
+ */
+private ofrecerCortarPapel(): void {
+  setTimeout(() => {
+    this.confirmationService.confirm({
+      header: '✂️ Cortar Papel',
+      message: '¿Desea cortar el papel de la ticketera?',
+      icon: 'pi pi-question-circle',
+      acceptLabel: 'Sí, Cortar',
+      rejectLabel: 'No',
+      acceptButtonStyleClass: 'p-button-success p-button-sm',
+      rejectButtonStyleClass: 'p-button-secondary p-button-sm',
+      accept: () => {
+        this.cortarPapelTicketera();
+      }
+    });
+  }, 1000);
+}
+
+/**
+ * Corta el papel de la ticketera
+ */
+private cortarPapelTicketera(): void {
+  this.comprobantesService.cortarPapel().subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.toastService.success('✂️ Papel Cortado', response.message, { duration: 2000 });
+      } else {
+        this.toastService.warning('⚠️ Aviso', response.message, { duration: 3000 });
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error cortando papel:', error);
+      this.toastService.error('❌ Error', 'No se pudo cortar el papel', { duration: 3000 });
+    }
+  });
+}
+
+/**
+ * Muestra vista previa como fallback cuando falla la impresión
+ */
+private mostrarVistaPreviaComoFallback(comprobanteId: number): void {
+  console.log('🔄 Mostrando vista previa como fallback...');
+  
+  this.comprobantesService.obtenerVistaPreviaTicket(comprobanteId).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.mostrarDialogoVistaPrevia(response.contenido);
+      } else {
+        // Último fallback: generar HTML básico
+        this.generarTicketHTML(comprobanteId);
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error obteniendo vista previa:', error);
+      // Último fallback: generar HTML básico
+      this.generarTicketHTML(comprobanteId);
+    }
+  });
+}
+
+/**
+ * Muestra diálogo con vista previa del ticket
+ */
+private mostrarDialogoVistaPrevia(contenido: string): void {
+  // Crear un diálogo simple con el contenido del ticket
+  this.confirmationService.confirm({
+    header: '👁️ Vista Previa del Ticket',
+    message: `<pre style="font-family: monospace; font-size: 12px; text-align: left;">${contenido}</pre>`,
+    icon: 'pi pi-eye',
+    acceptLabel: 'Cerrar',
+    rejectLabel: 'Intentar Imprimir',
+    acceptButtonStyleClass: 'p-button-secondary p-button-sm',
+    rejectButtonStyleClass: 'p-button-primary p-button-sm',
+    reject: () => {
+      // Mostrar opciones de configuración
+      this.mostrarOpcionesConfiguracion();
+    }
+  });
+}
+
+/**
+ * Imprime usando impresora normal (PDF)
+ */
+private imprimirEnImpresoraNormal(venta: VentaResponse): void {
+  console.log('🖨️ Imprimiendo en impresora normal...');
+  
+  this.toastService.info('⏳ Preparando', 'Generando PDF para impresión...', { duration: 2000 });
+  
+  // Usar la función de descarga PDF pero abrir para imprimir
+  this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
+    next: (comprobante) => {
+      this.comprobantesService.descargarPDF(comprobante.id).subscribe({
+        next: (blob) => {
+          this.abrirPDFParaImprimir(blob, `comprobante-${venta.numeroVenta}.pdf`);
+        },
+        error: (error) => {
+          console.error('❌ Error descargando PDF para imprimir:', error);
+          this.toastService.error('❌ Error', 'No se pudo preparar el PDF para impresión');
+        }
+      });
+    },
+    error: (error) => {
+      if (error.status === 404) {
+        console.log('🔄 Generando comprobante para impresión normal...');
+        this.generarYAbrirParaImprimir(venta);
+      } else {
+        this.toastService.error('❌ Error', 'No se pudo obtener el comprobante');
+      }
+    }
+  });
+}
+
+/**
+ * Genera comprobante y lo abre para imprimir
+ */
+private generarYAbrirParaImprimir(venta: VentaResponse): void {
+  const comprobanteRequest = {
+    ventaId: venta.id,
+    tipoDocumento: 'BOLETA' as const,
+    serie: 'B001',
+    observaciones: `Comprobante generado para impresión`
+  };
+
+  this.comprobantesService.generarComprobante(comprobanteRequest).subscribe({
+    next: (comprobante) => {
+      this.comprobantesService.descargarPDF(comprobante.id).subscribe({
+        next: (blob) => {
+          this.abrirPDFParaImprimir(blob, `comprobante-${venta.numeroVenta}.pdf`);
+        }
+      });
+    }
+  });
+}
+
+/**
+ * Abre PDF en nueva ventana para imprimir
+ */
+private abrirPDFParaImprimir(blob: Blob, nombreArchivo: string): void {
+  try {
+    const url = window.URL.createObjectURL(blob);
+    const ventana = window.open(url, '_blank');
+    
+    if (ventana) {
+      ventana.onload = () => {
+        setTimeout(() => {
+          ventana.print();
+        }, 500);
+      };
+      
+      this.toastService.success(
+        '✅ Listo para Imprimir',
+        'Se ha abierto el comprobante en una nueva ventana',
+        { duration: 3000 }
+      );
+    } else {
+      // Fallback: descargar archivo
+      this.comprobantesService.descargarArchivo(blob, nombreArchivo);
+      this.toastService.info('📁 Descargado', 'Archivo descargado para imprimir manualmente');
+    }
+    
+    // Limpiar URL después de un tiempo
+    setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+    
+  } catch (error) {
+    console.error('❌ Error abriendo PDF:', error);
+    this.toastService.error('❌ Error', 'No se pudo abrir el PDF para imprimir');
+  }
+}
+
+/**
+ * Genera HTML de ticket para impresión web (fallback)
+ */
+private generarTicketHTML(comprobanteId: number): void {
+  // Implementar generación de HTML específico para tickets
+  console.log('🎫 Generando HTML de ticket para impresión web como fallback');
+  
+  // TODO: Implementar plantilla HTML para tickets
+  this.toastService.info('🔄 Alternativa', 'Preparando ticket en formato web...');
 }
 
 // Función para enviar por email
 enviarComprobantePorEmail(venta: VentaResponse): void {
+  console.log('═══════════════════════════════════════════════════════════');
+  console.log('📧 [INICIO] enviarComprobantePorEmail() llamado');
+  console.log('📦 Venta recibida:', venta);
+  
+  if (!venta?.id) {
+    console.error('❌ ERROR: venta sin ID');
+    this.toastService.error('❌ Error', 'No se puede enviar: Venta inválida');
+    return;
+  }
+  
   const email = (venta.cliente as { email?: string }).email || 'cliente@ejemplo.com';
-  this.mostrarInfo('Enviando', `Enviando comprobante a ${email}...`);
+  console.log('📧 Email destino:', email);
+  console.log('⚠️ NOTA: Funcionalidad de envío por email pendiente de implementación');
+  
+  this.toastService.info('📧 Enviar Email', `Enviando comprobante a ${email}...`);
+  console.log('═══════════════════════════════════════════════════════════');
+  
+  // TODO: Implementar envío real por email
+  // this.comprobantesService.enviarPorEmail(venta.id, email).subscribe(...)
 }
 
 
@@ -871,23 +1417,10 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     this.cargarClientesRecientes();
     this.calcularTotales();
     
-    // Inicializar actualización periódica de métricas del dashboard
-    this.inicializarActualizacionPeriodica();
     
     console.log(`🚀 POS iniciado por ${this.currentUser} - ${this.getCurrentDateTime()}`);
   }
 
-  private inicializarActualizacionPeriodica(): void {
-    // Actualizar métricas cada 5 minutos
-    interval(5 * 60 * 1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.showDashboard) {
-          console.log('🔄 Actualizando métricas del dashboard...');
-          this.cargarDatosRealesdashboard();
-        }
-      });
-  }
 
   private configurarShortcuts() {
     document.addEventListener('keydown', (event) => {
@@ -964,18 +1497,7 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     this.mostrarInfo('Exportando', `Generando reporte de ${tipo}...`);
   }
 
-  actualizarTodasLasMetricas(): void {
-    this.metricas.forEach(metrica => {
-      metrica.loading = true;
-      metrica.ultimaActualizacion = new Date();
-      
-      // Simular actualización de datos
-      setTimeout(() => {
-        metrica.loading = false;
-      }, 1000);
-    });
-  }
-  
+
 
   // ✅ MÉTODOS DE BÚSQUEDA Y PRODUCTOS
   buscarProductoPorCodigo() {
@@ -1051,7 +1573,7 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     const query = event.query;
     
     if (!query || query.length < 1) {
-      // Si no hay query, obtener productos recientes del servidor
+      // Si no hay query, obtener productos recientes del servidor con datos frescos
       this.cargarProductosRecientes();
       return;
     }
@@ -1059,6 +1581,9 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     this.searchingProducts = true;
     this.loadingMessage = 'Buscando productos...';
     this.cdr.markForCheck();
+
+    // 🔄 FORZAR DATOS FRESCOS: Limpiar cache antes de buscar para obtener cantidades actualizadas
+    this.inventarioService['clearInventariosCache']();
 
     // Buscar usando el servicio real de inventario con parámetros optimizados
     this.inventarioService.obtenerInventarios(0, 30, 'producto.nombre', 'asc', {
@@ -1143,8 +1668,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
   // ✅ GESTIÓN DEL CARRITO
   agregarAlCarrito(inventario: InventarioPOS, cantidad: number) {
     // 🔍 Debug: Verificar precio del inventario antes de agregar
-
-
     
     this.addingToCart = true;
     this.loadingMessage = 'Agregando al carrito...';
@@ -1176,43 +1699,38 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
           
           // Si el precio sigue siendo 0, intentar obtenerlo directamente
           if (precioUnitario === 0 && inventario.producto?.id) {
-            this.obtenerPrecioProducto(inventario.producto.id).then(precioDirecto => {
-              if (precioDirecto > 0 && inventario.producto) {
-                // Actualizar el precio y continuar con la adición
-                inventario.producto.precioVenta = precioDirecto;
-                inventario.precioUnitario = precioDirecto;
-                
-                // Llamar recursivamente con el precio actualizado
-                this.agregarAlCarrito(inventario, cantidad);
-              } else {
-                // Si aún no se puede obtener el precio, mostrar error
-                console.error('❌ NO SE PUDO OBTENER PRECIO DIRECTAMENTE');
-                this.toastService.error(
-                  '❌ Error de Precio',
-                  `El producto ${inventario.producto?.nombre || 'desconocido'} no tiene precio asignado en el sistema.`,
-                  { 
-                    duration: 6000,
-                    persistent: true,
-                    actions: [
-                      {
-                        label: 'Ver Detalles',
-                        action: () => {
-
-                        }
-                      }
-                    ]
-                  }
-                );
-                
-                this.addingToCart = false;
-                this.cdr.markForCheck();
-              }
-            });
+            const precioDirecto = this.obtenerPrecioProducto(inventario.producto.id);
             
-            return; // Salir y esperar la respuesta asíncrona
-          }
-          
+            if (precioDirecto > 0 && inventario.producto) {
+              // Actualizar el precio y continuar con la adición
+              inventario.producto.precioVenta = precioDirecto;
+              inventario.precioUnitario = precioDirecto;
+              precioUnitario = precioDirecto;
+            } else {
+              // Si aún no se puede obtener el precio, mostrar error
+              console.error('❌ NO SE PUDO OBTENER PRECIO DIRECTAMENTE');
+              this.toastService.error(
+                '❌ Error de Precio',
+                `El producto ${inventario.producto?.nombre || 'desconocido'} no tiene precio asignado en el sistema.`,
+                { 
+                  duration: 6000,
+                  persistent: true,
+                  actions: [
+                    {
+                      label: 'Ver Detalles',
+                      action: () => {
 
+                      }
+                    }
+                  ]
+                }
+              );
+              
+              this.addingToCart = false;
+              this.cdr.markForCheck();
+              return;
+            }
+          }
           
           const nuevoItem: ItemCarrito = {
             inventarioId: inventario.id || 0,
@@ -1245,8 +1763,13 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
           // 🛒 Notificación moderna de producto agregado
           this.showProductAddedNotification(inventario, cantidad);
           
-          // Limpiar caché de búsqueda para reflejar cambios de stock
-          this.limpiarCacheBusqueda();
+          // 🔄 ACTUALIZACIÓN EN TIEMPO REAL: Actualizar inventario después de agregar al carrito
+          this.forzarActualizacionInventario();
+          
+          // También actualizar las cantidades en la lista actual de autoComplete
+          setTimeout(() => {
+            this.actualizarCantidadesEnTiempoReal();
+          }, 100);
         } else {
           this.showStockError(inventario);
         }
@@ -1263,6 +1786,12 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
       item.cantidad = nuevaCantidad;
       item.subtotal = item.cantidad * item.precioUnitario;
       this.calcularTotales();
+      
+      // 🔄 ACTUALIZACIÓN EN TIEMPO REAL: Actualizar cantidades en búsqueda
+      setTimeout(() => {
+        this.actualizarCantidadesEnTiempoReal();
+      }, 100);
+      
       this.cdr.markForCheck();
     }
   }
@@ -1277,6 +1806,12 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
         summary: 'Producto Eliminado',
         detail: `${item.producto.nombre} eliminado del carrito`
       });
+      
+      // 🔄 ACTUALIZACIÓN EN TIEMPO REAL: Actualizar cantidades después de eliminar
+      setTimeout(() => {
+        this.actualizarCantidadesEnTiempoReal();
+      }, 100);
+      
       this.cdr.markForCheck();
     }
   }
@@ -1310,11 +1845,21 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
 
   // ✅ CÁLCULOS
   calcularTotales() {
-    this.subtotalVenta = this.carrito.reduce((sum, item) => sum + item.subtotal, 0);
-    this.descuentoVenta = this.aplicarDescuento ? (this.subtotalVenta * this.porcentajeDescuento / 100) : 0;
-    const subtotalConDescuento = this.subtotalVenta - this.descuentoVenta;
-    this.igvVenta = subtotalConDescuento * 0.18;
-    this.totalVenta = subtotalConDescuento + this.igvVenta;
+    // Suma de todos los productos (precio con IGV incluido)
+    const totalConIGV = this.carrito.reduce((sum, item) => sum + item.subtotal, 0);
+    
+    // Aplicar descuento al total
+    this.descuentoVenta = this.aplicarDescuento ? (totalConIGV * this.porcentajeDescuento / 100) : 0;
+    const totalConDescuento = totalConIGV - this.descuentoVenta;
+    
+    // Cálculo del IGV (18%)
+    // El total ya incluye IGV, entonces dividimos entre 1.18 para obtener la base imponible
+    this.operacionGravada = totalConDescuento / 1.18;
+    this.igvVenta = totalConDescuento - this.operacionGravada;
+    
+    // Totales finales
+    this.subtotalVenta = this.operacionGravada; // Base imponible (sin IGV)
+    this.totalVenta = totalConDescuento; // Total con IGV incluido
   }
 
   toggleDescuento() {
@@ -1500,40 +2045,149 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
 
   // ✅ PAGOS
   canProcessPayment(): boolean {
-    // Validaciones básicas
-    if (this.carrito.length === 0 || this.totalVenta <= 0) {
-      return false;
+    const validaciones = {
+      tieneCliente: this.clienteSeleccionado !== null,
+      tieneProductos: this.carrito.length > 0,
+      tieneTotal: this.totalVenta > 0,
+      tieneComprobante: !!this.nuevaVenta.tipoComprobante,
+      tieneSerie: !!this.nuevaVenta.serieComprobante
+    };
+    
+    const puedeProceser = validaciones.tieneCliente && 
+          validaciones.tieneProductos && 
+          validaciones.tieneTotal &&
+          validaciones.tieneComprobante &&
+          validaciones.tieneSerie;
+  
+    
+    return puedeProceser;
+  }
+
+  iniciarPago(): void {
+    // ✅ Validación 1: Cliente
+    if (!this.clienteSeleccionado) {
+      console.error('❌ [INICIO PAGO] No hay cliente seleccionado');
+      this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente');
+      return;
     }
     
-    // Validar precios del carrito
-    return this.validarPreciosCarrito();
+    // ✅ Validación 2: Carrito
+    if (this.carrito.length === 0) {
+      console.error('❌ [INICIO PAGO] Carrito vacío');
+      this.mostrarError('Carrito vacío', 'Debe agregar productos antes de procesar el pago');
+      return;
+    }
+    
+    // ✅ Validación 3: Tipo de comprobante
+    if (!this.nuevaVenta.tipoComprobante) {
+      console.error('❌ [INICIO PAGO] No hay tipo de comprobante');
+      this.mostrarError('Comprobante requerido', 'Debe seleccionar un tipo de comprobante');
+      return;
+    }
+    
+    // ✅ Validación 4: Serie de comprobante
+    if (!this.nuevaVenta.serieComprobante) {
+      console.error('❌ [INICIO PAGO] No hay serie de comprobante');
+      this.mostrarError('Serie requerida', 'Debe seleccionar una serie de comprobante');
+      return;
+    }
+    
+    // ✅ Inicializar estado de pago
+    this.pagoActual = this.initPago();
+    this.pagoActual.monto = this.totalVenta;
+    this.montoPagado = this.totalVenta;
+    this.calcularVuelto();
+    
+    // 🔥 Abrir el diálogo directamente
+    this.pagoDialog = true;
   }
 
-  iniciarPago() {
-    if (!this.canProcessPayment()) return;
-
-    // Emitir evento al componente padre para que abra el diálogo de pago
-    this.procesarPago.emit({
-      carrito: this.carrito,
-      cliente: this.clienteSeleccionado,
-      totalVenta: this.totalVenta,
-      subtotalVenta: this.subtotalVenta,
-      igvVenta: this.igvVenta,
-      descuentoVenta: this.descuentoVenta
-    });
+   // Método para manejar el evento de procesar pago desde el componente POS
+  onProcesarPagoDesdePOS(datosPago: {
+    carrito: any[];
+    cliente: any;
+    totalVenta: number;
+    subtotalVenta: number;
+    igvVenta: number;
+    descuentoVenta: number;
+  }): void {
+    console.log('💳 Recibiendo datos de pago desde POS:', datosPago);
+    
+    // Actualizar los datos del componente padre con los datos del POS
+    this.carrito = datosPago.carrito;
+    this.clienteSeleccionado = datosPago.cliente;
+    this.totalVenta = datosPago.totalVenta;
+    this.subtotalVenta = datosPago.subtotalVenta;
+    this.descuentoVenta = datosPago.descuentoVenta;
+    
+    // Inicializar el pago
+    this.pagoActual = this.initPago();
+    this.pagoActual.monto = this.totalVenta;
+    this.montoPagado = this.totalVenta;
+    this.calcularVuelto();
+    
+    // Abrir el diálogo de pago
+    this.pagoDialog = true;
+    
+    console.log('✅ Diálogo de pago abierto desde POS');
   }
 
-  pagoRapido(metodo: string) {
-    if (!this.canProcessPayment()) return;
 
-    // Emitir evento al componente padre para que abra el diálogo de pago
-    this.procesarPago.emit({
-      carrito: this.carrito,
-      cliente: this.clienteSeleccionado,
-      totalVenta: this.totalVenta,
-      subtotalVenta: this.subtotalVenta,
-      igvVenta: this.igvVenta,
-      descuentoVenta: this.descuentoVenta
+  pagoRapido(metodoPago: string): void {
+    console.log(`🚀 [PAGO RÁPIDO] Método: ${metodoPago}`);
+    
+    // ✅ Validaciones básicas
+    if (!this.canProcessPayment()) {
+      console.error('❌ No se puede procesar el pago');
+      return;
+    }
+    
+    // ✅ Llamar a iniciarPago() primero
+    this.iniciarPago();
+    
+    // ✅ Pre-seleccionar el método de pago después de abrir
+    setTimeout(() => {
+      this.seleccionarMetodoPago(metodoPago);
+      console.log(`✅ [PAGO RÁPIDO] Método preseleccionado: ${metodoPago}`);
+    }, 300);
+  }
+
+  // Nuevo método para inicializar datos del pago
+  private inicializarDatosPago(metodoPago: string = 'EFECTIVO'): void {
+    console.log('🔧 Inicializando datos del pago...');
+    
+    // Resetear y configurar datos del pago
+    this.pagoActual = {
+      ventaId: 0, // Se asignará después de registrar la venta
+      usuarioId: 1, // TODO: obtener del AuthService
+      metodoPago: metodoPago,
+      monto: this.totalVenta,
+      nombreTarjeta: '',
+      ultimos4Digitos: '',
+      numeroReferencia: '',
+      observaciones: ''
+    };
+
+    // Configurar montos
+    if (metodoPago === 'EFECTIVO') {
+      // Para efectivo, redondear a múltiplos de 10
+      this.montoPagado = Math.ceil(this.totalVenta / 10) * 10;
+    } else {
+      // Para otros métodos, el monto exacto
+      this.montoPagado = this.totalVenta;
+    }
+    
+    this.calcularVuelto();
+    
+    // Asegurar que el pago no esté en proceso
+    this.procesandoPago = false;
+    
+    console.log('✅ Datos del pago inicializados:', {
+      usuarioId: this.pagoActual.usuarioId,
+      metodoPago: this.pagoActual.metodoPago,
+      monto: this.pagoActual.monto,
+      montoPagado: this.montoPagado,
+      vuelto: this.vuelto
     });
   }
 
@@ -1571,104 +2225,163 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
   }
 
   private finalizarVenta(metodo?: string) {
-    this.procesandoPago = false;
-    this.progressPercentage = 0;
+    this.procesandoPago = true;
+    this.progressPercentage = 50;
+    this.loadingMessage = '💾 Guardando venta...';
 
-    // Crear la venta
-    const venta: Venta = {
-      numeroVenta: this.getNumeroVenta(),
-      tipoComprobante: this.nuevaVenta.tipoComprobante || 'BOLETA',
-      serieComprobante: this.nuevaVenta.serieComprobante || 'B001',
+    // Preparar el request de venta para el backend
+    const ventaRequest: VentaRequest = {
+      clienteId: this.clienteSeleccionado?.id || 0,
+      usuarioId: 1, // TODO: obtener del AuthService
+      tipoComprobante: this.nuevaVenta.tipoComprobante,
+      serieComprobante: this.nuevaVenta.serieComprobante,
       observaciones: this.nuevaVenta.observaciones,
-      subtotal: this.subtotalVenta,
-      igv: this.igvVenta,
-      total: this.totalVenta,
-      descuento: this.descuentoVenta,
-      metodoPago: metodo || 'EFECTIVO',
-      cliente: this.clienteSeleccionado || undefined,
-      detalles: [...this.carrito],
-      fecha: new Date(),
-      usuario: this.currentUser
+      detalles: this.carrito.map(item => ({
+        inventarioId: item.inventarioId,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        subtotal: item.subtotal
+      }))
     };
 
-    // Limpiar el carrito
-    this.carrito = [];
-    this.clienteSeleccionado = null;
-    this.aplicarDescuento = false;
-    this.porcentajeDescuento = 0;
-    this.nuevaVenta = {
-      clienteId: 0,
-      usuarioId: 1,
-      tipoComprobante: 'BOLETA',
-      serieComprobante: 'B001',
-      observaciones: '',
-      detalles: []
-    };
-    this.calcularTotales();
+    // Guardar datos actuales para uso posterior
+    const carritoActual = [...this.carrito];
+    const totalActual = this.totalVenta;
+    const subtotalActual = this.subtotalVenta;
+    const descuentoActual = this.descuentoVenta;
+    const tipoAnterior = this.nuevaVenta.tipoComprobante;
+    const serieAnterior = this.nuevaVenta.serieComprobante;
 
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Venta Completada',
-      detail: `Venta ${venta.numeroVenta} procesada exitosamente`,
-      life: 5000
+    // Guardar la venta en el backend
+    this.ventasService.registrarVenta(ventaRequest).subscribe({
+      next: (ventaGuardada: VentaResponse) => {
+        console.log('✅ Venta guardada exitosamente:', ventaGuardada);
+        
+        this.progressPercentage = 100;
+        this.procesandoPago = false;
+
+        // ✨ ASIGNAR LA VENTA AL DIÁLOGO DE COMPROBANTE
+        this.ventaParaComprobante = ventaGuardada;
+        
+        // 🎉 ABRIR EL DIÁLOGO DE COMPROBANTE
+        this.comprobanteDialog = true;
+
+        // Limpiar el carrito
+        this.carrito = [];
+        this.clienteSeleccionado = null;
+        this.aplicarDescuento = false;
+        this.porcentajeDescuento = 0;
+        
+        // Mantener el tipo de comprobante seleccionado para la próxima venta
+        this.nuevaVenta = {
+          clienteId: 0,
+          usuarioId: 1,
+          tipoComprobante: tipoAnterior || 'BOLETA',
+          serieComprobante: serieAnterior || 'B001',
+          observaciones: '',
+          detalles: []
+        };
+        
+        this.calcularTotales();
+
+        this.toastService.success(
+          '✅ Venta Completada',
+          `Venta #${ventaGuardada.id} procesada exitosamente`,
+          { duration: 5000 }
+        );
+
+        // Actualizar inventarios después de completar la venta
+        this.actualizarInventariosDespuesDeVenta();
+        
+        this.cdr.markForCheck();
+      },
+      error: (error: any) => {
+        console.error('❌ Error guardando venta:', error);
+        this.procesandoPago = false;
+        this.progressPercentage = 0;
+        
+        this.toastService.error(
+          '❌ Error',
+          'No se pudo guardar la venta. Por favor intente nuevamente.',
+          { duration: 5000 }
+        );
+
+        // Restaurar el carrito en caso de error
+        this.carrito = carritoActual;
+        this.totalVenta = totalActual;
+        this.subtotalVenta = subtotalActual;
+        this.descuentoVenta = descuentoActual;
+        
+        this.cdr.markForCheck();
+      }
     });
-
-    // Actualizar inventarios después de completar la venta
-    this.actualizarInventariosDespuesDeVenta();
-    
-    this.cdr.markForCheck();
-
   }
   
   /**
    * Actualiza los inventarios después de completar una venta
    */
   private actualizarInventariosDespuesDeVenta(): void {
-    console.log('🔄 Actualizando inventarios después de la venta...');
+    // 🔄 ACTUALIZACIÓN COMPLETA DEL INVENTARIO POST-VENTA
+    this.forzarActualizacionInventario();
     
-    // Limpiar caché para forzar nueva búsqueda
-    this.limpiarCacheBusqueda();
+    // Notificar al usuario sobre la actualización
+    this.toastService.info(
+      '🔄 Actualizando Stock',
+      'Sincronizando cantidades después de la venta...',
+      { duration: 2000 }
+    );
     
-    // Recargar productos populares para reflejar nuevos stocks
+    // 📊 ACTUALIZACIÓN ESCALONADA PARA MEJOR SINCRONIZACIÓN
+    // Actualización inmediata
     setTimeout(() => {
-      this.cargarProductosPopulares();
-    }, 1000); // Esperar un segundo para que el backend se actualice
+      this.actualizarCantidadesEnTiempoReal();
+    }, 500);
+    
+    // Actualización de refuerzo después de 2 segundos
+    setTimeout(() => {
+      this.actualizarCantidadesEnTiempoReal();
+      this.toastService.success(
+        '✅ Stock Actualizado',
+        'Las cantidades han sido sincronizadas correctamente',
+        { duration: 1500 }
+      );
+    }, 2000);
+    
+    // Actualización final después de 5 segundos para asegurar consistencia
+    setTimeout(() => {
+      this.forzarActualizacionInventario();
+    }, 5000);
   }
 
   onComprobanteChange() {
     // Actualizar series según el tipo de comprobante
-    this.nuevaVenta.serieComprobante = '';
+    switch (this.nuevaVenta.tipoComprobante) {
+      case 'FACTURA':
+        this.nuevaVenta.serieComprobante = 'F001';
+        break;
+      case 'BOLETA':
+        this.nuevaVenta.serieComprobante = 'B001';
+        break;
+      case 'NOTA_VENTA':
+        this.nuevaVenta.serieComprobante = 'N001';
+        break;
+      case 'TICKET':
+        this.nuevaVenta.serieComprobante = 'T001';
+        break;
+      default:
+        this.nuevaVenta.serieComprobante = '';
+    }
     this.cdr.markForCheck();
   }
 
   // ✅ MÉTODOS AUXILIARES
-  formatearMoneda(valor: string | number): string {
-    // Manejar valores undefined, null, NaN y strings vacíos
-    if (valor === undefined || valor === null || valor === '' || isNaN(Number(valor))) {
-      return new Intl.NumberFormat('es-PE', {
-        style: 'currency',
-        currency: 'PEN',
-        minimumFractionDigits: 2
-      }).format(0);
-    }
-    
-    const numero = typeof valor === 'string' ? parseFloat(valor) : Number(valor);
-    
-    // Verificar que el número sea válido después de la conversión
-    if (isNaN(numero) || !isFinite(numero)) {
-      return new Intl.NumberFormat('es-PE', {
-        style: 'currency',
-        currency: 'PEN',
-        minimumFractionDigits: 2
-      }).format(0);
-    }
-    
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-      minimumFractionDigits: 2
-    }).format(numero);
-  }
+   formatearMoneda(monto: string | number): string {
+  const valor = typeof monto === 'string' ? parseFloat(monto) : monto;
+  return new Intl.NumberFormat('es-PE', {
+    style: 'currency',
+    currency: 'PEN'
+  }).format(valor);
+}
 
   getNumeroVenta(): string {
     const fecha = new Date();
@@ -1720,17 +2433,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     this.cdr.markForCheck();
   }
 
-  // ✅ MÉTODOS DE NAVEGACIÓN
-  abrirDashboard() {
-    this.showDashboard = true;
-    console.log('📊 Abriendo Dashboard Gerencial...');
-    
-    // Cargar datos reales del dashboard
-    this.cargarDatosRealesdashboard();
-    
-    this.cdr.markForCheck();
-  }
-
   abrirReportes() {
     console.log('Abrir reportes');
   }
@@ -1739,170 +2441,53 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     console.log('Abrir configuración');
   }
 
+  // ==================== ACCESO RÁPIDO TICKETERA ====================
+
+  /**
+   * Acceso rápido para configurar ticketera
+   */
+  configurarTicketeraRapido(): void {
+    console.log('🎫 Configuración rápida de ticketera');
+    this.mostrarOpcionesConfiguracion();
+  }
+
+  /**
+   * Acceso rápido para ticket de prueba
+   */
+  ticketPruebaRapido(): void {
+    console.log('🧪 Ticket de prueba rápido');
+    this.imprimirTicketPrueba();
+  }
+
+  /**
+   * Acceso rápido para abrir cajón
+   */
+  abrirCajonRapido(): void {
+    console.log('💰 Apertura rápida de cajón');
+    this.abrirCajonDinero();
+  }
+
+  /**
+   * Acceso rápido para verificar ticketera
+   */
+  verificarTicketeraRapido(): void {
+    console.log('📡 Verificación rápida de ticketera');
+    this.verificarConexionTicketera();
+  }
+
   cerrarSesion() {
     // Emitimos el evento al componente padre para que maneje el cierre de caja
     this.cerrarCajaEvent.emit();
   }
 
-  // ✅ MÉTODOS DE DASHBOARD CON DATOS REALES
-  private cargarDatosRealesdashboard(): void {
-    console.log('📊 Cargando datos reales del dashboard...');
-    
-    // Marcar métricas como loading
-    this.metricas.forEach(metrica => metrica.loading = true);
-    this.cdr.markForCheck();
-
-    // Cargar datos en paralelo
-    Promise.all([
-      this.cargarResumenVentasHoy(),
-      this.cargarStockCritico(),
-      this.cargarAnalytics()
-    ]).then(() => {
-      // Desmarcar loading cuando todo termine
-      this.metricas.forEach(metrica => {
-        metrica.loading = false;
-        metrica.ultimaActualizacion = new Date();
-      });
-      this.cdr.markForCheck();
-    }).catch(error => {
-      console.error('❌ Error cargando datos del dashboard:', error);
-      this.metricas.forEach(metrica => metrica.loading = false);
-      this.cdr.markForCheck();
-    });
-  }
-
-  private async cargarResumenVentasHoy(): Promise<void> {
-    try {
-      const fechaHoy = new Date().toISOString().split('T')[0];
-      const resumen = await this.ventasService.obtenerResumenDiario(fechaHoy).toPromise();
-      
-      if (resumen) {
-        // Actualizar métricas de ventas
-        const metricaVentas = this.metricas.find(m => m.id === 'ventas-dia');
-        if (metricaVentas) {
-          metricaVentas.valor = resumen.totalIngresos || 0;
-          metricaVentas.tendencia = {
-            direccion: resumen.porcentajeCrecimiento >= 0 ? 'up' : 'down',
-            porcentaje: Math.abs(resumen.porcentajeCrecimiento || 0),
-            periodo: 'crecimiento'
-          };
-        }
-
-        // Actualizar transacciones
-        const metricaTransacciones = this.metricas.find(m => m.id === 'transacciones');
-        if (metricaTransacciones) {
-          metricaTransacciones.valor = resumen.cantidadVentas || 0;
-          metricaTransacciones.tendencia = {
-            direccion: resumen.porcentajeCrecimiento >= 0 ? 'up' : 'down',
-            porcentaje: Math.abs(resumen.porcentajeCrecimiento || 0),
-            periodo: 'crecimiento'
-          };
-        }
-
-        // Actualizar ticket promedio
-        const metricaTicket = this.metricas.find(m => m.id === 'ticket-promedio');
-        if (metricaTicket) {
-          metricaTicket.valor = resumen.promedioVenta || 0;
-          metricaTicket.tendencia = {
-            direccion: resumen.porcentajeCrecimiento >= 0 ? 'up' : 'down',
-            porcentaje: Math.abs(resumen.porcentajeCrecimiento || 0),
-            periodo: 'promedio'
-          };
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error cargando resumen de ventas:', error);
-    }
-  }
-
-  private async cargarStockCritico(): Promise<void> {
-    try {
-      const response = await this.inventarioService.obtenerInventarios(0, 1000, 'cantidad', 'asc', {
-        soloStockCritico: true
-      }).toPromise();
-      
-      if (response) {
-        const stockCritico = response.contenido.filter(inv => inv.cantidad <= 5);
-        
-        const metricaStock = this.metricas.find(m => m.id === 'stock-critico');
-        if (metricaStock) {
-          metricaStock.valor = stockCritico.length;
-          metricaStock.alertaCritica = {
-            activa: stockCritico.length > 0,
-            mensaje: stockCritico.length > 0 ? `${stockCritico.length} productos requieren reposición` : 'Stock en niveles normales',
-            nivel: stockCritico.length > 20 ? 'alta' : stockCritico.length > 10 ? 'media' : 'baja'
-          };
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error cargando stock crítico:', error);
-    }
-  }
-
-  private async cargarAnalytics(): Promise<void> {
-    try {
-      const kpis = await this.analyticsService.getKPIMetrics().toPromise();
-      
-      if (kpis) {
-        // Actualizar métricas con datos de analytics
-        const metricaVentas = this.metricas.find(m => m.id === 'ventas-dia');
-        if (metricaVentas && kpis.ventasHoy) {
-          metricaVentas.valor = kpis.ventasHoy;
-        }
-
-        // Puedes agregar más actualizaciones según los datos disponibles en tu analytics service
-      }
-    } catch (error) {
-      console.error('❌ Error cargando analytics:', error);
-    }
-  }
 
   private calcularPorcentajeCambio(valorActual: number, valorAnterior: number): number {
     if (valorAnterior === 0) return valorActual > 0 ? 100 : 0;
     return Math.abs(((valorActual - valorAnterior) / valorAnterior) * 100);
   }
 
-  // ✅ MÉTODOS ADICIONALES PARA EL DASHBOARD
-  actualizarDashboardManual(): void {
-    console.log('🔄 Actualización manual del dashboard solicitada...');
-    this.toastService.info(
-      '🔄 Actualizando Dashboard',
-      'Obteniendo los datos más recientes...',
-      { duration: 2000 }
-    );
-    this.cargarDatosRealesdashboard();
-  }
-
-  cerrarDashboard(): void {
-    this.showDashboard = false;
-    this.cdr.markForCheck();
-  }
-
-  // Método para obtener datos históricos (si tu API lo soporta)
-  private async cargarDatosHistoricos(): Promise<void> {
-    try {
-      const fechaInicio = new Date();
-      fechaInicio.setDate(fechaInicio.getDate() - 7); // Últimos 7 días
-      const fechaFin = new Date();
-
-      const reporte = await this.ventasService.generarReporteVentas(
-        fechaInicio.toISOString().split('T')[0],
-        fechaFin.toISOString().split('T')[0]
-      ).toPromise();
-
-      if (reporte) {
-        console.log('📊 Datos históricos cargados:', reporte);
-        // Aquí puedes procesar los datos históricos si tu modelo lo incluye
-      }
-    } catch (error) {
-      console.error('❌ Error cargando datos históricos:', error);
-    }
-  }
-
   // MÉTODOS DE CARGA DE DATOS
   private cargarProductosPopulares() {
-    console.log('� Cargando productos populares desde el servidor...');
-    
     // Cargar productos reales del inventario con stock disponible
     this.inventarioService.obtenerInventarios(0, 20, 'cantidad', 'desc', {
       soloStockCritico: false,
@@ -1936,9 +2521,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
             return item;
           })
           .slice(0, 15); // Limitar a 15 productos populares
-        
-        
-        console.log(`✅ Productos populares cargados: ${this.productosPopulares.length} productos`);
         
         // Notificación de éxito solo al refrescar manualmente
         if (window.location.hash.includes('refresh')) {
@@ -2050,40 +2632,255 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
   cerrarComprobante(): void {
     this.comprobanteDialog = false;
     this.ventaParaComprobante = null;
+    
+    // 🔄 Preparar para siguiente venta automáticamente
+    setTimeout(() => {
+      this.limpiarFormularioVenta();
+      this.cdr.markForCheck();
+    }, 300);
   }
   
   
   descargarComprobantePDF(venta: VentaResponse): void {
-    // Usar el parámetro venta para generar el PDF
+    if (!venta?.id) {
+      this.toastService.error('❌ Error', 'No se puede descargar el comprobante: Venta inválida');
+      return;
+    }
+
     const nombreArchivo = `comprobante-${venta.numeroVenta}.pdf`;
-    this.mostrarInfo('Descargando', `Generando archivo PDF: ${nombreArchivo}`);
+    console.log('🔽 Iniciando descarga PDF para venta:', venta.id, 'Archivo:', nombreArchivo);
     
-    // TODO: Implementar lógica real de descarga
-    // this.ventasService.descargarComprobantePDF(venta.id);
+    // Mostrar notificación de inicio
+    this.toastService.info('⏳ Descargando', `Generando archivo PDF: ${nombreArchivo}`, { duration: 2000 });
+
+    // Primero obtener el comprobante asociado a la venta
+    this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
+      next: (comprobante) => {
+        console.log('✅ Comprobante encontrado:', comprobante);
+        
+        // Descargar el PDF del comprobante
+        this.comprobantesService.descargarPDF(comprobante.id).subscribe({
+          next: (blob) => {
+            try {
+              // Descargar el archivo usando la utilidad del servicio
+              this.comprobantesService.descargarArchivo(blob, nombreArchivo);
+              
+              // Notificación de éxito
+              this.toastService.success(
+                '✅ Descarga Completada', 
+                `El comprobante ${nombreArchivo} se ha descargado exitosamente`,
+                { duration: 3000 }
+              );
+              
+              console.log('✅ PDF descargado exitosamente:', nombreArchivo);
+              
+            } catch (error) {
+              console.error('❌ Error procesando descarga:', error);
+              this.toastService.error(
+                '❌ Error de Descarga',
+                'Hubo un problema al procesar el archivo descargado',
+                { duration: 4000 }
+              );
+            }
+          },
+          error: (error) => {
+            console.error('❌ Error descargando PDF:', error);
+            this.toastService.error(
+              '❌ Error de Descarga',
+              `No se pudo descargar el PDF: ${error.message || 'Error desconocido'}`,
+              { duration: 4000 }
+            );
+          }
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error obteniendo comprobante:', error);
+        console.log('🔍 Status del error:', error.status);
+        console.log('🔍 Mensaje del error:', error.message);
+        
+        // Si no existe el comprobante (404), intentar generarlo automáticamente
+        const esComprobanteFaltante = error.status === 404 || 
+                                     error.message?.toLowerCase().includes('no encontrado') || 
+                                     error.message?.toLowerCase().includes('not found') ||
+                                     error.message?.includes('404');
+        
+        if (esComprobanteFaltante) {
+          console.log('🔄 Comprobante no existe (404), intentando generar automáticamente...');
+          this.generarComprobanteAutomatico(venta);
+        } else {
+          this.toastService.error(
+            '❌ Error de Comprobante',
+            `Error al obtener comprobante: ${error.message || 'Error desconocido'}`,
+            { duration: 4000 }
+          );
+        }
+      }
+    });
+  }
+
+  /**
+   * Genera automáticamente un comprobante si no existe y luego descarga el PDF
+   */
+  private generarComprobanteAutomatico(venta: VentaResponse): void {
+    console.log('🔄 Generando comprobante automático para venta:', venta.id);
+    
+    const comprobanteRequest = {
+      ventaId: venta.id,
+      tipoDocumento: 'BOLETA' as const, // Por defecto BOLETA, puedes ajustar según tu lógica
+      serie: 'B001', // Serie por defecto, ajustar según tu configuración
+      observaciones: `Comprobante generado automáticamente para descarga PDF`
+    };
+
+    this.comprobantesService.generarComprobante(comprobanteRequest).subscribe({
+      next: (comprobante) => {
+        console.log('✅ Comprobante generado automáticamente:', comprobante);
+        
+        this.toastService.success(
+          '✅ Comprobante Generado',
+          'Se ha generado el comprobante automáticamente. Descargando PDF...',
+          { duration: 3000 }
+        );
+
+        // Ahora descargar el PDF del comprobante recién generado
+        const nombreArchivo = `comprobante-${venta.numeroVenta}.pdf`;
+        this.comprobantesService.descargarPDF(comprobante.id).subscribe({
+          next: (blob) => {
+            try {
+              this.comprobantesService.descargarArchivo(blob, nombreArchivo);
+              this.toastService.success(
+                '✅ Descarga Completada',
+                `El comprobante ${nombreArchivo} se ha descargado exitosamente`,
+                { duration: 3000 }
+              );
+            } catch (error) {
+              console.error('❌ Error procesando descarga:', error);
+              this.toastService.error('❌ Error de Descarga', 'Error al procesar el archivo');
+            }
+          },
+          error: (error) => {
+            console.error('❌ Error descargando PDF generado:', error);
+            this.toastService.error('❌ Error de Descarga', 'No se pudo descargar el PDF generado');
+          }
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error generando comprobante automático:', error);
+        this.toastService.error(
+          '❌ Error de Generación',
+          `No se pudo generar el comprobante: ${error.message || 'Error desconocido'}`,
+          { duration: 4000 }
+        );
+      }
+    });
   }
   
 // Funciones de acciones rápidas
 nuevaVentaRapida(): void {
-  this.activeTabIndex = 1;
-  this.pasoActual = 0;
-  this.limpiarFormularioVenta();
-  this.mostrarExito('Nueva Venta', 'Iniciando nueva venta...');
-  setTimeout(() => {
-    this.codigoInput?.nativeElement?.focus();
-  }, 100);
+  // 🔒 PROTECCIÓN CONTRA MÚLTIPLES CLICS
+  if (this.nuevaVentaEnProceso) {
+    console.log('⚠️ Nueva venta ya en proceso, ignorando clic adicional');
+    return;
+  }
+  
+  this.nuevaVentaEnProceso = true;
+  console.log('🛒 Iniciando nueva venta (única ejecución)...');
+  
+  try {
+    // 🧹 LIMPIAR COMPLETAMENTE EL POS PARA NUEVA VENTA
+    
+    // Cerrar el diálogo de comprobante si está abierto
+    this.comprobanteDialog = false;
+    this.ventaParaComprobante = null;
+    
+    // Resetear todos los estados del POS
+    this.activeTabIndex = 1;
+    this.pasoActual = 0;
+    this.procesandoPago = false;
+    this.procesandoVenta = false;
+    this.progressPercentage = 0;
+    this.loadingMessage = '';
+    
+    // Limpiar formulario y datos de venta
+    this.limpiarFormularioVenta();
+    
+    // Limpiar datos de descuento
+    this.aplicarDescuento = false;
+    this.porcentajeDescuento = 0;
+    this.esVentaCredito = false;
+    this.cuotasCredito = 1;
+    
+    // Limpiar búsquedas y productos
+    this.productoBusqueda = null;
+    this.productosAutoComplete = [];
+    this.limpiarCacheBusqueda();
+    
+    // 🔄 Forzar actualización del inventario para empezar fresco
+    this.forzarActualizacionInventario();
+    
+    // Notificación de éxito
+    this.toastService.success(
+      '✅ Nueva Venta Iniciada',
+      'POS limpio y listo para procesar una nueva venta',
+      { 
+        duration: 2000,
+        icon: 'pi pi-plus-circle'
+      }
+    );
+    
+    // Enfocar en el campo de búsqueda de productos
+    setTimeout(() => {
+      this.codigoInput?.nativeElement?.focus();
+    }, 200);
+    
+    // Actualizar la interfaz
+    this.cdr.markForCheck();
+    
+    console.log('✅ Nueva venta iniciada correctamente');
+    
+  } catch (error) {
+    console.error('❌ Error al iniciar nueva venta:', error);
+    this.toastService.error(
+      '❌ Error',
+      'Hubo un problema al iniciar la nueva venta',
+      { duration: 3000 }
+    );
+  } finally {
+    // 🔓 LIBERAR EL LOCK DESPUÉS DE UN TIEMPO
+    setTimeout(() => {
+      this.nuevaVentaEnProceso = false;
+      console.log('🔓 Nueva venta lista para siguiente ejecución');
+    }, 1000);
+  }
 }
   // Vista activa
   activeTabIndex = 0;  
-  pasoActual = 0;
 
   private limpiarFormularioVenta(): void {
+    // 🧹 LIMPIEZA COMPLETA DEL FORMULARIO DE VENTA
+    
+    // Resetear venta principal
     this.nuevaVenta = this.initNuevaVenta();
     this.clienteSeleccionado = null;
     this.carrito = [];
+    
+    // Recalcular totales
     this.calcularTotales();
+    
+    // Resetear estados de interfaz
     this.pasoActual = 0;
     this.codigoBusqueda = '';
     this.cantidadInput = 1;
+    
+    // Limpiar datos de cliente
+    this.loadingClient = false;
+    
+    // Resetear productos de búsqueda
+    this.productoBusqueda = null;
+    
+    // Limpiar estados de loading
+    this.searchingProducts = false;
+    this.addingToCart = false;
+    this.savingData = false;
   }
 
   private initNuevaVenta(): VentaRequest {
@@ -2332,4 +3129,1302 @@ nuevaVentaRapida(): void {
       );
     }, 2000);
   }
+
+  // ==================== CONFIGURACIÓN TICKETERA ====================
+
+  /**
+   * Muestra opciones de configuración de ticketera
+   */
+  private mostrarOpcionesConfiguracion(): void {
+    this.confirmationService.confirm({
+      header: '⚙️ Configuración Ticketera',
+      message: '¿Qué desea hacer?',
+      icon: 'pi pi-cog',
+      acceptLabel: '🧪 Ticket Prueba',
+      rejectLabel: '🔧 Configurar Puerto',
+      acceptButtonStyleClass: 'p-button-info p-button-sm',
+      rejectButtonStyleClass: 'p-button-warning p-button-sm',
+      accept: () => {
+        this.imprimirTicketPrueba();
+      },
+      reject: () => {
+        this.mostrarConfiguracionPuerto();
+      }
+    });
+  }
+
+
+
+  /**
+   * Ofrece abrir el cajón de dinero
+   */
+  private ofrecerAbrirCajon(): void {
+    setTimeout(() => {
+      this.confirmationService.confirm({
+        header: '💰 Cajón de Dinero',
+        message: '¿Desea abrir el cajón de dinero?',
+        icon: 'pi pi-dollar',
+        acceptLabel: 'Sí, Abrir',
+        rejectLabel: 'No',
+        acceptButtonStyleClass: 'p-button-success p-button-sm',
+        rejectButtonStyleClass: 'p-button-secondary p-button-sm',
+        accept: () => {
+          this.abrirCajonDinero();
+        }
+      });
+    }, 1000);
+  }
+
+  /**
+   * Abre el cajón de dinero
+   */
+  private abrirCajonDinero(): void {
+    this.comprobantesService.abrirCajon().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastService.success('💰 Cajón Abierto', response.message, { duration: 2000 });
+        } else {
+          this.toastService.warning('⚠️ Aviso', response.message, { duration: 3000 });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error abriendo cajón:', error);
+        this.toastService.error('❌ Error', 'No se pudo abrir el cajón', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * Muestra configuración de puerto
+   */
+  private mostrarConfiguracionPuerto(): void {
+    // Primero obtener puertos disponibles
+    this.comprobantesService.obtenerPuertosDisponibles().subscribe({
+      next: (response) => {
+        if (response.success && response.puertos?.length > 0) {
+          this.mostrarSeleccionPuerto(response.puertos);
+        } else {
+          this.toastService.warning('⚠️ Sin Puertos', 'No se encontraron puertos disponibles', { duration: 3000 });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error obteniendo puertos:', error);
+        this.toastService.error('❌ Error', 'No se pudieron obtener los puertos disponibles', { duration: 4000 });
+      }
+    });
+  }
+
+  /**
+   * Muestra selección de puerto disponible
+   */
+  private mostrarSeleccionPuerto(puertos: string[]): void {
+    // Por simplicidad, usar el primer puerto disponible
+    // En un entorno real, podrías mostrar un diálogo para seleccionar
+    const puertoSeleccionado = puertos[0];
+    
+    this.confirmationService.confirm({
+      header: '🔌 Configurar Puerto',
+      message: `¿Configurar ticketera en puerto ${puertoSeleccionado}?<br><br>Puertos disponibles: ${puertos.join(', ')}`,
+      icon: 'pi pi-cog',
+      acceptLabel: 'Configurar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-primary p-button-sm',
+      rejectButtonStyleClass: 'p-button-secondary p-button-sm',
+      accept: () => {
+        this.configurarPuerto(puertoSeleccionado);
+      }
+    });
+  }
+
+  /**
+   * Configura el puerto de la ticketera
+   */
+  private configurarPuerto(puerto: string): void {
+    this.toastService.info('🔧 Configurando', `Configurando ticketera en puerto ${puerto}...`, { duration: 2000 });
+    
+    this.comprobantesService.configurarPuertoTicketera(puerto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastService.success('✅ Puerto Configurado', response.message, { duration: 3000 });
+          
+          // Verificar conexión después de configurar
+          setTimeout(() => {
+            this.verificarConexionTicketera();
+          }, 1000);
+        } else {
+          this.toastService.error('❌ Error Configuración', response.message, { duration: 4000 });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error configurando puerto:', error);
+        this.toastService.error('❌ Error', 'No se pudo configurar el puerto', { duration: 4000 });
+      }
+    });
+  }
+
+
+
+  // ========================================
+  // MÉTODOS PARA PANEL DE PRUEBAS TICKETERA
+  // ========================================
+
+  /**
+   * Muestra el panel de pruebas de ticketera
+   */
+  mostrarPanelPruebas(): void {
+    this.panelPruebasVisible = true;
+    this.agregarLogPrueba('info', 'Panel de pruebas abierto');
+    
+    // Verificar conexión automáticamente al abrir
+    setTimeout(() => {
+      this.verificarConexionTicketera();
+    }, 500);
+  }
+
+  /**
+   * Cierra el panel de pruebas
+   */
+  cerrarPanelPruebas(): void {
+    this.panelPruebasVisible = false;
+    this.agregarLogPrueba('info', 'Panel de pruebas cerrado');
+  }
+
+  /**
+   * Verifica la conexión con la ticketera (para el panel de pruebas)
+   */
+  verificarConexionTicketera(): void {
+    if (this.verificandoConexion) return;
+    
+    this.verificandoConexion = true;
+    this.agregarLogPrueba('info', 'Verificando conexión con ticketera...');
+    
+    this.comprobantesService.verificarConexionTicketera().subscribe({
+      next: (response) => {
+        this.verificandoConexion = false;
+        
+        if (response.success) {
+          this.estadoConexion = {
+            conectada: true,
+            puerto: response.data?.puerto || 'Detectado',
+            estado: 'Conectada'
+          };
+          this.agregarLogPrueba('success', `✅ Ticketera conectada en puerto: ${this.estadoConexion.puerto}`);
+        } else {
+          this.estadoConexion = {
+            conectada: false,
+            puerto: '',
+            estado: 'Desconectada'
+          };
+          this.agregarLogPrueba('warning', `⚠️ Ticketera desconectada: ${response.message}`);
+        }
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.verificandoConexion = false;
+        this.estadoConexion = {
+          conectada: false,
+          puerto: '',
+          estado: 'Error'
+        };
+        console.error('❌ Error verificando conexión:', error);
+        this.agregarLogPrueba('error', `❌ Error verificando conexión: ${error.message || 'Error desconocido'}`);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /**
+   * Imprime un ticket de prueba básico
+   */
+  imprimirTicketPrueba(): void {
+    this.agregarLogPrueba('info', 'Enviando ticket de prueba...');
+    
+    this.comprobantesService.imprimirTicketPrueba().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', '✅ Ticket de prueba enviado correctamente');
+          this.toastService.success('🖨️ Ticket Enviado', 'Ticket de prueba impreso correctamente');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Problema con ticket de prueba: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error imprimiendo ticket de prueba:', error);
+        this.agregarLogPrueba('error', `❌ Error imprimiendo ticket: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo imprimir el ticket de prueba');
+      }
+    });
+  }
+
+  /**
+   * Prueba de texto simple
+   */
+  probarTextoSimple(): void {
+    this.agregarLogPrueba('info', 'Enviando texto simple...');
+    
+    const textoSimple = {
+      texto: "PRUEBA DE TEXTO SIMPLE\n\nEsta es una prueba básica\nde impresión de texto.\n\nFecha: " + new Date().toLocaleString() + "\n\n",
+      alineacion: "centro"
+    };
+
+    // Por ahora usamos el ticket de prueba como alternativa
+    this.comprobantesService.imprimirTicketPrueba().subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', '✅ Texto simple enviado correctamente');
+          this.toastService.success('📝 Texto Enviado', 'Texto simple impreso correctamente');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Problema con texto simple: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message);
+        }
+      },
+      error: (error: any) => {
+        console.error('❌ Error imprimiendo texto simple:', error);
+        this.agregarLogPrueba('error', `❌ Error imprimiendo texto: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo imprimir el texto simple');
+      }
+    });
+  }
+
+  /**
+   * Prueba de diferentes formatos de texto
+   */
+  probarFormatos(): void {
+    this.agregarLogPrueba('info', 'Enviando prueba de formatos...');
+    
+    const formatosTexto = {
+      texto: "=== PRUEBA DE FORMATOS ===\n\nTexto Normal\n**Texto en Negrita**\n\nTexto Centrado\n\nTexto Grande\n\nTexto Subrayado\n\n" + "=".repeat(30) + "\n\n",
+      incluirFormatos: true
+    };
+
+    // Por ahora usamos el ticket de prueba como alternativa
+    this.comprobantesService.imprimirTicketPrueba().subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', '✅ Formatos enviados correctamente');
+          this.toastService.success('🎨 Formatos Enviados', 'Prueba de formatos impresa correctamente');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Problema con formatos: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message);
+        }
+      },
+      error: (error: any) => {
+        console.error('❌ Error imprimiendo formatos:', error);
+        this.agregarLogPrueba('error', `❌ Error imprimiendo formatos: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo imprimir los formatos');
+      }
+    });
+  }
+
+  /**
+   * Prueba de corte de papel
+   */
+  cortarPapelPrueba(): void {
+    this.agregarLogPrueba('info', 'Enviando comando de corte...');
+    
+    this.comprobantesService.cortarPapel().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', '✅ Comando de corte enviado correctamente');
+          this.toastService.success('✂️ Papel Cortado', 'Comando de corte ejecutado correctamente');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Problema cortando papel: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error cortando papel:', error);
+        this.agregarLogPrueba('error', `❌ Error cortando papel: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo cortar el papel');
+      }
+    });
+  }
+
+  /**
+   * Prueba de apertura de cajón
+   */
+  abrirCajonPrueba(): void {
+    this.agregarLogPrueba('info', 'Enviando comando para abrir cajón...');
+    
+    this.comprobantesService.abrirCajon().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', '✅ Comando de apertura enviado correctamente');
+          this.toastService.success('📦 Cajón Abierto', 'Comando de apertura ejecutado correctamente');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Problema abriendo cajón: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error abriendo cajón:', error);
+        this.agregarLogPrueba('error', `❌ Error abriendo cajón: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo abrir el cajón');
+      }
+    });
+  }
+
+  /**
+   * Obtiene el estado detallado de la ticketera
+   */
+  obtenerEstadoTicketera(): void {
+    this.agregarLogPrueba('info', 'Obteniendo estado detallado...');
+    
+    // Usar verificación de conexión como alternativa
+    this.comprobantesService.verificarConexionTicketera().subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          const estado = response.data;
+          this.agregarLogPrueba('success', `✅ Estado obtenido: ${estado.estado || 'Conectada'}`);
+          this.agregarLogPrueba('info', `Puerto: ${estado.puerto || 'Detectado automáticamente'}`);
+          this.agregarLogPrueba('info', `Conexión: ${response.conectada ? 'Activa' : 'Inactiva'}`);
+          
+          this.toastService.info('📊 Estado Obtenido', 'Revisa el log para ver los detalles');
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ No se pudo obtener estado: ${response.message}`);
+          this.toastService.warning('⚠️ Advertencia', response.message || 'No se pudo obtener el estado');
+        }
+      },
+      error: (error: any) => {
+        console.error('❌ Error obteniendo estado:', error);
+        this.agregarLogPrueba('error', `❌ Error obteniendo estado: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo obtener el estado de la ticketera');
+      }
+    });
+  }
+
+  /**
+   * Detecta puertos disponibles
+   */
+  detectarPuertos(): void {
+    if (this.detectandoPuertos) return;
+    
+    this.detectandoPuertos = true;
+    this.agregarLogPrueba('info', 'Detectando puertos disponibles...');
+    
+    this.comprobantesService.obtenerPuertosDisponibles().subscribe({
+      next: (response) => {
+        this.detectandoPuertos = false;
+        
+        if (response.success && response.data) {
+          this.puertosDisponibles = response.data;
+          this.agregarLogPrueba('success', `✅ ${this.puertosDisponibles.length} puertos detectados: ${this.puertosDisponibles.join(', ')}`);
+          this.toastService.success('🔍 Puertos Detectados', `Se encontraron ${this.puertosDisponibles.length} puertos`);
+        } else {
+          this.puertosDisponibles = [];
+          this.agregarLogPrueba('warning', '⚠️ No se encontraron puertos disponibles');
+          this.toastService.warning('⚠️ Sin Puertos', 'No se encontraron puertos disponibles');
+        }
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.detectandoPuertos = false;
+        console.error('❌ Error detectando puertos:', error);
+        this.agregarLogPrueba('error', `❌ Error detectando puertos: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudieron detectar los puertos');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /**
+   * Configura el puerto seleccionado
+   */
+  configurarPuertoSeleccionado(): void {
+    if (!this.puertoSeleccionado) {
+      this.toastService.warning('⚠️ Selecciona Puerto', 'Debes seleccionar un puerto primero');
+      return;
+    }
+
+    this.agregarLogPrueba('info', `Configurando puerto: ${this.puertoSeleccionado}`);
+    
+    this.comprobantesService.configurarPuertoTicketera(this.puertoSeleccionado).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.agregarLogPrueba('success', `✅ Puerto ${this.puertoSeleccionado} configurado correctamente`);
+          this.toastService.success('🔧 Puerto Configurado', `Puerto ${this.puertoSeleccionado} configurado`);
+          
+          // Actualizar estado y verificar conexión
+          this.estadoConexion.puerto = this.puertoSeleccionado;
+          setTimeout(() => {
+            this.verificarConexionTicketera();
+          }, 1000);
+        } else {
+          this.agregarLogPrueba('warning', `⚠️ Error configurando puerto: ${response.message}`);
+          this.toastService.warning('⚠️ Error Configuración', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error configurando puerto:', error);
+        this.agregarLogPrueba('error', `❌ Error configurando puerto: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo configurar el puerto');
+      }
+    });
+  }
+
+  /**
+   * Imprime la venta actual (si hay carrito)
+   */
+  imprimirVentaActual(): void {
+    if (this.carrito.length === 0) {
+      this.toastService.warning('🛒 Carrito Vacío', 'Agrega productos al carrito primero');
+      return;
+    }
+
+    this.agregarLogPrueba('info', `Imprimiendo venta actual con ${this.carrito.length} productos`);
+    this.agregarLogPrueba('warning', '⚠️ Para pruebas reales, primero complete una venta');
+    this.agregarLogPrueba('info', '💡 Use "Imprimir Última Venta" para probar con datos reales');
+    
+    // En lugar de crear datos ficticios, sugerirr usar datos reales
+    this.toastService.info('ℹ️ Información', 'Para probar impresión, complete una venta primero y use "Última Venta"');
+  }
+
+  /**
+   * Crea una venta de prueba con datos ficticios
+   */
+  crearVentaPrueba(): void {
+    this.agregarLogPrueba('info', 'Creando venta de prueba...');
+    
+    // En lugar de crear ítems complejos, simplemente simular la acción
+    this.agregarLogPrueba('success', '✅ Venta de prueba simulada');
+    this.agregarLogPrueba('info', '📝 Productos ficticios:');
+    this.agregarLogPrueba('info', '  - Producto Test 1: $15.50 x2 = $31.00');
+    this.agregarLogPrueba('info', '  - Producto Test 2: $25.00 x1 = $25.00');
+    this.agregarLogPrueba('info', '  - Producto Test 3: $8.75 x3 = $26.25');
+    this.agregarLogPrueba('info', '💰 Total simulado: $82.25');
+    
+    this.toastService.success('🛒 Venta Simulada', 'Venta de prueba creada para testing');
+    
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Imprime la última venta real de la base de datos
+   */
+  imprimirUltimaVenta(): void {
+    this.agregarLogPrueba('info', 'Buscando última venta real...');
+    
+    // Usar el servicio de ventas para obtener la última venta
+    this.ventasService.obtenerVentasRecientes(1).subscribe({
+      next: (ventas: any[]) => {
+        if (ventas && ventas.length > 0) {
+          const ultimaVenta = ventas[0];
+          this.agregarLogPrueba('success', `✅ Encontrada venta: ${ultimaVenta.numeroVenta}`);
+          
+          // Ahora intentar imprimirla usando el método estándar
+          this.imprimirVentaReal(ultimaVenta);
+        } else {
+          this.agregarLogPrueba('warning', '⚠️ No se encontraron ventas en la base de datos');
+          this.toastService.warning('⚠️ Sin Ventas', 'No hay ventas registradas para imprimir');
+        }
+      },
+      error: (error: any) => {
+        console.error('❌ Error obteniendo última venta:', error);
+        this.agregarLogPrueba('error', `❌ Error buscando ventas: ${error.message || 'Error desconocido'}`);
+        this.toastService.error('❌ Error', 'No se pudo obtener la última venta');
+      }
+    });
+  }
+
+  /**
+   * Imprime una venta real usando el sistema estándar
+   */
+  private imprimirVentaReal(venta: any): void {
+    this.agregarLogPrueba('info', `Imprimiendo venta ID: ${venta.id}`);
+    
+    // Usar el método estándar de impresión
+    this.imprimirComprobante(venta);
+    
+    this.agregarLogPrueba('info', '📋 Usando el método estándar de impresión...');
+  }
+
+  /**
+   * Agrega una entrada al log de pruebas
+   */
+  private agregarLogPrueba(tipo: 'info' | 'success' | 'warning' | 'error', mensaje: string): void {
+    const timestamp = new Date().toLocaleTimeString();
+    this.logPruebas.unshift({ timestamp, tipo, mensaje });
+    
+    // Mantener solo los últimos 50 logs
+    if (this.logPruebas.length > 50) {
+      this.logPruebas = this.logPruebas.slice(0, 50);
+    }
+    
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Obtiene la clase CSS para el tipo de log
+   */
+  getLogClass(tipo: 'info' | 'success' | 'warning' | 'error'): string {
+    switch (tipo) {
+      case 'success': return 'text-green-400';
+      case 'warning': return 'text-yellow-400';
+      case 'error': return 'text-red-400';
+      default: return 'text-blue-400';
+    }
+  }
+
+  /**
+   * Limpia todos los logs de prueba
+   */
+  limpiarLogs(): void {
+    this.logPruebas = [];
+    this.toastService.info('🗑️ Logs Limpiados', 'Se limpiaron todos los logs de prueba');
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Función de tracking para ngFor en los logs
+   */
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
+  /**
+   * Imprime tanto en ticketera como descarga PDF
+   */
+  private async imprimirTicketYPDF(venta: VentaResponse): Promise<void> {
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('🎫 [INICIO] imprimirTicketYPDF()');
+    console.log('📦 Venta ID:', venta.id);
+    console.log('📋 Venta completa:', venta);
+    
+    try {
+      this.loadingImpresion = true;
+      console.log('⏳ loadingImpresion = true');
+      
+      this.toastService.info('🔄 Preparando', 'Impresión dual (Ticket + PDF)...', { duration: 3000 });
+      console.log('✅ Toast de preparación mostrado');
+
+      console.log('➡️ Llamando a asegurarComprobantePOS()...');
+      // Asegurar que existe el comprobante
+      const comprobanteId = await this.asegurarComprobantePOS(venta);
+      console.log('✅ Comprobante asegurado. ID:', comprobanteId);
+      
+      console.log('➡️ Ejecutando operaciones en paralelo...');
+      console.log('   1️⃣ imprimirSoloTicket(venta)');
+      console.log('   2️⃣ descargarSoloPDF(comprobanteId)');
+      
+      // Ejecutar ambas operaciones en paralelo
+      const [resultadoTicket, resultadoPDF] = await Promise.allSettled([
+        this.imprimirSoloTicket(venta),
+        this.descargarSoloPDF(comprobanteId)
+      ]);
+
+      console.log('✅ Operaciones completadas');
+      console.log('📊 Resultado Ticket:', resultadoTicket);
+      console.log('📊 Resultado PDF:', resultadoPDF);
+
+      let mensajesExito: string[] = [];
+      let errores: string[] = [];
+
+      // Evaluar resultado del ticket
+      if (resultadoTicket.status === 'fulfilled') {
+        console.log('✅ Ticket impreso exitosamente');
+        mensajesExito.push('🎫 Ticket impreso');
+      } else {
+        console.error('❌ Error imprimiendo ticket:', resultadoTicket.reason);
+        errores.push(`Ticket: ${resultadoTicket.reason?.message || 'Error desconocido'}`);
+      }
+
+      // Evaluar resultado del PDF
+      if (resultadoPDF.status === 'fulfilled') {
+        console.log('✅ PDF descargado exitosamente');
+        mensajesExito.push('📄 PDF descargado');
+      } else {
+        console.error('❌ Error descargando PDF:', resultadoPDF.reason);
+        errores.push(`PDF: ${resultadoPDF.reason?.message || 'Error al descargar'}`);
+      }
+
+      // Mostrar resultados
+      if (mensajesExito.length > 0) {
+        console.log('🎉 Mostrando mensaje de éxito:', mensajesExito.join(' | '));
+        this.toastService.success('✅ Éxito', mensajesExito.join(' | '), { duration: 5000 });
+      }
+
+      if (errores.length > 0) {
+        this.toastService.warning('⚠️ Parcial', errores.join(' | '), { duration: 6000 });
+      }
+
+    } catch (error: any) {
+      console.error('Error en impresión dual:', error);
+      this.toastService.error('❌ Error', 'Error en el proceso de impresión dual');
+    } finally {
+      this.loadingImpresion = false;
+    }
+  }
+
+  /**
+   * Solo descarga PDF
+   */
+  private async imprimirSoloPDF(venta: VentaResponse): Promise<void> {
+    try {
+      this.loadingImpresion = true;
+      this.toastService.info('🔄 Preparando', 'Generando comprobante PDF...', { duration: 3000 });
+
+      // Asegurar que existe el comprobante
+      const comprobanteId = await this.asegurarComprobantePOS(venta);
+      
+      await this.descargarSoloPDF(comprobanteId);
+      
+      this.toastService.success('📄 Éxito', 'Comprobante descargado exitosamente', { duration: 4000 });
+    } catch (error: any) {
+      console.error('Error al descargar PDF:', error);
+      this.toastService.error('❌ Error', 'No se pudo descargar el comprobante');
+    } finally {
+      this.loadingImpresion = false;
+    }
+  }
+
+  /**
+   * Asegura que existe un comprobante para la venta
+   */
+  private async asegurarComprobantePOS(venta: VentaResponse): Promise<number> {
+    return new Promise((resolve, reject) => {
+      // Primero intentar obtener el comprobante existente
+      this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
+        next: (comprobante) => {
+          resolve(comprobante.id);
+        },
+        error: (error) => {
+          // Si es 404, significa que no existe el comprobante
+          if (error.status === 404) {
+            this.toastService.info('📝 Generando', 'Creando comprobante faltante...', { duration: 2000 });
+            
+            // Generar el comprobante
+            this.generarComprobanteCompletoPOS(venta).then(nuevoComprobante => {
+              resolve(nuevoComprobante.id);
+            }).catch(reject);
+          } else {
+            // Si es otro error, re-lanzarlo
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Genera un comprobante completo para la venta
+   */
+  private async generarComprobanteCompletoPOS(venta: VentaResponse): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Determinar tipo de comprobante basado en documento del cliente
+      const tipoComprobante = venta.cliente?.documento && venta.cliente.documento.length === 11 
+        ? 'FACTURA' 
+        : 'BOLETA';
+
+      const comprobanteData = {
+        ventaId: venta.id,
+        tipoDocumento: tipoComprobante as 'FACTURA' | 'BOLETA',
+        serie: tipoComprobante === 'FACTURA' ? 'F001' : 'B001',
+        observaciones: `Comprobante generado automáticamente para venta ${venta.numeroVenta}`
+      };
+
+      this.comprobantesService.generarComprobante(comprobanteData).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
+  }
+
+  /**
+   * Solo imprime ticket sin PDF (directamente desde venta, sin comprobante)
+   */
+  private async imprimirSoloTicket(venta: VentaResponse): Promise<void> {
+    console.log('───────────────────────────────────────────────────────────');
+    console.log('🎫 [INICIO] imprimirSoloTicket()');
+    console.log('📦 Venta ID recibido:', venta.id);
+    console.log('🔍 Venta completa:', venta);
+    console.log('🔍 comprobantesService disponible:', !!this.comprobantesService);
+    
+    return new Promise((resolve, reject) => {
+      console.log('➡️ Llamando a comprobantesService.imprimirTicketDesdeVenta()...');
+      console.log('🔗 URL del endpoint:', `/api/comprobantes/venta/${venta.id}/imprimir-ticket`);
+      
+      this.comprobantesService.imprimirTicketDesdeVenta(venta.id).subscribe({
+        next: (resultado) => {
+          console.log('✅ Respuesta recibida del backend:', resultado);
+          console.log('🔍 resultado.success:', resultado.success);
+          console.log('📝 resultado.message:', resultado.message);
+          
+          if (resultado.success) {
+            console.log('🎉 ¡Ticket impreso exitosamente!');
+            console.log('───────────────────────────────────────────────────────────');
+            resolve();
+          } else {
+            console.error('❌ Backend reportó error:', resultado.message);
+            console.log('───────────────────────────────────────────────────────────');
+            reject(new Error(resultado.message || 'Error al imprimir ticket'));
+          }
+        },
+        error: (error) => {
+          console.error('❌ ERROR en la petición HTTP:', error);
+          console.error('📊 Error completo:', {
+            status: error.status,
+            statusText: error.statusText,
+            message: error.message,
+            error: error.error
+          });
+          console.log('───────────────────────────────────────────────────────────');
+          reject(error);
+        }
+      });
+    });
+  }
+
+  /**
+   * Solo descarga PDF
+   */
+  private async descargarSoloPDF(comprobanteId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.comprobantesService.descargarPDF(comprobanteId).subscribe({
+        next: () => resolve(),
+        error: reject
+      });
+    });
+  }
+
+  // ===============================================================
+  // MÉTODOS PARA EL DIÁLOGO DE PAGO
+  // ===============================================================
+
+  getTotalItems(): number {
+    return this.carrito.reduce((total, item) => total + item.cantidad, 0);
+  }
+
+  seleccionarMetodoPago(metodo: string): void {
+    this.pagoActual.metodoPago = metodo;
+    
+    // Si es efectivo, actualizar el monto pagado para mostrar el vuelto
+    if (metodo === 'EFECTIVO') {
+      // Redondear a múltiplos de 10 para simular pago con billetes
+      const montoRedondeado = Math.ceil(this.totalVenta / 10) * 10;
+      this.montoPagado = montoRedondeado;
+      this.calcularVuelto();
+    }
+  }
+
+  calcularVuelto(): void {
+    this.vuelto = Math.max(0, this.montoPagado - this.totalVenta);
+  }
+
+  cancelarPago(): void {
+    console.log('❌ Intentando cancelar pago...');
+    
+    // ✅ SI ESTÁ PROCESANDO, PEDIR CONFIRMACIÓN
+    if (this.procesandoPago) {
+      const confirmar = confirm('⚠️ Se está procesando el pago. ¿Está seguro de cancelar?');
+      
+      if (!confirmar) {
+        console.log('🛑 Cancelación abortada por el usuario');
+        return;
+      }
+      
+      console.log('🛑 Forzando cancelación durante procesamiento');
+    }
+    
+    // ✅ RESETEAR ESTADO COMPLETO
+    this.procesandoPago = false;
+    this.pagoDialog = false;
+    
+    // ✅ LIMPIAR ESTADO DE PAGO
+    this.resetearEstadoPago();
+    
+    // ✅ MENSAJE APROPIADO
+    const mensaje = this.procesandoPago ? 
+      'Procesamiento de pago cancelado forzadamente' : 
+      'Pago cancelado correctamente';
+      
+    this.messageService.add({
+      severity: this.procesandoPago ? 'warn' : 'info',
+      summary: this.procesandoPago ? '🛑 Cancelación Forzada' : 'ℹ️ Pago Cancelado',
+      detail: mensaje,
+      life: 4000
+    });
+    
+    console.log('✅ Cancelación de pago completada');
+  }
+
+  isPagoValid(): boolean {
+    if (this.montoPagado < this.totalVenta) {
+      return false;
+    }
+    
+    if (this.pagoActual.metodoPago === 'TARJETA_CREDITO' || 
+        this.pagoActual.metodoPago === 'TARJETA_DEBITO') {
+      if (!this.pagoActual.nombreTarjeta?.trim() || 
+          !this.pagoActual.ultimos4Digitos?.trim()) {
+        return false;
+      }
+    }
+    
+    if (this.pagoActual.metodoPago === 'TRANSFERENCIA' || 
+        this.pagoActual.metodoPago === 'YAPE' || 
+        this.pagoActual.metodoPago === 'PLIN') {
+      if (!this.pagoActual.numeroReferencia?.trim()) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  getMetodoPagoStyle(
+    metodo: 'EFECTIVO' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'TRANSFERENCIA' | 'YAPE' | 'PLIN' | string
+  ): string {
+    const styles: Record<'EFECTIVO' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'TRANSFERENCIA' | 'YAPE' | 'PLIN', string> = {
+      'EFECTIVO': 'w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center',
+      'TARJETA_CREDITO': 'w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center',
+      'TARJETA_DEBITO': 'w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center',
+      'TRANSFERENCIA': 'w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center',
+      'YAPE': 'w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center',
+      'PLIN': 'w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center'
+    };
+    return styles[metodo as keyof typeof styles] || 'w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center';
+  }
+
+  getMetodoLabel(metodo: string): string {
+    const labels = {
+      'EFECTIVO': 'Efectivo',
+      'TARJETA_CREDITO': 'Tarjeta Crédito',
+      'TARJETA_DEBITO': 'Tarjeta Débito', 
+      'TRANSFERENCIA': 'Transferencia',
+      'YAPE': 'Yape',
+      'PLIN': 'Plin'
+    };
+    return metodo in labels ? labels[metodo as keyof typeof labels] : metodo;
+  }
+
+  onPagoDialogHide(): void {
+    this.procesandoPago = false;
+    this.resetearEstadoPago();
+  }
+
+  resetearEstadoPago(): void {
+    // Resetear variables de pago
+    this.montoPagado = 0;
+    this.vuelto = 0;
+    this.procesandoPago = false;
+    
+    // Resetear datos del pago actual
+    this.pagoActual = {
+    ventaId: 0,
+    usuarioId: 1,
+    metodoPago: 'EFECTIVO',
+    monto: 0,
+    nombreTarjeta: '',
+    ultimos4Digitos: '',
+    numeroReferencia: '',
+    observaciones: ''
+  };
+  }
+
+  trackByMetodoPago: TrackByFunction<any> = (index: number, metodo: any) => {
+    return metodo.value || index;
+  }
+
+    procesarVenta(): void {
+    if (!this.validarVenta()) return;
+    
+    // Verificación adicional por si acaso
+    if (this.clienteSeleccionado?.id && this.nuevaVenta.clienteId === 0) {
+      this.nuevaVenta.clienteId = this.clienteSeleccionado.id;
+    }
+
+    this.procesandoPago = true;
+
+    // Verificar stock en tiempo real antes de procesar
+    this.verificarStockTiempoReal()
+      .then((stockValido) => {
+        if (!stockValido) {
+          this.procesandoPago = false;
+          return;
+        }
+        
+        // Preparar detalles de la venta
+        this.nuevaVenta.detalles = this.carrito.map((item) => {
+          return {
+            inventarioId: item.inventarioId,
+            cantidad: item.cantidad
+          };
+        });
+
+        // Proceder con el registro de la venta
+        this.registrarVenta();
+      })
+      .catch((error) => {
+        console.error('❌ Error al verificar stock:', error);
+        this.mostrarError('Error de validación', 'No se pudo verificar el stock actual');
+        this.procesandoPago = false;
+      });
+  }
+
+  private registrarVenta(): void {
+
+    this.ventasService.registrarVenta(this.nuevaVenta)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (venta) => {
+          // Verificar si la venta realmente se creó
+          if (venta.id && venta.numeroVenta) {
+            // Procesar pago
+            this.pagoActual.ventaId = venta.id;
+            
+            // Validar datos del pago antes de enviar
+            if (!this.validarDatosPago()) {
+              this.procesandoPago = false;
+              return;
+            }
+            
+            this.procesarPago(venta);
+          } else {
+            console.error('❌ Venta registrada pero sin datos válidos:', venta);
+            this.mostrarError('Error inesperado', 'La venta no se completó correctamente');
+            this.procesandoPago = false;
+          }
+        },
+        error: (error) => {
+          console.error('❌ Error al registrar venta:', error);
+          console.error('❌ Status del error:', error.status);
+          console.error('❌ Mensaje del error:', error.error?.message);
+          console.error('❌ Error completo:', error);
+          
+          // Analizar el tipo de error específico
+          let errorMessage = 'Error desconocido';
+          let shouldReload = false;
+          
+          if (error.status === 400 && error.error?.message) {
+            if (error.error.message.includes('Stock insuficiente')) {
+              errorMessage = `⚠️ ${error.error.message}`;
+              shouldReload = true; // Recargar para actualizar el stock
+              console.warn('🔄 Se recargará el inventario debido a conflicto de stock');
+            } else {
+              errorMessage = error.error.message;
+            }
+          } else if (error.status === 409) {
+            errorMessage = 'Conflicto de inventario. Verificando estado actual...';
+            shouldReload = true;
+          } else {
+            errorMessage = error.message || 'Error al procesar la venta';
+          }
+          
+          this.mostrarError('Error al procesar venta', errorMessage);
+          this.procesandoPago = false;
+          
+          // Recargar datos si es necesario
+          if (shouldReload) {
+            setTimeout(() => {
+              console.log('🔄 Recargando datos del inventario...');
+              this.cargarProductos();
+              this.cargarVentas();
+            }, 2000);
+          }
+        }
+      });
+  }
+
+  private cargarVentas(): void {
+    this.loading = true;
+    this.ventasService.obtenerTodasLasVentas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.ventas = data;
+          // this.aplicarFiltrosVentas();
+          this.loading = false;
+        },
+        error: (error) => {
+          this.mostrarError('Error al cargar ventas', error.message);
+          this.loading = false;
+        }
+      });
+  }
+
+
+   private validarVenta(): boolean {
+    if (!this.clienteSeleccionado) {
+      this.mostrarError('Cliente requerido', 'Debe seleccionar un cliente');
+      return false;
+    }
+    
+    if (this.carrito.length === 0) {
+      this.mostrarError('Productos requeridos', 'Debe agregar al menos un producto');
+      return false;
+    }
+    
+    if (this.pagoActual.monto <= 0) {
+      this.mostrarError('Monto inválido', 'El monto del pago debe ser mayor a 0');
+      return false;
+    }
+    
+    if (this.montoPagado < this.totalVenta) {
+      this.mostrarError('Pago insuficiente', 'El monto pagado debe cubrir el total de la venta');
+      return false;
+    }
+    
+    return true;
+  }
+
+
+   private async verificarStockTiempoReal(): Promise<boolean> {
+    try {
+      const verificaciones = this.carrito.map(async (item) => {
+        const inventario = await this.inventarioService.obtenerInventarioPorId(item.inventarioId).toPromise();
+        
+        if (!inventario) {
+          console.error(`❌ Inventario no encontrado para ID: ${item.inventarioId}`);
+          this.mostrarError('Producto no disponible', `El producto "${item.producto.nombre}" ya no está disponible`);
+          return false;
+        }
+        
+        if (inventario.cantidad < item.cantidad) {
+          console.error(`❌ Stock insuficiente para ${item.producto.nombre}:`, {
+            solicitado: item.cantidad,
+            disponible: inventario.cantidad
+          });
+          this.mostrarError('Stock insuficiente', 
+            `El producto "${item.producto.nombre}" solo tiene ${inventario.cantidad} unidades disponibles (solicitado: ${item.cantidad})`);
+          
+          // Actualizar el stock en el carrito con el valor actual
+          item.stock = inventario.cantidad;
+          this.cdr.detectChanges();
+          
+          return false;
+        }
+        
+        // Actualizar stock en el carrito si cambió
+        if (item.stock !== inventario.cantidad) {
+          item.stock = inventario.cantidad;
+          this.cdr.detectChanges();
+        }
+        
+        return true;
+      });
+      
+      const resultados = await Promise.all(verificaciones);
+      const todoValido = resultados.every(resultado => resultado);
+      
+      return todoValido;
+    } catch (error) {
+      console.error('❌ Error durante verificación de stock:', error);
+      return false;
+    }
+  }
+
+  
+  private procesarPago(venta: VentaResponse): void {
+    // Verificar si hay discrepancia entre los montos
+    if (Math.abs(this.pagoActual.monto - venta.total) > 0.01) {
+      // Ajustar el monto del pago al total real de la venta
+      this.pagoActual.monto = venta.total;
+    }
+
+    this.pagosService.registrarPago(this.pagoActual)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (pago) => {
+          this.mostrarExito('Venta procesada', `Venta ${venta.numeroVenta} creada exitosamente`);
+          
+          // Cerrar el diálogo de pago
+          this.pagoDialog = false;
+          this.procesandoPago = false;
+          this.pasoActual = 3;
+          
+          // 🎯 MOSTRAR COMPROBANTE DE LA VENTA COMPLETADA
+          this.mostrarComprobanteVentaCompletada(venta);
+          
+          // Recargar datos
+          this.cargarVentas();
+        },
+        error: (error) => {
+          console.error('❌ Error al procesar pago:', error);
+          console.error('❌ Status del error:', error.status);
+          console.error('❌ Mensaje del error:', error.error?.message);
+          console.error('❌ Error completo:', error);
+          
+          let errorMessage = 'Error desconocido al procesar pago';
+          if (error.status === 400 && error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.error && typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          this.mostrarError('Error al procesar pago', errorMessage);
+          this.procesandoPago = false;
+          
+          // Informar que la venta está creada pero el pago falló
+          this.mostrarAdvertencia('Venta registrada', 
+            `La venta ${venta.numeroVenta} se registró correctamente pero hubo un problema con el pago. Puede procesarlo manualmente.`);
+        }
+      });
+  }
+
+  private validarDatosPago(): boolean {
+    if (!this.pagoActual.ventaId || this.pagoActual.ventaId <= 0) {
+      this.mostrarError('Error de pago', 'ID de venta inválido');
+      console.error('❌ ID de venta inválido:', this.pagoActual.ventaId);
+      return false;
+    }
+    
+    if (!this.pagoActual.usuarioId || this.pagoActual.usuarioId <= 0) {
+      this.mostrarError('Error de pago', 'ID de usuario inválido');
+      console.error('❌ ID de usuario inválido:', this.pagoActual.usuarioId);
+      return false;
+    }
+    
+    if (!this.pagoActual.monto || this.pagoActual.monto <= 0) {
+      this.mostrarError('Error de pago', 'Monto inválido');
+      console.error('❌ Monto inválido:', this.pagoActual.monto);
+      return false;
+    }
+    
+    if (!this.pagoActual.metodoPago || this.pagoActual.metodoPago.trim() === '') {
+      this.mostrarError('Error de pago', 'Método de pago requerido');
+      console.error('❌ Método de pago inválido:', this.pagoActual.metodoPago);
+      return false;
+    }
+    
+    // Limpiar campos opcionales que podrían causar problemas si están vacíos
+    if (this.pagoActual.numeroReferencia === '') {
+      this.pagoActual.numeroReferencia = undefined;
+    }
+    if (this.pagoActual.nombreTarjeta === '') {
+      this.pagoActual.nombreTarjeta = undefined;
+    }
+    if (this.pagoActual.ultimos4Digitos === '') {
+      this.pagoActual.ultimos4Digitos = undefined;
+    }
+    if (this.pagoActual.observaciones === '') {
+      this.pagoActual.observaciones = undefined;
+    }
+    
+    return true;
+  }
+
+
+  
+  private mostrarError(titulo: string, mensaje: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: titulo,
+      detail: mensaje,
+      life: 5000
+    });
+  }
+
+  private mostrarAdvertencia(titulo: string, mensaje: string): void {
+    this.messageService.add({
+      severity: 'warn',
+      summary: titulo,
+      detail: mensaje,
+      life: 5000
+    });
+  }
+
+   // ==================== GESTIÓN DE CAJA ====================
+  inicializarEstadoCaja() {
+    // Verificar si hay un estado de caja guardado en localStorage
+    const cajaGuardada = localStorage.getItem('cajaAbierta');
+    if (cajaGuardada) {
+      this.cajaAbierta = JSON.parse(cajaGuardada);
+      if (this.cajaAbierta) {
+        console.log('💰 Restaurando estado de caja abierta');
+      }
+    }
+  }
+
+  private guardarEstadoCaja() {
+    localStorage.setItem('cajaAbierta', JSON.stringify(this.cajaAbierta));
+  }
+
+
+
+  cerrarCaja() {
+    this.confirmationService.confirm({
+      message: '¿Está seguro que desea cerrar la caja? Se volverá a la pantalla inicial.',
+      header: 'Confirmar Cierre de Caja',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, cerrar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.cajaAbierta = false;
+        this.activeTabIndex = 0;
+        this.guardarEstadoCaja(); // Guardar estado
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Caja Cerrada',
+          detail: 'La caja registradora ha sido cerrada',
+          life: 3000
+        });
+        console.log('💰 Cerrando caja registradora...');
+        // Lógica adicional para cerrar caja (resumen del día, reportes, etc.)
+      }
+    });
+  }
+
+  // ==================== CARGA DE DATOS ====================
+  
+ private cargarDatosIniciales(): void {
+  console.log('🚨 cargarDatosIniciales() ejecutándose...');
+  
+  this.cargarClientes();
+  this.cargarProductos(); // ← Esta línea debe estar aquí
+  this.cargarVentas();
+  this.cargarInventarios();
 }
+
+  private cargarClientes(): void {
+    this.clienteService.listar()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.clientes = data;
+          this.clientesFiltrados = data;
+        },
+        error: (error) => this.mostrarError('Error al cargar clientes', error.message)
+      });
+  }
+
+ private cargarProductos(): void {
+  this.productoService.getProducts(0, 500)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: { contenido?: Producto[], content?: Producto[], data?: Producto[] }) => {
+        this.productos = response?.contenido || response?.content || response?.data || [];
+      },
+      error: (error: Error) => {
+        this.mostrarError('Error al cargar productos', error.message);
+      }
+    });
+}
+
+  obtenerPrecioProducto(productoId: number): number {
+    // ✅ VERIFICACIÓN COMPLETA
+    if (!this.productos || !Array.isArray(this.productos) || this.productos.length === 0) {
+      console.warn('⚠️ productos no disponible, cargando...', this.productos);
+      return 0;
+    }
+    
+    const producto = this.productos.find(p => p?.id === productoId);
+    return producto?.precioVenta || 0;
+  }
+
+  private cargarInventarios(): void {
+  this.inventarioService.obtenerInventarios(0, 5000) // Cargar hasta 5000 items
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: { contenido?: Inventario[], content?: Inventario[], data?: Inventario[] }) => {
+        this.inventarios = response?.contenido || response?.content || response?.data || [];
+      },
+      error: (error: Error) => this.mostrarError('Error al cargar inventarios', error.message)
+    });
+}
+
+
+}
+

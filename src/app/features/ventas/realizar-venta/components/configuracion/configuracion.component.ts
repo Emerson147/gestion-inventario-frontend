@@ -81,7 +81,6 @@ export interface ConfiguracionFiscal {
   usuarioSol: string;
   claveSol: string;
   entornoSunat: 'PRODUCCION' | 'BETA';
-  igv: number;
   montoExonerado: boolean;
   serieFactura: string;
   serieBoleta: string;
@@ -205,7 +204,6 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     usuarioSol: 'EMERSON147',
     claveSol: '****',
     entornoSunat: 'BETA',
-    igv: 18,
     montoExonerado: false,
     serieFactura: 'F001',
     serieBoleta: 'B001',
@@ -356,7 +354,6 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       this.cargarImpresoras();
       this.loading = false;
       this.cdr.markForCheck();
-      console.log('📊 Datos de configuración cargados para Emerson147');
     }, 1500);
   }
 
