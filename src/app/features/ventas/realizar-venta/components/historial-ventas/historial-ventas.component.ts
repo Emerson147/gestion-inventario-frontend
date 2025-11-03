@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -47,6 +48,10 @@ import { EstadisticasVentasService } from '../../../../../core/services/estadist
 import { ComprobantesService } from '../../../../../core/services/comprobantes.service';
 import { VentaResponse } from '../../../../../core/models/venta.model';
 import { PaginatorModule } from 'primeng/paginator';
+
+// jsPDF para exportación a PDF
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Interfaces
 interface Venta {
@@ -210,6 +215,7 @@ interface EventoAutoComplete {
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     // PrimeNG Modules
     TableModule,
     ButtonModule,
@@ -273,6 +279,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   paginaActual = 1;
   ventasPorPagina = 25;
   totalPaginas = 0;
+  sidebarAbierto = false; // Para controlar el sidebar en móvil
 
   // ✅ FILTROS Y BÚSQUEDA
   filtros: FiltrosVenta = {};
@@ -437,6 +444,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.cargarDatosIniciales();
     this.configurarRelojes();
     this.configurarBusquedaInteligente();
+    this.suscribirseANuevasVentas();
   }
 
   ngOnDestroy(): void {
@@ -448,6 +456,45 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     }
     
     document.removeEventListener('keydown', this.handleKeyboardShortcuts);
+  }
+
+  /**
+   * Suscribirse a eventos de nuevas ventas registradas
+   * Se actualiza automáticamente cuando se procesa una venta
+   */
+  private suscribirseANuevasVentas(): void {
+    this.ventasService.onVentaRegistrada$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (nuevaVenta) => {
+          console.log('✅ [EVENTO] Nueva venta registrada detectada:', nuevaVenta);
+          
+          // Recargar datos automáticamente
+          this.actualizarDatosDespuesDeVenta();
+          
+          // Mostrar notificación opcional
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Venta Registrada',
+            detail: `Venta ${nuevaVenta.numeroVenta} procesada correctamente`,
+            life: 3000
+          });
+        },
+        error: (error) => {
+          console.error('❌ [ERROR] Error en suscripción a nuevas ventas:', error);
+        }
+      });
+  }
+
+  /**
+   * Actualizar datos después de registrar una venta
+   */
+  private actualizarDatosDespuesDeVenta(): void {
+    console.log('🔄 [ACTUALIZACIÓN] Actualizando datos después de nueva venta...');
+    
+    // Recargar ventas y estadísticas
+    this.cargarVentasReales();
+    this.cargarEstadisticas();
   }
 
   // ✅ INICIALIZACIÓN
@@ -466,45 +513,58 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
 
   private cargarDatosIniciales(): void {
-    console.log('📚 [CARGA] Iniciando carga de datos...');
+    console.log('📚 [CARGA] Iniciando carga de datos desde la base de datos...');
     this.cargandoVentas = true;
     
-    // TEST: Primero cargar datos de ejemplo
-    console.log('🧪 [TEST] Cargando datos de ejemplo primero...');
-    this.ventas = this.generarVentasEjemplo();
-    this.aplicarFiltrosYOrdenamiento();
-    
-    // Después intentar cargar datos reales
+    // Cargar solo datos reales de la base de datos
     this.cargarVentasReales();
     this.cargarEstadisticas();
-    
-    this.cargandoVentas = false;
   }
   
 
   private cargarVentasReales(): void {
-    console.log('🔄 [API] Intentando cargar ventas desde API...');
+    console.log('🔄 [API] Cargando ventas desde la base de datos...');
     
-    const filtrosApi = {
-      fechaDesde: this.rangoFechas[0],
-      fechaHasta: this.rangoFechas[1]
-    };
-    
-    this.ventasService.obtenerVentas(filtrosApi)
+    // No enviar filtros en la carga inicial - cargar TODAS las ventas
+    // Los filtros se aplicarán localmente en el frontend
+    this.ventasService.obtenerVentas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
+          console.log('📦 [API] Respuesta recibida:', data);
+          
           if (data && data.length > 0) {
             this.procesarVentasAPI(data);
+          } else {
+            // No hay ventas en la base de datos
+            this.ventas = [];
+            this.ventasFiltradas = [];
+            this.ventasPaginadas = [];
+            this.cargandoVentas = false;
+            
+            console.log('ℹ️ [API] No se encontraron ventas en la base de datos');
+            
+            this.messageService.add({
+              severity: 'info',
+              summary: 'ℹ️ Sin Datos',
+              detail: 'No hay ventas registradas',
+              life: 4000
+            });
           }
         },
         error: (error) => {
           console.error('❌ [API ERROR] Error al cargar ventas:', error);
+          this.cargandoVentas = false;
+          
+          // Inicializar con arrays vacíos en caso de error
+          this.ventas = [];
+          this.ventasFiltradas = [];
+          this.ventasPaginadas = [];
           
           this.messageService.add({
-            severity: 'warn',
-            summary: '⚠️ Modo Offline',
-            detail: 'Mostrando datos de ejemplo. Verifique conexión.',
+            severity: 'error',
+            summary: '❌ Error de Conexión',
+            detail: 'No se pudo conectar con el servidor. Verifique su conexión.',
             life: 5000
           });
         }
@@ -579,19 +639,45 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     this.opcionesExportacion = [
       {
-        label: 'Excel Detallado',
-        icon: 'pi pi-file-excel',
-        command: () => this.exportarVentas('excel-detallado')
+        label: 'Ventas de Hoy',
+        icon: 'pi pi-calendar',
+        command: () => this.exportarPorPeriodo('hoy')
       },
       {
-        label: 'PDF Resumen',
-        icon: 'pi pi-file-pdf',
-        command: () => this.exportarVentas('pdf-resumen')
+        label: 'Ventas de Ayer',
+        icon: 'pi pi-calendar-minus',
+        command: () => this.exportarPorPeriodo('ayer')
       },
       {
-        label: 'CSV Simple',
+        label: 'Ventas de la Semana',
+        icon: 'pi pi-calendar',
+        command: () => this.exportarPorPeriodo('semana')
+      },
+      {
+        label: 'Ventas del Mes',
+        icon: 'pi pi-calendar',
+        command: () => this.exportarPorPeriodo('mes')
+      },
+      {
+        separator: true
+      },
+      {
+        label: 'Todas las Ventas (Filtradas)',
+        icon: 'pi pi-download',
+        command: () => this.exportarExcelModerno()
+      },
+      {
+        separator: true
+      },
+      {
+        label: 'Exportar CSV',
         icon: 'pi pi-file',
-        command: () => this.exportarVentas('csv')
+        command: () => this.exportarCSV()
+      },
+      {
+        label: 'Exportar PDF',
+        icon: 'pi pi-file-pdf',
+        command: () => this.exportarPDF()
       }
     ];
 
@@ -722,20 +808,20 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           });
         },
         error: (error) => {
-          console.error('Error al cargar ventas:', error);
+          console.error('❌ [API ERROR] Error al cargar ventas:', error);
           this.cargandoVentas = false;
           
-          // Mostrar mensaje de error
+          // Inicializar con arrays vacíos en caso de error
+          this.ventas = [];
+          this.ventasFiltradas = [];
+          this.ventasPaginadas = [];
+          
           this.messageService.add({
             severity: 'error',
             summary: '❌ Error',
             detail: `No se pudieron cargar las ventas: ${error.message || 'Error del servidor'}`,
             life: 5000
           });
-          
-          // Cargar datos de ejemplo como fallback (opcional)
-          this.ventas = this.generarVentasEjemplo();
-          this.aplicarFiltrosYOrdenamiento();
         }
       });
   }
@@ -828,16 +914,22 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       });
       
       this.aplicarFiltrosYOrdenamiento();
+      this.cargandoVentas = false;
       
       this.messageService.add({
         severity: 'success',
-        summary: '✅ Ventas Reales Cargadas',
+        summary: '✅ Ventas Cargadas',
         detail: `${this.ventas.length} ventas cargadas desde la base de datos`,
-        life: 4000
+        life: 3000
       });
       
     } catch (error) {
       console.error('❌ [MAPEO ERROR] Error al procesar ventas:', error);
+      this.cargandoVentas = false;
+      this.ventas = [];
+      this.ventasFiltradas = [];
+      this.ventasPaginadas = [];
+      
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error de Mapeo',
@@ -993,7 +1085,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       busquedaRapida: this.busquedaRapida,
       estadosSeleccionados: this.estadosSeleccionados,
       metodosSeleccionados: this.metodosSeleccionados,
-      rangoMonto: this.rangoMonto
+      rangoMonto: this.rangoMonto,
+      fechaDesde: this.filtros.fechaDesde,
+      fechaHasta: this.filtros.fechaHasta
     });
     
     this.ventasFiltradas = this.ventas.filter(venta => {
@@ -1009,9 +1103,20 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         if (!coincide) return false;
       }
 
-      // Filtro por fechas
-      if (this.filtros.fechaDesde && venta.fechaVenta < this.filtros.fechaDesde) return false;
-      if (this.filtros.fechaHasta && venta.fechaVenta > this.filtros.fechaHasta) return false;
+      // Filtro por fechas - Comparación mejorada
+      if (this.filtros.fechaDesde || this.filtros.fechaHasta) {
+        const fechaVenta = new Date(venta.fechaVenta);
+        
+        if (this.filtros.fechaDesde) {
+          const fechaDesde = new Date(this.filtros.fechaDesde);
+          if (fechaVenta < fechaDesde) return false;
+        }
+        
+        if (this.filtros.fechaHasta) {
+          const fechaHasta = new Date(this.filtros.fechaHasta);
+          if (fechaVenta > fechaHasta) return false;
+        }
+      }
 
       // Filtro por estados
       if (this.estadosSeleccionados.length > 0 && !this.estadosSeleccionados.includes(venta.estado)) {
@@ -1060,31 +1165,49 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
   filtrarPorPeriodo(periodo: string): void {
     const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Resetear a inicio del día
+    
+    const finHoy = new Date();
+    finHoy.setHours(23, 59, 59, 999); // Fin del día actual
+
     const ayer = new Date(hoy);
     ayer.setDate(hoy.getDate() - 1);
+    
+    const finAyer = new Date(ayer);
+    finAyer.setHours(23, 59, 59, 999);
 
     switch (periodo) {
       case 'hoy':
-        this.rangoFechas = [hoy, hoy];
+        this.rangoFechas = [hoy, finHoy];
         break;
       case 'ayer':
-        this.rangoFechas = [ayer, ayer];
+        this.rangoFechas = [ayer, finAyer];
         break;
       case 'semana': {
         const inicioSemana = new Date(hoy);
         inicioSemana.setDate(hoy.getDate() - hoy.getDay());
-        this.rangoFechas = [inicioSemana, hoy];
+        inicioSemana.setHours(0, 0, 0, 0);
+        this.rangoFechas = [inicioSemana, finHoy];
         break;
       }
       case 'mes': {
         const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-        this.rangoFechas = [inicioMes, hoy];
+        inicioMes.setHours(0, 0, 0, 0);
+        this.rangoFechas = [inicioMes, finHoy];
         break;
       }
     }
 
     this.filtros.fechaDesde = this.rangoFechas[0];
     this.filtros.fechaHasta = this.rangoFechas[1];
+    
+    console.log('📅 [PERIODO] Filtro aplicado:', {
+      periodo,
+      fechaDesde: this.filtros.fechaDesde,
+      fechaHasta: this.filtros.fechaHasta,
+      totalVentas: this.ventas.length
+    });
+    
     this.filtrarVentas();
 
     this.messageService.add({
@@ -1136,6 +1259,48 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       summary: '✅ Filtros Aplicados',
       detail: `${this.ventasFiltradas.length} ventas encontradas`,
       life: 3000
+    });
+  }
+
+  /**
+   * Evento cuando cambia el rango de fechas en el calendario
+   */
+  onRangoFechasChange(): void {
+    if (this.rangoFechas && this.rangoFechas.length === 2) {
+      // Asegurar que las fechas tengan el rango completo del día
+      const fechaInicio = new Date(this.rangoFechas[0]);
+      fechaInicio.setHours(0, 0, 0, 0);
+      
+      const fechaFin = new Date(this.rangoFechas[1]);
+      fechaFin.setHours(23, 59, 59, 999);
+      
+      this.filtros.fechaDesde = fechaInicio;
+      this.filtros.fechaHasta = fechaFin;
+      this.filtrarVentas();
+      
+      this.messageService.add({
+        severity: 'info',
+        summary: '📅 Rango de Fechas',
+        detail: 'Filtro de fechas aplicado',
+        life: 2000
+      });
+    }
+  }
+
+  /**
+   * Limpia el rango de fechas seleccionado
+   */
+  onLimpiarRangoFechas(): void {
+    this.rangoFechas = [];
+    this.filtros.fechaDesde = undefined;
+    this.filtros.fechaHasta = undefined;
+    this.filtrarVentas();
+    
+    this.messageService.add({
+      severity: 'info',
+      summary: '🗑️ Fechas Limpiadas',
+      detail: 'Filtro de fechas eliminado',
+      life: 2000
     });
   }
 
@@ -1256,15 +1421,15 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       header: '🖨️ Opciones de Impresión',
       message: `¿Cómo deseas imprimir el comprobante de la venta ${venta.numeroVenta}?`,
       icon: 'pi pi-print',
-      acceptLabel: '🎫 Ticket + PDF',
-      rejectLabel: '🖨️ Solo PDF',
+      acceptLabel: '📄 Descargar PDF',
+      rejectLabel: '🎫 Ticket',
       acceptButtonStyleClass: 'p-button-success p-button-sm',
       rejectButtonStyleClass: 'p-button-secondary p-button-sm',
       accept: () => {
-        this.imprimirTicketYPDF(venta);
+        this.imprimirSoloPDF(venta);
       },
       reject: () => {
-        this.imprimirSoloPDF(venta);
+        this.imprimirSoloTicket(venta);
       }
     });
   }
@@ -1353,6 +1518,44 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Solo imprime ticket en ticketera
+   */
+  private imprimirSoloTicket(venta: Venta): void {
+    this.messageService.add({
+      severity: 'info',
+      summary: '🎫 Imprimiendo Ticket',
+      detail: 'Enviando a ticketera...',
+      life: 2000
+    });
+
+    this.enviarTicketDesdeVenta(venta.id, venta.numeroVenta).then((exito) => {
+      if (exito) {
+        this.messageService.add({
+          severity: 'success',
+          summary: '✅ Ticket Enviado',
+          detail: `Ticket de venta ${venta.numeroVenta} enviado a ticketera`,
+          life: 4000
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: '❌ Error',
+          detail: 'No se pudo imprimir el ticket',
+          life: 4000
+        });
+      }
+    }).catch((error) => {
+      console.error('❌ Error imprimiendo ticket:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'Error al enviar ticket a ticketera',
+        life: 4000
+      });
+    });
+  }
+
+  /**
    * Asegura que existe un comprobante para la venta (lo genera si no existe)
    */
   private async asegurarComprobante(venta: Venta): Promise<any> {
@@ -1360,16 +1563,21 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       // Primero intentar obtener comprobante existente
       this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
         next: (comprobante: any) => {
-          console.log('✅ Comprobante existente encontrado:', comprobante.id);
+          console.log(`✅ Usando comprobante existente ID: ${comprobante.id} para venta ${venta.numeroVenta}`);
           resolve(comprobante);
         },
         error: (error: any) => {
-          if (error.status === 404) {
-            console.log('🔄 Comprobante no existe, generando nuevo...');
+          // Verificar si es un error 404 (comprobante no encontrado)
+          const esError404 = error.status === 404 || 
+                            error?.message?.includes('no encontrado') || 
+                            error?.message?.includes('404');
+          
+          if (esError404) {
+            console.log(`� Generando comprobante automáticamente para venta ${venta.numeroVenta}...`);
             // Generar comprobante nuevo
             this.generarComprobanteCompleto(venta).then(resolve).catch(reject);
           } else {
-            console.error('❌ Error obteniendo comprobante:', error);
+            console.error('❌ Error inesperado obteniendo comprobante:', error);
             reject(error);
           }
         }
@@ -1513,42 +1721,794 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.contextMenu.show(evento);
   }
 
-  // ✅ EXPORTACIÓN
+  // ✅ EXPORTACIÓN MODERNA A EXCEL
+  
+  /**
+   * Exportar ventas por período de tiempo específico
+   * @param periodo - Período a exportar: 'hoy', 'ayer', 'semana', 'mes'
+   */
+  exportarPorPeriodo(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): void {
+    try {
+      console.log(`📅 Exportando ventas del período: ${periodo}`);
+      
+      // Calcular rango de fechas según el período
+      const { fechaInicio, fechaFin } = this.calcularRangoFechas(periodo);
+      
+      // Filtrar ventas por el período
+      const ventasPeriodo = this.ventasFiltradas.filter(venta => {
+        const fechaVenta = new Date(venta.fechaVenta);
+        return fechaVenta >= fechaInicio && fechaVenta <= fechaFin;
+      });
+
+      if (ventasPeriodo.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: '⚠️ Sin Datos',
+          detail: `No hay ventas ${this.obtenerDescripcionPeriodo(periodo)}`,
+          life: 4000
+        });
+        return;
+      }
+
+      this.messageService.add({
+        severity: 'info',
+        summary: '📊 Exportando',
+        detail: `Generando reporte ${this.obtenerDescripcionPeriodo(periodo)}...`,
+        life: 2000
+      });
+
+      // Preparar datos para exportar
+      const datosExportar = this.prepararDatosExportacionPorPeriodo(ventasPeriodo);
+      
+      // Crear archivo Excel con nombre personalizado
+      this.crearArchivoExcelPeriodo(datosExportar, periodo);
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: '✅ Exportación Exitosa',
+        detail: `${ventasPeriodo.length} ventas ${this.obtenerDescripcionPeriodo(periodo)} exportadas`,
+        life: 4000
+      });
+      
+    } catch (error) {
+      console.error('❌ Error al exportar por período:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se pudo exportar el archivo. Intenta nuevamente.',
+        life: 4000
+      });
+    }
+  }
+
+  /**
+   * Calcular rango de fechas según el período
+   */
+  private calcularRangoFechas(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): { fechaInicio: Date, fechaFin: Date } {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    const fechaFin = new Date();
+    fechaFin.setHours(23, 59, 59, 999);
+    
+    let fechaInicio = new Date();
+    
+    switch (periodo) {
+      case 'hoy':
+        fechaInicio = new Date(hoy);
+        break;
+        
+      case 'ayer':
+        fechaInicio = new Date(hoy);
+        fechaInicio.setDate(fechaInicio.getDate() - 1);
+        fechaFin.setDate(fechaFin.getDate() - 1);
+        fechaFin.setHours(23, 59, 59, 999);
+        break;
+        
+      case 'semana':
+        fechaInicio = new Date(hoy);
+        const diaSemana = fechaInicio.getDay();
+        const diferencia = diaSemana === 0 ? 6 : diaSemana - 1; // Lunes = 0
+        fechaInicio.setDate(fechaInicio.getDate() - diferencia);
+        break;
+        
+      case 'mes':
+        fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        break;
+    }
+    
+    return { fechaInicio, fechaFin };
+  }
+
+  /**
+   * Obtener descripción del período para mensajes
+   */
+  private obtenerDescripcionPeriodo(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): string {
+    const descripciones = {
+      'hoy': 'de hoy',
+      'ayer': 'de ayer',
+      'semana': 'de la semana',
+      'mes': 'del mes'
+    };
+    return descripciones[periodo];
+  }
+
+  /**
+   * Preparar datos de ventas por período para exportación
+   */
+  private prepararDatosExportacionPorPeriodo(ventas: Venta[]): any[] {
+    return ventas.map(venta => ({
+      'Número Venta': venta.numeroVenta || '',
+      'Fecha': this.formatearFechaExcel(venta.fechaVenta),
+      'Hora': this.formatearHoraExcel(venta.fechaVenta),
+      'Cliente': `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() || 'Cliente General',
+      'DNI/RUC': venta.cliente?.dni || venta.cliente?.ruc || 'S/N',
+      'Comprobante': `${venta.tipoComprobante} ${venta.serieComprobante}`,
+      'Cantidad Productos': venta.detalles?.length || 0,
+      'Método Pago': venta.pago?.metodoPago || 'EFECTIVO',
+      'Subtotal': venta.subtotal || 0,
+      'Total': venta.total || 0,
+      'Estado': venta.estado || 'PENDIENTE'
+    }));
+  }
+
+  /**
+   * Crear archivo Excel con nombre personalizado por período
+   */
+  private crearArchivoExcelPeriodo(datos: any[], periodo: string): void {
+    if (datos.length === 0) {
+      console.warn('⚠️ No hay datos para exportar');
+      return;
+    }
+
+    // Crear hoja de cálculo
+    const ws = this.crearHojaCalculo(datos);
+    
+    // Crear libro de trabajo
+    const wb = {
+      Sheets: { 'Ventas': ws },
+      SheetNames: ['Ventas']
+    };
+    
+    // Generar buffer
+    const buffer = this.generarBufferExcel(wb);
+    
+    // Descargar con nombre personalizado
+    const nombreArchivo = this.generarNombreArchivoPeriodo(periodo);
+    this.descargarExcel(buffer, nombreArchivo);
+  }
+
+  /**
+   * Generar nombre de archivo con período
+   */
+  private generarNombreArchivoPeriodo(periodo: string): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const hora = String(fecha.getHours()).padStart(2, '0');
+    const minutos = String(fecha.getMinutes()).padStart(2, '0');
+    
+    const periodoMayus = periodo.charAt(0).toUpperCase() + periodo.slice(1);
+    
+    return `Ventas_${periodoMayus}_${año}${mes}${dia}_${hora}${minutos}.csv`;
+  }
+
+  /**
+   * Exportar a Excel moderno con formato profesional
+   */
+  exportarExcelModerno(): void {
+    try {
+      console.log('� Iniciando exportación a Excel...');
+      
+      this.messageService.add({
+        severity: 'info',
+        summary: '📊 Exportando',
+        detail: 'Generando archivo Excel...',
+        life: 2000
+      });
+
+      // Preparar datos para exportar
+      const datosExportar = this.prepararDatosExportacion();
+      
+      // Crear archivo Excel
+      this.crearArchivoExcel(datosExportar);
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: '✅ Exportación Exitosa',
+        detail: `${datosExportar.length} ventas exportadas correctamente`,
+        life: 4000
+      });
+      
+    } catch (error) {
+      console.error('❌ Error al exportar:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se pudo exportar el archivo. Intenta nuevamente.',
+        life: 4000
+      });
+    }
+  }
+
+  /**
+   * Preparar datos para exportación
+   */
+  private prepararDatosExportacion(): any[] {
+    return this.ventasFiltradas.map(venta => ({
+      'Número Venta': venta.numeroVenta || '',
+      'Fecha': this.formatearFechaExcel(venta.fechaVenta),
+      'Hora': this.formatearHoraExcel(venta.fechaVenta),
+      'Cliente': `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() || 'Cliente General',
+      'DNI/RUC': venta.cliente?.dni || venta.cliente?.ruc || 'S/N',
+      'Comprobante': `${venta.tipoComprobante} ${venta.serieComprobante}`,
+      'Cantidad Productos': venta.detalles?.length || 0,
+      'Método Pago': venta.pago?.metodoPago || 'EFECTIVO',
+      'Subtotal': venta.subtotal || 0,
+      'Total': venta.total || 0,
+      'Estado': venta.estado || 'PENDIENTE'
+    }));
+  }
+
+  /**
+   * Crear y descargar archivo Excel
+   */
+  private crearArchivoExcel(datos: any[]): void {
+    // Crear un libro de trabajo
+    const ws: any = this.crearHojaCalculo(datos);
+    const wb: any = { Sheets: { 'Ventas': ws }, SheetNames: ['Ventas'] };
+    
+    // Generar archivo Excel
+    const excelBuffer: any = this.generarBufferExcel(wb);
+    
+    // Descargar archivo
+    this.descargarExcel(excelBuffer, this.generarNombreArchivo());
+  }
+
+  /**
+   * Crear hoja de cálculo con formato
+   */
+  private crearHojaCalculo(datos: any[]): any {
+    // Aquí usaremos una implementación simple
+    // En producción, usarías una librería como xlsx
+    
+    const hoja: any = {};
+    const headers = Object.keys(datos[0] || {});
+    
+    // Agregar encabezados
+    headers.forEach((header, colIndex) => {
+      const cellRef = this.obtenerReferenciaCelda(0, colIndex);
+      hoja[cellRef] = { v: header, t: 's' };
+    });
+    
+    // Agregar datos
+    datos.forEach((fila, rowIndex) => {
+      headers.forEach((header, colIndex) => {
+        const cellRef = this.obtenerReferenciaCelda(rowIndex + 1, colIndex);
+        const value = fila[header];
+        
+        // Determinar tipo de dato
+        if (typeof value === 'number') {
+          hoja[cellRef] = { v: value, t: 'n' };
+        } else {
+          hoja[cellRef] = { v: value, t: 's' };
+        }
+      });
+    });
+    
+    // Definir rango
+    hoja['!ref'] = `A1:${this.obtenerReferenciaCelda(datos.length, headers.length - 1)}`;
+    
+    return hoja;
+  }
+
+  /**
+   * Generar buffer del archivo Excel
+   */
+  private generarBufferExcel(workbook: any): any {
+    // Conversión simplificada a CSV para compatibilidad sin librería externa
+    const hojaVentas = workbook.Sheets['Ventas'];
+    const datos: string[][] = [];
+    
+    // Extraer rango
+    const rango = hojaVentas['!ref'];
+    if (!rango) return '';
+    
+    const [inicio, fin] = rango.split(':');
+    const [, filaInicio] = this.parsearReferenciaCelda(inicio);
+    const [, filaFin] = this.parsearReferenciaCelda(fin);
+    
+    // Obtener headers
+    const headers: string[] = [];
+    let colIndex = 0;
+    while (true) {
+      const cellRef = this.obtenerReferenciaCelda(0, colIndex);
+      const cell = hojaVentas[cellRef];
+      if (!cell) break;
+      headers.push(cell.v);
+      colIndex++;
+    }
+    
+    // Construir CSV
+    let csv = headers.join(',') + '\n';
+    
+    for (let row = filaInicio + 1; row <= filaFin; row++) {
+      const fila: string[] = [];
+      for (let col = 0; col < headers.length; col++) {
+        const cellRef = this.obtenerReferenciaCelda(row, col);
+        const cell = hojaVentas[cellRef];
+        const value = cell ? cell.v : '';
+        fila.push(`"${value}"`);
+      }
+      csv += fila.join(',') + '\n';
+    }
+    
+    return csv;
+  }
+
+  /**
+   * Descargar archivo Excel
+   */
+  private descargarExcel(buffer: any, nombreArchivo: string): void {
+    const blob = new Blob([buffer], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', nombreArchivo.replace('.xlsx', '.csv'));
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  /**
+   * Generar nombre de archivo con fecha
+   */
+  private generarNombreArchivo(): string {
+    const fecha = new Date();
+    const fechaFormateada = `${fecha.getFullYear()}${(fecha.getMonth() + 1).toString().padStart(2, '0')}${fecha.getDate().toString().padStart(2, '0')}`;
+    const horaFormateada = `${fecha.getHours().toString().padStart(2, '0')}${fecha.getMinutes().toString().padStart(2, '0')}`;
+    return `Ventas_${fechaFormateada}_${horaFormateada}.xlsx`;
+  }
+
+  /**
+   * Obtener referencia de celda (A1, B2, etc.)
+   */
+  private obtenerReferenciaCelda(fila: number, columna: number): string {
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let col = '';
+    let num = columna;
+    
+    while (num >= 0) {
+      col = letras[num % 26] + col;
+      num = Math.floor(num / 26) - 1;
+    }
+    
+    return col + (fila + 1);
+  }
+
+  /**
+   * Parsear referencia de celda
+   */
+  private parsearReferenciaCelda(ref: string): [number, number] {
+    const match = ref.match(/^([A-Z]+)(\d+)$/);
+    if (!match) return [0, 0];
+    
+    const colStr = match[1];
+    const rowStr = match[2];
+    
+    let col = 0;
+    for (let i = 0; i < colStr.length; i++) {
+      col = col * 26 + colStr.charCodeAt(i) - 65 + 1;
+    }
+    
+    return [col - 1, parseInt(rowStr) - 1];
+  }
+
+  /**
+   * Formatear fecha para Excel
+   */
+  private formatearFechaExcel(fecha: Date | string): string {
+    const f = new Date(fecha);
+    return `${f.getDate().toString().padStart(2, '0')}/${(f.getMonth() + 1).toString().padStart(2, '0')}/${f.getFullYear()}`;
+  }
+
+  /**
+   * Formatear hora para Excel
+   */
+  private formatearHoraExcel(fecha: Date | string): string {
+    const f = new Date(fecha);
+    return `${f.getHours().toString().padStart(2, '0')}:${f.getMinutes().toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Exportar PDF con diseño moderno y profesional
+   */
+  exportarPDF(): void {
+    try {
+      console.log('📄 Iniciando exportación a PDF...');
+      
+      this.messageService.add({
+        severity: 'info',
+        summary: '📄 Generando PDF',
+        detail: 'Creando documento profesional...',
+        life: 2000
+      });
+
+      const datos = this.prepararDatosExportacion();
+      
+      if (datos.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: '⚠️ Sin Datos',
+          detail: 'No hay ventas para exportar',
+          life: 3000
+        });
+        return;
+      }
+
+      this.generarPDFProfesional(datos);
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: '✅ PDF Generado',
+        detail: `Reporte de ${datos.length} ventas generado exitosamente`,
+        life: 4000
+      });
+      
+    } catch (error) {
+      console.error('❌ Error al generar PDF:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se pudo generar el PDF. Intenta nuevamente.',
+        life: 4000
+      });
+    }
+  }
+
+  /**
+   * Generar PDF con diseño profesional y moderno
+   */
+  private generarPDFProfesional(datos: any[]): void {
+    // Crear documento PDF en formato A4 horizontal para mejor visualización
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // Colores del tema (moderno y profesional) - definidos como tuplas
+    const colorPrimario: [number, number, number] = [41, 128, 185]; // Azul profesional
+    const colorSecundario: [number, number, number] = [52, 73, 94]; // Azul oscuro
+    const colorTexto: [number, number, number] = [44, 62, 80]; // Gris oscuro
+    const colorFondo: [number, number, number] = [236, 240, 241]; // Gris claro
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // ============================================
+    // ENCABEZADO PRINCIPAL
+    // ============================================
+    
+    // Fondo del encabezado con degradado simulado
+    doc.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+    
+    // Línea decorativa inferior del encabezado
+    doc.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
+    doc.rect(0, 35, pageWidth, 2, 'F');
+
+    // Logo/Icono (simulado con texto)
+    doc.setFillColor(255, 255, 255);
+    doc.circle(20, 17.5, 8, 'F');
+    doc.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📊', 16, 21);
+
+    // Título principal
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REPORTE DE VENTAS', 35, 15);
+
+    // Subtítulo
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sistema de Gestión de Inventario', 35, 23);
+
+    // Información de fecha y hora (derecha)
+    const fechaActual = new Date();
+    const fechaFormateada = fechaActual.toLocaleDateString('es-PE', { 
+      day: '2-digit', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+    const horaFormateada = fechaActual.toLocaleTimeString('es-PE', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Fecha: ${fechaFormateada}`, pageWidth - 15, 15, { align: 'right' });
+    doc.text(`Hora: ${horaFormateada}`, pageWidth - 15, 21, { align: 'right' });
+    doc.text(`Total Ventas: ${datos.length}`, pageWidth - 15, 27, { align: 'right' });
+
+    // ============================================
+    // INFORMACIÓN RESUMIDA (Tarjetas de métricas)
+    // ============================================
+    
+    const yInicio = 42;
+    const totalGeneral = datos.reduce((sum, venta) => sum + (parseFloat(venta['Total']) || 0), 0);
+    const promedioVenta = totalGeneral / datos.length;
+    const ventasCompletadas = datos.filter(v => v['Estado'] === 'COMPLETADA').length;
+
+    // Tarjeta 1: Total General
+    this.dibujarTarjetaMetrica(doc, 15, yInicio, 'TOTAL GENERAL', `S/. ${totalGeneral.toFixed(2)}`, colorPrimario);
+    
+    // Tarjeta 2: Promedio por Venta
+    this.dibujarTarjetaMetrica(doc, 90, yInicio, 'PROMEDIO VENTA', `S/. ${promedioVenta.toFixed(2)}`, [46, 204, 113]);
+    
+    // Tarjeta 3: Ventas Completadas
+    this.dibujarTarjetaMetrica(doc, 165, yInicio, 'COMPLETADAS', `${ventasCompletadas}/${datos.length}`, [52, 152, 219]);
+    
+    // Tarjeta 4: Período
+    const periodoTexto = this.obtenerTextoPeriodo();
+    this.dibujarTarjetaMetrica(doc, 240, yInicio, 'PERÍODO', periodoTexto, [155, 89, 182]);
+
+    // ============================================
+    // TABLA DE DATOS
+    // ============================================
+    
+    const yTabla = yInicio + 30;
+
+    // Preparar datos para la tabla
+    const headers = Object.keys(datos[0]);
+    const rows = datos.map(venta => Object.values(venta).map(v => String(v)));
+
+    // Configurar autoTable con diseño moderno
+    autoTable(doc, {
+      startY: yTabla,
+      head: [headers],
+      body: rows,
+      theme: 'grid',
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+        font: 'helvetica',
+        textColor: colorTexto,
+        lineColor: [200, 200, 200],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: colorSecundario,
+        textColor: [255, 255, 255],
+        fontSize: 9,
+        fontStyle: 'bold',
+        halign: 'center',
+        valign: 'middle',
+        cellPadding: 4
+      },
+      alternateRowStyles: {
+        fillColor: colorFondo
+      },
+      columnStyles: {
+        0: { cellWidth: 25, halign: 'left' },   // Número Venta
+        1: { cellWidth: 22, halign: 'center' }, // Fecha
+        2: { cellWidth: 18, halign: 'center' }, // Hora
+        3: { cellWidth: 35, halign: 'left' },   // Cliente
+        4: { cellWidth: 22, halign: 'center' }, // DNI/RUC
+        5: { cellWidth: 30, halign: 'left' },   // Comprobante
+        6: { cellWidth: 18, halign: 'center' }, // Cantidad
+        7: { cellWidth: 25, halign: 'center' }, // Método Pago
+        8: { cellWidth: 20, halign: 'right' },  // Subtotal
+        9: { cellWidth: 20, halign: 'right' },  // Total
+        10: { cellWidth: 22, halign: 'center' } // Estado
+      },
+      didParseCell: (data) => {
+        // Colorear columna de estado
+        if (data.column.index === 10 && data.section === 'body') {
+          const estado = data.cell.raw as string;
+          if (estado === 'COMPLETADA') {
+            data.cell.styles.textColor = [46, 204, 113]; // Verde
+            data.cell.styles.fontStyle = 'bold';
+          } else if (estado === 'PENDIENTE') {
+            data.cell.styles.textColor = [243, 156, 18]; // Naranja
+            data.cell.styles.fontStyle = 'bold';
+          } else if (estado === 'ANULADA') {
+            data.cell.styles.textColor = [231, 76, 60]; // Rojo
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+        
+        // Formatear montos
+        if ((data.column.index === 8 || data.column.index === 9) && data.section === 'body') {
+          const valor = parseFloat(data.cell.raw as string);
+          if (!isNaN(valor)) {
+            data.cell.text = [`S/. ${valor.toFixed(2)}`];
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+      },
+      margin: { top: yTabla, left: 10, right: 10, bottom: 25 },
+      didDrawPage: (data) => {
+        // Pie de página en cada página
+        this.dibujarPiePagina(doc, data.pageNumber, colorTexto, colorPrimario);
+      }
+    });
+
+    // Guardar el PDF
+    const nombreArchivo = this.generarNombreArchivoPDF();
+    doc.save(nombreArchivo);
+  }
+
+  /**
+   * Dibujar tarjeta de métrica (diseño moderno)
+   */
+  private dibujarTarjetaMetrica(
+    doc: jsPDF, 
+    x: number, 
+    y: number, 
+    titulo: string, 
+    valor: string, 
+    color: number[]
+  ): void {
+    const ancho = 65;
+    const alto = 20;
+
+    // Sombra suave
+    doc.setFillColor(200, 200, 200);
+    doc.roundedRect(x + 1, y + 1, ancho, alto, 3, 3, 'F');
+
+    // Fondo blanco de la tarjeta
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(x, y, ancho, alto, 3, 3, 'F');
+
+    // Borde coloreado
+    doc.setDrawColor(color[0], color[1], color[2]);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(x, y, ancho, alto, 3, 3, 'S');
+
+    // Barra de color superior
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.rect(x, y, ancho, 3, 'F');
+
+    // Título
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(titulo, x + ancho/2, y + 9, { align: 'center' });
+
+    // Valor
+    doc.setTextColor(color[0], color[1], color[2]);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(valor, x + ancho/2, y + 16, { align: 'center' });
+  }
+
+  /**
+   * Dibujar pie de página
+   */
+  private dibujarPiePagina(doc: jsPDF, numeroPagina: number, colorTexto: number[], colorPrimario: number[]): void {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Línea superior del pie
+    doc.setDrawColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+    doc.setLineWidth(0.5);
+    doc.line(10, pageHeight - 15, pageWidth - 10, pageHeight - 15);
+
+    // Información del pie
+    doc.setTextColor(colorTexto[0], colorTexto[1], colorTexto[2]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    
+    // Izquierda: Sistema
+    doc.text('Sistema de Gestión de Inventario © 2025', 10, pageHeight - 10);
+    
+    // Centro: Advertencia
+    doc.text('Documento generado automáticamente', pageWidth/2, pageHeight - 10, { align: 'center' });
+    
+    // Derecha: Número de página
+    doc.text(`Página ${numeroPagina}`, pageWidth - 10, pageHeight - 10, { align: 'right' });
+  }
+
+  /**
+   * Obtener texto del período actual (para tarjeta de métricas)
+   */
+  private obtenerTextoPeriodo(): string {
+    const hoy = new Date();
+    const mes = hoy.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
+    const año = hoy.getFullYear();
+    return `${mes} ${año}`;
+  }
+
+  /**
+   * Generar nombre de archivo PDF
+   */
+  private generarNombreArchivoPDF(): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const hora = String(fecha.getHours()).padStart(2, '0');
+    const minutos = String(fecha.getMinutes()).padStart(2, '0');
+    
+    return `Reporte_Ventas_${año}${mes}${dia}_${hora}${minutos}.pdf`;
+  }
+
+  /**
+   * Exportar CSV simple (alternativa)
+   */
+  exportarCSV(): void {
+    try {
+      const datos = this.prepararDatosExportacion();
+      const headers = Object.keys(datos[0] || {});
+      
+      // Crear CSV
+      let csv = headers.join(',') + '\n';
+      datos.forEach(fila => {
+        const valores = headers.map(header => `"${fila[header]}"`);
+        csv += valores.join(',') + '\n';
+      });
+      
+      // Descargar
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', this.generarNombreArchivo().replace('.xlsx', '.csv'));
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: '✅ CSV Exportado',
+        detail: 'Archivo CSV descargado correctamente',
+        life: 3000
+      });
+    } catch (error) {
+      console.error('Error al exportar CSV:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: '❌ Error',
+        detail: 'No se pudo exportar el archivo CSV',
+        life: 3000
+      });
+    }
+  }
+
+  // Métodos heredados (compatibilidad)
   exportarVentas(formato: string): void {
     console.log('📥 Exportar ventas en formato:', formato);
     
-    this.messageService.add({
-      severity: 'info',
-      summary: '📥 Exportando',
-      detail: `Generando reporte en formato ${formato.toUpperCase()}`,
-      life: 4000
-    });
-
-    // TODO: Implementar lógica real de exportación
-    setTimeout(() => {
-      this.messageService.add({
-        severity: 'success',
-        summary: '✅ Exportación Completa',
-        detail: `Reporte de ${this.ventasFiltradas.length} ventas generado exitosamente`,
-        life: 5000,
-        data: {
-          acciones: [{
-            label: 'Descargar',
-            action: () => this.descargarArchivo(formato),
-            style: 'px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-lg hover:bg-green-600'
-          }]
-        }
-      });
-    }, 2000);
+    if (formato === 'excel' || formato === 'excel-detallado') {
+      this.exportarExcelModerno();
+    } else if (formato === 'csv') {
+      this.exportarCSV();
+    } else if (formato === 'pdf' || formato === 'pdf-resumen') {
+      this.exportarPDF();
+    }
   }
 
   exportarPrincipal(): void {
-    this.exportarVentas('excel');
+    this.exportarExcelModerno();
   }
 
   private descargarArchivo(formato: string): void {
-    // TODO: Implementar descarga real
     console.log('💾 Descargando archivo:', formato);
+    this.exportarExcelModerno();
   }
 
   // ✅ VISTA Y INTERFAZ
@@ -1700,7 +2660,9 @@ getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' |
     }
   }
 
-  // ✅ DATOS DE EJEMPLO (TEMPORAL)
+  // ✅ MÉTODO DE DATOS DE EJEMPLO - YA NO SE USA
+  // Se mantiene comentado por si se necesita en desarrollo futuro
+  /*
   private generarVentasEjemplo(): Venta[] {
     const ventas: Venta[] = [];
     const estados: EstadoVenta[] = ['COMPLETADA', 'PENDIENTE', 'PROCESANDO', 'ANULADA'];
@@ -1756,4 +2718,5 @@ getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' |
     
     return ventas;
   }
+  */
 }

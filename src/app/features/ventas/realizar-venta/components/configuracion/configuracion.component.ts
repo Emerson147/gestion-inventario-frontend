@@ -633,6 +633,14 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
+  // Mostrar formulario para agregar nueva impresora
+  mostrarNuevaImpresora(): void {
+    this.nuevaImpresora = {};
+    this.impresoraSeleccionada = null;
+    this.mostrarFormularioImpresora = true;
+    this.cdr.markForCheck();
+  }
+
   // ✅ CONFIGURACIÓN FISCAL (manteniendo tu lógica)
   guardarConfiguracionFiscal(): void {
     this.guardando = true;
@@ -670,6 +678,17 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
       console.log(`🎨 Tema personalizado aplicado por ${this.currentUser}`);
     }, 1500);
+  }
+
+  // Navegación desde breadcrumbs (placeholders, pueden integrar Router luego)
+  irInicio(): void {
+    console.log('Navegar a Inicio (breadcrumb)');
+    // TODO: integrar con Router si se desea
+  }
+
+  irVentas(): void {
+    console.log('Navegar a Ventas (breadcrumb)');
+    // TODO: integrar con Router si se desea
   }
 
   aplicarTemaPreview(): void {

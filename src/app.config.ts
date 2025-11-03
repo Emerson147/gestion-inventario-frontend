@@ -6,6 +6,7 @@ import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import {authInterceptor} from './app/core/interceptors/auth.interceptor';
 import {provideAnimations} from '@angular/platform-browser/animations';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +17,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor])
     ),
     provideAnimations(),
+    MessageService,
+    ConfirmationService
   ]
 };

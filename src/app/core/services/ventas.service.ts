@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EstadisticasModeloResponse, FiltrosVentaRequest, ReporteVentasResponse, ResumenClienteResponse, ResumenDiarioResponse, VentaRequest, VentaResponse } from '../models/venta.model';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 
@@ -12,8 +12,19 @@ export class VentasService {
 
   private http = inject(HttpClient);
 
+  // Subject para notificar cuando se registra una nueva venta
+  private ventaRegistrada$ = new Subject<VentaResponse>();
+
+  // Observable público para que otros componentes se suscriban
+  public onVentaRegistrada$ = this.ventaRegistrada$.asObservable();
+
   registrarVenta(venta: VentaRequest): Observable<VentaResponse> {
-    return this.http.post<VentaResponse>(`${this.apiUrl}/registrar`, venta);
+    return this.http.post<VentaResponse>(`${this.apiUrl}/registrar`, venta).pipe(
+      tap(ventaRegistrada => {
+        // Notificar a los suscriptores que se registró una nueva venta
+        this.ventaRegistrada$.next(ventaRegistrada);
+      })
+    );
   }
 
   obtenerTodasLasVentas(): Observable<VentaResponse[]> {

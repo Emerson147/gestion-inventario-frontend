@@ -1,770 +1,378 @@
-<div class="reports-container min-h-screen bg-slate-50">
+<!-- ========================================
+     ANALYTICS CENTER - DISEÑO MODERNO Y LIMPIO
+     ======================================== -->
 
-  <!-- HEADER EMPRESARIAL -->
-  <div class="header-section bg-slate-900 text-white shadow-sm">
-    <div class="container mx-auto p-6">
-      <div class="flex justify-between items-center">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/20">
+
+  <!-- ===== HEADER STICKY ===== -->
+  <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+      <div class="flex items-center justify-between gap-4">
         
-        <div class="flex items-center gap-6">
-          <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-            <i class="pi pi-chart-bar text-xl text-white"></i>
+        <!-- Branding -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div class="relative">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 ring-2 ring-blue-100">
+              <i class="pi pi-chart-line text-lg sm:text-xl text-white"></i>
+            </div>
+            <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
           </div>
           <div>
-            <h1 class="text-2xl font-semibold text-white mb-1">Centro de Reportes</h1>
-            <p class="text-slate-300 text-sm">
-              Sistema de Análisis de Datos - Usuario: <span class="text-blue-300 font-medium">{{currentUser}}</span>
-            </p>
-            <p class="text-slate-400 text-xs flex items-center gap-2 mt-1">
-              <i class="pi pi-calendar"></i>
-              {{currentDateTime}} UTC
-            </p>
+            <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">Analytics Center</h1>
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+              <span class="hidden sm:inline">Dashboard Principal</span>
+              <span class="hidden sm:inline">•</span>
+              <span class="font-semibold text-blue-600">{{currentUser}}</span>
+            </div>
           </div>
         </div>
         
-        <div class="bg-green-600 rounded-lg p-3">
-          <div class="flex items-center gap-2 text-white">
-            <i class="pi pi-check-circle"></i>
-            <div class="text-sm">
-              <div class="font-medium">Sistema</div>
-              <div class="text-green-100 text-xs">ACTIVO</div>
-            </div>
+        <!-- Actions & Status -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Botón de Exportación con Menú -->
+          <div class="relative">
+            <p-button 
+              label="Exportar"
+              icon="pi pi-download"
+              (onClick)="exportarDashboard()"
+              severity="success"
+              size="small"
+              [style]="{'font-size': 'clamp(0.75rem, 2vw, 0.875rem)'}"
+              pTooltip="Exportar reporte ejecutivo completo"
+              tooltipPosition="bottom">
+            </p-button>
+          </div>
+          
+          <div class="relative">
+            <p-button 
+              #botonMenu
+              icon="pi pi-chevron-down"
+              (onClick)="menuExportar.toggle($event)"
+              severity="success"
+              size="small"
+              [text]="true"
+              pTooltip="Más opciones de exportación"
+              tooltipPosition="bottom">
+            </p-button>
+            
+            <p-menu 
+              #menuExportar 
+              [model]="opcionesExportacion" 
+              [popup]="true"
+              [appendTo]="'body'">
+            </p-menu>
+          </div>
+          
+          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-xs font-semibold text-emerald-700">Online</span>
+          </div>
+          <div class="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 bg-gray-100 rounded-xl text-xs text-gray-600">
+            <i class="pi pi-clock text-[10px]"></i>
+            <span class="hidden sm:inline">{{currentDateTime}}</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- DASHBOARD PRINCIPAL -->
-  <div class="dashboard-main bg-white">
-    <p-splitter [style]="{'height': '800px'}" styleClass="border-0">
-      
-      <!-- PANEL DE FILTROS -->
-      <ng-template pTemplate="panel">
-        <div class="filters-panel bg-white border-r border-slate-200 h-full overflow-y-auto">
-          <p-panel header="Centro de Control" styleClass="border-0 h-full">
+  <!-- ===== BANNER NAVEGACIÓN A HISTORIAL ===== -->
+  <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div class="bg-gradient-to-r from-green-50 via-emerald-50/50 to-green-50 border border-green-200/60 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:shadow-md transition-all duration-300">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-list text-white text-lg"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <i class="pi pi-info-circle text-green-600 text-sm"></i>
+            <p class="text-sm font-bold text-green-900">¿Necesitas datos transaccionales específicos?</p>
+          </div>
+          <p class="text-xs sm:text-sm text-green-700 leading-relaxed">
+            Este es el <span class="font-semibold">Analytics Center</span> para análisis estratégico con KPIs, gráficos y reportes ejecutivos. 
+            Para buscar ventas específicas, ver detalles de transacciones o exportar datos en CSV/Excel, visita el 
+            <a 
+              [routerLink]="['/ventas/historial']" 
+              class="font-bold underline decoration-2 hover:text-green-900 transition-colors inline-flex items-center gap-1"
+            >
+              Historial de Ventas
+              <i class="pi pi-external-link text-xs"></i>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTENIDO PRINCIPAL ===== -->
+  <div class="max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-6 space-y-4 sm:space-y-6">
+    
+    <!-- ===== TABS NAVEGACIÓN - RESPONSIVE ===== -->
+    <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
+      <p-tabView [(activeIndex)]="tabActivo" styleClass="modern-tabs-scroll">
+        
+        <!-- TAB: DASHBOARD GENERAL -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-1.5 sm:gap-2 px-1 sm:px-2 py-1">
+              <i class="pi pi-chart-pie text-xs sm:text-sm"></i>
+              <span class="font-semibold text-xs sm:text-sm">Overview</span>
+            </div>
+          </ng-template>
+          
+          <div class="p-3 sm:p-6 space-y-4 sm:space-y-6">
             
-            <p-accordion [multiple]="true" [activeIndex]="[0, 1]">
+            <!-- KPIs Grid - Optimizado para móvil -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               
-              <!-- FILTROS DE TIEMPO -->
-              <p-accordionTab header="Filtros de Tiempo">
-                <div class="p-4 space-y-4 bg-slate-50">
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Período:</label>
-                    <p-dropdown 
-                      [(ngModel)]="periodoSeleccionado"
-                      [options]="periodos"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Seleccionar período"
-                      styleClass="w-full">
-                    </p-dropdown>
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Rango de Fechas:</label>
-                    <p-calendar 
-                      [(ngModel)]="rangoFechas"
-                      selectionMode="range"
-                      [readonlyInput]="true"
-                      placeholder="Seleccionar rango"
-                      dateFormat="dd/mm/yy"
-                      [showIcon]="true"
-                      styleClass="w-full">
-                    </p-calendar>
-                  </div>
-                </div>
-              </p-accordionTab>
-              
-              <!-- FILTROS DE DATOS -->
-              <p-accordionTab header="Filtros de Datos">
-                <div class="p-4 space-y-4 bg-slate-50">
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Sucursales:</label>
-                    <p-multiSelect 
-                      [(ngModel)]="sucursalesSeleccionadas"
-                      [options]="sucursales"
-                      optionLabel="nombre"
-                      optionValue="id"
-                      placeholder="Seleccionar sucursales"
-                      styleClass="w-full">
-                    </p-multiSelect>
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Vendedores:</label>
-                    <p-multiSelect 
-                      [(ngModel)]="vendedoresSeleccionados"
-                      [options]="vendedores"
-                      optionLabel="nombre"
-                      optionValue="id"
-                      placeholder="Seleccionar vendedores"
-                      styleClass="w-full">
-                    </p-multiSelect>
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Categorías:</label>
-                    <p-multiSelect 
-                      [(ngModel)]="categoriasSeleccionadas"
-                      [options]="categorias"
-                      optionLabel="nombre"
-                      optionValue="id"
-                      placeholder="Seleccionar categorías"
-                      styleClass="w-full">
-                    </p-multiSelect>
-                  </div>
-                </div>
-              </p-accordionTab>
-              
-              <!-- FILTROS AVANZADOS -->
-              <p-accordionTab header="Filtros Avanzados">
-                <div class="p-4 space-y-4 bg-slate-50">
-                  <div class="space-y-3">
-                    <label class="block text-sm font-medium text-slate-700">Rango de Montos:</label>
-                    <div class="bg-white rounded-lg p-3 border border-slate-200">
-                      <p-slider 
-                        [(ngModel)]="rangoMontos"
-                        [range]="true"
-                        [min]="0"
-                        [max]="100000"
-                        [step]="1000"
-                        styleClass="w-full">
-                      </p-slider>
-                      <div class="flex justify-between text-sm text-slate-600 mt-2">
-                        <span class="bg-slate-100 px-2 py-1 rounded text-xs">S/ {{rangoMontos[0] | number}}</span>
-                        <span class="bg-slate-100 px-2 py-1 rounded text-xs">S/ {{rangoMontos[1] | number}}</span>
+              <!-- KPI: Ventas -->
+              <div class="group relative bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 overflow-hidden hover:shadow-xl active:scale-95 sm:hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div class="absolute inset-0 bg-white/5"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-2 sm:mb-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-emerald-100 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 sm:mb-1.5">Ventas Totales</p>
+                      <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-1 truncate">
+                        S/ {{kpis.ventasTotales | number:'1.0-0'}}
+                      </h3>
+                      <div class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-emerald-700/40 backdrop-blur-sm rounded-md sm:rounded-lg">
+                        <i class="pi pi-arrow-up text-[8px] sm:text-[10px] text-emerald-100"></i>
+                        <span class="text-[10px] sm:text-xs font-bold text-emerald-100">{{kpis.crecimientoVentas}}%</span>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Mínimo de Transacciones:</label>
-                    <p-inputNumber 
-                      [(ngModel)]="minimoTransacciones"
-                      [min]="1"
-                      [max]="1000"
-                      [showButtons]="true"
-                      buttonLayout="horizontal"
-                      incrementButtonIcon="pi pi-plus"
-                      decrementButtonIcon="pi pi-minus"
-                      styleClass="w-full">
-                    </p-inputNumber>
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 bg-white/15 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center ring-1 ring-white/20 flex-shrink-0">
+                      <i class="pi pi-dollar text-base sm:text-xl text-white"></i>
+                    </div>
                   </div>
                 </div>
-              </p-accordionTab>
-            </p-accordion>
-            
-            <!-- ACCIONES -->
-            <div class="p-4 bg-slate-100 border-t border-slate-200">
-              <div class="space-y-3">
-                <p-button 
-                  label="Aplicar Filtros"
-                  icon="pi pi-search"
-                  styleClass="p-button-success w-full"
-                  [loading]="aplicandoFiltros"
-                  (click)="aplicarFiltros()">
-                </p-button>
-                
-                <p-button 
-                  label="Limpiar Filtros"
-                  icon="pi pi-refresh"
-                  styleClass="p-button-secondary w-full"
-                  [outlined]="true"
-                  (click)="limpiarFiltros()">
-                </p-button>
-                
-                <p-button 
-                  label="Guardar Configuración"
-                  icon="pi pi-save"
-                  styleClass="p-button-outlined w-full"
-                  (click)="guardarConfiguracion()">
-                </p-button>
+              </div>
+              
+              <!-- KPI: Transacciones -->
+              <div class="group relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 overflow-hidden hover:shadow-xl active:scale-95 sm:hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div class="absolute inset-0 bg-white/5"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-2 sm:mb-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-blue-100 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 sm:mb-1.5">Transacciones</p>
+                      <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-1 truncate">
+                        {{kpis.numeroTransacciones | number}}
+                      </h3>
+                      <div class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-blue-700/40 backdrop-blur-sm rounded-md sm:rounded-lg">
+                        <i class="pi pi-arrow-up text-[8px] sm:text-[10px] text-blue-100"></i>
+                        <span class="text-[10px] sm:text-xs font-bold text-blue-100">{{kpis.crecimientoTransacciones}}%</span>
+                      </div>
+                    </div>
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 bg-white/15 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center ring-1 ring-white/20 flex-shrink-0">
+                      <i class="pi pi-shopping-cart text-base sm:text-xl text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- KPI: Clientes -->
+              <div class="group relative bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 overflow-hidden hover:shadow-xl active:scale-95 sm:hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div class="absolute inset-0 bg-white/5"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-2 sm:mb-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-amber-100 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 sm:mb-1.5">Clientes Únicos</p>
+                      <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-1 truncate">
+                        {{kpis.clientesUnicos | number}}
+                      </h3>
+                      <div class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-amber-700/40 backdrop-blur-sm rounded-md sm:rounded-lg">
+                        <i class="pi pi-arrow-up text-[8px] sm:text-[10px] text-amber-100"></i>
+                        <span class="text-[10px] sm:text-xs font-bold text-amber-100">{{kpis.crecimientoClientes}}%</span>
+                      </div>
+                    </div>
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 bg-white/15 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center ring-1 ring-white/20 flex-shrink-0">
+                      <i class="pi pi-users text-base sm:text-xl text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- KPI: Ticket Promedio -->
+              <div class="group relative bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 overflow-hidden hover:shadow-xl active:scale-95 sm:hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div class="absolute inset-0 bg-white/5"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-2 sm:mb-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-violet-100 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 sm:mb-1.5">Ticket Promedio</p>
+                      <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-1 truncate">
+                        S/ {{kpis.ticketPromedio | number:'1.0-0'}}
+                      </h3>
+                      <div class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-violet-700/40 backdrop-blur-sm rounded-md sm:rounded-lg">
+                        <i class="pi pi-arrow-up text-[8px] sm:text-[10px] text-violet-100"></i>
+                        <span class="text-[10px] sm:text-xs font-bold text-violet-100">{{kpis.crecimientoTicket}}%</span>
+                      </div>
+                    </div>
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 bg-white/15 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center ring-1 ring-white/20 flex-shrink-0">
+                      <i class="pi pi-receipt text-base sm:text-xl text-white"></i>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </p-panel>
-        </div>
-      </ng-template>
-      
-      <!-- CONTENIDO PRINCIPAL -->
-      <ng-template pTemplate="panel">
-        <div class="content-main h-full overflow-y-auto">
+
+            <!-- Progreso de Meta - Optimizado móvil -->
+            <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow">
+              <div class="flex flex-col gap-3 mb-3 sm:mb-4">
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-target text-white text-sm sm:text-base"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-gray-900 text-sm sm:text-base truncate">Progreso de Meta Mensual</h3>
+                    <p class="text-[10px] sm:text-xs text-gray-500">Objetivo del período actual</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-left">
+                    <div class="text-xl sm:text-2xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                      S/ {{kpis.ventasTotales | number:'1.0-0'}}
+                    </div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 font-medium">de S/ {{kpis.metaMensual | number:'1.0-0'}}</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-2xl sm:text-3xl font-black text-blue-600">{{progresoMeta}}%</div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 font-medium">completado</div>
+                  </div>
+                </div>
+              </div>
+              <p-progressBar 
+                [value]="progresoMeta"
+                [style]="{'height': '10px', 'borderRadius': '9999px'}"
+                [showValue]="false"
+                unit="%">
+              </p-progressBar>
+            </div>
+
+            <!-- Gráficos - Optimizado móvil -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              
+              <!-- Evolución de Ventas -->
+              <div class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow">
+                <div class="flex flex-col gap-3 mb-4">
+                  <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <i class="pi pi-chart-line text-white text-sm sm:text-base"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-sm sm:text-base">Evolución de Ventas</h3>
+                  </div>
+                  <div class="overflow-x-auto -mx-2 px-2">
+                    <p-selectButton 
+                      [(ngModel)]="tipoGraficoVentas"
+                      [options]="tiposGrafico"
+                      optionLabel="label"
+                      optionValue="value"
+                      (onChange)="cambiarTipoGrafico()"
+                      size="small"
+                      styleClass="text-xs">
+                    </p-selectButton>
+                  </div>
+                </div>
+                <p-chart 
+                  type="line"
+                  [data]="datosGraficoVentas"
+                  [options]="opcionesGraficoVentas"
+                  height="300"
+                  [responsive]="true">
+                </p-chart>
+              </div>
+              
+              <!-- Métodos de Pago -->
+              <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 sm:gap-3 mb-4">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-credit-card text-white text-sm sm:text-base"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900 text-sm sm:text-base">Métodos de Pago</h3>
+                </div>
+                <p-chart 
+                  type="doughnut"
+                  [data]="datosGraficoMetodosPago"
+                  [options]="opcionesGraficoCircular"
+                  height="240"
+                  [responsive]="true">
+                </p-chart>
+                
+                <div class="mt-4 space-y-2">
+                  <div *ngFor="let metodo of resumenMetodosPago" 
+                       class="flex items-center justify-between p-2 sm:p-3 bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all active:scale-95">
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                      <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shadow-sm ring-2 ring-white flex-shrink-0" [style.background]="metodo.color"></div>
+                      <span class="text-xs sm:text-sm font-semibold text-gray-700 truncate">{{metodo.nombre}}</span>
+                    </div>
+                    <span class="text-xs sm:text-sm font-bold text-gray-900 ml-2">{{metodo.porcentaje}}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- TAB: TOP PERFORMANCE - OPTIMIZADO MÓVIL -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-1.5 sm:gap-2 px-1 sm:px-2 py-1">
+              <i class="pi pi-star text-xs sm:text-sm"></i>
+              <span class="font-semibold text-xs sm:text-sm">Top Performance</span>
+            </div>
+          </ng-template>
           
-          <p-tabView [(activeIndex)]="tabActivo" styleClass="reports-tabs h-full">
+          <div class="p-3 sm:p-6 space-y-4 sm:space-y-6">
             
-            <!-- DASHBOARD EJECUTIVO -->
-            <p-tabPanel header="Dashboard Ejecutivo">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               
-              <!-- KPIs PRINCIPALES -->
-              <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  
-                  <div class="bg-green-600 rounded-xl p-6 text-white shadow-sm">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="text-2xl font-bold mb-1">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
-                        <div class="text-green-100 text-sm mb-2">Ventas Totales</div>
-                        <div class="flex items-center gap-1 text-sm bg-green-700 rounded-lg px-2 py-1 w-fit">
-                          <i class="pi pi-arrow-up text-xs"></i>
-                          <span>{{kpis.crecimientoVentas}}%</span>
-                        </div>
-                      </div>
-                      <div class="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center">
-                        <i class="pi pi-dollar"></i>
-                      </div>
+              <!-- Top Productos -->
+              <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-gray-200 p-3 sm:p-5">
+                  <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <i class="pi pi-star text-white text-sm sm:text-base"></i>
                     </div>
-                  </div>
-                  
-                  <div class="bg-blue-600 rounded-xl p-6 text-white shadow-sm">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="text-2xl font-bold mb-1">{{kpis.numeroTransacciones | number}}</div>
-                        <div class="text-blue-100 text-sm mb-2">Transacciones</div>
-                        <div class="flex items-center gap-1 text-sm bg-blue-700 rounded-lg px-2 py-1 w-fit">
-                          <i class="pi pi-arrow-up text-xs"></i>
-                          <span>{{kpis.crecimientoTransacciones}}%</span>
-                        </div>
-                      </div>
-                      <div class="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center">
-                        <i class="pi pi-shopping-cart"></i>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="bg-orange-600 rounded-xl p-6 text-white shadow-sm">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="text-2xl font-bold mb-1">{{kpis.clientesUnicos | number}}</div>
-                        <div class="text-orange-100 text-sm mb-2">Clientes Únicos</div>
-                        <div class="flex items-center gap-1 text-sm bg-orange-700 rounded-lg px-2 py-1 w-fit">
-                          <i class="pi pi-arrow-up text-xs"></i>
-                          <span>{{kpis.crecimientoClientes}}%</span>
-                        </div>
-                      </div>
-                      <div class="w-10 h-10 bg-orange-700 rounded-lg flex items-center justify-center">
-                        <i class="pi pi-users"></i>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="bg-purple-600 rounded-xl p-6 text-white shadow-sm">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="text-2xl font-bold mb-1">S/ {{kpis.ticketPromedio | number:'1.0-0'}}</div>
-                        <div class="text-purple-100 text-sm mb-2">Ticket Promedio</div>
-                        <div class="flex items-center gap-1 text-sm bg-purple-700 rounded-lg px-2 py-1 w-fit">
-                          <i class="pi pi-arrow-up text-xs"></i>
-                          <span>{{kpis.crecimientoTicket}}%</span>
-                        </div>
-                      </div>
-                      <div class="w-10 h-10 bg-purple-700 rounded-lg flex items-center justify-center">
-                        <i class="pi pi-receipt"></i>
-                      </div>
-                    </div>
+                    <h3 class="font-bold text-gray-900 text-sm sm:text-base">Top 10 Productos</h3>
                   </div>
                 </div>
-              </div>
-              
-              <!-- PROGRESO DE META -->
-              <div class="px-6 pb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                  <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                      <i class="pi pi-target text-slate-600"></i>
-                      Progreso de Meta Mensual
-                    </h3>
-                    <div class="text-right">
-                      <div class="text-xl font-bold text-green-600">S/ {{kpis.ventasTotales | number:'1.0-0'}}</div>
-                      <div class="text-sm text-slate-500">Meta: S/ {{kpis.metaMensual | number:'1.0-0'}}</div>
-                    </div>
-                  </div>
-                  <p-progressBar 
-                    [value]="progresoMeta"
-                    [style]="{'height': '16px'}"
-                    [showValue]="true"
-                    unit="%">
-                  </p-progressBar>
-                </div>
-              </div>
-              
-              <!-- GRÁFICOS PRINCIPALES -->
-              <div class="px-6 pb-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
-                  <div class="lg:col-span-2">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                      <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                          <i class="pi pi-chart-line text-slate-600"></i>
-                          Evolución de Ventas
-                        </h3>
-                        <p-selectButton 
-                          [(ngModel)]="tipoGraficoVentas"
-                          [options]="tiposGrafico"
-                          optionLabel="label"
-                          optionValue="value"
-                          (onChange)="cambiarTipoGrafico()"
-                          size="small">
-                        </p-selectButton>
-                      </div>
-                      <p-chart 
-                        type="line"
-                        [data]="datosGraficoVentas"
-                        [options]="opcionesGraficoVentas"
-                        height="350">
-                      </p-chart>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                      <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="pi pi-credit-card text-slate-600"></i>
-                        Métodos de Pago
-                      </h3>
-                      <p-chart 
-                        type="doughnut"
-                        [data]="datosGraficoMetodosPago"
-                        [options]="opcionesGraficoCircular"
-                        height="280">
-                      </p-chart>
-                      
-                      <div class="mt-4 space-y-2">
-                        <div *ngFor="let metodo of resumenMetodosPago" 
-                             class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                          <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full" [style.background]="metodo.color"></div>
-                            <span class="text-sm font-medium text-slate-700">{{metodo.nombre}}</span>
-                          </div>
-                          <span class="text-sm font-semibold text-slate-800">{{metodo.porcentaje}}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-            </p-tabPanel>
-            
-            <!-- TOP PERFORMANCE -->
-            <p-tabPanel header="Top Performance">
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-                
-                <div>
-                  <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-                    <div class="p-6 border-b border-slate-200 bg-slate-50">
-                      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                        <i class="pi pi-star text-slate-600"></i>
-                        Top 10 Productos
-                      </h3>
-                    </div>
-                    <div class="p-6">
-                      <p-table 
-                        [value]="topProductos"
-                        styleClass="p-datatable-sm"
-                        [paginator]="false"
-                        [rows]="10">
-                        
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th class="w-16">Rank</th>
-                            <th>Producto</th>
-                            <th class="text-right">Ventas</th>
-                            <th class="text-center">Cantidad</th>
-                          </tr>
-                        </ng-template>
-                        
-                        <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
-                          <tr class="hover:bg-slate-50 transition-colors">
-                            <td>
-                              <p-badge 
-                                [value]="(rowIndex + 1).toString()"
-                                [severity]="getRankSeverity(rowIndex)"
-                                styleClass="font-medium">
-                              </p-badge>
-                            </td>
-                            <td>
-                              <div>
-                                <div class="font-medium text-slate-800">{{producto.nombre}}</div>
-                                <div class="text-sm text-slate-500">{{producto.categoria}}</div>
-                              </div>
-                            </td>
-                            <td class="text-right">
-                              <div class="font-semibold text-green-600">S/ {{producto.totalVentas | number:'1.0-0'}}</div>
-                            </td>
-                            <td class="text-center">
-                              <p-chip 
-                                [label]="producto.cantidadVendida.toString()"
-                                styleClass="bg-slate-100 text-slate-700">
-                              </p-chip>
-                            </td>
-                          </tr>
-                        </ng-template>
-                      </p-table>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-                    <div class="p-6 border-b border-slate-200 bg-slate-50">
-                      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                        <i class="pi pi-users text-slate-600"></i>
-                        Top 10 Vendedores
-                      </h3>
-                    </div>
-                    <div class="p-6">
-                      <p-table 
-                        [value]="topVendedores"
-                        styleClass="p-datatable-sm"
-                        [paginator]="false"
-                        [rows]="10">
-                        
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th class="w-16">Rank</th>
-                            <th>Vendedor</th>
-                            <th class="text-right">Ventas</th>
-                            <th class="text-right">Comisión</th>
-                          </tr>
-                        </ng-template>
-                        
-                        <ng-template pTemplate="body" let-vendedor let-rowIndex="rowIndex">
-                          <tr class="hover:bg-slate-50 transition-colors">
-                            <td>
-                              <p-badge 
-                                [value]="(rowIndex + 1).toString()"
-                                [severity]="getRankSeverity(rowIndex)"
-                                styleClass="font-medium">
-                              </p-badge>
-                            </td>
-                            <td>
-                              <div class="flex items-center gap-3">
-                                <p-avatar 
-                                  [label]="vendedor.iniciales"
-                                  size="normal"
-                                  shape="circle"
-                                  styleClass="bg-slate-600 text-white">
-                                </p-avatar>
-                                <div>
-                                  <div class="font-medium text-slate-800">{{vendedor.nombre}}</div>
-                                  <div class="text-sm text-slate-500">{{vendedor.sucursal}}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td class="text-right">
-                              <div class="space-y-1">
-                                <div class="font-semibold text-green-600">S/ {{vendedor.totalVentas | number:'1.0-0'}}</div>
-                                <div class="text-xs">
-                                  <p-progressBar 
-                                    [value]="vendedor.porcentajeMeta"
-                                    [style]="{'height': '4px'}"
-                                    [showValue]="false">
-                                  </p-progressBar>
-                                  <span class="text-slate-500">{{vendedor.porcentajeMeta}}% meta</span>
-                                </div>
-                              </div>
-                            </td>
-                            <td class="text-right">
-                              <p-chip 
-                                [label]="'S/ ' + (vendedor.comision | number:'1.0-0')"
-                                styleClass="bg-green-100 text-green-700">
-                              </p-chip>
-                            </td>
-                          </tr>
-                        </ng-template>
-                      </p-table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="px-6 pb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                  <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    <i class="pi pi-chart-bar text-slate-600"></i>
-                    Comparativo de Vendedores
-                  </h3>
-                  <p-chart 
-                    type="bar"
-                    [data]="datosGraficoVendedores"
-                    [options]="opcionesGraficoBarras"
-                    height="400">
-                  </p-chart>
-                </div>
-              </div>
-              
-            </p-tabPanel>
-            
-            <!-- ANÁLISIS DE CLIENTES -->
-            <p-tabPanel header="Análisis de Clientes">
-              
-              <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 p-6">
-                
-                <div>
-                  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                      <i class="pi pi-chart-pie text-slate-600"></i>
-                      Segmentación
-                    </h3>
-                    <p-chart 
-                      type="pie"
-                      [data]="datosSegmentosClientes"
-                      [options]="opcionesGraficoCircular"
-                      height="250">
-                    </p-chart>
-                    
-                    <div class="mt-4 space-y-2">
-                      <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <div class="flex items-center gap-2">
-                          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                          <span class="text-sm font-medium text-slate-700">Premium VIP</span>
-                        </div>
-                        <span class="text-sm font-semibold text-slate-800">127</span>
-                      </div>
-                      <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-200">
-                        <div class="flex items-center gap-2">
-                          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <span class="text-sm font-medium text-slate-700">Frecuentes</span>
-                        </div>
-                        <span class="text-sm font-semibold text-slate-800">245</span>
-                      </div>
-                      <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="flex items-center gap-2">
-                          <div class="w-3 h-3 bg-slate-500 rounded-full"></div>
-                          <span class="text-sm font-medium text-slate-700">Ocasionales</span>
-                        </div>
-                        <span class="text-sm font-semibold text-slate-800">195</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="lg:col-span-3">
-                  <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-                    <div class="p-6 border-b border-slate-200 bg-slate-50">
-                      <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                          <i class="pi pi-users text-slate-600"></i>
-                          Top 15 Clientes
-                        </h3>
-                        <div class="relative">
-                          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                          <input 
-                            type="text" 
-                            placeholder="Buscar clientes..."
-                            class="pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            (input)="filtrarClientes($event)">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="p-6">
-                      <p-table 
-                        [value]="topClientes"
-                        styleClass="p-datatable-sm"
-                        [paginator]="true"
-                        [rows]="15">
-                        
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th>Cliente</th>
-                            <th>Segmento</th>
-                            <th class="text-right">Total Compras</th>
-                            <th>Última Compra</th>
-                            <th class="text-center">Acciones</th>
-                          </tr>
-                        </ng-template>
-                        
-                        <ng-template pTemplate="body" let-cliente>
-                          <tr class="hover:bg-slate-50 transition-colors">
-                            <td>
-                              <div class="flex items-center gap-3">
-                                <p-avatar 
-                                  [label]="getClienteInitials(cliente)"
-                                  size="normal"
-                                  shape="circle"
-                                  styleClass="bg-slate-600 text-white">
-                                </p-avatar>
-                                <div>
-                                  <div class="font-medium text-slate-800">{{cliente.nombres}} {{cliente.apellidos}}</div>
-                                  <div class="text-sm text-slate-500">{{cliente.email}}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <p-chip 
-                                [label]="cliente.segmento"
-                                [styleClass]="getSegmentoClass(cliente.segmento)">
-                              </p-chip>
-                            </td>
-                            <td class="text-right">
-                              <div>
-                                <div class="font-semibold text-green-600">S/ {{cliente.totalCompras | number:'1.0-0'}}</div>
-                                <div class="text-sm text-slate-500">{{cliente.numeroCompras}} compras</div>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="text-sm text-slate-700">{{cliente.ultimaCompra | date:'dd/MM/yyyy'}}</div>
-                            </td>
-                            <td class="text-center">
-                              <div class="flex justify-center gap-1">
-                                <p-button 
-                                  icon="pi pi-eye"
-                                  styleClass="p-button-rounded p-button-text p-button-sm"
-                                  pTooltip="Ver detalles"
-                                  (click)="verDetalleCliente(cliente)">
-                                </p-button>
-                                <p-button 
-                                  icon="pi pi-envelope"
-                                  styleClass="p-button-rounded p-button-text p-button-sm"
-                                  pTooltip="Enviar email"
-                                  (click)="enviarEmailCliente(cliente)">
-                                </p-button>
-                              </div>
-                            </td>
-                          </tr>
-                        </ng-template>
-                      </p-table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-            </p-tabPanel>
-            
-            <!-- GENERAR REPORTES -->
-            <p-tabPanel header="Generar Reportes">
-              
-              <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  
-                  <div *ngFor="let tipo of tiposReportes" 
-                       class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-                    <div class="p-6">
-                      <div class="text-center mb-4">
-                        <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 bg-slate-100">
-                          <i [class]="tipo.icono + ' text-xl text-slate-600'"></i>
-                        </div>
-                        <h4 class="text-lg font-semibold text-slate-800">{{tipo.titulo}}</h4>
-                        <p class="text-sm text-slate-600 mt-1">{{tipo.descripcion}}</p>
-                      </div>
-                      
-                      <p-button 
-                        [label]="'Generar ' + tipo.formato"
-                        [icon]="tipo.iconoAccion"
-                        styleClass="p-button-outlined w-full"
-                        [loading]="tipo.generando"
-                        (click)="generarReporte(tipo.tipo)">
-                      </p-button>
-                      
-                      <div *ngIf="tipo.generando" class="mt-3">
-                        <p-progressBar 
-                          [value]="tipo.progreso"
-                          [style]="{'height': '6px'}"
-                          [showValue]="false">
-                        </p-progressBar>
-                        <div class="text-xs text-slate-500 mt-1 text-center">
-                          Generando... {{tipo.progreso}}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="px-6 pb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-                  <div class="p-6 border-b border-slate-200 bg-slate-50">
-                    <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                      <i class="pi pi-history text-slate-600"></i>
-                      Historial de Reportes Generados
-                    </h3>
-                  </div>
-                  <div class="p-6">
+                <div class="p-3 sm:p-5 overflow-x-auto -mx-3 sm:mx-0">
+                  <div class="inline-block min-w-full align-middle">
                     <p-table 
-                      [value]="historialReportes"
+                      [value]="topProductos"
                       styleClass="p-datatable-sm"
-                      [paginator]="true"
+                      [paginator]="false"
                       [rows]="10"
-                      [loading]="cargandoHistorial">
+                      [responsive]="true">
                       
                       <ng-template pTemplate="header">
                         <tr>
-                          <th>Reporte</th>
-                          <th>Fecha Generación</th>
-                          <th>Tipo</th>
-                          <th>Estado</th>
-                          <th>Archivo</th>
-                          <th class="text-center">Acciones</th>
+                          <th class="w-10 sm:w-14 font-bold text-gray-700 text-xs sm:text-sm">#</th>
+                          <th class="font-bold text-gray-700 text-xs sm:text-sm">Producto</th>
+                          <th class="text-right font-bold text-gray-700 text-xs sm:text-sm">Ventas</th>
+                          <th class="text-center font-bold text-gray-700 text-xs sm:text-sm hidden sm:table-cell">Cant.</th>
                         </tr>
                       </ng-template>
                       
-                      <ng-template pTemplate="body" let-reporte>
-                        <tr class="hover:bg-slate-50 transition-colors">
+                      <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
+                        <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
                           <td>
-                            <div class="flex items-center gap-2">
-                              <i [class]="reporte.icon + ' text-slate-600'"></i>
-                              <span class="font-medium text-slate-800">{{reporte.tipo}}</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold flex items-center justify-center text-[10px] sm:text-xs shadow-sm">
+                              {{rowIndex + 1}}
                             </div>
                           </td>
-                          <td class="text-slate-700">{{reporte.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
                           <td>
-                            <p-chip [label]="reporte.tipo" styleClass="bg-slate-100 text-slate-700"></p-chip>
+                            <div class="font-bold text-gray-900 text-xs sm:text-sm max-w-[120px] sm:max-w-none truncate">{{producto.nombre}}</div>
+                            <div class="text-[10px] sm:text-xs text-gray-500 font-medium truncate">{{producto.categoria}}</div>
                           </td>
-                          <td>
-                            <p-tag 
-                              [value]="reporte.estado"
-                              [severity]="getEstadoReporteSeverity(reporte.estado)"
-                              [icon]="getEstadoReporteIcon(reporte.estado)">
-                            </p-tag>
-                          </td>
-                          <td>
-                            <div>
-                              <div class="font-medium text-sm text-slate-800">{{reporte.archivo}}</div>
-                              <div class="text-xs text-slate-500">{{reporte.tamano | number:'1.1-1'}} MB</div>
+                          <td class="text-right">
+                            <div class="font-bold text-emerald-600 text-xs sm:text-sm whitespace-nowrap">
+                              S/ {{producto.totalVentas | number:'1.0-0'}}
                             </div>
+                            <div class="text-[10px] text-gray-500 sm:hidden">{{producto.cantidadVendida}} uds</div>
                           </td>
-                          <td class="text-center">
-                            <div class="flex justify-center gap-1">
-                              <p-button 
-                                icon="pi pi-download"
-                                styleClass="p-button-rounded p-button-text p-button-sm"
-                                pTooltip="Descargar"
-                                [disabled]="reporte.estado !== 'COMPLETADO'"
-                                (click)="descargarReporte(reporte)">
-                              </p-button>
-                              <p-button 
-                                icon="pi pi-eye"
-                                styleClass="p-button-rounded p-button-text p-button-sm"
-                                pTooltip="Vista previa"
-                                [disabled]="reporte.estado !== 'COMPLETADO'"
-                                (click)="vistaPrevia(reporte)">
-                              </p-button>
-                              <p-button 
-                                icon="pi pi-trash"
-                                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                                pTooltip="Eliminar"
-                                (click)="eliminarReporte(reporte)">
-                              </p-button>
-                            </div>
-                          </td>
-                        </tr>
-                      </ng-template>
-                      
-                      <ng-template pTemplate="emptymessage">
-                        <tr>
-                          <td colspan="6" class="text-center py-8">
-                            <div class="text-center">
-                              <i class="pi pi-file-o text-4xl text-slate-300 mb-4"></i>
-                              <h4 class="text-lg font-medium text-slate-600 mb-2">No hay reportes generados</h4>
-                              <p class="text-slate-500 mb-4">Comienza generando tu primer reporte</p>
-                              <p-button 
-                                label="Generar Primer Reporte"
-                                icon="pi pi-plus"
-                                styleClass="p-button-outlined"
-                                (click)="tabActivo = 0">
-                              </p-button>
-                            </div>
+                          <td class="text-center hidden sm:table-cell">
+                            <span class="inline-flex items-center justify-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold">
+                              {{producto.cantidadVendida}}
+                            </span>
                           </td>
                         </tr>
                       </ng-template>
@@ -773,283 +381,704 @@
                 </div>
               </div>
               
-            </p-tabPanel>
+              <!-- Top Vendedores -->
+              <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 p-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                      <i class="pi pi-users text-white"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900">Top 10 Vendedores</h3>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <p-table 
+                    [value]="topVendedores"
+                    styleClass="p-datatable-sm"
+                    [paginator]="false"
+                    [rows]="10">
+                    
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="w-14 font-bold text-gray-700">#</th>
+                        <th class="font-bold text-gray-700">Vendedor</th>
+                        <th class="text-right font-bold text-gray-700">Ventas</th>
+                        <th class="text-right font-bold text-gray-700">Comisión</th>
+                      </tr>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="body" let-vendedor let-rowIndex="rowIndex">
+                      <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
+                        <td>
+                          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                            {{rowIndex + 1}}
+                          </div>
+                        </td>
+                        <td>
+                          <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                              {{vendedor.iniciales}}
+                            </div>
+                            <div>
+                              <div class="font-bold text-gray-900 text-sm">{{vendedor.nombre}}</div>
+                              <div class="text-xs text-gray-500">{{vendedor.sucursal}}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="text-right">
+                          <div class="font-bold text-emerald-600">S/ {{vendedor.totalVentas | number:'1.0-0'}}</div>
+                          <div class="text-xs text-gray-500">{{vendedor.porcentajeMeta}}% meta</div>
+                        </td>
+                        <td class="text-right">
+                          <span class="inline-flex px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold">
+                            S/ {{vendedor.comision | number:'1.0-0'}}
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Comparativo Vendedores -->
+            <div class="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 hover:shadow-lg transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                  <i class="pi pi-chart-bar text-white"></i>
+                </div>
+                <h3 class="font-bold text-gray-900">Comparativo de Vendedores</h3>
+              </div>
+              <p-chart 
+                type="bar"
+                [data]="datosGraficoVendedores"
+                [options]="opcionesGraficoBarras"
+                height="400">
+              </p-chart>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- TAB: ANÁLISIS CLIENTES -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-2 px-2 py-1">
+              <i class="pi pi-users text-sm"></i>
+              <span class="font-semibold text-sm">Clientes</span>
+            </div>
+          </ng-template>
+          
+          <div class="p-4 sm:p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+              
+              <!-- Segmentación -->
+              <div class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-chart-pie text-white"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900">Segmentación</h3>
+                </div>
+                <p-chart 
+                  type="pie"
+                  [data]="datosSegmentosClientes"
+                  [options]="opcionesGraficoCircular"
+                  height="250">
+                </p-chart>
+                
+                <div class="mt-4 space-y-2">
+                  <div class="flex items-center justify-between p-2.5 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-200">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span class="text-xs font-bold text-gray-700">Premium VIP</span>
+                    </div>
+                    <span class="text-xs font-bold text-gray-900">127</span>
+                  </div>
+                  <div class="flex items-center justify-between p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span class="text-xs font-bold text-gray-700">Frecuentes</span>
+                    </div>
+                    <span class="text-xs font-bold text-gray-900">245</span>
+                  </div>
+                  <div class="flex items-center justify-between p-2.5 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border-2 border-gray-200">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 bg-slate-500 rounded-full"></div>
+                      <span class="text-xs font-bold text-gray-700">Ocasionales</span>
+                    </div>
+                    <span class="text-xs font-bold text-gray-900">195</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Lista de Clientes -->
+              <div class="lg:col-span-3 bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 p-5">
+                  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <i class="pi pi-users text-white"></i>
+                      </div>
+                      <h3 class="font-bold text-gray-900">Top 15 Clientes</h3>
+                    </div>
+                    <div class="relative w-full sm:w-auto">
+                      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                      <input 
+                        type="text" 
+                        placeholder="Buscar clientes..."
+                        class="w-full sm:w-64 pl-9 pr-4 py-2 border-2 border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-blue-300 transition-colors"
+                        (input)="filtrarClientes($event)">
+                    </div>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <p-table 
+                    [value]="topClientes"
+                    styleClass="p-datatable-sm"
+                    [paginator]="true"
+                    [rows]="15">
+                    
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="font-bold text-gray-700">Cliente</th>
+                        <th class="font-bold text-gray-700">Segmento</th>
+                        <th class="text-right font-bold text-gray-700">Total Compras</th>
+                        <th class="font-bold text-gray-700">Última Compra</th>
+                        <th class="text-center font-bold text-gray-700">Acciones</th>
+                      </tr>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="body" let-cliente>
+                      <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
+                        <td>
+                          <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                              {{getClienteInitials(cliente)}}
+                            </div>
+                            <div>
+                              <div class="font-bold text-gray-900 text-sm">{{cliente.nombres}} {{cliente.apellidos}}</div>
+                              <div class="text-xs text-gray-500">{{cliente.email}}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span [class]="getSegmentoClass(cliente.segmento) + ' inline-flex px-2.5 py-1 rounded-lg text-xs font-bold'">
+                            {{cliente.segmento}}
+                          </span>
+                        </td>
+                        <td class="text-right">
+                          <div class="font-bold text-emerald-600">S/ {{cliente.totalCompras | number:'1.0-0'}}</div>
+                          <div class="text-xs text-gray-500">{{cliente.numeroCompras}} compras</div>
+                        </td>
+                        <td>
+                          <div class="text-sm text-gray-700 font-medium">{{cliente.ultimaCompra | date:'dd/MM/yyyy'}}</div>
+                        </td>
+                        <td class="text-center">
+                          <div class="flex justify-center gap-1">
+                            <button 
+                              class="w-8 h-8 rounded-lg hover:bg-blue-50 flex items-center justify-center text-blue-600 transition-colors"
+                              (click)="verDetalleCliente(cliente)"
+                              pTooltip="Ver detalles">
+                              <i class="pi pi-eye text-sm"></i>
+                            </button>
+                            <button 
+                              class="w-8 h-8 rounded-lg hover:bg-green-50 flex items-center justify-center text-green-600 transition-colors"
+                              (click)="enviarEmailCliente(cliente)"
+                              pTooltip="Enviar email">
+                              <i class="pi pi-envelope text-sm"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- TAB: REPORTES -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-2 px-2 py-1">
+              <i class="pi pi-file-pdf text-sm"></i>
+              <span class="font-semibold text-sm">Reportes</span>
+            </div>
+          </ng-template>
+          
+          <div class="p-4 sm:p-6 space-y-6">
             
-            <!-- IA & PREDICCIONES -->
-            <p-tabPanel header="IA y Predicciones">
-              
-              <div class="p-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                  <h3 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="pi pi-cog text-slate-600"></i>
-                    Configuración de Inteligencia Artificial
-                  </h3>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="space-y-2">
-                      <label class="block text-sm font-medium text-slate-700">Algoritmo de IA:</label>
-                      <p-dropdown 
-                        [(ngModel)]="algoritmoIA"
-                        [options]="algoritmosIA"
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="Seleccionar algoritmo"
-                        styleClass="w-full">
-                      </p-dropdown>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label class="block text-sm font-medium text-slate-700">Ventana de Tiempo:</label>
-                      <p-dropdown 
-                        [(ngModel)]="ventanaTiempo"
-                        [options]="ventanasTiempo"
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="Seleccionar ventana"
-                        styleClass="w-full">
-                      </p-dropdown>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label class="block text-sm font-medium text-slate-700">Variables Predictivas:</label>
-                      <p-multiSelect 
-                        [(ngModel)]="variablesPredictivas"
-                        [options]="variablesDisponibles"
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="Seleccionar variables"
-                        styleClass="w-full">
-                      </p-multiSelect>
-                    </div>
+            <!-- Tipos de Reportes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div *ngFor="let tipo of tiposReportes" 
+                   class="bg-white rounded-2xl border-2 border-gray-200 p-5 hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                <div class="text-center">
+                  <div class="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i [class]="tipo.icono + ' text-2xl text-white'"></i>
                   </div>
+                  <h4 class="font-bold text-gray-900 mb-1">{{tipo.titulo}}</h4>
+                  <p class="text-xs text-gray-600 mb-4">{{tipo.descripcion}}</p>
                   
-                  <div class="flex flex-wrap gap-3">
-                    <p-button 
-                      label="Entrenar Modelo"
-                      icon="pi pi-cog"
-                      styleClass="p-button-success"
-                      [loading]="entrenandoModelo"
-                      (click)="entrenarModelo()">
-                    </p-button>
-                    
-                    <p-button 
-                      label="Generar Predicción"
-                      icon="pi pi-chart-line"
-                      styleClass="p-button-info"
-                      [loading]="generandoPrediccion"
-                      (click)="generarPrediccion()">
-                    </p-button>
-                    
-                    <p-button 
-                      label="Exportar Modelo"
-                      icon="pi pi-download"
-                      styleClass="p-button-outlined"
-                      (click)="exportarModelo()">
-                    </p-button>
+                  <button 
+                    class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all"
+                    [class.opacity-50]="tipo.generando"
+                    [disabled]="tipo.generando"
+                    (click)="generarReporte(tipo.tipo)">
+                    <span *ngIf="!tipo.generando">Generar {{tipo.formato}}</span>
+                    <span *ngIf="tipo.generando">Generando...</span>
+                  </button>
+                  
+                  <div *ngIf="tipo.generando" class="mt-3">
+                    <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-300" 
+                           [style.width.%]="tipo.progreso"></div>
+                    </div>
+                    <div class="text-xs text-gray-600 mt-1.5 font-semibold">{{tipo.progreso}}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Historial de Reportes -->
+            <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden">
+              <div class="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-gray-200 p-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-history text-white"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900">Historial de Reportes</h3>
+                </div>
+              </div>
+              <div class="p-5">
+                <p-table 
+                  [value]="historialReportes"
+                  styleClass="p-datatable-sm"
+                  [paginator]="true"
+                  [rows]="10"
+                  [loading]="cargandoHistorial">
+                  
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="font-bold text-gray-700">Reporte</th>
+                      <th class="font-bold text-gray-700">Fecha</th>
+                      <th class="font-bold text-gray-700">Estado</th>
+                      <th class="font-bold text-gray-700">Tamaño</th>
+                      <th class="text-center font-bold text-gray-700">Acciones</th>
+                    </tr>
+                  </ng-template>
+                  
+                  <ng-template pTemplate="body" let-reporte>
+                    <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
+                      <td>
+                        <div class="flex items-center gap-3">
+                          <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <i [class]="reporte.icon + ' text-white text-sm'"></i>
+                          </div>
+                          <div class="font-bold text-gray-900 text-sm">{{reporte.tipo}}</div>
+                        </div>
+                      </td>
+                      <td class="text-sm text-gray-700 font-medium">{{reporte.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
+                      <td>
+                        <span class="inline-flex px-2.5 py-1 rounded-lg text-xs font-bold" 
+                              [class.bg-green-100]="reporte.estado === 'COMPLETADO'"
+                              [class.text-green-700]="reporte.estado === 'COMPLETADO'"
+                              [class.bg-yellow-100]="reporte.estado === 'PROCESANDO'"
+                              [class.text-yellow-700]="reporte.estado === 'PROCESANDO'"
+                              [class.bg-red-100]="reporte.estado === 'ERROR'"
+                              [class.text-red-700]="reporte.estado === 'ERROR'">
+                          {{reporte.estado}}
+                        </span>
+                      </td>
+                      <td class="text-sm font-semibold text-gray-700">{{reporte.tamano | number:'1.1-1'}} MB</td>
+                      <td class="text-center">
+                        <div class="flex justify-center gap-1">
+                          <button 
+                            class="w-8 h-8 rounded-lg hover:bg-blue-50 flex items-center justify-center text-blue-600 transition-colors disabled:opacity-30"
+                            [disabled]="reporte.estado !== 'COMPLETADO'"
+                            (click)="descargarReporte(reporte)"
+                            pTooltip="Descargar">
+                            <i class="pi pi-download text-sm"></i>
+                          </button>
+                          <button 
+                            class="w-8 h-8 rounded-lg hover:bg-green-50 flex items-center justify-center text-green-600 transition-colors disabled:opacity-30"
+                            [disabled]="reporte.estado !== 'COMPLETADO'"
+                            (click)="vistaPrevia(reporte)"
+                            pTooltip="Vista previa">
+                            <i class="pi pi-eye text-sm"></i>
+                          </button>
+                          <button 
+                            class="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 transition-colors"
+                            (click)="eliminarReporte(reporte)"
+                            pTooltip="Eliminar">
+                            <i class="pi pi-trash text-sm"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="5" class="text-center py-16">
+                        <div class="flex flex-col items-center gap-4">
+                          <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center">
+                            <i class="pi pi-file-o text-4xl text-gray-400"></i>
+                          </div>
+                          <div>
+                            <h4 class="text-lg font-bold text-gray-700 mb-1">Sin reportes generados</h4>
+                            <p class="text-sm text-gray-500">Genera tu primer reporte para comenzar</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- TAB: IA & PREDICCIONES -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-2 px-2 py-1">
+              <i class="pi pi-sparkles text-sm"></i>
+              <span class="font-semibold text-sm">IA & Predicciones</span>
+            </div>
+          </ng-template>
+          
+          <div class="p-4 sm:p-6 space-y-6">
+            
+            <!-- Configuración IA -->
+            <div class="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <i class="pi pi-cog text-white"></i>
+                </div>
+                <h3 class="font-bold text-gray-900">Configuración de IA</h3>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="space-y-2">
+                  <label class="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="pi pi-microchip text-purple-600 text-sm"></i>
+                    Algoritmo
+                  </label>
+                  <p-dropdown 
+                    [(ngModel)]="algoritmoIA"
+                    [options]="algoritmosIA"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccionar..."
+                    styleClass="w-full">
+                  </p-dropdown>
+                </div>
+                
+                <div class="space-y-2">
+                  <label class="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="pi pi-calendar text-purple-600 text-sm"></i>
+                    Ventana de Tiempo
+                  </label>
+                  <p-dropdown 
+                    [(ngModel)]="ventanaTiempo"
+                    [options]="ventanasTiempo"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccionar..."
+                    styleClass="w-full">
+                  </p-dropdown>
+                </div>
+                
+                <div class="space-y-2">
+                  <label class="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="pi pi-sliders-h text-purple-600 text-sm"></i>
+                    Variables
+                  </label>
+                  <p-multiSelect 
+                    [(ngModel)]="variablesPredictivas"
+                    [options]="variablesDisponibles"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccionar..."
+                    styleClass="w-full">
+                  </p-multiSelect>
+                </div>
+              </div>
+              
+              <div class="flex flex-wrap gap-3">
+                <button 
+                  class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all"
+                  [class.opacity-50]="entrenandoModelo"
+                  [disabled]="entrenandoModelo"
+                  (click)="entrenarModelo()">
+                  <i class="pi pi-cog mr-2"></i>
+                  Entrenar Modelo
+                </button>
+                
+                <button 
+                  class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all"
+                  [class.opacity-50]="generandoPrediccion"
+                  [disabled]="generandoPrediccion"
+                  (click)="generarPrediccion()">
+                  <i class="pi pi-chart-line mr-2"></i>
+                  Generar Predicción
+                </button>
+                
+                <button 
+                  class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all"
+                  (click)="exportarModelo()">
+                  <i class="pi pi-download mr-2"></i>
+                  Exportar Modelo
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              
+              <!-- Gráfico Predicciones -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-5 sm:p-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-chart-line text-white"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900">Predicciones de Ventas</h3>
+                </div>
+                <p-chart 
+                  type="line"
+                  [data]="datosPredicciones"
+                  [options]="opcionesGraficoPredicciones"
+                  height="400">
+                </p-chart>
+                
+                <div class="mt-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-gray-200">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-bold text-gray-700">Precisión del Modelo</span>
+                    <span class="text-lg font-black text-emerald-600">{{predicciones.confianza}}%</span>
+                  </div>
+                  <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-600 transition-all" 
+                         [style.width.%]="predicciones.confianza"></div>
                   </div>
                 </div>
               </div>
               
-              <div class="px-6 pb-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
-                  <div class="lg:col-span-2">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                      <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="pi pi-chart-line text-slate-600"></i>
-                        Predicciones de Ventas
-                      </h3>
-                      <p-chart 
-                        type="line"
-                        [data]="datosPredicciones"
-                        [options]="opcionesGraficoPredicciones"
-                        height="400">
-                      </p-chart>
-                      
-                      <div class="mt-4 p-4 bg-slate-50 rounded-lg">
-                        <div class="flex items-center justify-between mb-2">
-                          <span class="font-medium text-slate-700">Precisión del Modelo:</span>
-                          <span class="font-semibold text-green-600">{{predicciones.confianza}}%</span>
-                        </div>
-                        <p-progressBar 
-                          [value]="predicciones.confianza"
-                          [style]="{'height': '10px'}"
-                          [showValue]="false">
-                        </p-progressBar>
+              <!-- Insights -->
+              <div class="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-lightbulb text-white"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900">Insights de IA</h3>
+                </div>
+                
+                <div class="space-y-3">
+                  <div class="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl text-white">
+                    <div class="flex items-center gap-3">
+                      <div class="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <i class="pi pi-arrow-up text-xl"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-emerald-100 mb-0.5">Crecimiento Esperado</div>
+                        <div class="text-2xl font-black">+{{predicciones.proximaSemana}}%</div>
+                        <div class="text-xs text-emerald-100 font-medium">próxima semana</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                      <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="pi pi-lightbulb text-slate-600"></i>
-                        Insights de IA
-                      </h3>
-                      
-                      <div class="space-y-4">
-                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-                          <div class="flex items-center gap-3">
-                            <i class="pi pi-arrow-up text-green-600"></i>
-                            <div>
-                              <div class="font-medium text-green-900">Crecimiento Esperado</div>
-                              <div class="text-xl font-bold text-green-600">+{{predicciones.proximaSemana}}%</div>
-                              <div class="text-sm text-green-700">próxima semana</div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                          <div class="flex items-center gap-3">
-                            <i class="pi pi-chart-line text-blue-600"></i>
-                            <div>
-                              <div class="font-medium text-blue-900">Tendencia Mensual</div>
-                              <div class="text-xl font-bold text-blue-600">+{{predicciones.proximoMes}}%</div>
-                              <div class="text-sm text-blue-700">próximo mes</div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                          <div class="flex items-center gap-3">
-                            <i class="pi pi-shield text-purple-600"></i>
-                            <div>
-                              <div class="font-medium text-purple-900">Confianza</div>
-                              <div class="text-xl font-bold text-purple-600">{{predicciones.confianza}}%</div>
-                              <div class="text-sm text-purple-700">precisión del modelo</div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                          <div class="flex items-center gap-3">
-                            <i class="pi pi-trending-up text-orange-600"></i>
-                            <div>
-                              <div class="font-medium text-orange-900">Tendencia</div>
-                              <div class="text-xl font-bold text-orange-600">{{predicciones.tendencia | titlecase}}</div>
-                              <div class="text-sm text-orange-700">dirección general</div>
-                            </div>
-                          </div>
-                        </div>
+                  <div class="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl text-white">
+                    <div class="flex items-center gap-3">
+                      <div class="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <i class="pi pi-chart-line text-xl"></i>
                       </div>
-                      
-                      <div class="mt-6">
-                        <h5 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                          <i class="pi pi-lightbulb text-slate-600"></i>
-                          Recomendaciones
-                        </h5>
-                        <div class="space-y-2">
-                          <div class="flex items-start gap-2 text-sm text-slate-700">
-                            <i class="pi pi-check text-green-500 mt-0.5"></i>
-                            <span>Incrementar stock en productos de alta rotación</span>
-                          </div>
-                          <div class="flex items-start gap-2 text-sm text-slate-700">
-                            <i class="pi pi-check text-green-500 mt-0.5"></i>
-                            <span>Enfocar marketing en segmento premium</span>
-                          </div>
-                          <div class="flex items-start gap-2 text-sm text-slate-700">
-                            <i class="pi pi-check text-green-500 mt-0.5"></i>
-                            <span>Optimizar horarios de personal</span>
-                          </div>
-                          <div class="flex items-start gap-2 text-sm text-slate-700">
-                            <i class="pi pi-check text-green-500 mt-0.5"></i>
-                            <span>Implementar promociones específicas</span>
-                          </div>
-                        </div>
+                      <div>
+                        <div class="text-xs font-bold text-blue-100 mb-0.5">Tendencia Mensual</div>
+                        <div class="text-2xl font-black">+{{predicciones.proximoMes}}%</div>
+                        <div class="text-xs text-blue-100 font-medium">próximo mes</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl text-white">
+                    <div class="flex items-center gap-3">
+                      <div class="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <i class="pi pi-shield text-xl"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-violet-100 mb-0.5">Confianza</div>
+                        <div class="text-2xl font-black">{{predicciones.confianza}}%</div>
+                        <div class="text-xs text-violet-100 font-medium">precisión</div>
                       </div>
                     </div>
                   </div>
                 </div>
+                
+                <div class="pt-3 border-t border-gray-200">
+                  <h5 class="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                    <i class="pi pi-lightbulb text-amber-600"></i>
+                    Recomendaciones
+                  </h5>
+                  <div class="space-y-2">
+                    <div class="flex items-start gap-2 text-xs text-gray-700 p-2 bg-green-50 rounded-lg border border-green-200">
+                      <i class="pi pi-check text-green-600 font-bold mt-0.5"></i>
+                      <span class="font-medium">Incrementar stock productos alta rotación</span>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-gray-700 p-2 bg-green-50 rounded-lg border border-green-200">
+                      <i class="pi pi-check text-green-600 font-bold mt-0.5"></i>
+                      <span class="font-medium">Enfocar marketing segmento premium</span>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-gray-700 p-2 bg-green-50 rounded-lg border border-green-200">
+                      <i class="pi pi-check text-green-600 font-bold mt-0.5"></i>
+                      <span class="font-medium">Optimizar horarios de personal</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-            </p-tabPanel>
-          </p-tabView>
-        </div>
-      </ng-template>
-    </p-splitter>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
   </div>
 
-  <!-- FLOATING ACTION BUTTON -->
-  <div class="fixed bottom-6 right-6 z-50">
+  <!-- FLOATING ACTION BUTTON - OPTIMIZADO MÓVIL -->
+  <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
     <p-speedDial 
       [model]="menuFlotante"
-      [radius]="80"
+      [radius]="60"
+      [hideOnClickOutside]="true"
       type="quarter-circle"
       direction="up-left"
       [transitionDelay]="80"
       showIcon="pi pi-plus"
       hideIcon="pi pi-times"
-      buttonClassName="p-button-help p-button-lg shadow-lg">
+      buttonClassName="p-button-help !w-12 !h-12 sm:!w-14 sm:!h-14 !shadow-xl sm:!shadow-2xl !ring-2 sm:!ring-4 !ring-blue-400/30">
     </p-speedDial>
   </div>
 </div>
 
-<!-- DIÁLOGOS -->
-<p-confirmDialog styleClass="confirm-dialog"></p-confirmDialog>
-<p-toast position="top-right" styleClass="custom-toast"></p-toast>
+<!-- DIÁLOGOS - OPTIMIZADO MÓVIL -->
+<p-confirmDialog 
+  [breakpoints]="{'960px': '90vw', '640px': '95vw'}"
+  [style]="{width: '450px'}"
+  styleClass="modern-dialog">
+</p-confirmDialog>
 
-<!-- DIALOG PARA DETALLES -->
+<p-toast 
+  position="top-right" 
+  styleClass="modern-toast"
+  [breakpoints]="{'920px': 'top-center'}">
+</p-toast>
+
+<!-- DIALOG DETALLES CLIENTE - OPTIMIZADO MÓVIL -->
 <p-dialog 
   [(visible)]="mostrarDetalles"
   [header]="tituloDetalle"
   [modal]="true"
-  [style]="{width: '85vw', height: '85vh'}"
+  [breakpoints]="{'960px': '95vw', '640px': '98vw'}"
+  [style]="{width: '90vw', maxWidth: '1200px', height: 'auto', maxHeight: '90vh'}"
   [closable]="true"
-  styleClass="detail-dialog">
+  [dismissableMask]="true"
+  styleClass="modern-dialog">
   
-  <div class="h-full overflow-y-auto">
-    <div [ngSwitch]="tipoDetalle">
+  <div class="overflow-y-auto p-3 sm:p-4" *ngIf="clienteSeleccionado">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
       
-      <div *ngSwitchCase="'cliente'" class="cliente-detail">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" *ngIf="clienteSeleccionado">
-          <div>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 text-center">
-              <h4 class="text-lg font-semibold text-slate-800 mb-4">Información Personal</h4>
-              <p-avatar 
-                [label]="getClienteInitials(clienteSeleccionado)"
-                size="xlarge"
-                shape="circle"
-                styleClass="mb-4 bg-slate-600 text-white">
-              </p-avatar>
-              <h5 class="text-xl font-semibold text-slate-800 mb-2">
-                {{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}
-              </h5>
-              <p class="text-slate-600 mb-4">{{clienteSeleccionado.email}}</p>
-              <p-chip 
-                [label]="clienteSeleccionado.segmento"
-                [styleClass]="getSegmentoClass(clienteSeleccionado.segmento)">
-              </p-chip>
-            </div>
+      <!-- Info Personal -->
+      <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 text-center">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl sm:rounded-2xl text-white font-black text-xl sm:text-2xl flex items-center justify-center shadow-lg ring-2 sm:ring-4 ring-blue-100">
+          {{getClienteInitials(clienteSeleccionado)}}
+        </div>
+        <h5 class="text-base sm:text-xl font-bold text-gray-900 mb-1">
+          {{clienteSeleccionado.nombres}} {{clienteSeleccionado.apellidos}}
+        </h5>
+        <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 break-all">{{clienteSeleccionado.email}}</p>
+        <span [class]="getSegmentoClass(clienteSeleccionado.segmento) + ' inline-flex px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-bold'">
+          {{clienteSeleccionado.segmento}}
+        </span>
+      </div>
+      
+      <!-- Historial -->
+      <div class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6">
+        <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="pi pi-shopping-bag text-white text-sm sm:text-base"></i>
           </div>
-          
-          <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h4 class="text-lg font-semibold text-slate-800 mb-4">Historial de Compras</h4>
-              <p-table 
-                [value]="historialComprasCliente"
-                styleClass="p-datatable-sm"
-                [paginator]="true"
-                [rows]="10">
-                
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Producto</th>
-                    <th class="text-center">Cantidad</th>
-                    <th class="text-right">Total</th>
-                  </tr>
-                </ng-template>
-                
-                <ng-template pTemplate="body" let-compra>
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="text-slate-700">{{compra.fecha | date:'dd/MM/yyyy'}}</td>
-                    <td class="font-medium text-slate-800">{{compra.producto}}</td>
-                    <td class="text-center text-slate-700">{{compra.cantidad}}</td>
-                    <td class="text-right font-semibold text-green-600">S/ {{compra.total | number:'1.0-0'}}</td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </div>
+          <div class="flex-1">
+            <h4 class="font-bold text-gray-900 text-sm sm:text-base">Historial de Compras</h4>
+            <p class="text-xs text-gray-500">Todas las compras realizadas por este cliente</p>
+          </div>
+        </div>
+        
+        <div class="overflow-x-auto -mx-4 sm:mx-0">
+          <div class="inline-block min-w-full align-middle">
+            <p-table 
+              [value]="historialComprasCliente"
+              styleClass="p-datatable-sm"
+              [paginator]="true"
+              [rows]="10"
+              [responsive]="true"
+              [loading]="cargandoHistorial"
+              [totalRecords]="historialComprasCliente.length">
+              
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="font-bold text-gray-700 text-xs sm:text-sm">Fecha</th>
+                  <th class="font-bold text-gray-700 text-xs sm:text-sm">Producto</th>
+                  <th class="text-center font-bold text-gray-700 text-xs sm:text-sm">Cant.</th>
+                  <th class="text-right font-bold text-gray-700 text-xs sm:text-sm">Total</th>
+                  <th class="font-bold text-gray-700 text-xs sm:text-sm hidden sm:table-cell">Vendedor</th>
+                </tr>
+              </ng-template>
+              
+              <ng-template pTemplate="body" let-compra>
+                <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
+                  <td class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{{compra.fecha | date:'dd/MM/yy HH:mm'}}</td>
+                  <td class="font-bold text-gray-900 text-xs sm:text-sm">
+                    <div class="max-w-[150px] sm:max-w-none truncate" [pTooltip]="compra.producto">{{compra.producto}}</div>
+                  </td>
+                  <td class="text-center font-semibold text-gray-700 text-xs sm:text-sm">
+                    <span class="inline-flex items-center justify-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg font-bold">
+                      {{compra.cantidad}}
+                    </span>
+                  </td>
+                  <td class="text-right font-bold text-emerald-600 text-xs sm:text-sm whitespace-nowrap">S/ {{compra.total | number:'1.2-2'}}</td>
+                  <td class="text-xs text-gray-600 hidden sm:table-cell">
+                    <div class="flex items-center gap-1.5">
+                      <i class="pi pi-user text-[10px] text-gray-400"></i>
+                      <span class="truncate max-w-[100px]" [pTooltip]="compra.vendedor">{{compra.vendedor}}</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-12">
+                    <div class="flex flex-col items-center gap-3">
+                      <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
+                        <i class="pi pi-shopping-bag text-3xl text-gray-400"></i>
+                      </div>
+                      <div>
+                        <h5 class="text-sm font-bold text-gray-700 mb-1">Sin compras registradas</h5>
+                        <p class="text-xs text-gray-500">Este cliente aún no ha realizado compras</p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              
+              <ng-template pTemplate="loadingbody">
+                <tr>
+                  <td colspan="5" class="text-center py-12">
+                    <div class="flex flex-col items-center gap-3">
+                      <i class="pi pi-spin pi-spinner text-3xl text-blue-600"></i>
+                      <p class="text-sm font-semibold text-gray-600">Cargando historial de compras...</p>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
         </div>
       </div>

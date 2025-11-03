@@ -401,6 +401,11 @@ stream: MediaStream | null = null;
       clearInterval(this.timeInterval);
     }
     this.cerrarScanner();
+    
+    // ⚠️ NO limpiar el estado de caja aquí
+    // El estado debe persistir entre navegaciones
+    // Solo se limpia con cerrarCaja() o al cambiar de día
+    console.log('🔄 Componente destruido, pero estado de caja se mantiene en localStorage');
   }
 
 
@@ -2714,11 +2719,37 @@ resetearEstadoPago(): void {
   }
   
   cerrarSesion(): void {
-    if (confirm('¿Está seguro de cerrar la sesión?')) {
-      console.log('👋 Cerrando sesión...');
-      // Aquí implementarías el logout real
-      alert('Sesión cerrada - Redirigiendo...');
-    }
+    this.confirmationService.confirm({
+      message: '¿Está seguro de cerrar la sesión? Se cerrará automáticamente la caja si está abierta.',
+      header: 'Confirmar Cierre de Sesión',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, cerrar sesión',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        console.log('👋 Cerrando sesión...');
+        
+        // Limpiar estado de caja antes de cerrar sesión
+        if (this.cajaAbierta) {
+          this.limpiarEstadoCaja();
+          console.log('� Caja cerrada automáticamente al cerrar sesión');
+        }
+        
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cerrando Sesión',
+          detail: 'Hasta pronto...',
+          life: 2000
+        });
+        
+        // Aquí implementarías el logout real
+        // Por ejemplo: this.authService.logoutAndRedirect();
+        setTimeout(() => {
+          // Redirigir al login u otra página
+          // this.router.navigate(['/login']);
+          alert('Sesión cerrada - Redirigiendo al login...');
+        }, 2000);
+      }
+    });
   }
 
   inicializarMetricas(): void {
@@ -3012,10 +3043,42 @@ resetearEstadoPago(): void {
   inicializarEstadoCaja() {
     // Verificar si hay un estado de caja guardado en localStorage
     const cajaGuardada = localStorage.getItem('cajaAbierta');
-    if (cajaGuardada) {
-      this.cajaAbierta = JSON.parse(cajaGuardada);
-      if (this.cajaAbierta) {
-        console.log('💰 Restaurando estado de caja abierta');
+    const sesionCaja = localStorage.getItem('sesionCaja');
+    
+    if (cajaGuardada && sesionCaja) {
+      try {
+        this.cajaAbierta = JSON.parse(cajaGuardada);
+        const datosSesion = JSON.parse(sesionCaja);
+        
+        if (this.cajaAbierta) {
+          // Verificar si la sesión es del mismo día
+          const fechaApertura = new Date(datosSesion.fechaApertura);
+          const hoy = new Date();
+          
+          const esMismoDia = fechaApertura.toDateString() === hoy.toDateString();
+          
+          if (esMismoDia) {
+            console.log('💰 Restaurando estado de caja abierta');
+            console.log('📅 Fecha de apertura:', fechaApertura.toLocaleString());
+            console.log('👤 Usuario:', datosSesion.usuario);
+            
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Sesión de Caja Restaurada',
+              detail: `Caja abierta desde ${fechaApertura.toLocaleTimeString()}`,
+              life: 4000
+            });
+          } else {
+            // Si es de otro día, limpiar y pedir nueva apertura
+            console.log('⚠️ Sesión de caja expirada (día diferente)');
+            this.limpiarEstadoCaja();
+            this.cajaAbierta = false;
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error al restaurar estado de caja:', error);
+        this.limpiarEstadoCaja();
+        this.cajaAbierta = false;
       }
     }
   }
@@ -3024,11 +3087,29 @@ resetearEstadoPago(): void {
     localStorage.setItem('cajaAbierta', JSON.stringify(this.cajaAbierta));
   }
 
+  private guardarSesionCaja(usuario: string = 'Usuario Actual', fondoInicial: number = 1000) {
+    const sesionCaja = {
+      fechaApertura: new Date().toISOString(),
+      usuario: usuario,
+      fondoInicial: fondoInicial,
+      estado: 'ABIERTA'
+    };
+    
+    localStorage.setItem('sesionCaja', JSON.stringify(sesionCaja));
+    console.log('💾 Sesión de caja guardada:', sesionCaja);
+  }
+
+  private limpiarEstadoCaja() {
+    localStorage.removeItem('cajaAbierta');
+    localStorage.removeItem('sesionCaja');
+    console.log('🧹 Estado de caja limpiado');
+  }
+
 
 
   cerrarCaja() {
     this.confirmationService.confirm({
-      message: '¿Está seguro que desea cerrar la caja? Se volverá a la pantalla inicial.',
+      message: '¿Está seguro que desea cerrar la caja? Se volverá a la pantalla inicial y deberá abrirla nuevamente en la próxima sesión.',
       header: 'Confirmar Cierre de Caja',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí, cerrar',
@@ -3036,14 +3117,15 @@ resetearEstadoPago(): void {
       accept: () => {
         this.cajaAbierta = false;
         this.activeTabIndex = 0;
-        this.guardarEstadoCaja(); // Guardar estado
+        this.limpiarEstadoCaja(); // ✅ Limpiar todo el estado de localStorage
         this.messageService.add({
           severity: 'info',
           summary: 'Caja Cerrada',
-          detail: 'La caja registradora ha sido cerrada',
-          life: 3000
+          detail: 'La caja registradora ha sido cerrada. Sesión finalizada.',
+          life: 4000
         });
         console.log('💰 Cerrando caja registradora...');
+        console.log('🧹 Sesión de caja limpiada del almacenamiento local');
         // Lógica adicional para cerrar caja (resumen del día, reportes, etc.)
       }
     });
@@ -3242,12 +3324,14 @@ resetearEstadoPago(): void {
   private abrirCajaRegistradora(): void {
     console.log('💰 Abriendo caja registradora...');
     this.cajaAbierta = true;
+    this.guardarEstadoCaja(); // ✅ Guardar estado en localStorage
+    this.guardarSesionCaja(); // ✅ Guardar datos completos de la sesión
     this.registrarAperturaCaja();
     this.messageService.add({
       severity: 'success',
       summary: 'Caja Abierta',
-      detail: 'Caja registradora abierta exitosamente',
-      life: 3000
+      detail: 'Caja registradora abierta exitosamente. La sesión se mantendrá activa.',
+      life: 4000
     });
   }
 

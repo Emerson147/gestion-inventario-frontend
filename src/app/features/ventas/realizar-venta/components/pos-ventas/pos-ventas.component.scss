@@ -1,0 +1,92 @@
+// 📱 Estilos Responsive para POS
+
+// Carrito deslizable en móvil
+aside.show-mobile-cart {
+  @media (max-width: 1023px) {
+    transform: translateY(0) !important;
+  }
+}
+
+// Animaciones suaves para el carrito
+aside {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Patrón de fondo para el header
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+// Animación bounce suave para iconos
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+// Animación pulse lenta
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+// Mejora de scrollbar para el carrito
+aside::-webkit-scrollbar {
+  width: 8px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 10px;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #818cf8, #6366f1);
+  border-radius: 10px;
+  
+  &:hover {
+    background: linear-gradient(to bottom, #6366f1, #4f46e5);
+  }
+}
+
+// Estilo para modo oscuro
+@media (prefers-color-scheme: dark) {
+  aside::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.5);
+  }
+}
+
+// Overlay semi-transparente
+.bg-opacity-50 {
+  backdrop-filter: blur(4px);
+}
+
+// Transición suave para elementos interactivos
+button, a {
+  transition: all 0.2s ease-in-out;
+}
+
+// Mejora visual para inputs en móvil
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important; // Previene zoom en iOS
+  }
+}

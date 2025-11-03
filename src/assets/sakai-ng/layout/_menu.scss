@@ -14,7 +14,30 @@
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);
-    padding: 0.5rem 1.5rem;
+    padding: 1rem 1rem;
+    
+    // Mejorar scrollbar con colores pastel
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: rgba(147, 197, 253, 0.05);  /* Azul pastel muy suave */
+        border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, 
+            rgb(147, 197, 253) 0%,    /* Azul pastel */
+            rgb(196, 181, 253) 100%); /* Púrpura pastel */
+        border-radius: 10px;
+        
+        &:hover {
+            background: linear-gradient(180deg, 
+                rgb(134, 239, 172) 0%,    /* Verde pastel */
+                rgb(147, 197, 253) 100%); /* Azul pastel */
+        }
+    }
 }
 
 .layout-menu {
@@ -23,12 +46,36 @@
     list-style-type: none;
 
     .layout-root-menuitem {
+        margin-bottom: 0.5rem;
+        
         > .layout-menuitem-root-text {
-            font-size: 0.857rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             font-weight: 700;
-            color: var(--text-color);
-            margin: 0.75rem 0;
+            color: var(--text-color-secondary);
+            margin: 1.5rem 0 0.75rem 0;
+            padding: 0 0.75rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            
+            // Línea decorativa con gradiente pastel
+            &:after {
+                content: '';
+                flex: 1;
+                height: 2px;
+                background: linear-gradient(90deg, 
+                    rgb(147, 197, 253) 0%,      /* Azul pastel */
+                    rgb(196, 181, 253) 50%,     /* Púrpura pastel */
+                    transparent 100%);
+                margin-left: 0.75rem;
+                border-radius: 2px;
+            }
+            
+            // Primera sección sin margen superior
+            &:first-child {
+                margin-top: 0;
+            }
         }
 
         > a {
@@ -38,6 +85,8 @@
 
     a {
         user-select: none;
+        font-weight: 500;
+        font-size: 0.95rem;
 
         &.active-menuitem {
             > .layout-submenu-toggler {
@@ -66,68 +115,156 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 1rem;
-            border-radius: var(--content-border-radius);
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.25rem;
             transition:
-                background-color var(--element-transition-duration),
-                box-shadow var(--element-transition-duration);
+                all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
 
             .layout-menuitem-icon {
-                margin-right: 0.5rem;
+                margin-right: 0.75rem;
+                font-size: 1.25rem;
+                width: 2rem;
+                height: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                background: linear-gradient(135deg, 
+                    rgba(147, 197, 253, 0.2) 0%,    /* Azul pastel suave */
+                    rgba(196, 181, 253, 0.15) 100%); /* Púrpura pastel suave */
+                color: rgb(59, 130, 246);            /* Azul medio */
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                flex-shrink: 0;
+            }
+            
+            .layout-menuitem-text {
+                flex: 1;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .layout-submenu-toggler {
-                font-size: 75%;
+                font-size: 0.875rem;
                 margin-left: auto;
-                transition: transform var(--element-transition-duration);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0.6;
             }
 
             &.active-route {
                 font-weight: 700;
                 color: var(--primary-color);
+                background: linear-gradient(135deg, 
+                    rgba(147, 197, 253, 0.15) 0%,    /* Azul pastel */
+                    rgba(196, 181, 253, 0.1) 100%);  /* Púrpura pastel */
+                border-left: 4px solid rgb(96, 165, 250);  /* Azul pastel vibrante */
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(147, 197, 253, 0.25);  /* Sombra azul pastel */
+                transform: translateX(4px);
+                
+                .layout-menuitem-icon {
+                    background: linear-gradient(135deg, 
+                        rgb(147, 197, 253) 0%,       /* Azul pastel */
+                        rgb(167, 139, 250) 100%);    /* Púrpura pastel */
+                    color: white;
+                    box-shadow: 0 4px 16px rgba(147, 197, 253, 0.4);
+                    transform: scale(1.05);
+                }
+                
+                .layout-menuitem-text {
+                    font-weight: 700;
+                    color: rgb(59, 130, 246);  /* Azul medio */
+                }
+                
+                .layout-submenu-toggler {
+                    opacity: 1;
+                    color: rgb(96, 165, 250);  /* Azul pastel vibrante */
+                }
             }
 
             &:hover {
-                background-color: var(--surface-hover);
+                background: linear-gradient(135deg, 
+                    rgba(167, 243, 208, 0.12) 0%,    /* Verde pastel */
+                    rgba(147, 197, 253, 0.12) 100%); /* Azul pastel */
+                transform: translateX(4px);
+                border-left: 4px solid rgb(134, 239, 172);  /* Verde pastel vibrante */
+                border-radius: 12px;
+                
+                .layout-menuitem-icon {
+                    background: linear-gradient(135deg, 
+                        rgb(134, 239, 172) 0%,       /* Verde pastel */
+                        rgb(147, 197, 253) 100%);    /* Azul pastel */
+                    color: white;
+                    transform: scale(1.08);
+                    box-shadow: 0 4px 16px rgba(134, 239, 172, 0.35);
+                }
+                
+                .layout-submenu-toggler {
+                    opacity: 1;
+                    transform: translateX(2px);
+                    color: rgb(74, 222, 128);  /* Verde pastel vibrante */
+                }
             }
 
             &:focus {
                 @include focused-inset();
+            }
+            
+            // Efecto ripple mejorado
+            &:active {
+                transform: translateX(4px) scale(0.98);
+                
+                .layout-menuitem-icon {
+                    transform: scale(0.95);
+                }
             }
         }
 
         ul {
             overflow: hidden;
             border-radius: var(--content-border-radius);
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid rgba(196, 181, 253, 0.3);  /* Púrpura pastel suave */
+            margin-left: 1rem;
 
             li {
                 a {
-                    margin-left: 1rem;
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9rem;
+                    
+                    .layout-menuitem-icon {
+                        width: 1.75rem;
+                        height: 1.75rem;
+                        font-size: 1rem;
+                        margin-right: 0.625rem;
+                    }
                 }
 
                 li {
                     a {
-                        margin-left: 2rem;
+                        margin-left: 1rem;
                     }
 
                     li {
                         a {
-                            margin-left: 2.5rem;
+                            margin-left: 1.5rem;
                         }
 
                         li {
                             a {
-                                margin-left: 3rem;
+                                margin-left: 2rem;
                             }
 
                             li {
                                 a {
-                                    margin-left: 3.5rem;
+                                    margin-left: 2.5rem;
                                 }
 
                                 li {
                                     a {
-                                        margin-left: 4rem;
+                                        margin-left: 3rem;
                                     }
                                 }
                             }
@@ -137,24 +274,215 @@
             }
         }
     }
+    
+    // Separadores de menú mejorados con gradiente pastel
+    .menu-separator {
+        height: 2px;
+        background: linear-gradient(90deg, 
+            transparent 0%,
+            rgb(252, 231, 243) 15%,   /* Rosa pastel */
+            rgb(196, 181, 253) 35%,   /* Púrpura pastel */
+            rgb(147, 197, 253) 50%,   /* Azul pastel */
+            rgb(134, 239, 172) 65%,   /* Verde pastel */
+            rgb(254, 240, 138) 85%,   /* Amarillo pastel */
+            transparent 100%);
+        margin: 1rem 0;
+        border-radius: 2px;
+        opacity: 0.6;
+    }
 }
 
 .layout-submenu-enter-from,
 .layout-submenu-leave-to {
     max-height: 0;
+    opacity: 0;
 }
 
 .layout-submenu-enter-to,
 .layout-submenu-leave-from {
     max-height: 1000px;
+    opacity: 1;
 }
 
 .layout-submenu-leave-active {
     overflow: hidden;
-    transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
+    transition: 
+        max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .layout-submenu-enter-active {
     overflow: hidden;
-    transition: max-height 1s ease-in-out;
+    transition: 
+        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Estilos adicionales para dark mode con colores pastel suaves
+@media (prefers-color-scheme: dark) {
+    .layout-sidebar {
+        &::-webkit-scrollbar-track {
+            background: rgba(147, 197, 253, 0.03);
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, 
+                rgba(147, 197, 253, 0.4) 0%,
+                rgba(196, 181, 253, 0.4) 100%);
+            
+            &:hover {
+                background: linear-gradient(180deg, 
+                    rgba(134, 239, 172, 0.5) 0%,
+                    rgba(147, 197, 253, 0.5) 100%);
+            }
+        }
+    }
+    
+    .layout-menu {
+        .layout-root-menuitem {
+            > .layout-menuitem-root-text {
+                &:after {
+                    background: linear-gradient(90deg, 
+                        rgba(147, 197, 253, 0.3) 0%,
+                        rgba(196, 181, 253, 0.3) 50%,
+                        transparent 100%);
+                }
+            }
+        }
+        
+        ul {
+            a {
+                .layout-menuitem-icon {
+                    background: linear-gradient(135deg, 
+                        rgba(147, 197, 253, 0.15) 0%,
+                        rgba(196, 181, 253, 0.1) 100%);
+                    color: rgb(147, 197, 253);
+                }
+                
+                &:hover {
+                    background: linear-gradient(135deg, 
+                        rgba(167, 243, 208, 0.08) 0%,
+                        rgba(147, 197, 253, 0.08) 100%);
+                    
+                    .layout-menuitem-icon {
+                        background: linear-gradient(135deg, 
+                            rgba(134, 239, 172, 0.8) 0%,
+                            rgba(147, 197, 253, 0.8) 100%);
+                    }
+                }
+                
+                &.active-route {
+                    background: linear-gradient(135deg, 
+                        rgba(147, 197, 253, 0.12) 0%,
+                        rgba(196, 181, 253, 0.08) 100%);
+                    border-left-color: rgba(96, 165, 250, 0.8);
+                    box-shadow: 0 2px 12px rgba(147, 197, 253, 0.2);
+                    
+                    .layout-menuitem-icon {
+                        background: linear-gradient(135deg, 
+                            rgba(147, 197, 253, 0.9) 0%,
+                            rgba(167, 139, 250, 0.9) 100%);
+                        box-shadow: 0 4px 16px rgba(147, 197, 253, 0.3);
+                    }
+                }
+            }
+        }
+        
+        .menu-separator {
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                rgba(252, 231, 243, 0.2) 15%,
+                rgba(196, 181, 253, 0.2) 35%,
+                rgba(147, 197, 253, 0.2) 50%,
+                rgba(134, 239, 172, 0.2) 65%,
+                rgba(254, 240, 138, 0.2) 85%,
+                transparent 100%);
+            opacity: 0.4;
+        }
+    }
+}
+
+// Animaciones adicionales con colores pastel
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(147, 197, 253, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(147, 197, 253, 0.4);
+    }
+}
+
+@keyframes rainbowShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.layout-menu {
+    ul {
+        a {
+            animation: slideInFromLeft 0.3s ease-out;
+            
+            // Efecto de brillo sutil en hover
+            &:hover::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg,
+                    rgba(147, 197, 253, 0.1) 0%,
+                    rgba(167, 243, 208, 0.1) 50%,
+                    rgba(252, 231, 243, 0.1) 100%);
+                border-radius: 12px;
+                pointer-events: none;
+                opacity: 0;
+                animation: fadeIn 0.3s ease-out forwards;
+            }
+            
+            &.active-route {
+                animation: pulseGlow 3s ease-in-out infinite;
+            }
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+// Efecto especial para el sidebar completo
+.layout-sidebar {
+    // Sutil gradiente de fondo con colores pastel
+    background: linear-gradient(135deg, 
+        var(--surface-overlay) 0%,
+        var(--surface-overlay) 100%);
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg,
+            rgba(147, 197, 253, 0.02) 0%,
+            rgba(196, 181, 253, 0.02) 50%,
+            rgba(167, 243, 208, 0.02) 100%);
+        pointer-events: none;
+        border-radius: var(--content-border-radius);
+    }
 }

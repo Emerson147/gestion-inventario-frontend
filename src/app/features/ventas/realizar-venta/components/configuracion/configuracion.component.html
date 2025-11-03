@@ -1,218 +1,279 @@
-<div class="configuracion-layout min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
   
-  <!-- 🛡️ HEADER PRINCIPAL OPTIMIZADO -->
-  <div class="configuracion-header bg-slate-800 text-white shadow-xl mb-8">
-    <div class="header-content p-6">
+  <!-- 🛡️ HEADER PRINCIPAL EMPRESARIAL -->
+  <div class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-6 py-4">
       <div class="flex items-center justify-between">
-        <div class="header-info">
-          <div class="flex items-center gap-6">
-            <div class="header-icon relative">
-              <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <i class="pi pi-cog text-3xl text-white"></i>
-              </div>
+        <!-- Logo y Título -->
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <i class="pi pi-cog text-2xl text-white"></i>
             </div>
-            <div>
-              <h2 class="text-3xl font-bold text-white mb-2">Panel de Administración</h2>
-              <p class="text-slate-300">
-                Control total del sistema - Admin: 
-                <span class="text-blue-300 font-semibold">{{currentUser}}</span> | 
-                <span class="text-green-300">{{currentDateTime}}</span>
-              </p>
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Panel de Administración</h2>
+            <p class="text-sm text-gray-500">
+              <span class="text-indigo-600 font-medium">{{currentUser}}</span>
+              <span class="mx-2">•</span>
+              <span>{{currentDateTime}}</span>
+            </p>
+
+            <!-- Breadcrumbs -->
+            <div class="mt-2 text-sm text-gray-500">
+              <nav class="flex items-center gap-2" aria-label="Breadcrumb">
+                <a class="hover:text-blue-600 transition-colors" (click)="irInicio()">Inicio</a>
+                <i class="pi pi-angle-right text-xs text-gray-400"></i>
+                <a class="hover:text-blue-600 transition-colors" (click)="irVentas()">Ventas</a>
+                <i class="pi pi-angle-right text-xs text-gray-400"></i>
+                <span class="text-gray-900 font-medium">Configuración</span>
+              </nav>
             </div>
           </div>
         </div>
         
-        <!-- Estado del sistema optimizado -->
-        <div class="sistema-estado">
-          <div class="bg-green-600 rounded-xl p-4 shadow-lg border border-green-500">
-            <div class="flex items-center gap-3 text-white">
-              <i class="pi pi-shield text-2xl"></i>
-              <div>
-                <div class="font-bold">Sistema</div>
-                <div class="text-green-100 text-sm">ONLINE</div>
-              </div>
-            </div>
+        <!-- Estado del Sistema -->
+        <div class="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
+          <div class="relative">
+            <i class="pi pi-shield text-green-600 text-lg"></i>
+            <span class="absolute -top-1 -right-1 flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+          </div>
+          <div class="text-sm">
+            <div class="font-semibold text-green-900">Sistema Online</div>
+            <div class="text-green-600 text-xs">Todos los servicios activos</div>
           </div>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- 📋 TABS DE CONFIGURACIÓN OPTIMIZADOS -->
-  <div class="configuracion-tabs px-6">
-    <p-tabView [(activeIndex)]="seccionActiva" 
-               styleClass="admin-tabview bg-white rounded-xl shadow-lg"
-               >
-      
-      <!-- 👤 GESTIÓN DE USUARIOS -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-users text-lg text-blue-600"></i>
-            <span class="font-semibold">Usuarios</span>
-            <div class="bg-green-600 text-white rounded-full px-2 py-1 text-xs font-bold min-w-[24px] text-center">
-              {{usuarios.length}}
-            </div>
-          </div>
-        </ng-template>
+  <!-- 📋 CONTENEDOR PRINCIPAL -->
+  <div class="max-w-[1600px] mx-auto px-6 py-6">
+    <!-- Tabs empresariales con diseño moderno -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <p-tabView [(activeIndex)]="seccionActiva" styleClass="modern-tabs">
         
-        <div class="seccion-content usuarios-section p-6">
-          <!-- Toolbar de usuarios optimizado -->
-          <div class="usuarios-toolbar mb-6 bg-blue-50 rounded-xl p-6">
-            <div class="flex justify-between items-center">
-              <div class="toolbar-left">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Gestión de Usuarios del Sistema</h3>
-                <p class="text-gray-600">
-                  Administrar accesos y permisos - Responsable: 
-                  <span class="text-blue-600 font-semibold">{{currentUser}}</span>
-                </p>
+        <!-- 👤 GESTIÓN DE USUARIOS -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+                <i class="pi pi-users text-white text-lg font-bold"></i>
               </div>
-              <div class="toolbar-right">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Usuarios</span>
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold min-w-[24px] text-center">
+                  {{usuarios.length}}
+                </span>
+              </div>
+            </div>
+          </ng-template>
+          
+          <div class="p-6">
+            <!-- Toolbar moderno -->
+            <div class="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100/50">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-1">Gestión de Usuarios</h3>
+                  <p class="text-sm text-gray-600">
+                    Administrar accesos y permisos del sistema
+                    <span class="mx-2">•</span>
+                    <span class="text-blue-600 font-medium">{{currentUser}}</span>
+                  </p>
+                </div>
                 <p-button 
                   icon="pi pi-plus"
                   label="Nuevo Usuario"
                   severity="success"
-                  styleClass="shadow-lg hover:shadow-xl transition-all duration-300"
+                  styleClass="shadow-md hover:shadow-lg transition-all"
                   (click)="mostrarNuevoUsuario()">
                 </p-button>
               </div>
             </div>
-          </div>
-          
-          <!-- Tabla de usuarios optimizada -->
-          <div class="usuarios-table-container bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <p-table 
-              [value]="usuarios" 
-              styleClass="p-datatable-sm"
-              [paginator]="true"
-              [rows]="10"
-              [responsive]="true"
-              [lazy]="true"
-              (onLazyLoad)="cargarUsuariosLazy($event)">
+            
+            <!-- Tabla moderna y limpia -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <p-table 
+                [value]="usuarios" 
+                styleClass="modern-table"
+                [paginator]="true"
+                [rows]="10"
+                [responsive]="true"
+                [lazy]="true"
+                (onLazyLoad)="cargarUsuariosLazy($event)">
               
-              <ng-template pTemplate="header">
-                <tr class="bg-gray-50">
-                  <th class="text-gray-700 font-semibold">Usuario</th>
-                  <th class="text-gray-700 font-semibold">Información</th>
-                  <th class="text-gray-700 font-semibold">Rol</th>
-                  <th class="text-gray-700 font-semibold">Estado</th>
-                  <th class="text-gray-700 font-semibold">Último Acceso</th>
-                  <th class="text-gray-700 font-semibold text-center">Acciones</th>
-                </tr>
-              </ng-template>
-              
-              <ng-template pTemplate="body" let-usuario>
-                <tr class="hover:bg-blue-50 transition-colors duration-200">
-                  <!-- Usuario -->
-                  <td>
-                    <div class="flex items-center gap-3">
-                      <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                        {{usuario.avatar || usuario.nombre.substring(0, 2).toUpperCase()}}
+                <ng-template pTemplate="header">
+                  <tr class="bg-gray-50/80">
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Usuario</th>
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Información</th>
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Rol</th>
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Último Acceso</th>
+                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider text-center">Acciones</th>
+                  </tr>
+                </ng-template>
+                
+                <!-- 🎨 Empty State para tabla vacía -->
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6" class="p-0">
+                      <div class="py-16 px-6 text-center">
+                        <div class="max-w-md mx-auto">
+                          <!-- Icono decorativo -->
+                          <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                            <i class="pi pi-users text-5xl text-blue-400"></i>
+                          </div>
+                          
+                          <!-- Título y descripción -->
+                          <h3 class="text-xl font-bold text-gray-900 mb-3">No hay usuarios registrados</h3>
+                          <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                            Comienza a construir tu equipo agregando el primer usuario al sistema.
+                            <br>Podrás asignar roles y permisos específicos.
+                          </p>
+                          
+                          <!-- Botón de acción -->
+                          <p-button 
+                            icon="pi pi-plus-circle" 
+                            label="Crear Primer Usuario" 
+                            severity="success"
+                            styleClass="shadow-lg hover:shadow-xl transition-all"
+                            (click)="mostrarNuevoUsuario()">
+                          </p-button>
+                          
+                          <!-- Ayuda adicional -->
+                          <div class="mt-6 pt-6 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 flex items-center justify-center gap-2">
+                              <i class="pi pi-info-circle"></i>
+                              <span>Los usuarios pueden tener roles de Administrador, Vendedor o Cajero</span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div class="font-semibold text-gray-900">{{usuario.nombre}}</div>
-                        <div class="text-sm text-gray-500">{{usuario.username}}</div>
+                    </td>
+                  </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="body" let-usuario>
+                  <tr class="hover:bg-blue-50/30 transition-colors border-b border-gray-100">
+                    <!-- Usuario -->
+                    <td class="py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md">
+                          {{usuario.avatar || usuario.nombre.substring(0, 2).toUpperCase()}}
+                        </div>
+                        <div>
+                          <div class="font-semibold text-gray-900 text-sm">{{usuario.nombre}}</div>
+                          <div class="text-xs text-gray-500">{{ '@' + usuario.username}}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  
-                  <!-- Información -->
-                  <td>
-                    <div class="space-y-1">
-                      <div class="flex items-center gap-2 text-sm">
-                        <i class="pi pi-envelope text-blue-500 text-xs"></i>
-                        <span class="text-gray-700">{{usuario.email}}</span>
+                    </td>
+                    
+                    <!-- Información -->
+                    <td class="py-4">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs">
+                          <i class="pi pi-envelope text-blue-500"></i>
+                          <span class="text-gray-600">{{usuario.email}}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs" *ngIf="usuario.telefono">
+                          <i class="pi pi-phone text-green-500"></i>
+                          <span class="text-gray-600">{{usuario.telefono}}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                          <i class="pi pi-building text-purple-500"></i>
+                          <span class="text-gray-600">{{usuario.sucursal}}</span>
+                        </div>
                       </div>
-                      <div class="flex items-center gap-2 text-sm" *ngIf="usuario.telefono">
-                        <i class="pi pi-phone text-green-500 text-xs"></i>
-                        <span class="text-gray-700">{{usuario.telefono}}</span>
+                    </td>
+                    
+                    <!-- Rol -->
+                    <td class="py-4">
+                      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" 
+                           [class]="getRolClasses(usuario.rol)">
+                        <i [class]="getRolIcon(usuario.rol)"></i>
+                        <span>{{usuario.rol}}</span>
                       </div>
-                      <div class="flex items-center gap-2 text-sm">
-                        <i class="pi pi-building text-purple-500 text-xs"></i>
-                        <span class="text-gray-700">{{usuario.sucursal}}</span>
+                    </td>
+                    
+                    <!-- Estado -->
+                    <td class="py-4">
+                      <p-tag 
+                        [value]="usuario.estado"
+                        [severity]="getEstadoSeverity(usuario.estado)"
+                        styleClass="font-medium text-xs">
+                      </p-tag>
+                    </td>
+                    
+                    <!-- Último acceso -->
+                    <td class="py-4">
+                      <div class="text-xs">
+                        <div class="font-medium text-gray-900">{{formatearFechaUltimoAcceso(usuario.ultimoAcceso)}}</div>
+                        <div class="text-gray-500">{{usuario.ultimoAcceso | date:'dd/MM/yy HH:mm'}}</div>
                       </div>
-                    </div>
-                  </td>
-                  
-                  <!-- Rol -->
-                  <td>
-                    <div class="flex items-center gap-2 px-3 py-1 rounded-full" 
-                         [class]="getRolClasses(usuario.rol)">
-                      <i [class]="getRolIcon(usuario.rol)"></i>
-                      <span class="text-sm font-medium">{{usuario.rol}}</span>
-                    </div>
-                  </td>
-                  
-                  <!-- Estado -->
-                  <td>
-                    <p-tag 
-                      [value]="usuario.estado"
-                      [severity]="getEstadoSeverity(usuario.estado)"
-                      styleClass="font-medium">
-                    </p-tag>
-                  </td>
-                  
-                  <!-- Último acceso -->
-                  <td>
-                    <div class="text-sm">
-                      <div class="font-medium text-gray-900">{{formatearFechaUltimoAcceso(usuario.ultimoAcceso)}}</div>
-                      <div class="text-gray-500">{{usuario.ultimoAcceso | date:'dd/MM/yy HH:mm'}}</div>
-                    </div>
-                  </td>
-                  
-                  <!-- Acciones -->
-                  <td class="text-center">
-                    <div class="flex justify-center gap-2">
-                      <p-button 
-                        icon="pi pi-pencil"
-                        [text]="true"
-                        [rounded]="true"
-                        size="small"
-                        severity="info"
-                        pTooltip="Editar usuario"
-                        styleClass="hover:bg-blue-100 transition-colors"
-                        (click)="editarUsuario(usuario)">
-                      </p-button>
-                      <p-button 
-                        icon="pi pi-trash"
-                        [text]="true"
-                        [rounded]="true"
-                        size="small"
-                        severity="danger"
-                        pTooltip="Eliminar usuario"
-                        styleClass="hover:bg-red-100 transition-colors"
-                        (click)="eliminarUsuario(usuario)"
-                        [disabled]="usuario.username === currentUser.toLowerCase()">
-                      </p-button>
-                    </div>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
+                    </td>
+                    
+                    <!-- Acciones -->
+                    <td class="py-4 text-center">
+                      <div class="flex justify-center gap-1">
+                        <p-button 
+                          icon="pi pi-pencil"
+                          [text]="true"
+                          [rounded]="true"
+                          size="small"
+                          severity="info"
+                          pTooltip="Editar"
+                          tooltipPosition="top"
+                          styleClass="w-8 h-8 hover:bg-blue-50"
+                          (click)="editarUsuario(usuario)">
+                        </p-button>
+                        <p-button 
+                          icon="pi pi-trash"
+                          [text]="true"
+                          [rounded]="true"
+                          size="small"
+                          severity="danger"
+                          pTooltip="Eliminar"
+                          tooltipPosition="top"
+                          styleClass="w-8 h-8 hover:bg-red-50"
+                          (click)="eliminarUsuario(usuario)"
+                          [disabled]="usuario.username === currentUser.toLowerCase()">
+                        </p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
           </div>
-        </div>
-      </p-tabPanel>
-      
-      <!-- 🏪 CONFIGURACIÓN DEL NEGOCIO -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-building text-lg text-green-600"></i>
-            <span class="font-semibold">Negocio</span>
-          </div>
-        </ng-template>
+        </p-tabPanel>
         
-        <div class="seccion-content negocio-section p-6">
-          <div class="negocio-header mb-6 bg-green-50 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Configuración del Negocio</h3>
-            <p class="text-gray-600">
-              Datos de la empresa y configuración general - 
-              <span class="text-green-600 font-semibold">{{currentUser}}</span>
-            </p>
-          </div>
+        <!-- 🏪 CONFIGURACIÓN DEL NEGOCIO -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+                <i class="pi pi-building text-white text-lg font-bold"></i>
+              </div>
+              <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Negocio</span>
+            </div>
+          </ng-template>
           
-          <div class="negocio-form">
-            <p-accordion [multiple]="true" [activeIndex]="[0]">
+          <div class="p-6">
+            <div class="mb-6 p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100/50">
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Configuración del Negocio</h3>
+              <p class="text-sm text-gray-600">
+                Datos de la empresa y configuración general
+                <span class="mx-2">•</span>
+                <span class="text-green-600 font-medium">{{currentUser}}</span>
+              </p>
+            </div>
+            
+            <div class="space-y-4">
+              <p-accordion [multiple]="true" [activeIndex]="[0]" styleClass="modern-accordion">
               
               <!-- Información Básica -->
               <p-accordionTab header="Información Básica de la Empresa" [selected]="true">
@@ -237,6 +298,7 @@
                       <label for="rucEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
                         <i class="pi pi-id-card text-green-600"></i>
                         <span>RUC</span>
+                        <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Número de RUC de 11 dígitos. Ej: 20123456789" tooltipPosition="top"></i>
                       </label>
                       <input 
                         id="rucEmpresa"
@@ -438,24 +500,24 @@
                           </div>
                           <div class="flex-1">
                             <h5 class="text-lg font-bold text-gray-900">
-                              {{configNegocio.nombre || 'Nombre de la Empresa'}}
+                              {{configNegocio.nombre || "Nombre de la Empresa"}}
                             </h5>
-                            <p class="text-gray-600">{{configNegocio.slogan || 'Tu slogan aquí'}}</p>
+                            <p class="text-gray-600">{{configNegocio.slogan || "Tu slogan aquí"}}</p>
                           </div>
                         </div>
                         
                         <div class="space-y-3">
                           <div class="flex items-center gap-3 text-sm">
                             <i class="pi pi-map-marker text-purple-600"></i>
-                            <span class="text-gray-700">{{configNegocio.direccion || 'Dirección de la empresa'}}</span>
+                            <span class="text-gray-700">{{configNegocio.direccion || "Dirección de la empresa"}}</span>
                           </div>
                           <div class="flex items-center gap-3 text-sm">
                             <i class="pi pi-phone text-green-600"></i>
-                            <span class="text-gray-700">{{configNegocio.telefono || 'Teléfono'}}</span>
+                            <span class="text-gray-700">{{configNegocio.telefono || "Teléfono"}}</span>
                           </div>
                           <div class="flex items-center gap-3 text-sm">
                             <i class="pi pi-envelope text-blue-600"></i>
-                            <span class="text-gray-700">{{configNegocio.email || 'Email'}}</span>
+                            <span class="text-gray-700">{{configNegocio.email || "Email"}}</span>
                           </div>
                         </div>
                       </div>
@@ -465,46 +527,93 @@
               </p-accordionTab>
             </p-accordion>
             
-            <!-- Botón guardar optimizado -->
-            <div class="form-actions mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div class="flex justify-end">
-                <p-button 
-                  icon="pi pi-save"
-                  label="Guardar Configuración"
-                  severity="success"
-                  styleClass="shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-3"
-                  [loading]="guardando"
-                  (click)="guardarConfiguracionNegocio()">
-                </p-button>
+            <!-- Botón guardar moderno -->
+            <div class="mt-6 p-5 bg-white rounded-xl border border-gray-200 flex justify-end">
+              <p-button 
+                icon="pi pi-save"
+                label="Guardar Configuración"
+                severity="success"
+                styleClass="shadow-md hover:shadow-lg transition-all"
+                [loading]="guardando"
+                (click)="guardarConfiguracionNegocio()">
+              </p-button>
+            </div>
+            </div>
+          </div>
+        </p-tabPanel>
+        
+        <!-- 🖨️ IMPRESORAS Y DISPOSITIVOS -->
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+                <i class="pi pi-print text-white text-lg font-bold"></i>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Impresoras</span>
+                <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold min-w-[24px] text-center">
+                  {{impresoras.length}}
+                </span>
+              </div>
+            </div>
+          </ng-template>
+          
+          <div class="p-6">
+            <div class="mb-6 p-5 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-xl border border-purple-100/50">
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Gestión de Impresoras</h3>
+              <p class="text-sm text-gray-600">
+                Configuración de hardware del sistema
+                <span class="mx-2">•</span>
+                <span class="text-purple-600 font-medium">{{currentUser}}</span>
+              </p>
+            </div>
+          
+          <!-- 🎨 Empty State para impresoras -->
+          <div *ngIf="impresoras.length === 0" class="py-16 px-6 text-center">
+            <div class="max-w-md mx-auto">
+              <!-- Icono decorativo -->
+              <div class="w-24 h-24 mx-auto bg-gradient-to-br from-purple-50 to-fuchsia-100 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <i class="pi pi-print text-5xl text-purple-400"></i>
+              </div>
+              
+              <!-- Título y descripción -->
+              <h3 class="text-xl font-bold text-gray-900 mb-3">No hay impresoras configuradas</h3>
+              <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                Configura tu primera impresora para comenzar a imprimir tickets y comprobantes.
+                <br>Compatible con impresoras térmicas y de red.
+              </p>
+              
+              <!-- Botón de acción -->
+              <p-button 
+                icon="pi pi-plus-circle" 
+                label="Agregar Primera Impresora" 
+                severity="success"
+                styleClass="shadow-lg hover:shadow-xl transition-all"
+                (click)="mostrarNuevaImpresora()">
+              </p-button>
+              
+              <!-- Ayuda adicional -->
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex items-center justify-center gap-4 text-xs text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-check-circle text-green-500"></i>
+                    <span>Impresoras USB</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-check-circle text-green-500"></i>
+                    <span>Impresoras de Red</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-check-circle text-green-500"></i>
+                    <span>Tickets 80mm</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </p-tabPanel>
-      
-      <!-- 🖨️ IMPRESORAS Y DISPOSITIVOS -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-print text-lg text-purple-600"></i>
-            <span class="font-semibold">Impresoras</span>
-            <div class="bg-purple-600 text-white rounded-full px-2 py-1 text-xs font-bold min-w-[24px] text-center">
-              {{impresoras.length}}
-            </div>
-          </div>
-        </ng-template>
-        
-        <div class="seccion-content impresoras-section p-6">
-          <div class="impresoras-header mb-6 bg-purple-50 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Gestión de Impresoras y Dispositivos</h3>
-            <p class="text-gray-600">
-              Configuración de hardware del sistema - Admin: 
-              <span class="text-purple-600 font-semibold">{{currentUser}}</span>
-            </p>
-          </div>
           
           <!-- Grid de impresoras optimizado -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngIf="impresoras.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div *ngFor="let impresora of impresoras; trackBy: trackByImpresoraId" 
                  class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300">
               
@@ -543,16 +652,22 @@
                   <span class="text-sm text-gray-600">Tipo:</span>
                   <span class="text-sm font-medium text-gray-900">{{impresora.tipo}}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-600">Papel:</span>
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Papel:</span>
+                    <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Ancho del rollo de papel compatible con la impresora (ej: 80mm)" tooltipPosition="top"></i>
+                  </div>
                   <span class="text-sm font-medium text-gray-900">{{impresora.tamanoPapel}}</span>
                 </div>
                 <div class="flex justify-between" *ngIf="impresora.ip">
                   <span class="text-sm text-gray-600">IP:</span>
                   <span class="text-sm font-medium text-gray-900">{{impresora.ip}}:{{impresora.puerto}}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-600">Driver:</span>
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Driver:</span>
+                    <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Controlador o driver necesario para la comunicación con la impresora" tooltipPosition="top"></i>
+                  </div>
                   <span class="text-sm font-medium text-gray-900">{{impresora.driver}}</span>
                 </div>
               </div>
@@ -616,9 +731,11 @@
       <!-- 💰 CONFIGURACIÓN FISCAL -->
       <p-tabPanel>
         <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-calculator text-lg text-orange-600"></i>
-            <span class="font-semibold">Fiscal</span>
+          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+              <i class="pi pi-calculator text-white text-lg font-bold"></i>
+            </div>
+            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Fiscal</span>
           </div>
         </ng-template>
         
@@ -833,9 +950,11 @@
       <!-- 🎨 PERSONALIZACIÓN -->
       <p-tabPanel>
         <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-palette text-lg text-pink-600"></i>
-            <span class="font-semibold">Personalización</span>
+          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+              <i class="pi pi-palette text-white text-lg font-bold"></i>
+            </div>
+            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Personalización</span>
           </div>
         </ng-template>
         
@@ -1014,9 +1133,11 @@
       <!-- 💾 BACKUP Y SINCRONIZACIÓN -->
       <p-tabPanel>
         <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-4 py-2">
-            <i class="pi pi-database text-lg text-indigo-600"></i>
-            <span class="font-semibold">Backup</span>
+          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
+              <i class="pi pi-database text-white text-lg font-bold"></i>
+            </div>
+            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Backup</span>
           </div>
         </ng-template>
         
@@ -1228,41 +1349,42 @@
       </p-tabPanel>
     </p-tabView>
   </div>
-  
-  <!-- 🔄 LOADING OVERLAY OPTIMIZADO -->
-  <div *ngIf="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
-      <div class="relative w-16 h-16 mx-auto mb-6">
-        <div class="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
-        <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-      </div>
-      <h3 class="text-lg font-bold text-gray-900 mb-2">Cargando configuración</h3>
-      <p class="text-gray-600">
-        Para <span class="font-semibold text-blue-600">{{currentUser}}</span>...
-      </p>
+</div>
+
+<!-- 🔄 LOADING OVERLAY MODERNO -->
+<div *ngIf="loading" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
+    <div class="relative w-16 h-16 mx-auto mb-6">
+      <div class="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
+      <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+      <div class="absolute inset-2 border-3 border-indigo-300 rounded-full border-r-transparent animate-spin" style="animation-direction: reverse; animation-duration: 1s;"></div>
     </div>
+    <h3 class="text-lg font-bold text-gray-900 mb-2">Cargando configuración</h3>
+    <p class="text-sm text-gray-600">
+      Usuario: <span class="font-semibold text-indigo-600">{{currentUser}}</span>
+    </p>
   </div>
 </div>
 
-<!-- 🗨️ DIÁLOGOS OPTIMIZADOS -->
-<p-confirmDialog styleClass="confirm-dialog-custom"></p-confirmDialog>
-<p-toast position="top-right" styleClass="custom-toast"></p-toast>
+<!-- 🗨️ DIÁLOGOS -->
+<p-confirmDialog styleClass="modern-confirm-dialog"></p-confirmDialog>
+<p-toast position="top-right" styleClass="modern-toast"></p-toast>
 
-<!-- 👤 DIÁLOGO USUARIO OPTIMIZADO -->
+<!-- 👤 DIÁLOGO USUARIO MODERNO -->
 <p-dialog 
   [(visible)]="mostrarFormularioUsuario"
-  [header]="(usuarioSeleccionado ? 'Editar Usuario' : 'Nuevo Usuario') + ' - ' + currentUser"
+  [header]="(usuarioSeleccionado ? 'Editar Usuario' : 'Nuevo Usuario')"
   [modal]="true"
-  [style]="{width: '700px'}"
+  [style]="{width: '650px'}"
   [closable]="true"
-  styleClass="usuario-dialog">
+  styleClass="modern-dialog">
   
-  <div class="usuario-form">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       
       <div class="space-y-2">
-        <label for="nombre" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-user text-blue-600"></i>
+        <label for="nombre" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-user text-blue-600 text-xs"></i>
           <span>Nombre Completo</span>
         </label>
         <input 
@@ -1270,12 +1392,12 @@
           pInputText
           [(ngModel)]="nuevoUsuario.nombre"
           placeholder="Nombre completo"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" />
+          class="w-full" />
       </div>
       
       <div class="space-y-2">
-        <label for="username" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-at text-purple-600"></i>
+        <label for="username" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-at text-purple-600 text-xs"></i>
           <span>Username</span>
         </label>
         <input 
@@ -1283,12 +1405,12 @@
           pInputText
           [(ngModel)]="nuevoUsuario.username"
           placeholder="usuario123"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all" />
+          class="w-full" />
       </div>
       
       <div class="space-y-2">
-        <label for="email" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-envelope text-green-600"></i>
+        <label for="email" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-envelope text-green-600 text-xs"></i>
           <span>Email</span>
         </label>
         <input 
@@ -1296,12 +1418,12 @@
           pInputText
           [(ngModel)]="nuevoUsuario.email"
           placeholder="usuario@empresa.com"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
+          class="w-full" />
       </div>
       
       <div class="space-y-2">
-        <label for="telefono" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-phone text-orange-600"></i>
+        <label for="telefono" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-phone text-orange-600 text-xs"></i>
           <span>Teléfono</span>
         </label>
         <input 
@@ -1309,12 +1431,12 @@
           pInputText
           [(ngModel)]="nuevoUsuario.telefono"
           placeholder="+51 987 654 321"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all" />
+          class="w-full" />
       </div>
       
       <div class="space-y-2">
-        <label for="rol" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-users text-indigo-600"></i>
+        <label for="rol" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-users text-indigo-600 text-xs"></i>
           <span>Rol</span>
         </label>
         <p-dropdown 
@@ -1328,8 +1450,8 @@
       </div>
       
       <div class="space-y-2">
-        <label for="estado" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-circle text-red-600"></i>
+        <label for="estado" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-circle text-red-600 text-xs"></i>
           <span>Estado</span>
         </label>
         <p-dropdown 
@@ -1343,8 +1465,8 @@
       </div>
       
       <div class="md:col-span-2 space-y-2">
-        <label for="sucursal" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-building text-teal-600"></i>
+        <label for="sucursal" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <i class="pi pi-building text-teal-600 text-xs"></i>
           <span>Sucursal</span>
         </label>
         <input 
@@ -1352,26 +1474,25 @@
           pInputText
           [(ngModel)]="nuevoUsuario.sucursal"
           placeholder="Principal"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all" />
+          class="w-full" />
       </div>
     </div>
   </div>
   
   <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
       <p-button 
         icon="pi pi-times"
         label="Cancelar"
         [outlined]="true"
         severity="secondary"
-        styleClass="px-6"
         (click)="mostrarFormularioUsuario = false">
       </p-button>
       <p-button 
         icon="pi pi-check"
-        [label]="usuarioSeleccionado ? 'Actualizar Usuario' : 'Crear Usuario'"
+        [label]="usuarioSeleccionado ? 'Actualizar' : 'Crear Usuario'"
         severity="success"
-        styleClass="px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+        styleClass="shadow-md hover:shadow-lg transition-all"
         [loading]="guardando"
         (click)="guardarUsuario()">
       </p-button>
@@ -1521,3 +1642,4 @@
     </div>
   </ng-template>
 </p-dialog>
+</div>

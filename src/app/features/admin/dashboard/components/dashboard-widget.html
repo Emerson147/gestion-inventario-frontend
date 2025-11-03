@@ -1,74 +1,202 @@
-<div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="card mb-0">
-      <div class="flex justify-between mb-4">
-          <div>
-              <span class="block text-muted-color font-medium mb-4">Categoría</span>
-              <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{data.category}}</div>
-          </div>
-          <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-              <i class="pi pi-tags text-green-500 !text-xl"></i>
-          </div>
-      </div>
-      <p-button size="small" label="Ver Categoria" icon="pi pi-eye" [routerLink]="['/pages/categoria']" class="p-button-sm p-button-text"></p-button>
+<!-- Loading State -->
+<div *ngIf="loading" class="col-span-12">
+  <div class="flex items-center justify-center p-8">
+    <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
+    <span class="ml-3 text-lg text-gray-600">Cargando métricas del sistema...</span>
   </div>
 </div>
 
-<div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="card mb-0">
-      <div class="flex justify-between mb-4">
-          <div>
-              <span class="block text-muted-color font-medium mb-4">Producto</span>
-              <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{data.product}}</div>
-          </div>
-          <div class="flex items-center justify-center bg-indigo-100 dark:bg-indigo-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-              <i class="pi pi-shopping-bag text-indigo-500 !text-xl"></i>
-          </div>
-      </div>
-      <p-button size="small" label="Ver Producto" icon="pi pi-eye" [routerLink]="['/pages/producto']" class="p-button-sm p-button-text"></p-button>
-  </div>
-</div>
-
-<div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="card mb-0">
-      <div class="flex justify-between mb-4">
-          <div>
-              <span class="block text-muted-color font-medium mb-4">Factura</span>
-              <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{data.bill}}</div>
-          </div>
-          <div class="flex items-center justify-center bg-red-100 dark:bg-red-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-              <i class="pi pi-file text-red-500 !text-xl"></i>
-          </div>
-      </div>
-      <p-button size="small" label="Ver Factura" icon="pi pi-eye" [routerLink]="['/pages/factura']" class="p-button-sm p-button-text"></p-button>
-  </div>
-</div>
-
-<div class="col-span-12 lg:col-span-6 xl:col-span-4">
-    <div class="card mb-0">
-        <div class="flex justify-between mb-4">
-            <div>
-                <span class="block text-muted-color font-medium mb-4">Almacén</span>
-                <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{data.warehouse}}</div>
-            </div>
-            <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                <i class="pi pi-warehouse text-blue-500 !text-xl"></i>
-            </div>
-        </div>
-        <p-button size="small" label="Ver Almacén" icon="pi pi-eye" [routerLink]="['/pages/almacen']" class="p-button-sm p-button-text"></p-button>
+<!-- Error State -->
+<div *ngIf="error && !loading" class="col-span-12">
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+    <i class="pi pi-exclamation-circle text-red-500 text-2xl"></i>
+    <div>
+      <h3 class="font-semibold text-red-800">Error al cargar datos</h3>
+      <p class="text-sm text-red-600">{{error}}</p>
     </div>
   </div>
+</div>
 
-  <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-    <div class="card mb-0">
-        <div class="flex justify-between mb-4">
-            <div>
-                <span class="block text-muted-color font-medium mb-4">Usuario</span>
-                <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{data.users}}</div>
-            </div>
-            <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                <i class="pi pi-user text-green-500 !text-xl"></i>
-            </div>
+<!-- Dashboard Widgets con diseño moderno -->
+<ng-container *ngIf="!loading && !error">
+  
+<!-- Categorías/Marcas Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-green-500"
+       [routerLink]="['/pages/producto']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Marcas/Categorías</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-green-600 transition-colors">
+          {{data.category}}
         </div>
-        <p-button size="small" label="Ver Usuario" icon="pi pi-eye" [routerLink]="['/pages/usuarios']" class="p-button-sm p-button-text"></p-button>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-green-600 font-semibold flex items-center gap-1">
+            <i class="pi pi-arrow-up text-xs"></i>
+            {{metrics?.crecimientoMensual | number:'1.1-1'}}%
+          </span>
+          <span class="text-gray-500">vs mes anterior</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-tags text-green-600 dark:text-green-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-green-600 transition-colors">Ver todas las marcas</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-green-600 group-hover:translate-x-2 transition-all"></i>
     </div>
   </div>
+</div>
+
+<!-- Productos Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-indigo-500"
+       [routerLink]="['/pages/producto']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Total Productos</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-indigo-600 transition-colors">
+          {{data.product}}
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-orange-600 font-semibold flex items-center gap-1">
+            <i class="pi pi-exclamation-triangle text-xs"></i>
+            {{metrics?.productosStockCritico || 0}}
+          </span>
+          <span class="text-gray-500">en stock crítico</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900 dark:to-indigo-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-shopping-bag text-indigo-600 dark:text-indigo-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">Gestionar inventario</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-2 transition-all"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Ventas del Día Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-red-500"
+       [routerLink]="['/pages/realizar-venta']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Ventas de Hoy</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-red-600 transition-colors">
+          {{data.bill}}
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-green-600 font-semibold">
+            S/. {{metrics?.ventasTotalesHoy | number:'1.2-2'}}
+          </span>
+          <span class="text-gray-500">total vendido</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-shopping-cart text-red-600 dark:text-red-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-red-600 transition-colors">Ver reporte de ventas</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-red-600 group-hover:translate-x-2 transition-all"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Almacenes Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-blue-500"
+       [routerLink]="['/pages/almacen']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Almacenes Activos</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-blue-600 transition-colors">
+          {{data.warehouse}}
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-blue-600 font-semibold">
+            S/. {{metrics?.valorTotalInventario | number:'1.0-0'}}
+          </span>
+          <span class="text-gray-500">valor en stock</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-warehouse text-blue-600 dark:text-blue-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-blue-600 transition-colors">Administrar almacenes</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-blue-600 group-hover:translate-x-2 transition-all"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Usuarios Activos Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-purple-500"
+       [routerLink]="['/pages/usuario']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Usuarios Activos</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-purple-600 transition-colors">
+          {{data.users}}
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-green-600 font-semibold flex items-center gap-1">
+            <i class="pi pi-user-plus text-xs"></i>
+            {{metrics?.usuariosNuevos || 0}}
+          </span>
+          <span class="text-gray-500">nuevos este mes</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-users text-purple-600 dark:text-purple-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-purple-600 transition-colors">Gestionar usuarios</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-purple-600 group-hover:translate-x-2 transition-all"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Ticket Promedio Card -->
+<div class="col-span-12 lg:col-span-6 xl:col-span-4">
+  <div class="card mb-0 hover:shadow-xl transition-all duration-300 cursor-pointer group border-l-4 border-yellow-500"
+       [routerLink]="['/pages/realizar-venta']">
+    <div class="flex justify-between mb-4">
+      <div class="flex-1">
+        <span class="block text-gray-500 font-medium mb-2 text-sm uppercase tracking-wide">Ticket Promedio</span>
+        <div class="text-gray-900 dark:text-gray-100 font-bold text-4xl mb-2 group-hover:text-yellow-600 transition-colors">
+          S/. {{metrics?.ticketPromedio | number:'1.2-2'}}
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-gray-600 font-semibold flex items-center gap-1">
+            <i class="pi pi-calendar text-xs"></i>
+            S/. {{metrics?.ventasTotalesMes | number:'1.0-0'}}
+          </span>
+          <span class="text-gray-500">ventas del mes</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300" 
+           style="width: 4rem; height: 4rem">
+        <i class="pi pi-wallet text-yellow-600 dark:text-yellow-400 text-3xl"></i>
+      </div>
+    </div>
+    <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+      <span class="text-sm text-gray-500 group-hover:text-yellow-600 transition-colors">Análisis financiero</span>
+      <i class="pi pi-arrow-right text-gray-400 group-hover:text-yellow-600 group-hover:translate-x-2 transition-all"></i>
+    </div>
+  </div>
+</div>
+
+</ng-container>
+

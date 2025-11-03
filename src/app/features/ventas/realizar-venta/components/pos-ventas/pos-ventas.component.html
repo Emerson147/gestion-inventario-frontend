@@ -6,157 +6,213 @@
     (toastDismissed)="onToastDismissed($event)"
   ></app-toast-notification>
 
-  <!-- Header POS Moderno - Estilo Square/Stripe (Azul Premium) -->
-  <header class="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-white shadow-2xl border-b-2 border-blue-400/40 dark:border-gray-600/40 relative overflow-hidden transition-all duration-300">
-    <!-- Efectos visuales premium inspirados en Square POS -->
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-500/8 to-blue-600/10"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(59,130,246,0.15),transparent_70%)]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(14,165,233,0.12),transparent_70%)]"></div>
+  <!-- Header POS Empresarial Moderno - RESPONSIVE -->
+  <header class="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-950 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-white shadow-2xl border-b border-indigo-500/20 dark:border-gray-700/30 relative overflow-hidden">
+    <!-- Efectos visuales de fondo premium -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-600/10 via-transparent to-transparent"></div>
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/5 to-transparent"></div>
     
     <!-- Contenido principal del header -->
-    <div class="relative z-10 flex justify-between items-center p-6">
-      <!-- ZONA IZQUIERDA: Branding y Estado del Sistema -->
-      <div class="flex items-center gap-8">
-        <!-- Branding Principal -->
-        <div class="flex items-center gap-4">
+    <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center px-3 sm:px-4 md:px-8 py-3 sm:py-4 md:py-5 gap-3 lg:gap-0">
+      <!-- ZONA IZQUIERDA: Branding Corporativo -->
+      <div class="flex items-center gap-3 sm:gap-4 md:gap-10 w-full lg:w-auto">
+        <!-- Logo Empresarial Premium -->
+        <div class="flex items-center gap-2 sm:gap-3 md:gap-5 flex-1 lg:flex-initial">
           <div class="relative group">
-            <!-- Logo principal con gradiente Square-style -->
-            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:from-blue-400 group-hover:to-blue-600">
-              <i class="pi pi-shop text-white text-2xl"></i>
+            <!-- Logo principal con efecto holográfico -->
+            <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/50 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-indigo-400/70 border border-indigo-400/30">
+              <i class="pi pi-shopping-bag text-white text-lg sm:text-2xl md:text-3xl"></i>
             </div>
-            <!-- Indicador de conexión con color accent -->
-            <div class="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full border-2 border-white animate-pulse shadow-md"></div>
+            <!-- Indicador de estado operativo -->
+            <div class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full border-2 sm:border-3 border-white animate-pulse shadow-lg shadow-emerald-500/50">
+              <div class="absolute inset-0 bg-emerald-300 rounded-full animate-ping opacity-75"></div>
+            </div>
           </div>
 
-          <!-- Información empresarial -->
-          <div class="space-y-1">
-            <h1 class="text-xl font-bold text-white tracking-wide">SISTEMA POS EMPRESARIAL</h1>
-            <div class="flex items-center gap-4 text-xs text-slate-300">
-              <span class="flex items-center gap-1.5 bg-slate-800/60 px-2 py-1 rounded-md border border-blue-400/20">
-                <i class="pi pi-building text-blue-400"></i>
-                <span>RUC: 20123456789</span>
+          <!-- Información Corporativa -->
+          <div class="space-y-0.5 sm:space-y-1 md:space-y-1.5">
+            <h1 class="text-sm sm:text-lg md:text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">POINT OF SALE</h1>
+            <div class="hidden sm:flex items-center gap-2 md:gap-4 text-[10px] md:text-xs text-slate-400">
+              <span class="flex items-center gap-1 md:gap-2 bg-slate-800/50 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-md md:rounded-lg border border-indigo-500/20 hover:border-indigo-400/40 transition-colors">
+                <i class="pi pi-building text-indigo-400 text-[8px] md:text-xs"></i>
+                <span class="font-medium hidden md:inline">RUC: 20123456789</span>
+                <span class="font-medium md:hidden">20123456789</span>
               </span>
-              <span class="flex items-center gap-1.5 bg-slate-800/60 px-2 py-1 rounded-md border border-cyan-400/20">
-                <i class="pi pi-desktop text-cyan-400"></i>
-                <span>Terminal: POS-001</span>
+              <span class="hidden md:flex items-center gap-2 bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-purple-500/20 hover:border-purple-400/40 transition-colors">
+                <i class="pi pi-desktop text-purple-400"></i>
+                <span class="font-medium">Terminal: POS-001</span>
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Estados del Sistema con colores Square -->
-        <div class="flex items-center gap-3">
-          <!-- Estado SUNAT -->
-          <div class="flex items-center gap-2 bg-cyan-600/90 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-cyan-400/30">
-            <div class="w-2 h-2 bg-cyan-300 rounded-full animate-pulse"></div>
-            <span class="text-xs font-medium text-white">SUNAT</span>
+        <!-- Indicadores de Sistema - Compactos en móvil -->
+        <div class="hidden sm:flex items-center gap-2 md:gap-3">
+          <!-- Estado SUNAT con animación -->
+          <div class="relative group">
+            <div class="flex items-center gap-1.5 md:gap-2.5 bg-gradient-to-r from-emerald-600/90 to-green-600/90 backdrop-blur-md px-2 sm:px-3 md:px-4 py-1.5 md:py-2.5 rounded-lg md:rounded-xl shadow-lg shadow-emerald-500/20 border border-emerald-400/30 hover:shadow-emerald-400/40 transition-all duration-300">
+              <div class="relative flex items-center justify-center">
+                <div class="w-1.5 sm:w-2 md:w-2.5 h-1.5 sm:h-2 md:h-2.5 bg-emerald-300 rounded-full animate-pulse"></div>
+                <div class="absolute w-1.5 sm:w-2 md:w-2.5 h-1.5 sm:h-2 md:h-2.5 bg-emerald-400 rounded-full animate-ping"></div>
+              </div>
+              <span class="text-[10px] md:text-xs font-bold text-white tracking-wide hidden sm:inline">SUNAT</span>
+              <span class="text-xs font-bold text-white tracking-wide md:hidden">OK</span>
+            </div>
           </div>
           
-          <!-- Usuario activo -->
-          <div class="flex items-center gap-2 bg-blue-600/90 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-blue-400/30">
-            <i class="pi pi-user text-xs text-white"></i>
-            <span class="text-xs font-medium text-white">Emerson147</span>
+          <!-- Usuario activo con avatar -->
+          <div class="flex items-center gap-1.5 md:gap-2.5 bg-gradient-to-r from-indigo-600/90 to-purple-600/90 backdrop-blur-md px-2 sm:px-3 md:px-4 py-1.5 md:py-2.5 rounded-lg md:rounded-xl shadow-lg shadow-indigo-500/20 border border-indigo-400/30 hover:shadow-indigo-400/40 transition-all duration-300">
+            <div class="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
+              <i class="pi pi-user text-[8px] sm:text-[10px] md:text-xs text-white"></i>
+            </div>
+            <span class="text-[10px] md:text-xs font-bold text-white truncate max-w-[60px] sm:max-w-none">Emerson147</span>
           </div>
         </div>
       </div>
 
-      <!-- ZONA CENTRAL: Panel de Venta Activa -->
-      <div class="flex-1 max-w-md mx-8">
-        <div class="bg-slate-800/80 backdrop-blur rounded-2xl p-6 border border-blue-400/20 shadow-xl">
-          <!-- Header del panel de venta -->
-          <div class="flex justify-between items-center mb-3">
-            <div class="flex items-center gap-2 text-sm text-slate-300">
-              <i class="pi pi-user-plus text-cyan-400"></i>
-              <span>{{ clienteSeleccionado?.nombres || "Cliente General" }}</span>
+      <!-- ZONA CENTRAL: Panel de Transacción Activa - RESPONSIVE -->
+      <div class="w-full lg:flex-1 lg:max-w-lg lg:mx-10">
+        <div class="relative group">
+          <!-- Resplandor de fondo -->
+          <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-2xl md:rounded-3xl opacity-20 group-hover:opacity-30 blur-xl transition-opacity duration-500"></div>
+          
+          <div class="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-7 border border-indigo-500/30 shadow-2xl shadow-indigo-900/50">
+            <!-- Header del panel -->
+            <div class="flex justify-between items-center mb-3 md:mb-4">
+              <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                <div class="w-7 sm:w-8 h-7 sm:h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+                  <i class="pi pi-user text-white text-[10px] sm:text-xs"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <!-- Nombre del cliente -->
+                  <div class="text-slate-200 font-bold text-xs sm:text-sm truncate">
+                    {{ clienteSeleccionado ? (clienteSeleccionado.nombres + ' ' + clienteSeleccionado.apellidos) : "Cliente General" }}
+                  </div>
+                  <!-- DNI/RUC del cliente -->
+                  <div class="text-slate-400 text-[10px] sm:text-xs mt-0.5">
+                    <span *ngIf="clienteSeleccionado?.dni">
+                      <i class="pi pi-id-card text-indigo-400 text-[8px] sm:text-[10px]"></i> DNI: {{ clienteSeleccionado?.dni }}
+                    </span>
+                    <span *ngIf="clienteSeleccionado?.ruc && !clienteSeleccionado?.dni">
+                      <i class="pi pi-building text-purple-400 text-[8px] sm:text-[10px]"></i> RUC: {{ clienteSeleccionado?.ruc }}
+                    </span>
+                    <span *ngIf="!clienteSeleccionado">
+                      <i class="pi pi-users text-slate-500 text-[8px] sm:text-[10px]"></i> Sin asignar
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                *ngIf="!clienteSeleccionado"
+                class="group/btn relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg md:rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-indigo-500/50 border border-indigo-400/30 flex-shrink-0"
+                (click)="openClientModal()"
+              >
+                <span class="relative z-10 flex items-center gap-1 sm:gap-1.5">
+                  <i class="pi pi-plus text-[10px] sm:text-xs"></i>
+                  <span class="hidden sm:inline">Asignar</span>
+                  <span class="sm:hidden">+</span>
+                </span>
+              </button>
+              <button
+                *ngIf="clienteSeleccionado"
+                class="group/btn relative overflow-hidden bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold transition-all duration-300 hover:scale-105 shadow-md flex-shrink-0"
+                (click)="openClientModal()"
+              >
+                <span class="relative z-10 flex items-center gap-1 sm:gap-1.5">
+                  <i class="pi pi-pencil text-[8px] sm:text-[10px]"></i>
+                  <span class="hidden sm:inline">Cambiar</span>
+                  <span class="sm:hidden">✏️</span>
+                </span>
+              </button>
             </div>
-            <button
-              *ngIf="!clienteSeleccionado"
-              class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 shadow-md border border-blue-400/30"
-              (click)="openClientModal()"
-            >
-              <i class="pi pi-plus mr-1"></i>Asignar
-            </button>
-          </div>
 
-          <!-- Total de venta destacado con color Square -->
-          <div class="text-center space-y-2">
-            <div class="text-3xl font-mono font-bold text-cyan-400 tracking-wider">
-              {{ formatearMoneda(totalVenta) }}
-            </div>
-            <div class="flex justify-center items-center gap-4 text-xs text-slate-400">
-              <span class="flex items-center gap-1">
-                <i class="pi pi-hashtag"></i>
-                {{ getNumeroVenta() }}
-              </span>
-              <span>•</span>
-              <span class="flex items-center gap-1">
-                <i class="pi pi-shopping-cart"></i>
-                {{ carrito.length }} items
-              </span>
-              <span>•</span>
-              <span>{{ getCurrentDateTime() }}</span>
+            <!-- Total de venta con efecto neón - RESPONSIVE -->
+            <div class="text-center space-y-2 md:space-y-3">
+              <div class="relative inline-block">
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-green-500 blur-xl md:blur-2xl opacity-30 animate-pulse"></div>
+                <div class="relative text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent tracking-tight font-mono">
+                  {{ formatearMoneda(totalVenta) }}
+                </div>
+              </div>
+              
+              <div class="flex justify-center items-center gap-2 sm:gap-3 md:gap-5 text-[10px] sm:text-xs text-slate-400 flex-wrap">
+                <span class="flex items-center gap-1 sm:gap-1.5 bg-slate-700/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg border border-slate-600/50">
+                  <i class="pi pi-hashtag text-indigo-400 text-[8px] sm:text-xs"></i>
+                  <span class="font-mono font-bold text-[10px] sm:text-xs">{{ getNumeroVenta() }}</span>
+                </span>
+                <div class="w-1 h-1 bg-slate-600 rounded-full hidden sm:block"></div>
+                <span class="flex items-center gap-1 sm:gap-1.5 bg-slate-700/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg border border-slate-600/50">
+                  <i class="pi pi-shopping-cart text-purple-400 text-[8px] sm:text-xs"></i>
+                  <span class="font-bold text-[10px] sm:text-xs">{{ carrito.length }}</span>
+                  <span class="hidden sm:inline text-[10px] sm:text-xs">items</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div> 
     </div>
 
-    <!-- Barra de Estado Inteligente -->
-    <div class="relative z-10 bg-slate-950/80 backdrop-blur px-6 py-2 border-t border-slate-700/50">
-      <div class="flex justify-between items-center text-xs">
-        <!-- Información temporal con iconos temáticos -->
-        <div class="flex items-center gap-6">
-          <span class="flex items-center gap-2 text-slate-300">
-            <i class="pi pi-calendar text-cyan-400"></i>
-            <span class="font-medium">{{ getCurrentTime() }}</span>
+    <!-- Barra de Estado Premium - RESPONSIVE -->
+    <div class="relative z-10 bg-slate-950/90 backdrop-blur-md px-3 sm:px-4 md:px-8 py-2 md:py-3 border-t border-indigo-900/30">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 text-[10px] sm:text-xs">
+        <!-- Información temporal -->
+        <div class="flex items-center gap-2 sm:gap-4 md:gap-8 flex-wrap">
+          <span class="flex items-center gap-1.5 sm:gap-2.5 text-slate-300 bg-slate-800/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg border border-slate-700/50">
+            <i class="pi pi-calendar text-indigo-400 text-[8px] sm:text-xs"></i>
+            <span class="font-semibold text-[10px] sm:text-xs">{{ getCurrentTime() }}</span>
           </span>
-          <span class="flex items-center gap-2 text-slate-300">
-            <i class="pi pi-clock text-blue-400"></i>
-            <span>Turno: {{ horaInicioTurno }}</span>
+          <span class="flex items-center gap-1.5 sm:gap-2.5 text-slate-300 bg-slate-800/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg border border-slate-700/50">
+            <i class="pi pi-clock text-purple-400 text-[8px] sm:text-xs"></i>
+            <span class="text-[10px] sm:text-xs">Turno: <span class="font-bold">{{ horaInicioTurno }}</span></span>
           </span>
         </div>
 
-        <!-- Estado del sistema con colores Square -->
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2 bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-400/30">
-            <i class="pi pi-check-circle text-xs"></i>
-            <span class="font-medium">Sistema Operativo</span>
+        <!-- Estado del sistema -->
+        <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+          <div class="flex items-center gap-1.5 sm:gap-2.5 bg-gradient-to-r from-emerald-600/20 to-green-600/20 text-emerald-300 px-2 sm:px-4 py-1 sm:py-1.5 rounded-full border border-emerald-500/30 shadow-lg shadow-emerald-500/10">
+            <i class="pi pi-check-circle text-[8px] sm:text-xs"></i>
+            <span class="font-bold text-[10px] sm:text-xs">Sistema OK</span>
           </div>
-          <span class="text-slate-500 font-mono">v2.1.0 • Build 2025-09-15</span>
+          <span class="text-slate-500 font-mono text-[9px] sm:text-xs bg-slate-800/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg hidden md:inline">v2.1.0 • Build 2025</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Contenido Principal Moderno - Layout con scroll vertical -->
-  <main class="flex-1 flex min-h-0">
-    <!-- Panel Izquierdo: Productos (65%) -->
-    <section class="w-[65%] flex flex-col p-4 space-y-4">
-      <!-- Búsqueda Principal Optimizada -->
-      <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+  <!-- Contenido Principal Empresarial - RESPONSIVE -->
+  <main class="flex-1 flex flex-col lg:flex-row min-h-0 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-950">
+    <!-- Panel Izquierdo: Búsqueda y Productos - RESPONSIVE -->
+    <section class="flex-1 flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6 overflow-y-auto">
+      <!-- Panel de Búsqueda Premium - RESPONSIVE -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50 hover:shadow-2xl transition-all duration-300">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <!-- Búsqueda por código -->
-          <div class="lg:col-span-2">
+          <div class="sm:col-span-2 lg:col-span-2">
             <label
               for="codigoInput"
-              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+              class="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 sm:mb-3 md:mb-4 flex items-center gap-2 sm:gap-3"
             >
-              <i class="pi pi-qrcode text-blue-600"></i>
-              Código de Producto
+              <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                <i class="pi pi-qrcode text-white text-xs sm:text-sm"></i>
+              </div>
+              <span class="text-xs sm:text-sm">Código de Producto</span>
             </label>
-            <div class="flex gap-2">
+            <div class="flex gap-3">
               <input
                 #codigoInput
                 pInputText
                 [(ngModel)]="codigoBusqueda"
-                placeholder="Escanear o escribir código..."
+                placeholder="Escanear o ingresar código..."
                 (keyup.enter)="buscarProductoPorCodigo()"
-                class="flex-1 text-lg font-mono p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                class="flex-1 text-lg font-mono px-4 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-900 transition-all duration-200 bg-gray-50 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600"
               />
               <p-button
                 icon="pi pi-search"
                 severity="info"
-                styleClass="px-4 py-3"
+                [raised]="true"
+                styleClass="px-5 py-3.5 shadow-lg hover:shadow-xl"
                 (click)="buscarProductoPorCodigo()"
               ></p-button>
             </div>
@@ -166,9 +222,11 @@
           <div>
             <label
               for="cantidadInput"
-              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+              class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-3"
             >
-              <i class="pi pi-hashtag text-green-600"></i>
+              <div class="w-9 h-9 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center shadow-lg">
+                <i class="pi pi-hashtag text-white text-sm"></i>
+              </div>
               Cantidad
             </label>
             <p-inputNumber
@@ -176,7 +234,7 @@
               [min]="1"
               [max]="999"
               [showButtons]="true"
-              inputStyleClass="p-3"
+              inputStyleClass="px-4 py-3.5 text-center font-bold"
               styleClass="w-full"
             ></p-inputNumber>
           </div>
@@ -185,9 +243,11 @@
           <div>
             <label
               for="scannerButton"
-              class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"
+              class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-3"
             >
-              <i class="pi pi-camera text-purple-600"></i>
+              <div class="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
+                <i class="pi pi-camera text-white text-sm"></i>
+              </div>
               Escáner
             </label>
             <p-button
@@ -195,31 +255,34 @@
               label="F8"
               [outlined]="true"
               severity="secondary"
-              styleClass="w-full h-12"
+              [raised]="true"
+              styleClass="w-full h-14 font-bold hover:scale-105 transition-transform"
               (click)="activarScanner()"
             ></p-button>
           </div>
         </div>
 
-        <!-- Búsqueda avanzada optimizada -->
-        <div class="mt-6">
-          <div class="flex items-center justify-between mb-3">
+        <!-- Búsqueda avanzada premium -->
+        <div class="mt-8 pt-7 border-t-2 border-gray-200 dark:border-gray-700">
+          <div class="flex items-center justify-between mb-5">
             <label
               for="autoComplete"
-              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+              class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3"
             >
-              <i class="pi pi-search text-indigo-600"></i>
-              Búsqueda Avanzada
+              <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg">
+                <i class="pi pi-search text-white text-sm"></i>
+              </div>
+              Búsqueda Avanzada de Productos
             </label>
             
-            <!-- Botón de refrescar inventarios -->
+            <!-- Botón de actualizar -->
             <button
               type="button"
-              class="flex items-center gap-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 shadow-md"
+              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-indigo-500/50 border border-indigo-400/30"
               (click)="refrescarDatos()"
-              title="Refrescar inventarios disponibles"
+              title="Actualizar inventarios"
             >
-              <i class="pi pi-refresh text-xs"></i>
+              <i class="pi pi-refresh text-sm group-hover:rotate-180 transition-transform duration-500"></i>
               <span>Actualizar</span>
             </button>
           </div>
@@ -229,23 +292,26 @@
             (completeMethod)="buscarProductosAutoComplete($event)"
             (onSelect)="seleccionarProductoAutoComplete($event)"
             field="displayLabel"
-            placeholder="Buscar por nombre, código o descripción..."
+            placeholder="🔍 Buscar por nombre, código, descripción o categoría..."
             styleClass="w-full"
             [dropdown]="true"
-            scrollHeight="300px"
+            scrollHeight="350px"
             [showClear]="true"
             [minLength]="1"
             [delay]="300"
             [forceSelection]="false"
+            inputStyleClass="px-4 py-3.5 text-base border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-900"
           >
             <ng-template let-producto pTemplate="item">
-              <div class="flex items-center gap-3 p-2">
+              <div class="flex items-center gap-4 p-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
                 <div class="flex-1">
-                  <div class="font-medium text-gray-900">
+                  <div class="font-bold text-gray-900 dark:text-gray-100 text-base">
                     {{ producto.producto?.codigo }} - {{ producto.producto?.nombre }}
                   </div>
-                  <div class="text-sm text-gray-600">
-                    {{ producto.color?.nombre }} • {{ producto.talla?.numero }} • Stock: {{ producto.cantidad }}
+                  <div class="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+                    <span class="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs font-medium">{{ producto.color?.nombre }}</span>
+                    <span class="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full text-xs font-medium">{{ producto.talla?.numero }}</span>
+                    <span class="text-xs">• Stock: <span class="font-bold">{{ producto.cantidad }}</span></span>
                   </div>
                 </div>
               </div>
@@ -255,8 +321,8 @@
       </div>
 
       <!-- Scanner Optimizado -->
-      <div *ngIf="scannerActive" class="bg-gray-900 rounded-xl p-4 shadow-lg">
-        <div class="relative h-64 rounded-lg overflow-hidden bg-black">
+      <div *ngIf="scannerActive" class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 shadow-2xl border-2 border-red-500/30">
+        <div class="relative h-80 rounded-xl overflow-hidden bg-black shadow-inner">
           <video #videoElement class="w-full h-full object-cover"></video>
           <div
             class="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -289,99 +355,52 @@
           </button>
         </div>
       </div>
-
-      <!-- Productos Populares Optimizado -->
-      <!-- <div
-        *ngIf="productosPopulares.length > 0 && !scannerActive"
-        class="flex-1"
-      >
-        <div
-          class="bg-white rounded-xl p-6 shadow-lg h-full flex flex-col border border-gray-200"
-        >
-          <div class="flex items-center gap-3 mb-6">
-            <div
-              class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center"
-            >
-              <i class="pi pi-star-fill text-white"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-800">Productos Populares</h3>
-            <span
-              class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium"
-            >
-              {{ productosPopulares.length }} productos
-            </span>
-          </div>
-
-          <div
-            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 flex-1"
-          >
-            <div
-              *ngFor="
-                let producto of productosPopulares;
-                trackBy: trackByProductoPopularId
-              "
-              class="bg-gray-50 hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-              (click)="seleccionarProductoPopular(producto)"
-              (keydown.enter)="seleccionarProductoPopular(producto)"
-              (keydown.space)="seleccionarProductoPopular(producto)"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="'Seleccionar ' + producto.producto.nombre"
-            >
-              <div class="text-center">
-                <div class="relative mb-3">
-                  <img
-                    [src]="
-                      producto.producto.imagen ||
-                      '/assets/images/product-placeholder.svg'
-                    "
-                    [alt]="producto.producto.nombre"
-                    class="w-full h-20 object-cover rounded-lg border border-gray-200"
-                    onerror="this.src='/assets/images/product-placeholder.svg'"
-                  />
-                  <span
-                    class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md"
-                  >
-                    {{ producto.cantidad }}
-                  </span>
-                </div>
-                <div
-                  class="text-sm font-semibold text-gray-700 truncate mb-2"
-                  [title]="producto.producto.nombre"
-                >
-                  {{ producto.producto.nombre }}
-                </div>
-                <div class="text-lg font-bold text-blue-600">
-                  {{
-                    formatearMoneda(
-                      obtenerPrecioProducto(producto.producto.id || 0)
-                    )
-                  }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
     </section>
 
-    <!-- Panel Derecho: Carrito y Pago - CON SCROLL PROPIO -->
+    <!-- Panel Derecho: Carrito y Checkout Premium - RESPONSIVE CON MODO DESLIZABLE -->
     <aside
-      class="min-w-[400px] w-[35%] max-w-[500px] bg-white border-l border-gray-200 flex flex-col shadow-lg resize-x overflow-y-auto"
-      style="resize: horizontal; height: calc(100vh - 200px);"
+      [class.show-mobile-cart]="showMobileCart"
+      class="
+        w-full lg:w-[420px] flex-shrink-0 
+        bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-800 dark:via-gray-850 dark:to-gray-800 
+        lg:border-l-2 border-indigo-100 dark:border-indigo-900/30 shadow-2xl 
+        overflow-y-auto overflow-x-hidden scroll-smooth
+        
+        fixed lg:relative bottom-0 left-0 right-0 lg:bottom-auto lg:left-auto
+        max-h-[70vh] lg:max-h-none
+        z-40 lg:z-auto
+        transform translate-y-full lg:translate-y-0
+        transition-transform duration-300 ease-in-out
+        rounded-t-3xl lg:rounded-none
+      "
+      style="scrollbar-width: thin; scrollbar-color: rgb(129 140 248) rgb(241 245 249);"
+      [style.height.lg]="'calc(100vh - 200px)'"
     >
-      <!-- Cliente Actual Optimizado - FIJO -->
-      <div class="p-6 border-b border-gray-200 bg-blue-50 flex-shrink-0">
+      <!-- Barra de arrastre (solo móvil) -->
+      <div class="lg:hidden sticky top-0 z-10 bg-gradient-to-r from-indigo-100 to-purple-100 py-2 px-4 rounded-t-3xl">
+        <div class="w-12 h-1.5 bg-gray-400 rounded-full mx-auto mb-2"></div>
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-gray-800">🛒 Carrito ({{carrito.length}})</h3>
+          <button 
+            (click)="showMobileCart = false"
+            class="w-8 h-8 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition-colors">
+            <i class="pi pi-times text-gray-700 text-sm"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="flex flex-col min-h-full">
+      <!-- Cliente Actual Premium -->
+      <div class="px-4 sm:px-5 md:px-7 py-4 sm:py-5 md:py-6 border-b-2 border-indigo-100 dark:border-indigo-900/30 bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-indigo-900/20">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 sm:gap-4">
             <div
-              class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md"
+              class="w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/30 ring-2 sm:ring-4 ring-indigo-100 dark:ring-indigo-900/30"
             >
-              <i class="pi pi-user text-white text-lg"></i>
+              <i class="pi pi-user text-white text-lg sm:text-xl"></i>
             </div>
             <div>
-              <div class="font-bold text-gray-900">
+              <div class="font-bold text-gray-900 dark:text-gray-100 text-base">
                 {{
                   clienteSeleccionado
                     ? clienteSeleccionado.nombres +
@@ -390,7 +409,7 @@
                     : "Cliente General"
                 }}
               </div>
-              <div class="text-sm text-gray-600" *ngIf="clienteSeleccionado">
+              <div class="text-sm text-indigo-600 dark:text-indigo-400 font-medium" *ngIf="clienteSeleccionado">
                 {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
               </div>
             </div>
@@ -399,39 +418,40 @@
             icon="pi pi-user-edit"
             severity="info"
             [outlined]="true"
+            [raised]="true"
             size="small"
-            styleClass="hover:scale-105 transition-transform"
+            styleClass="hover:scale-110 transition-transform shadow-lg"
             (click)="openClientModal()"
           ></p-button>
         </div>
       </div>
 
-      <!-- Header del Carrito - FIJO -->
-      <div class="p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+      <!-- Header del Carrito Premium -->
+      <div class="px-7 py-5 border-b-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-gray-800 flex items-center gap-2">
+          <h3 class="font-black text-gray-900 dark:text-gray-100 flex items-center gap-3 text-lg">
             <div
-              class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"
+              class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30"
             >
               <i class="pi pi-shopping-cart text-white"></i>
             </div>
             Carrito
             <span
-              class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-bold"
+              class="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1.5 rounded-full text-sm font-black shadow-lg"
             >
               {{ carrito.length }}
             </span>
           </h3>
           
-          <!-- Botón para vista expandida -->
+          <!-- Acciones del carrito -->
           <div class="flex items-center gap-2">
             <button
               *ngIf="carrito.length > 3"
-              class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-colors"
+              class="bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-800/40 text-indigo-700 dark:text-indigo-300 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105 shadow-md"
               (click)="mostrarCarritoExpandido = true"
               title="Ver carrito completo"
             >
-              <i class="pi pi-external-link mr-1"></i>
+              <i class="pi pi-external-link mr-1.5"></i>
               Expandir
             </button>
             <p-button
@@ -439,23 +459,24 @@
               icon="pi pi-trash"
               severity="danger"
               [outlined]="true"
-            size="small"
-            styleClass="hover:scale-105 transition-transform"
-            (click)="limpiarCarrito()"
-          ></p-button>
+              [raised]="true"
+              size="small"
+              styleClass="hover:scale-110 transition-transform shadow-lg"
+              (click)="limpiarCarrito()"
+            ></p-button>
           </div>
         </div>
       </div>
 
-      <!-- Items del carrito - EXPANSIÓN NATURAL -->
-      <div class="flex-grow">
+      <!-- Items del carrito -->
+      <div class="flex-1">
           <!-- Carrito vacío -->
           <div
             *ngIf="carrito.length === 0"
             class="p-8 text-center text-gray-500"
           >
             <div
-              class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+              class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4"
             >
               <i class="pi pi-shopping-cart text-4xl text-gray-400"></i>
             </div>
@@ -570,8 +591,8 @@
           </div>
         </div>
 
-      <!-- Resumen y Pago Optimizado - AL FINAL -->
-      <div class="border-t border-gray-200 p-6 space-y-4 bg-gray-50 flex-shrink-0 mt-auto">
+      <!-- Resumen y Pago Optimizado -->
+      <div class="border-t-2 border-gray-300 dark:border-gray-600 p-6 space-y-4 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-850 shadow-inner">
         <!-- Totales con IGV desglosado -->
         <div
           class="space-y-3 text-sm bg-white rounded-lg p-4 border border-gray-200"
@@ -719,9 +740,29 @@
           </select>
         </div>
       </div>
+      </div>
     </aside>
   </main>
 
+  <!-- 🛒 Botón Flotante del Carrito (Solo Móvil) -->
+  <button 
+    (click)="showMobileCart = !showMobileCart"
+    class="lg:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 rounded-full shadow-2xl shadow-emerald-500/50 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all duration-300 border-4 border-white"
+  >
+    <i class="pi pi-shopping-cart text-2xl"></i>
+    <span 
+      *ngIf="carrito.length > 0" 
+      class="absolute -top-2 -right-2 w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-sm font-black border-3 border-white shadow-lg animate-pulse">
+      {{carrito.length}}
+    </span>
+  </button>
+
+  <!-- Overlay para cerrar el carrito en móvil -->
+  <div 
+    *ngIf="showMobileCart"
+    (click)="showMobileCart = false"
+    class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300">
+  </div>
 
   <!-- 💳 Loading de Procesamiento de Pago -->
   <div
@@ -787,31 +828,33 @@
     </div>
   </div>
 
-<!-- Modal de Cliente - Estilo Empresarial Optimizado -->
+<!-- Modal de Cliente con Configuración Responsive Optimizada -->
 <p-dialog
   [(visible)]="showClientModal"
   [modal]="true"
   [closable]="true"
-  [style]="{ width: '850px', height: 'auto' }"
+  [style]="{ width: '95vw', maxWidth: '950px' }"
+  [breakpoints]="{ '960px': '90vw', '640px': '95vw' }"
+  [contentStyle]="{ 'max-height': '70vh', 'overflow-y': 'auto' }"
   styleClass="cliente-dialog-optimizado"
   [blockScroll]="true"
 >
-  <!-- HEADER OPTIMIZADO -->
+  <!-- HEADER MEJORADO -->
   <ng-template pTemplate="header">
     <div
-      class="flex items-center justify-between w-full bg-indigo-600 text-white p-6 -mx-6 -mt-6 mb-6"
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 text-white p-5 sm:p-7 -mx-6 -mt-6 mb-5 sm:mb-6 rounded-t-xl gap-4 sm:gap-0"
     >
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 sm:gap-5">
         <div
-          class="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center shadow-lg"
+          class="w-14 h-14 sm:w-16 sm:h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-sm border border-white/30"
         >
-          <i class="pi pi-users text-white text-2xl"></i>
+          <i class="pi pi-users text-white text-2xl sm:text-3xl"></i>
         </div>
         <div>
-          <div class="text-sm text-indigo-100 font-medium">
-            👥 Gestión de Cliente
+          <div class="text-xs text-indigo-100 font-semibold tracking-wider uppercase mb-1 sm:mb-1.5">
+            👥 Sistema de Gestión
           </div>
-          <div class="text-2xl font-bold">
+          <div class="text-2xl sm:text-3xl font-black tracking-tight">
             {{
               clienteSeleccionado
                 ? "Cliente Seleccionado"
@@ -821,33 +864,38 @@
         </div>
       </div>
 
-      <!-- CONTADOR DE CLIENTES -->
+      <!-- CONTADOR DE CLIENTES MEJORADO -->
       <div
-        class="flex items-center gap-2 bg-white bg-opacity-10 rounded-full px-4 py-2"
+        class="flex items-center gap-3 bg-white bg-opacity-15 backdrop-blur-md rounded-2xl px-5 py-3 border border-white/20 shadow-lg"
       >
-        <i class="pi pi-database text-white"></i>
-        <span class="text-sm font-medium"
-          >{{ clientesFiltrados.length || 0 }} clientes</span
-        >
+        <i class="pi pi-database text-white text-lg"></i>
+        <div class="text-right">
+          <div class="text-2xl font-black text-white">{{ clientesFiltrados.length || 0 }}</div>
+          <div class="text-xs text-indigo-100 font-medium">clientes totales</div>
+        </div>
       </div>
     </div>
   </ng-template>
 
-  <div class="p-6 space-y-6 max-h-96 overflow-y-auto">
+  <!-- CONTENEDOR PRINCIPAL SIN SCROLL DUPLICADO -->
+  <div class="p-5 sm:p-6 md:p-7 space-y-5 sm:space-y-6 md:space-y-7">
     <!-- CONTENIDO DINÁMICO BASADO EN ESTADO -->
     <div *ngIf="!clienteSeleccionado">
-      <!-- SECCIÓN DE BÚSQUEDA -->
-      <div class="space-y-4">
-        <div class="flex items-center gap-3 mb-4">
+      <!-- SECCIÓN DE BÚSQUEDA MEJORADA -->
+      <div class="space-y-5">
+        <div class="flex items-center gap-4 mb-5">
           <div
-            class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"
+            class="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg"
           >
-            <i class="pi pi-search text-white text-sm"></i>
+            <i class="pi pi-search text-white text-lg"></i>
           </div>
-          <h4 class="text-lg font-bold text-gray-900">Buscar Cliente</h4>
+          <div>
+            <h4 class="text-xl font-black text-gray-900">Buscar Cliente</h4>
+            <p class="text-sm text-gray-500">Encuentra rápidamente a tus clientes registrados</p>
+          </div>
         </div>
 
-        <!-- BUSCADOR AVANZADO -->
+        <!-- BUSCADOR AVANZADO MEJORADO -->
         <div class="relative">
           <p-autoComplete
             [(ngModel)]="clienteBusqueda"
@@ -859,9 +907,11 @@
             styleClass="w-full"
             [dropdown]="true"
             [showClear]="true"
-            scrollHeight="250px"
+            scrollHeight="300px"
             [minLength]="0"
             [completeOnFocus]="true"
+            appendTo="body"
+            inputStyleClass="pl-5 pr-5 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200"
           >
             <ng-template let-cliente pTemplate="item">
               <div
@@ -895,187 +945,132 @@
                     {{ cliente.telefono }}
                   </div>
                 </div>
-                <div class="text-right">
-                  <div class="text-sm font-semibold text-green-600">
-                    {{ cliente.compras || 0 }} compras
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    {{ formatearMoneda(cliente.totalCompras || 0) }}
-                  </div>
-                </div>
               </div>
             </ng-template>
           </p-autoComplete>
         </div>
 
-        <!-- FILTROS RÁPIDOS -->
-        <div class="flex gap-2 flex-wrap">
-          <button
-            class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
-            (click)="filtrarClientesPorTipo('frecuentes')"
-          >
-            🌟 Frecuentes
-          </button>
-          <button
-            class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
-            (click)="filtrarClientesPorTipo('nuevos')"
-          >
-            🆕 Nuevos
-          </button>
-          <button
-            class="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
-            (click)="filtrarClientesPorTipo('vip')"
-          >
-            💎 VIP
-          </button>
-        </div>
       </div>
 
-      <!-- CLIENTES RECIENTES -->
-      <div *ngIf="clientesRecientes.length > 0">
-        <div class="flex items-center gap-3 mb-4">
+      <!-- CLIENTES RECIENTES MEJORADOS -->
+      <div *ngIf="clientesRecientes.length > 0" class="space-y-5">
+        <div class="flex items-center gap-4 mb-5">
           <div
-            class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center"
+            class="w-11 h-11 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg"
           >
-            <i class="pi pi-clock text-white text-sm"></i>
+            <i class="pi pi-history text-white text-lg"></i>
           </div>
-          <h4 class="text-lg font-bold text-gray-900">Clientes Recientes</h4>
+          <div class="flex-1">
+            <h4 class="text-xl font-black text-gray-900">Clientes Recientes</h4>
+            <p class="text-sm text-gray-500">Últimos clientes con los que has interactuado</p>
+          </div>
           <span
-            class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium"
+            class="bg-gradient-to-r from-orange-100 to-orange-200 text-orange-700 px-4 py-2 rounded-full font-bold text-sm shadow-sm"
             >{{ clientesRecientes.length }}</span
           >
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             *ngFor="let cliente of clientesRecientes.slice(0, 6)"
-            class="text-left p-4 border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 hover:shadow-md"
+            class="group text-left p-5 border-2 border-gray-200 rounded-2xl hover:border-orange-400 hover:bg-orange-50/50 transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
             (click)="seleccionarCliente(cliente)"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
               <div
-                class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+                class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md"
               >
                 {{ cliente.nombres.charAt(0) || "C"
                 }}{{ cliente.apellidos.charAt(0) || "L" }}
               </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-gray-900 truncate text-base">
                   {{ cliente.nombres }} {{ cliente.apellidos }}
                 </div>
-                <div class="text-xs text-gray-500 flex items-center gap-2">
+                <div class="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                  <i class="pi pi-id-card text-xs"></i>
                   <span>{{ cliente.dni || cliente.ruc }}</span>
                   <span
                     *ngIf="cliente.compras"
-                    class="bg-gray-100 px-2 py-0.5 rounded-full"
+                    class="bg-gradient-to-r from-orange-100 to-orange-200 text-orange-700 px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   >
                     {{ cliente.compras }} compras
                   </span>
                 </div>
               </div>
-              <i class="pi pi-arrow-right text-gray-400"></i>
+              <i class="pi pi-chevron-right text-gray-400 group-hover:text-orange-500 transition-colors"></i>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- CREAR NUEVO CLIENTE -->
-      <div
-        class="text-center py-8 bg-green-50 rounded-2xl border-2 border-dashed border-green-300"
-      >
-        <div
-          class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4"
-        >
-          <i class="pi pi-user-plus text-white text-2xl"></i>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">¿Cliente Nuevo?</h3>
-        <p class="text-gray-600 mb-4 text-sm">
-          Crea un nuevo perfil en segundos
-        </p>
-        <button
-          class="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors shadow-lg"
-          (click)="nuevoCliente()"
-        >
-          <i class="pi pi-plus mr-2"></i>
-          Crear Nuevo Cliente
-        </button>
-      </div>
+  
     </div>
 
-    <!-- CLIENTE SELECCIONADO -->
-    <div *ngIf="clienteSeleccionado">
-      <!-- HEADER DEL CLIENTE -->
-      <div class="bg-green-500 rounded-2xl p-6 text-white shadow-lg">
-        <div class="flex items-center gap-4 mb-4">
+    <!-- CLIENTE SELECCIONADO MEJORADO Y RESPONSIVE -->
+    <div *ngIf="clienteSeleccionado" class="space-y-5 sm:space-y-6">
+      <!-- HEADER DEL CLIENTE CON GRADIENTE PREMIUM -->
+      <div class="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-500 rounded-2xl p-5 sm:p-6 md:p-7 text-white shadow-2xl relative overflow-hidden">
+        <!-- Decoración de fondo animada -->
+        <div class="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-white opacity-5 rounded-full -mr-24 sm:-mr-32 -mt-24 sm:-mt-32 animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 sm:w-48 sm:h-48 bg-white opacity-5 rounded-full -ml-16 sm:-ml-24 -mb-16 sm:-mb-24 animate-pulse delay-75"></div>
+        
+        <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mb-4 sm:mb-5">
           <div
-            class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md"
+            class="w-16 h-16 sm:w-20 sm:h-20 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black shadow-xl border-2 border-white/30 flex-shrink-0"
           >
             {{ clienteSeleccionado.nombres.charAt(0) || "C"
             }}{{ clienteSeleccionado.apellidos.charAt(0) || "L" }}
           </div>
-          <div class="flex-1">
-            <div class="text-2xl font-bold mb-1">
+          <div class="flex-1 min-w-0">
+            <div class="text-xs text-emerald-100 font-semibold tracking-wider uppercase mb-1 sm:mb-2">
+              ✨ Cliente Seleccionado
+            </div>
+            <div class="text-2xl sm:text-3xl font-black mb-2 tracking-tight truncate">
               {{ clienteSeleccionado.nombres }}
               {{ clienteSeleccionado.apellidos }}
             </div>
-            <div class="text-green-100 flex items-center gap-2">
-              <i class="pi pi-id-card"></i>
-              {{ clienteSeleccionado.dni ? "DNI" : "RUC" }}:
-              {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
+            <div class="flex items-center gap-2 sm:gap-3 text-emerald-50 flex-wrap">
+              <i class="pi pi-id-card text-base sm:text-lg flex-shrink-0"></i>
+              <span class="font-semibold text-sm sm:text-base truncate">
+                {{ clienteSeleccionado.dni ? "DNI" : "RUC" }}:
+                {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
+              </span>
             </div>
           </div>
-          <div class="text-right">
-            <div class="text-3xl font-bold">
+          <div class="w-full sm:w-auto text-left sm:text-right bg-white bg-opacity-15 backdrop-blur-md rounded-xl sm:rounded-2xl px-5 sm:px-6 py-3 sm:py-4 border border-white/20 flex-shrink-0">
+            <div class="text-3xl sm:text-4xl font-black">
               {{ clienteSeleccionado.compras || 0 }}
             </div>
-            <div class="text-sm text-green-100">compras realizadas</div>
+            <div class="text-xs sm:text-sm text-emerald-100 font-medium">compras realizadas</div>
           </div>
-        </div>
-
-        <!-- INDICADORES DE ESTADO -->
-        <div class="flex gap-2">
-          <span
-            class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium"
-          >
-            ✅ Cliente Activo
-          </span>
-          <span
-            *ngIf="(clienteSeleccionado.compras || 0) > 5"
-            class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-medium"
-          >
-            🌟 Cliente Frecuente
-          </span>
-          <span
-            *ngIf="(clienteSeleccionado.totalCompras || 0) > 1000"
-            class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium"
-          >
-            💎 Cliente VIP
-          </span>
         </div>
       </div>
 
-      <!-- INFORMACIÓN DETALLADA -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- DATOS DE CONTACTO -->
-        <div class="bg-blue-50 rounded-xl p-5 border border-blue-200">
-          <div class="flex items-center gap-2 mb-4">
+      <!-- INFORMACIÓN DETALLADA MEJORADA Y RESPONSIVE -->
+      <div class="grid grid-cols-1 gap-4 sm:gap-5">
+        <!-- DATOS DE CONTACTO (PANTALLA COMPLETA) -->
+        <div class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border-2 border-indigo-100/50 shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div
-              class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"
+              class="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md"
             >
-              <i class="pi pi-address-book text-white text-sm"></i>
+              <i class="pi pi-address-book text-white text-lg sm:text-xl"></i>
             </div>
-            <h5 class="font-bold text-gray-900">Información de Contacto</h5>
+            <h5 class="text-base sm:text-lg font-black text-gray-900">Información de Contacto</h5>
           </div>
 
-          <div class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div
               *ngIf="clienteSeleccionado.email"
-              class="flex items-center gap-3"
+              class="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
             >
-              <i class="pi pi-envelope text-blue-500"></i>
-              <div>
-                <div class="text-xs text-gray-500">Email</div>
-                <div class="font-medium text-gray-900">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-envelope text-indigo-600 text-base sm:text-lg"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Email</div>
+                <div class="font-bold text-gray-900 text-sm sm:text-base break-all group-hover:text-indigo-600 transition-colors">
                   {{ clienteSeleccionado.email }}
                 </div>
               </div>
@@ -1083,12 +1078,14 @@
 
             <div
               *ngIf="clienteSeleccionado.telefono"
-              class="flex items-center gap-3"
+              class="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
             >
-              <i class="pi pi-phone text-blue-500"></i>
-              <div>
-                <div class="text-xs text-gray-500">Teléfono</div>
-                <div class="font-medium text-gray-900">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-phone text-emerald-600 text-base sm:text-lg"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Teléfono</div>
+                <div class="font-bold text-gray-900 text-sm sm:text-base group-hover:text-emerald-600 transition-colors">
                   {{ clienteSeleccionado.telefono }}
                 </div>
               </div>
@@ -1096,110 +1093,55 @@
 
             <div
               *ngIf="clienteSeleccionado.direccion"
-              class="flex items-center gap-3"
+              class="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
             >
-              <i class="pi pi-map-marker text-blue-500"></i>
-              <div>
-                <div class="text-xs text-gray-500">Dirección</div>
-                <div class="font-medium text-gray-900">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-map-marker text-orange-600 text-base sm:text-lg"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Dirección</div>
+                <div class="font-bold text-gray-900 text-sm sm:text-base line-clamp-2 group-hover:text-orange-600 transition-colors">
                   {{ clienteSeleccionado.direccion }}
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- ESTADÍSTICAS DE COMPRAS -->
-        <div class="bg-purple-50 rounded-xl p-5 border border-purple-200">
-          <div class="flex items-center gap-2 mb-4">
-            <div
-              class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center"
-            >
-              <i class="pi pi-chart-bar text-white text-sm"></i>
-            </div>
-            <h5 class="font-bold text-gray-900">Historial de Compras</h5>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-center p-3 bg-white rounded-lg">
-              <div class="text-2xl font-bold text-purple-600">
-                {{ clienteSeleccionado.compras || 0 }}
-              </div>
-              <div class="text-xs text-gray-600">Compras</div>
-            </div>
-
-            <div class="text-center p-3 bg-white rounded-lg">
-              <div class="text-lg font-bold text-green-600">
-                {{ formatearMoneda(clienteSeleccionado.totalCompras || 0) }}
-              </div>
-              <div class="text-xs text-gray-600">Total</div>
-            </div>
-
-            <div class="text-center p-3 bg-white rounded-lg">
-              <div class="text-lg font-bold text-blue-600">
-                {{ formatearMoneda(getPromedioCompras(clienteSeleccionado)) }}
-              </div>
-              <div class="text-xs text-gray-600">Promedio</div>
-            </div>
-
-            <div class="text-center p-3 bg-white rounded-lg">
-              <div class="text-sm font-bold text-orange-600">
-                {{
-                  clienteSeleccionado.ultimaCompra
-                    ? (clienteSeleccionado.ultimaCompra | date : "dd/MM")
-                    : "N/A"
-                }}
-              </div>
-              <div class="text-xs text-gray-600">Última</div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- ACCIONES DEL CLIENTE -->
-      <div class="flex gap-3 mt-6">
+      <!-- ACCIONES DEL CLIENTE CON DISEÑO PREMIUM Y RESPONSIVE -->
+      <div class="flex justify-center mt-5 sm:mt-6">
         <button
-          class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md flex items-center justify-center gap-2"
-          (click)="editarCliente()"
-        >
-          <i class="pi pi-pencil"></i>
-          Editar Cliente
-        </button>
-
-        <button
-          class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md flex items-center justify-center gap-2"
+          class="group relative overflow-hidden bg-white hover:bg-gray-50 text-gray-700 hover:text-indigo-600 py-2.5 px-6 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-xl border-2 border-gray-200 hover:border-indigo-400 flex items-center justify-center gap-2.5"
           (click)="limpiarClienteSeleccionado()"
         >
-          <i class="pi pi-refresh"></i>
-          Cambiar Cliente
-        </button>
-
-        <button
-          class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-xl font-semibold transition-colors shadow-md"
-          (click)="verHistorialCliente()"
-        >
-          <i class="pi pi-history"></i>
+          <!-- Efecto de brillo al hover -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-100/30 to-transparent transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          
+          <!-- Contenido del botón -->
+          <div class="relative flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <i class="pi pi-refresh text-white text-xs"></i>
+            </div>
+            <span class="text-sm font-bold tracking-wide">Cambiar Cliente</span>
+          </div>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER MEJORADO Y RESPONSIVE -->
   <ng-template pTemplate="footer">
-    <div
-      class="flex justify-between items-center p-6 bg-gray-50 -mx-6 -mb-6 mt-6 border-t border-gray-200"
-    >
-      <!-- INFO RÁPIDA -->
-      <div class="flex items-center gap-4 text-sm">
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-          <span class="text-gray-600">Cliente:</span>
-          <span class="font-bold text-gray-900">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-3 p-4 sm:p-5 bg-gradient-to-r from-gray-50 via-white to-gray-50 border-t border-gray-200">
+      <!-- INFO RÁPIDA DEL CLIENTE -->
+      <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+        <div class="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition-shadow flex-1 sm:flex-initial border border-gray-200">
+          <div class="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-pulse flex-shrink-0"></div>
+          <span class="text-gray-600 font-semibold text-xs sm:text-sm">Cliente:</span>
+          <span class="font-black text-gray-900 text-xs sm:text-sm truncate">
             {{
               clienteSeleccionado
-                ? clienteSeleccionado.nombres +
-                  " " +
-                  clienteSeleccionado.apellidos
+                ? clienteSeleccionado.nombres + " " + clienteSeleccionado.apellidos
                 : "No seleccionado"
             }}
           </span>
@@ -1207,158 +1149,27 @@
       </div>
 
       <!-- BOTONES DE ACCIÓN -->
-      <div class="flex gap-3">
+      <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
         <p-button
           label="Cancelar"
           icon="pi pi-times"
           severity="secondary"
           [outlined]="true"
           (click)="showClientModal = false"
-          styleClass="px-6 py-2"
+          styleClass="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 text-sm font-bold hover:scale-105 transition-transform"
         >
         </p-button>
 
         <p-button
-          [label]="
-            clienteSeleccionado ? 'Confirmar Cliente' : 'Seleccionar Cliente'
-          "
-          [icon]="clienteSeleccionado ? 'pi pi-check' : 'pi pi-user'"
+          [label]="clienteSeleccionado ? 'Confirmar ✓' : 'Seleccionar'"
+          [icon]="clienteSeleccionado ? 'pi pi-check-circle' : 'pi pi-user-plus'"
           severity="success"
           [disabled]="!clienteSeleccionado"
           (click)="confirmarCliente()"
-          styleClass="px-8 py-2 shadow-lg"
+          styleClass="flex-1 sm:flex-initial px-4 sm:px-8 py-2 sm:py-2.5 text-sm font-black shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         >
         </p-button>
       </div>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- Modal de Ayuda de Teclado -->
-<p-dialog
-  header="⌨️ Atajos de Teclado"
-  [(visible)]="showKeyboardHelp"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="false"
-  [resizable]="false"
-  styleClass="w-11/12 max-w-2xl"
->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Funciones Principales -->
-    <div>
-      <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-        <i class="pi pi-cog text-blue-600"></i>
-        Funciones Principales
-      </h4>
-      <div class="space-y-2">
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Buscar Producto</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F2</kbd>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Seleccionar Cliente</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F3</kbd>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Aplicar Descuento</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F4</kbd>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Activar Escáner</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F8</kbd>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Abrir Caja</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono">F9</kbd>
-        </div>
-        <div
-          class="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200"
-        >
-          <span class="text-sm font-medium">Procesar Pago</span>
-          <kbd class="px-2 py-1 bg-green-200 rounded text-xs font-mono"
-            >F12</kbd
-          >
-        </div>
-      </div>
-    </div>
-
-    <!-- Pagos Rápidos -->
-    <div>
-      <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-        <i class="pi pi-credit-card text-green-600"></i>
-        Pagos Rápidos
-      </h4>
-      <div class="space-y-2">
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">💵 Pago Efectivo</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl+1</kbd
-          >
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">💳 Pago Tarjeta</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl+2</kbd
-          >
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">📱 Pago Digital</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl+3</kbd
-          >
-        </div>
-      </div>
-
-      <h4 class="font-semibold text-gray-800 mb-3 mt-6 flex items-center gap-2">
-        <i class="pi pi-wrench text-purple-600"></i>
-        Utilidades
-      </h4>
-      <div class="space-y-2">
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Limpiar Carrito</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl+Del</kbd
-          >
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Aumentar Cantidad</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl++</kbd
-          >
-        </div>
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm">Disminuir Cantidad</span>
-          <kbd class="px-2 py-1 bg-gray-200 rounded text-xs font-mono"
-            >Ctrl+-</kbd
-          >
-        </div>
-        <div
-          class="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200"
-        >
-          <span class="text-sm">Cancelar / Salir</span>
-          <kbd class="px-2 py-1 bg-red-200 rounded text-xs font-mono">ESC</kbd>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-    <p class="text-sm text-blue-800">
-      <i class="pi pi-info-circle mr-2"></i>
-      <strong>Tip profesional:</strong> Los atajos funcionan desde cualquier
-      parte del sistema, excepto cuando estés escribiendo en un campo de texto.
-    </p>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-center">
-      <button
-        class="bg-blue-600 text-white px-6 py-2 rounded font-medium"
-        (click)="showKeyboardHelp = false"
-      >
-        Entendido
-      </button>
     </div>
   </ng-template>
 </p-dialog>
@@ -1368,7 +1179,7 @@
   [(visible)]="comprobanteDialog" 
   [header]="'Venta Completada'" 
   [modal]="true" 
-  [style]="{width: '700px'}" 
+  [style]="{width: '850px', maxHeight: '92vh'}" 
   [draggable]="false" 
   [resizable]="false"
   styleClass="border-0 shadow-2xl comprobante-dialog"
@@ -1376,149 +1187,283 @@
   [blockScroll]="true"
 >
   <ng-template pTemplate="header">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-        <i class="pi pi-check-circle text-white text-xl"></i>
+    <div class="w-[calc(100%+3rem)] flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 text-white p-6 sm:p-7 -mx-6 -mt-6 mb-0 shadow-xl gap-4 sm:gap-0" style="border-radius: 0.75rem 0.75rem 0 0;">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center shadow-2xl backdrop-blur-sm border border-white/30 animate-bounce-gentle">
+          <i class="pi pi-check-circle text-white text-3xl"></i>
+        </div>
+        <div>
+          <div class="text-sm text-emerald-100 font-semibold uppercase tracking-wider mb-1">
+            ✅ Operación Exitosa
+          </div>
+          <div class="text-3xl font-black tracking-tight">¡Venta Completada!</div>
+          <div class="text-sm text-emerald-100 mt-1">
+            Venta #{{ventaParaComprobante?.numeroVenta}}
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="text-sm text-gray-500">Venta #{{ventaParaComprobante?.numeroVenta}}</div>
-        <div class="text-2xl font-bold text-gray-800">¡Venta Completada!</div>
+      
+      <!-- Badge de estado -->
+      <div class="bg-white bg-opacity-15 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 shadow-lg">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <span class="text-sm font-bold">PROCESADA</span>
+        </div>
       </div>
     </div>
   </ng-template>
   
-  <div class="p-5">
+  <div class="p-6 space-y-6 bg-gradient-to-br from-gray-50 via-white to-gray-50">
     <!-- Vista previa del comprobante -->
     <div class="comprobante-preview" *ngIf="ventaParaComprobante">
-      <!-- Encabezado del comprobante -->
-      <div class="text-center mb-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-1">{{getTipoComprobanteLabel(ventaParaComprobante.tipoComprobante)}}</h3>
-        <div class="text-lg font-mono font-semibold text-blue-600">
+      
+      <!-- Encabezado del comprobante Premium -->
+      <div class="text-center mb-6 p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-2xl border-2 border-indigo-100 shadow-lg">
+        <div class="inline-flex items-center gap-3 bg-white px-6 py-3 rounded-xl shadow-md mb-4">
+          <i class="pi pi-file-edit text-indigo-600 text-xl"></i>
+          <h3 class="text-2xl font-black text-gray-900">
+            {{getTipoComprobanteLabel(ventaParaComprobante.tipoComprobante)}}
+          </h3>
+        </div>
+        
+        <div class="text-2xl font-mono font-black text-indigo-700 mb-3 tracking-wider">
           {{ventaParaComprobante.serieComprobante}}-{{ventaParaComprobante.numeroComprobante || ventaParaComprobante.numeroVenta || 'GENERANDO...'}}
         </div>
-        <div class="text-sm text-gray-600 mt-2">
-          Fecha: {{ventaParaComprobante.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
-        </div>
-      </div>
-      
-      <!-- Información del cliente -->
-      <div class="bg-blue-50/60 backdrop-blur-sm rounded-lg p-4 mb-4 border border-blue-100">
-        <div class="flex items-start justify-between">
-          <div>
-            <h5 class="font-bold text-blue-800 mb-1">Datos del Cliente</h5>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm">
-              <div><span class="text-gray-500">Nombre:</span> <span class="font-medium">{{ventaParaComprobante.cliente.nombres}} {{ventaParaComprobante.cliente.apellidos}}</span></div>
-              <div><span class="text-gray-500">Documento:</span> <span class="font-medium">{{ventaParaComprobante.cliente.documento}}</span></div>
-            </div>
-          </div>
-          
-          <div class="text-right">
-            <div class="bg-blue-100 rounded-lg py-1 px-3 text-blue-800 font-medium text-sm inline-block">
-              <i class="pi pi-user-plus mr-1"></i>
-              Cliente registrado
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Detalle de productos -->
-      <div class="mb-4">
-        <h5 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <i class="pi pi-shopping-bag text-purple-600"></i>
-          Detalle de Productos
-        </h5>
         
-        <div class="overflow-auto max-h-48">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-gray-50 text-left">
-                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold">Producto</th>
-                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-center">Cant.</th>
-                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">P. Unit.</th>
-                <th class="p-2 border-b border-gray-200 text-gray-600 text-sm font-semibold text-right">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let detalle of ventaParaComprobante.detalles" class="border-b border-gray-100">
-                <td class="p-2">
-                  <div class="font-medium text-gray-800">{{detalle.producto.nombre}}</div>
-                  <div class="text-xs text-gray-500">
-                    {{detalle.color.nombre}} - {{detalle.talla.numero}} - {{detalle.producto.codigo}}
-                  </div>
-                </td>
-                <td class="p-2 text-center font-medium">{{detalle.cantidad}}</td>
-                <td class="p-2 text-right font-mono">{{formatearMoneda(detalle.precioUnitario)}}</td>
-                <td class="p-2 text-right font-mono font-medium text-blue-700">{{formatearMoneda(detalle.subtotal)}}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+          <i class="pi pi-calendar text-indigo-600"></i>
+          <span class="font-semibold">Fecha:</span>
+          <span class="font-bold">{{ventaParaComprobante.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</span>
         </div>
       </div>
       
-      <!-- Totales con IGV desglosado -->
-      <div class="bg-gray-50/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <div class="text-sm text-gray-500 mb-1">Método de pago</div>
-            <div class="flex items-center gap-2">
-              <i class="pi pi-wallet text-blue-600"></i>
-              <span class="font-medium">{{getMetodoPagoLabel(pagoActual.metodoPago)}}</span>
+      <!-- Información del cliente Premium -->
+      <div class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 backdrop-blur-sm rounded-2xl p-6 mb-6 border-2 border-blue-100 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-user text-white text-xl"></i>
+              </div>
+              <h5 class="text-xl font-black text-gray-900">Datos del Cliente</h5>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="pi pi-user text-blue-600"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Nombre Completo</div>
+                  <div class="text-base font-bold text-gray-900">
+                    {{ventaParaComprobante.cliente.nombres}} {{ventaParaComprobante.cliente.apellidos}}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="pi pi-id-card text-indigo-600"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Documento</div>
+                  <div class="text-base font-bold text-gray-900">{{ventaParaComprobante.cliente.documento}}</div>
+                </div>
+              </div>
             </div>
           </div>
           
+          <div class="text-right ml-4">
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl py-2 px-4 shadow-lg inline-flex items-center gap-2">
+              <i class="pi pi-verified text-sm"></i>
+              <span class="font-bold text-sm">Cliente Registrado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Detalle de productos Premium -->
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="pi pi-shopping-bag text-white text-lg"></i>
+          </div>
+          <h5 class="text-xl font-black text-gray-900">Detalle de Productos</h5>
+          <div class="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+        </div>
+        
+        <div class="bg-white rounded-2xl border-2 border-gray-100 shadow-lg overflow-hidden">
+          <div class="overflow-auto max-h-64">
+            <table class="w-full">
+              <thead class="sticky top-0">
+                <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-left">
+                  <th class="p-4 border-b-2 border-gray-200 text-gray-700 text-sm font-black uppercase tracking-wider">
+                    Producto
+                  </th>
+                  <th class="p-4 border-b-2 border-gray-200 text-gray-700 text-sm font-black uppercase tracking-wider text-center">
+                    Cant.
+                  </th>
+                  <th class="p-4 border-b-2 border-gray-200 text-gray-700 text-sm font-black uppercase tracking-wider text-right">
+                    P. Unit.
+                  </th>
+                  <th class="p-4 border-b-2 border-gray-200 text-gray-700 text-sm font-black uppercase tracking-wider text-right">
+                    Subtotal
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let detalle of ventaParaComprobante.detalles; let last = last" 
+                    class="hover:bg-purple-50 transition-colors"
+                    [class.border-b-0]="last"
+                    [class.border-b]="!last"
+                    [class.border-gray-100]="!last">
+                  <td class="p-4">
+                    <div class="font-bold text-gray-900 text-base mb-1">{{detalle.producto.nombre}}</div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-md font-semibold">
+                        {{detalle.color.nombre}}
+                      </span>
+                      <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-md font-semibold">
+                        Talla {{detalle.talla.numero}}
+                      </span>
+                      <span class="text-xs text-gray-500 font-mono">
+                        #{{detalle.producto.codigo}}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="p-4 text-center">
+                    <span class="inline-flex items-center justify-center w-10 h-10 bg-indigo-100 text-indigo-700 rounded-lg font-black">
+                      {{detalle.cantidad}}
+                    </span>
+                  </td>
+                  <td class="p-4 text-right font-mono font-semibold text-gray-700">
+                    {{formatearMoneda(detalle.precioUnitario)}}
+                  </td>
+                  <td class="p-4 text-right font-mono font-black text-lg text-emerald-600">
+                    {{formatearMoneda(detalle.subtotal)}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Totales con IGV desglosado Premium -->
+      <div class="bg-gradient-to-br from-slate-50 via-white to-slate-50 rounded-2xl p-6 border-2 border-gray-200 shadow-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Método de pago -->
           <div>
-            <div class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Op. Gravada:</span>
-                <span class="font-mono">{{formatearMoneda(ventaParaComprobante.subtotal)}}</span>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-wallet text-white text-lg"></i>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-blue-600">IGV (18%):</span>
-                <span class="font-mono text-blue-600">{{formatearMoneda(ventaParaComprobante.igv)}}</span>
+              <h5 class="text-lg font-black text-gray-900">Método de Pago</h5>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-blue-100 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-md">
+                  <i class="pi pi-credit-card text-white"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Pagado con</div>
+                  <div class="font-black text-gray-900 text-lg">
+                    {{getMetodoPagoLabel(pagoActual.metodoPago)}}
+                  </div>
+                </div>
               </div>
-              <div class="flex justify-between font-medium pt-2 border-t border-gray-300">
-                <span class="text-gray-800">TOTAL:</span>
-                <span class="font-mono text-xl text-emerald-600">{{formatearMoneda(ventaParaComprobante.total)}}</span>
+            </div>
+          </div>
+          
+          <!-- Totales -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="pi pi-calculator text-white text-lg"></i>
+              </div>
+              <h5 class="text-lg font-black text-gray-900">Resumen de Cobro</h5>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200">
+                <span class="text-sm font-semibold text-gray-600">Op. Gravada:</span>
+                <span class="font-mono font-bold text-gray-900">{{formatearMoneda(ventaParaComprobante.subtotal)}}</span>
+              </div>
+              
+              <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <span class="text-sm font-semibold text-blue-700 flex items-center gap-2">
+                  <i class="pi pi-percentage text-xs"></i>
+                  IGV (18%):
+                </span>
+                <span class="font-mono font-bold text-blue-700">{{formatearMoneda(ventaParaComprobante.igv)}}</span>
+              </div>
+              
+              <div class="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl shadow-lg border-2 border-emerald-400">
+                <span class="text-base font-black text-white uppercase tracking-wider">TOTAL:</span>
+                <span class="font-mono text-3xl font-black text-white">{{formatearMoneda(ventaParaComprobante.total)}}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Observaciones -->
-      <div *ngIf="ventaParaComprobante.observaciones" class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-        <h5 class="font-semibold text-yellow-800 mb-1 flex items-center gap-2">
-          <i class="pi pi-comment"></i>
-          Observaciones:
-        </h5>
-        <p class="text-sm text-yellow-700">{{ventaParaComprobante.observaciones}}</p>
+      <!-- Observaciones Premium -->
+      <div *ngIf="ventaParaComprobante.observaciones" 
+           class="mt-6 p-5 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-50 rounded-2xl border-2 border-amber-200 shadow-lg">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+            <i class="pi pi-comment text-white text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <h5 class="font-black text-amber-900 mb-2 text-lg">Observaciones:</h5>
+            <p class="text-base text-amber-800 leading-relaxed">{{ventaParaComprobante.observaciones}}</p>
+          </div>
+        </div>
       </div>
       
-      <!-- Mensajes finales -->
-      <div class="mt-6 text-center">
-        <div class="text-gray-500 text-sm mb-2">Vendedor: {{ventaParaComprobante.usuario.nombre}}</div>
-        <div class="text-gray-400 text-xs">¡Gracias por su compra!</div>
+      <!-- Mensajes finales Premium -->
+      <div class="mt-6 text-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
+        <div class="flex items-center justify-center gap-3 mb-3">
+          <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <i class="pi pi-user text-white text-sm"></i>
+          </div>
+          <div class="text-gray-700">
+            <span class="font-semibold">Atendido por:</span>
+            <span class="font-black text-gray-900 ml-2">{{ventaParaComprobante.usuario.nombre}}</span>
+          </div>
+        </div>
+        
+        <div class="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-xl shadow-md border-2 border-emerald-200">
+          <i class="pi pi-heart-fill text-emerald-600"></i>
+          <span class="text-gray-600 font-semibold">¡Gracias por su compra!</span>
+          <i class="pi pi-heart-fill text-emerald-600"></i>
+        </div>
       </div>
     </div>
   </div>
   
   <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center px-3">
-      <div class="flex gap-2">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-gradient-to-r from-gray-50 via-white to-gray-50 border-t-2 border-gray-200 -mx-6 -mb-6">
+      
+      <!-- Acciones Principales Premium -->
+      <div class="flex flex-wrap gap-3 w-full sm:w-auto">
         <p-button 
           label="Imprimir" 
           icon="pi pi-print" 
           severity="secondary"
           [outlined]="true"
           (click)="imprimirComprobante(ventaParaComprobante!)"
+          styleClass="flex-1 sm:flex-initial px-5 py-2.5 font-bold border-2 hover:scale-105 transition-transform hover:border-gray-400"
         ></p-button>
         
         <p-button 
-          label="Enviar" 
+          label="Enviar Email" 
           icon="pi pi-envelope" 
           severity="info"
           [outlined]="true"
           (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
+          styleClass="flex-1 sm:flex-initial px-5 py-2.5 font-bold border-2 hover:scale-105 transition-transform"
         ></p-button>
         
         <p-button 
@@ -1527,22 +1472,26 @@
           severity="danger"
           [outlined]="true"
           (click)="descargarComprobantePDF(ventaParaComprobante!)"
+          styleClass="flex-1 sm:flex-initial px-5 py-2.5 font-bold border-2 hover:scale-105 transition-transform"
         ></p-button>
       </div>
       
-      <div class="flex gap-2">
+      <!-- Acciones Secundarias Premium -->
+      <div class="flex gap-3 w-full sm:w-auto">
         <p-button 
           label="Cerrar" 
           icon="pi pi-times" 
           severity="secondary"
           (click)="cerrarComprobante()"
+          styleClass="flex-1 sm:flex-initial px-6 py-2.5 font-bold hover:scale-105 transition-transform border-2"
         ></p-button>
         
         <p-button 
           label="Nueva Venta" 
-          icon="pi pi-plus" 
+          icon="pi pi-plus-circle" 
           severity="success"
           (click)="nuevaVentaRapida()"
+          styleClass="flex-1 sm:flex-initial px-8 py-2.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 font-black text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
         ></p-button>
       </div>
     </div>
@@ -1871,263 +1820,11 @@
   </div>
 </div>
 
-<!-- Botón flotante para Panel de Pruebas de Ticketera -->
-<button
-  *ngIf="mostrarBotonPruebas"
-  class="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
-  (click)="mostrarPanelPruebas()"
-  title="Panel de Pruebas Ticketera"
->
-  <i class="pi pi-cog text-xl group-hover:rotate-90 transition-transform duration-300"></i>
-</button>
-
-<!-- Panel de Pruebas de Ticketera -->
-<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" *ngIf="panelPruebasVisible">
-  <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-    <!-- Header del Panel -->
-    <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-2xl font-bold">🖨️ Panel de Pruebas - Ticketera XPrinter</h2>
-          <p class="text-blue-100 mt-1">Sistema de pruebas para XPrinter XP-V320M</p>
-        </div>
-        <button 
-          class="text-white hover:text-gray-200 text-xl p-2"
-          (click)="cerrarPanelPruebas()"
-        >
-          <i class="pi pi-times"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Contenido del Panel -->
-    <div class="p-6 max-h-[70vh] overflow-y-auto">
-      <!-- Estado de Conexión -->
-      <div class="mb-6">
-        <div class="bg-gray-50 rounded-lg p-4 border">
-          <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
-            <i class="pi pi-info-circle mr-2 text-blue-600"></i>
-            Estado de la Ticketera
-          </h3>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="flex items-center">
-                <div class="w-3 h-3 rounded-full mr-2" 
-                     [class]="estadoConexion.conectada ? 'bg-green-500' : 'bg-red-500'"></div>
-                <span class="font-medium">
-                  {{ estadoConexion.conectada ? 'Conectada' : 'Desconectada' }}
-                </span>
-              </div>
-              <div class="text-sm text-gray-600">
-                Puerto: {{ estadoConexion.puerto || 'No detectado' }}
-              </div>
-            </div>
-            <button 
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-              (click)="verificarConexionTicketera()"
-              [disabled]="verificandoConexion"
-            >
-              <i class="pi pi-refresh mr-2" [class.pi-spin]="verificandoConexion"></i>
-              {{ verificandoConexion ? 'Verificando...' : 'Verificar' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Secciones de Pruebas -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Pruebas Básicas -->
-        <div class="bg-gray-50 rounded-lg p-4 border">
-          <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="pi pi-play mr-2 text-green-600"></i>
-            Pruebas Básicas
-          </h3>
-          <div class="space-y-3">
-            <button 
-              class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="imprimirTicketPrueba()"
-            >
-              <i class="pi pi-print mr-2"></i>
-              Ticket de Prueba
-            </button>
-            
-            <button 
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="probarTextoSimple()"
-            >
-              <i class="pi pi-file-edit mr-2"></i>
-              Texto Simple
-            </button>
-            
-            <button 
-              class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="probarFormatos()"
-            >
-              <i class="pi pi-palette mr-2"></i>
-              Formatos de Texto
-            </button>
-          </div>
-        </div>
-
-        <!-- Pruebas de Hardware -->
-        <div class="bg-gray-50 rounded-lg p-4 border">
-          <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="pi pi-cog mr-2 text-orange-600"></i>
-            Hardware
-          </h3>
-          <div class="space-y-3">
-            <button 
-              class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="cortarPapelPrueba()"
-            >
-              <i class="pi pi-scissors mr-2"></i>
-              Cortar Papel
-            </button>
-            
-            <button 
-              class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="abrirCajonPrueba()"
-            >
-              <i class="pi pi-box mr-2"></i>
-              Abrir Cajón
-            </button>
-            
-            <button 
-              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="obtenerEstadoTicketera()"
-            >
-              <i class="pi pi-info mr-2"></i>
-              Estado Detallado
-            </button>
-          </div>
-        </div>
-
-        <!-- Configuración -->
-        <div class="bg-gray-50 rounded-lg p-4 border">
-          <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="pi pi-wrench mr-2 text-gray-600"></i>
-            Configuración
-          </h3>
-          <div class="space-y-3">
-            <button 
-              class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="detectarPuertos()"
-              [disabled]="detectandoPuertos"
-            >
-              <i class="pi pi-search mr-2" [class.pi-spin]="detectandoPuertos"></i>
-              {{ detectandoPuertos ? 'Detectando...' : 'Detectar Puertos' }}
-            </button>
-            
-            <div class="space-y-2" *ngIf="puertosDisponibles.length > 0">
-              <label class="block text-sm font-medium text-gray-700">Puerto:</label>
-              <select 
-                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                [(ngModel)]="puertoSeleccionado"
-              >
-                <option value="">Seleccionar puerto...</option>
-                <option *ngFor="let puerto of puertosDisponibles" [value]="puerto">
-                  {{ puerto }}
-                </option>
-              </select>
-              <button 
-                class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
-                (click)="configurarPuertoSeleccionado()"
-                [disabled]="!puertoSeleccionado"
-              >
-                <i class="pi pi-check mr-2"></i>
-                Configurar Puerto
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pruebas con Datos Reales -->
-        <div class="bg-gray-50 rounded-lg p-4 border">
-          <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="pi pi-shopping-cart mr-2 text-cyan-600"></i>
-            Datos Reales
-          </h3>
-          <div class="space-y-3">
-            <button 
-              class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="imprimirVentaActual()"
-              [disabled]="carrito.length === 0"
-            >
-              <i class="pi pi-receipt mr-2"></i>
-              Imprimir Venta Actual
-            </button>
-            
-            <button 
-              class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="crearVentaPrueba()"
-            >
-              <i class="pi pi-plus mr-2"></i>
-              Crear Venta de Prueba
-            </button>
-            
-            <button 
-              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-              (click)="imprimirUltimaVenta()"
-            >
-              <i class="pi pi-history mr-2"></i>
-              Última Venta
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Log de Pruebas -->
-      <div class="mt-6 bg-gray-900 rounded-lg p-4">
-        <h3 class="font-semibold text-white mb-3 flex items-center">
-          <i class="pi pi-list mr-2 text-green-400"></i>
-          Log de Pruebas
-        </h3>
-        <div class="bg-black rounded p-3 h-40 overflow-y-auto font-mono text-sm">
-          <div *ngFor="let log of logPruebas; trackBy: trackByIndex" 
-               class="mb-1" 
-               [class]="getLogClass(log.tipo)">
-            <span class="text-gray-500">[{{ log.timestamp }}]</span>
-            <span class="ml-2">{{ log.mensaje }}</span>
-          </div>
-          <div *ngIf="logPruebas.length === 0" class="text-gray-500 text-center py-8">
-            No hay logs de pruebas aún...
-          </div>
-        </div>
-        <div class="mt-3 flex justify-end">
-          <button 
-            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
-            (click)="limpiarLogs()"
-          >
-            <i class="pi pi-trash mr-2"></i>
-            Limpiar Logs
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer del Panel -->
-    <div class="bg-gray-50 border-t p-4 flex justify-between items-center">
-      <div class="text-sm text-gray-600">
-        <i class="pi pi-info-circle mr-1"></i>
-        Utiliza estas pruebas para verificar el funcionamiento de tu ticketera
-      </div>
-      <button 
-        class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors"
-        (click)="cerrarPanelPruebas()"
-      >
-        Cerrar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- 🔧 DIÁLOGOS FUERA DEL CONTENEDOR PRINCIPAL -->
 <!-- DIÁLOGO: PROCESAMIENTO DE PAGO -->
   <p-dialog 
     [(visible)]="pagoDialog" 
     [modal]="true" 
-    [style]="{width: '750px', maxHeight: '90vh'}" 
+    [style]="{width: '850px', maxHeight: '92vh'}" 
     [draggable]="false" 
     [resizable]="false"
     styleClass="modern-dialog"
@@ -2136,110 +1833,142 @@
     [blockScroll]="true"
     (onHide)="onPagoDialogHide()"
   >
-    <!-- Header Limpio -->
+    <!-- Header Premium con Gradiente -->
     <ng-template pTemplate="header">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-credit-card text-white text-xl"></i>
+      <div class="w-[calc(100%+3rem)] flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white p-6 sm:p-7 -mx-6 -mt-6 mb-0 shadow-xl gap-4 sm:gap-0" style="border-radius: 0.75rem 0.75rem 0 0;">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center shadow-2xl backdrop-blur-sm border border-white/30 animate-pulse-slow">
+            <i class="pi pi-wallet text-white text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-black text-white mb-1 tracking-tight">Procesar Pago</h2>
+            <p class="text-sm text-indigo-100 flex items-center gap-2">
+              <i class="pi pi-shopping-cart text-xs"></i>
+              {{carrito.length}} productos • {{getTotalItems()}} unidades
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-xl font-bold text-gray-900">Procesar Pago</h2>
-          <p class="text-sm text-gray-600">Total: {{formatearMoneda(totalVenta)}}</p>
+        
+        <!-- Total destacado -->
+        <div class="bg-white bg-opacity-15 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 shadow-lg">
+          <div class="text-xs text-indigo-100 mb-1 text-center">Total a Cobrar</div>
+          <div class="text-3xl font-black text-white text-center tracking-tight">
+            {{formatearMoneda(totalVenta)}}
+          </div>
         </div>
       </div>
     </ng-template>
     
-    <div class="p-6 space-y-6">
+    <div class="p-6 space-y-6 bg-gradient-to-br from-gray-50 via-white to-gray-50">
       
-      <!-- Resumen de Venta Simplificado -->
-      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-            <i class="pi pi-shopping-cart text-white text-sm"></i>
+      <!-- Resumen de Venta Premium -->
+      <div class="bg-gradient-to-br from-slate-50 via-white to-slate-50 rounded-2xl p-5 border-2 border-indigo-100 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="pi pi-shopping-cart text-white text-lg"></i>
           </div>
-          <h4 class="text-lg font-semibold text-gray-900">Resumen de Venta</h4>
+          <h4 class="text-lg font-black text-gray-900">Resumen de Venta</h4>
         </div>
         
-        <div class="grid grid-cols-3 gap-3">
-          <div class="text-center p-3 bg-white rounded-lg border border-gray-200">
-            <div class="text-xl font-bold text-blue-600">{{carrito.length}}</div>
-            <div class="text-xs text-gray-600">Productos</div>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="text-center p-4 bg-white rounded-xl border-2 border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-2xl font-black text-blue-600">{{carrito.length}}</div>
+            <div class="text-xs font-semibold text-gray-600 mt-1">Productos</div>
           </div>
           
-          <div class="text-center p-3 bg-white rounded-lg border border-gray-200">
-            <div class="text-xl font-bold text-green-600">{{getTotalItems()}}</div>
-            <div class="text-xs text-gray-600">Unidades</div>
+          <div class="text-center p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-2xl font-black text-emerald-600">{{getTotalItems()}}</div>
+            <div class="text-xs font-semibold text-gray-600 mt-1">Unidades</div>
           </div>
           
-          <div class="text-center p-3 bg-white rounded-lg border border-gray-200">
-            <div class="text-sm font-semibold text-purple-600">{{getTipoComprobanteLabel(nuevaVenta.tipoComprobante)}}</div>
-            <div class="text-xs text-gray-600">{{nuevaVenta.serieComprobante}}</div>
+          <div class="text-center p-4 bg-white rounded-xl border-2 border-purple-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-sm font-bold text-purple-600 truncate">{{getTipoComprobanteLabel(nuevaVenta.tipoComprobante)}}</div>
+            <div class="text-xs font-semibold text-gray-600 mt-1">{{nuevaVenta.serieComprobante}}</div>
           </div>
         </div>
         
-        <!-- Cliente Info -->
-        <div class="mt-4 p-3 bg-white rounded-lg border border-gray-200">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+        <!-- Cliente Info Premium -->
+        <div class="p-4 bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50 rounded-xl border-2 border-indigo-100 shadow-sm">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black text-lg shadow-lg ring-4 ring-indigo-100">
               {{clienteSeleccionado?.nombres?.charAt(0)}}{{clienteSeleccionado?.apellidos?.charAt(0)}}
             </div>
             <div class="flex-1">
-              <div class="font-semibold text-gray-900 text-sm">{{clienteSeleccionado?.nombres}} {{clienteSeleccionado?.apellidos}}</div>
-              <div class="text-xs text-gray-600">{{clienteSeleccionado?.dni || clienteSeleccionado?.ruc}}</div>
+              <div class="font-black text-gray-900 text-base">{{clienteSeleccionado?.nombres}} {{clienteSeleccionado?.apellidos}}</div>
+              <div class="text-sm text-indigo-600 font-semibold">{{clienteSeleccionado?.dni || clienteSeleccionado?.ruc}}</div>
+            </div>
+            <div class="bg-white px-3 py-1.5 rounded-lg border border-indigo-200">
+              <i class="pi pi-verified text-indigo-600"></i>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Métodos de Pago -->
+      <!-- Métodos de Pago Premium -->
       <div class="space-y-4">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-            <i class="pi pi-wallet text-white text-sm"></i>
+          <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="pi pi-credit-card text-white text-lg"></i>
           </div>
-          <h4 class="text-lg font-semibold text-gray-900">Método de Pago</h4>
+          <h4 class="text-lg font-black text-gray-900">Método de Pago</h4>
+          <div class="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
         </div>
         
-        <!-- Botones de Métodos -->
+        <!-- Grid de Métodos de Pago Mejorado -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div *ngFor="let metodo of metodosPago; trackBy: trackByMetodoPago"
-               class="cursor-pointer transition-all duration-200"
-               [class.active]="pagoActual.metodoPago === metodo.value"
+               class="cursor-pointer transition-all duration-300 transform hover:scale-105"
+               [class.scale-105]="pagoActual.metodoPago === metodo.value"
                (click)="seleccionarMetodoPago(metodo.value)"
                tabindex="0"
                role="button"
                [attr.aria-label]="'Seleccionar método de pago: ' + metodo.label"
                [attr.aria-pressed]="pagoActual.metodoPago === metodo.value">
-            <div class="p-4 rounded-xl border-2 transition-all duration-200"
+            <div class="relative p-4 rounded-xl border-2 transition-all duration-300 group overflow-hidden"
                  [class]="pagoActual.metodoPago === metodo.value ? 
-                         'border-blue-500 bg-blue-50' : 
-                         'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'">
-              <div class="flex flex-col items-center gap-2">
-                <!-- Iconos -->
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center"
-                     [class]="getMetodoPagoStyle(metodo.value)">
-                  <i [class]="getMetodoPagoIcon(metodo.value) + ' text-lg text-white'"></i>
+                         'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg' : 
+                         'border-gray-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/30 shadow-sm hover:shadow-md'">
+              
+              <!-- Efecto de brillo al hover -->
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              
+              <div class="relative flex flex-col items-center gap-2.5">
+                <!-- Iconos con animación -->
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300"
+                     [class]="getMetodoPagoStyle(metodo.value)"
+                     [class.ring-4]="pagoActual.metodoPago === metodo.value"
+                     [class.ring-indigo-200]="pagoActual.metodoPago === metodo.value">
+                  <i [class]="getMetodoPagoIcon(metodo.value) + ' text-xl text-white'"></i>
                 </div>
-                <span class="text-sm font-medium text-center"
-                      [class]="pagoActual.metodoPago === metodo.value ? 'text-blue-700' : 'text-gray-700'">
+                <span class="text-sm font-bold text-center leading-tight"
+                      [class]="pagoActual.metodoPago === metodo.value ? 'text-indigo-700' : 'text-gray-700'">
                   {{metodo.label}}
                 </span>
+                
+                <!-- Checkmark cuando está seleccionado -->
+                <div *ngIf="pagoActual.metodoPago === metodo.value" 
+                     class="absolute -top-1 -right-1 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-gentle">
+                  <i class="pi pi-check text-white text-xs"></i>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- FORMULARIO DE PAGO DINÁMICO -->
-      <div class="space-y-4 animate-fade-in">
+      <!-- FORMULARIO DE PAGO DINÁMICO Premium -->
+      <div class="space-y-5 animate-fade-in">
         
-        <!-- MONTO A PAGAR - SIEMPRE VISIBLE CON MEJOR ACCESIBILIDAD -->
+        <!-- MONTO A PAGAR - Diseño Premium -->
         <div class="relative">
           <label for="montoPagado" 
-                 class="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-            <i class="pi pi-dollar text-green-500" aria-hidden="true"></i>
+                 class="flex items-center gap-2.5 text-sm font-black text-gray-800 mb-3 uppercase tracking-wide">
+            <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
+              <i class="pi pi-dollar text-white text-sm" aria-hidden="true"></i>
+            </div>
             Monto Recibido
-            <span class="text-red-500" aria-label="campo requerido">*</span>
+            <span class="text-red-500 ml-1" aria-label="campo requerido">*</span>
+            <div class="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
           </label>
           <div class="relative">
             <p-inputNumber 
@@ -2250,31 +1979,39 @@
               locale="es-PE"
               [min]="0"
               placeholder="S/ 0.00"
-              styleClass="w-full pago-input-modern"
+              styleClass="w-full pago-input-modern text-2xl font-bold"
               (onInput)="calcularVuelto()"
-              [class.border-red-300]="montoPagado < totalVenta"
+              [class.border-red-400]="montoPagado < totalVenta"
+              [class.border-emerald-400]="montoPagado >= totalVenta"
               [attr.aria-describedby]="'monto-help monto-validation'"
               [attr.aria-invalid]="montoPagado < totalVenta"
               required>
             </p-inputNumber>
             
-            <!-- VALIDACIÓN VISUAL MEJORADA -->
-            <div *ngIf="montoPagado < totalVenta" 
+            <!-- VALIDACIÓN VISUAL Premium -->
+            <div *ngIf="montoPagado > 0 && montoPagado < totalVenta" 
                  id="monto-validation"
-                 class="absolute -bottom-6 left-0 flex items-center gap-1 text-red-500 text-xs animate-shake"
+                 class="mt-2 flex items-center gap-2 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg animate-shake"
                  role="alert"
                  aria-live="polite">
-              <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-              <span>Monto insuficiente. Mínimo: {{formatearMoneda(totalVenta)}}</span>
+              <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-exclamation-triangle text-white text-xs" aria-hidden="true"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-red-700">Monto insuficiente</div>
+                <div class="text-xs text-red-600">Mínimo requerido: {{formatearMoneda(totalVenta)}}</div>
+              </div>
             </div>
             
             <div *ngIf="montoPagado >= totalVenta" 
                  id="monto-validation"
-                 class="absolute -bottom-6 left-0 flex items-center gap-1 text-green-500 text-xs"
+                 class="mt-2 flex items-center gap-2 p-3 bg-emerald-50 border-l-4 border-emerald-500 rounded-lg"
                  role="status"
                  aria-live="polite">
-              <i class="pi pi-check-circle" aria-hidden="true"></i>
-              <span>Monto válido</span>
+              <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse-slow">
+                <i class="pi pi-check text-white text-xs" aria-hidden="true"></i>
+              </div>
+              <span class="text-sm font-bold text-emerald-700">Monto válido ✓</span>
             </div>
             
             <div id="monto-help" class="sr-only">
@@ -2284,78 +2021,94 @@
         </div>
         
         <!-- CAMPOS ESPECÍFICOS POR MÉTODO -->
-        <div class="mt-8">
+        <div class="mt-6">
           
-          <!-- TARJETAS CON ACCESIBILIDAD MEJORADA -->
+          <!-- TARJETAS Premium -->
           <div *ngIf="pagoActual.metodoPago === 'TARJETA_CREDITO' || pagoActual.metodoPago === 'TARJETA_DEBITO'"  
-               class="space-y-4 animate-slide-down">
+               class="space-y-5 animate-slide-down">
             
-            <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-5 text-white shadow-xl">
-              <div class="flex items-center gap-3 mb-4">
-                <i class="pi pi-credit-card text-2xl" aria-hidden="true"></i>
-                <span class="font-bold">Información de Tarjeta</span>
-              </div>
+            <div class="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl p-6 text-white shadow-2xl overflow-hidden border-2 border-gray-700">
+              <!-- Decoración de fondo -->
+              <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+              <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl"></div>
               
-              <div class="space-y-4">
-                <div>
-                  <label for="nombreTarjeta" class="text-sm text-gray-300 mb-1 block">
-                    Nombre del Titular
-                    <span class="text-yellow-400 ml-1" aria-label="campo requerido">*</span>
-                  </label>
-                  <input 
-                    id="nombreTarjeta"
-                    pInputText 
-                    [(ngModel)]="pagoActual.nombreTarjeta" 
-                    placeholder="JUAN PÉREZ GARCÍA"
-                    class="card-input w-full"
-                    maxlength="50"
-                    autocomplete="cc-name"
-                    [attr.aria-describedby]="'nombre-help'"
-                    required
-                  />
-                  <div id="nombre-help" class="sr-only">
-                    Ingrese el nombre completo como aparece en la tarjeta
+              <div class="relative">
+                <div class="flex items-center justify-between mb-6">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <i class="pi pi-credit-card text-2xl text-white" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                      <span class="font-black text-lg">Información de Tarjeta</span>
+                      <div class="text-xs text-gray-400">Datos del titular</div>
+                    </div>
+                  </div>
+                  <div class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                    <span class="text-xs font-bold">{{pagoActual.metodoPago === 'TARJETA_CREDITO' ? 'CRÉDITO' : 'DÉBITO'}}</span>
                   </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-4">
                   <div>
-                    <label for="ultimos4Digitos" class="text-sm text-gray-300 mb-1 block">
-                      Últimos 4 dígitos
-                      <span class="text-yellow-400 ml-1" aria-label="campo requerido">*</span>
-                    </label>
-                    <p-inputMask 
-                      id="ultimos4Digitos"
-                      [(ngModel)]="pagoActual.ultimos4Digitos" 
-                      mask="9999" 
-                      placeholder="****"
-                      styleClass="w-full card-input"
-                      autocomplete="cc-number"
-                      [attr.aria-describedby]="'digitos-help'"
-                      required>
-                    </p-inputMask>
-                    <div id="digitos-help" class="sr-only">
-                      Ingrese solo los últimos 4 dígitos de la tarjeta
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label for="numeroReferenciaTarjeta" class="text-sm text-gray-300 mb-1 block">
-                      N° Operación
+                    <label for="nombreTarjeta" class="text-xs text-gray-300 mb-2 block uppercase tracking-wider font-semibold">
+                      Nombre del Titular
                       <span class="text-yellow-400 ml-1" aria-label="campo requerido">*</span>
                     </label>
                     <input 
-                      id="numeroReferenciaTarjeta"
+                      id="nombreTarjeta"
                       pInputText 
-                      [(ngModel)]="pagoActual.numeroReferencia" 
-                      placeholder="123456789"
-                      class="card-input w-full"
-                      maxlength="20"
-                      [attr.aria-describedby]="'referencia-help'"
+                      [(ngModel)]="pagoActual.nombreTarjeta" 
+                      placeholder="JUAN PÉREZ GARCÍA"
+                      class="card-input w-full bg-white/10 border-2 border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-yellow-400 focus:bg-white/20 transition-all backdrop-blur-sm"
+                      maxlength="50"
+                      autocomplete="cc-name"
+                      [attr.aria-describedby]="'nombre-help'"
                       required
                     />
-                    <div id="referencia-help" class="sr-only">
-                      Número de referencia u operación proporcionado por el terminal
+                    <div id="nombre-help" class="sr-only">
+                      Ingrese el nombre completo como aparece en la tarjeta
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="ultimos4Digitos" class="text-xs text-gray-300 mb-2 block uppercase tracking-wider font-semibold">
+                        Últimos 4 dígitos
+                        <span class="text-yellow-400 ml-1" aria-label="campo requerido">*</span>
+                      </label>
+                      <p-inputMask 
+                        id="ultimos4Digitos"
+                        [(ngModel)]="pagoActual.ultimos4Digitos" 
+                        mask="9999" 
+                        placeholder="****"
+                        styleClass="w-full card-input bg-white/10 border-2 border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-yellow-400 focus:bg-white/20 transition-all backdrop-blur-sm"
+                        autocomplete="cc-number"
+                        [attr.aria-describedby]="'digitos-help'"
+                        required>
+                      </p-inputMask>
+                      <div id="digitos-help" class="sr-only">
+                        Ingrese solo los últimos 4 dígitos de la tarjeta
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label for="numeroReferenciaTarjeta" class="text-xs text-gray-300 mb-2 block uppercase tracking-wider font-semibold">
+                        N° Operación
+                        <span class="text-yellow-400 ml-1" aria-label="campo requerido">*</span>
+                      </label>
+                      <input 
+                        id="numeroReferenciaTarjeta"
+                        pInputText 
+                        [(ngModel)]="pagoActual.numeroReferencia" 
+                        placeholder="123456789"
+                        class="card-input w-full bg-white/10 border-2 border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-yellow-400 focus:bg-white/20 transition-all backdrop-blur-sm"
+                        maxlength="20"
+                        [attr.aria-describedby]="'referencia-help'"
+                        required
+                      />
+                      <div id="referencia-help" class="sr-only">
+                        Número de referencia u operación proporcionado por el terminal
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2363,112 +2116,138 @@
             </div>
           </div>
           
-          <!-- TRANSFERENCIAS DIGITALES CON ACCESIBILIDAD MEJORADA -->
+          <!-- TRANSFERENCIAS DIGITALES Premium -->
           <div *ngIf="pagoActual.metodoPago === 'TRANSFERENCIA' || 
                      pagoActual.metodoPago === 'YAPE' || 
                      pagoActual.metodoPago === 'PLIN'" 
                class="animate-slide-down">
             
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-5 border border-blue-200/50">
-              <div class="flex items-center gap-3 mb-3">
-                <div [class]="getMetodoPagoStyle(pagoActual.metodoPago) + ' w-8 h-8 rounded-lg flex items-center justify-center'">
-                  <i [class]="getMetodoPagoIcon(pagoActual.metodoPago) + ' text-white text-sm'" aria-hidden="true"></i>
-                </div>
-                <span class="font-bold text-gray-800">
-                  Referencia de {{getMetodoLabel(pagoActual.metodoPago)}}
-                </span>
-              </div>
+            <div class="relative bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-indigo-200 shadow-lg overflow-hidden">
+              <!-- Decoración de fondo -->
+              <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-indigo-300/20 to-purple-300/20 rounded-full blur-2xl"></div>
               
-              <div>
-                <label for="numeroReferenciaTransferencia" 
-                       class="text-sm font-medium text-gray-700 mb-2 block">
-                  Número de Operación
-                  <span class="text-red-500 ml-1" aria-label="campo requerido">*</span>
-                </label>
-                <input 
-                  id="numeroReferenciaTransferencia"
-                  pInputText 
-                  [(ngModel)]="pagoActual.numeroReferencia" 
-                  placeholder="Ingresa el código de operación"
-                  class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 focus:border-blue-500 transition-colors focus:ring-custom"
-                  maxlength="30"
-                  [attr.aria-describedby]="'transferencia-help'"
-                  required
-                />
-                <div id="transferencia-help" class="sr-only">
-                  Código de operación proporcionado por la aplicación {{getMetodoLabel(pagoActual.metodoPago)}}
+              <div class="relative">
+                <div class="flex items-center gap-3 mb-5">
+                  <div [class]="getMetodoPagoStyle(pagoActual.metodoPago) + ' w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ring-4 ring-white'">
+                    <i [class]="getMetodoPagoIcon(pagoActual.metodoPago) + ' text-white text-lg'" aria-hidden="true"></i>
+                  </div>
+                  <div>
+                    <span class="font-black text-gray-900 text-lg">
+                      Referencia de {{getMetodoLabel(pagoActual.metodoPago)}}
+                    </span>
+                    <div class="text-xs text-gray-600">Código de operación digital</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label for="numeroReferenciaTransferencia" 
+                         class="text-sm font-bold text-gray-800 mb-2 block uppercase tracking-wide">
+                    Número de Operación
+                    <span class="text-red-500 ml-1" aria-label="campo requerido">*</span>
+                  </label>
+                  <input 
+                    id="numeroReferenciaTransferencia"
+                    pInputText 
+                    [(ngModel)]="pagoActual.numeroReferencia" 
+                    placeholder="Ingresa el código de operación"
+                    class="w-full border-2 border-indigo-300 rounded-xl px-4 py-3.5 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all font-mono text-lg bg-white shadow-sm"
+                    maxlength="30"
+                    [attr.aria-describedby]="'transferencia-help'"
+                    required
+                  />
+                  <div id="transferencia-help" class="mt-2 text-xs text-gray-600 flex items-center gap-1">
+                    <i class="pi pi-info-circle"></i>
+                    Código proporcionado por {{getMetodoLabel(pagoActual.metodoPago)}}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- VUELTO DESTACADO -->
+        <!-- VUELTO DESTACADO Premium -->
         <div *ngIf="pagoActual.metodoPago === 'EFECTIVO' && vuelto > 0" 
-             class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-5 border-2 border-green-200 animate-bounce-gentle">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center animate-pulse">
-                <i class="pi pi-money-bill text-white text-xl"></i>
+             class="relative bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 rounded-2xl p-6 shadow-2xl overflow-hidden border-2 border-emerald-300 animate-bounce-gentle">
+          <!-- Decoración animada -->
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+          <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse delay-75"></div>
+          
+          <div class="relative flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl animate-pulse-slow">
+                <i class="pi pi-money-bill text-emerald-600 text-3xl"></i>
               </div>
               <div>
-                <div class="text-sm font-semibold text-green-700">💰 Vuelto para el Cliente</div>
-                <div class="text-xs text-green-600">Cambio a entregar</div>
+                <div class="text-sm font-bold text-emerald-100 uppercase tracking-wider mb-1">💰 Vuelto para el Cliente</div>
+                <div class="text-xs text-emerald-200">Cambio a entregar</div>
               </div>
             </div>
             <div class="text-right">
-              <div class="text-3xl font-bold text-green-600">{{formatearMoneda(vuelto)}}</div>
-              <div class="text-xs text-green-500 font-medium">PEN</div>
+              <div class="text-5xl font-black text-white tracking-tight shadow-text">{{formatearMoneda(vuelto)}}</div>
+              <div class="text-sm text-emerald-100 font-bold mt-1">SOLES PERUANOS</div>
             </div>
           </div>
         </div>
         
-        <!-- OBSERVACIONES MEJORADAS CON ACCESIBILIDAD -->
-        <div class="space-y-2">
+        <!-- OBSERVACIONES Premium -->
+        <div class="space-y-3">
           <label for="observacionesPago" 
-                 class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-            <i class="pi pi-comment text-blue-500" aria-hidden="true"></i>
+                 class="flex items-center gap-2.5 text-sm font-black text-gray-800 uppercase tracking-wide">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+              <i class="pi pi-comment text-white text-sm" aria-hidden="true"></i>
+            </div>
             Observaciones del Pago
-            <span class="text-gray-400 text-xs">(Opcional)</span>
+            <span class="text-gray-400 text-xs font-normal normal-case">(Opcional)</span>
+            <div class="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
           </label>
           <textarea 
             id="observacionesPago"
             pInputTextarea 
             [(ngModel)]="pagoActual.observaciones" 
-            placeholder="Agregar notas o comentarios adicionales..."
-            rows="2"
+            placeholder="Agregar notas o comentarios adicionales sobre este pago..."
+            rows="3"
             maxlength="200"
-            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 transition-colors resize-none focus:ring-custom"
+            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all resize-none bg-white shadow-sm hover:border-gray-400"
             [attr.aria-describedby]="'observaciones-help'"
           ></textarea>
-          <div id="observaciones-help" class="text-xs text-gray-500">
-            Máximo 200 caracteres. Incluya información adicional sobre el pago si es necesario.
+          <div id="observaciones-help" class="flex items-center justify-between text-xs text-gray-500">
+            <span class="flex items-center gap-1">
+              <i class="pi pi-info-circle"></i>
+              Información adicional sobre el pago
+            </span>
+            <span class="font-mono">{{pagoActual.observaciones?.length || 0}}/200</span>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- FOOTER MODERNO -->
+    <!-- FOOTER PREMIUM -->
     <ng-template pTemplate="footer">
-      <div class="flex justify-between items-center p-6 bg-gray-50 -mx-6 -mb-6 mt-6 border-t border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-gradient-to-r from-gray-50 via-white to-gray-50 -mx-6 -mb-6 mt-6 border-t-2 border-gray-200 shadow-inner">
         
-        <!-- RESUMEN RÁPIDO -->
-        <div class="flex items-center gap-4 text-sm">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span class="text-gray-600">Total:</span>
-            <span class="font-bold text-gray-900">{{formatearMoneda(totalVenta)}}</span>
+        <!-- RESUMEN RÁPIDO Premium -->
+        <div class="flex flex-wrap items-center gap-4 text-sm">
+          <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2 rounded-xl border border-indigo-200 shadow-sm">
+            <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+            <span class="text-gray-600 font-semibold">Total:</span>
+            <span class="font-black text-indigo-700">{{formatearMoneda(totalVenta)}}</span>
           </div>
           
-          <div *ngIf="montoPagado > 0" class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span class="text-gray-600">Recibido:</span>
-            <span class="font-bold text-gray-900">{{formatearMoneda(montoPagado)}}</span>
+          <div *ngIf="montoPagado > 0" class="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-2 rounded-xl border border-emerald-200 shadow-sm">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-gray-600 font-semibold">Recibido:</span>
+            <span class="font-black text-emerald-700">{{formatearMoneda(montoPagado)}}</span>
+          </div>
+          
+          <div *ngIf="vuelto > 0" class="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-2 rounded-xl border border-amber-200 shadow-sm">
+            <i class="pi pi-money-bill text-amber-600"></i>
+            <span class="text-gray-600 font-semibold">Vuelto:</span>
+            <span class="font-black text-amber-700">{{formatearMoneda(vuelto)}}</span>
           </div>
         </div>
         
-        <!-- BOTONES MEJORADOS -->
-        <div class="flex gap-3">
+        <!-- BOTONES PREMIUM -->
+        <div class="flex gap-3 w-full sm:w-auto">
           <p-button 
             label="Cancelar" 
             icon="pi pi-times" 
@@ -2476,17 +2255,17 @@
             [outlined]="true"
             [disabled]="procesandoPago"
             (click)="cancelarPago()"
-            styleClass="px-6 py-2 hover:scale-105 transition-transform"
+            styleClass="flex-1 sm:flex-initial px-6 py-2.5 hover:scale-105 transition-transform font-bold border-2 hover:border-gray-400"
           ></p-button>
           
           <p-button 
-            [label]="procesandoPago ? 'Procesando...' : 'Confirmar Venta'" 
-            [icon]="procesandoPago ? 'pi pi-spin pi-spinner' : 'pi pi-check'" 
+            [label]="procesandoPago ? 'Procesando...' : 'Confirmar Venta ✓'" 
+            [icon]="procesandoPago ? 'pi pi-spin pi-spinner' : 'pi pi-check-circle'" 
             severity="success"
             [loading]="procesandoPago"
             [disabled]="!isPagoValid()"
             (click)="procesarVenta()"
-            styleClass="px-8 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:scale-105 transition-all duration-300 shadow-lg"
+            styleClass="flex-1 sm:flex-initial px-8 py-2.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl font-black text-base"
           ></p-button>
         </div>
       </div>

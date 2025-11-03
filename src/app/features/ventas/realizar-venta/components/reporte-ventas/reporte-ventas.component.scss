@@ -9,6 +9,42 @@
   --shadow-empresa: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+// ✅ ANIMACIONES MODERNAS
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// ✅ SIDEBAR DE FILTROS CON SCROLL PERSONALIZADO
+.sidebar-filtros {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+}
+
 // ✅ HEADER EMPRESARIAL
 .header-empresarial {
   @apply bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-2xl;
@@ -765,4 +801,97 @@ button:focus,
 
 .shadow-xl {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== SCROLL HORIZONTAL SOLO EN PESTAÑAS (TABS) - MÓVIL ===== */
+
+::ng-deep .modern-tabs-scroll {
+  
+  /* Contenedor de navegación con scroll horizontal solo en móvil */
+  .p-tabview-nav-container {
+    position: relative;
+    
+    @media (max-width: 1024px) {
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE y Edge */
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch; /* iOS momentum */
+      
+      /* Ocultar scrollbar en Webkit */
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+  
+  /* Barra de navegación (pestañas) */
+  .p-tabview-nav {
+    border-bottom: 2px solid #e5e7eb;
+    
+    @media (max-width: 1024px) {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      width: max-content !important;
+      min-width: 100%;
+    }
+    
+    @media (min-width: 1024px) {
+      display: flex !important;
+      flex-wrap: wrap !important;
+    }
+  }
+  
+  /* Cada pestaña individual */
+  .p-tabview-nav-link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    
+    @media (max-width: 1024px) {
+      white-space: nowrap !important;
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem !important;
+      flex-shrink: 0 !important;
+    }
+    
+    @media (min-width: 1024px) {
+      padding: 1rem 1.5rem !important;
+      font-size: 0.9375rem !important;
+    }
+    
+    &:hover {
+      background-color: #f3f4f6;
+    }
+  }
+  
+  /* Pestaña activa */
+  .p-highlight .p-tabview-nav-link {
+    color: #2563eb !important;
+    border-bottom-color: #2563eb !important;
+    font-weight: 600;
+  }
+  
+  /* Contenido de las pestañas - SIN SCROLL, flujo normal */
+  .p-tabview-panels {
+    overflow: visible !important;
+    
+    .p-tabview-panel {
+      overflow: visible !important;
+    }
+  }
+}
+
+/* Efectos táctiles para móvil */
+@media (max-width: 1024px) {
+  ::ng-deep .modern-tabs-scroll .p-tabview-nav-link {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    
+    &:active {
+      transform: scale(0.98);
+      background-color: #e5e7eb;
+    }
+  }
 }

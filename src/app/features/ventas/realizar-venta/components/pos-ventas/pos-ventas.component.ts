@@ -13,7 +13,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MessageService, ConfirmationService, MenuItem } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { VentaRequest, VentaResponse } from '../../../../../core/models/venta.model';
 import { PagoRequest, PagoResponse } from '../../../../../core/models/pago.model';
 import { MetricaVenta } from '../metrics/metric-card.interface';
@@ -44,13 +44,6 @@ interface InventarioPOS extends Inventario {
   codigoCompleto: string;
   subtotal: number;
   displayLabel?: string;
-}
-
-// Agregar interfaz Tendencia
-interface Tendencia {
-  direccion: 'up' | 'down' | 'neutral';
-  porcentaje: number;
-  periodo: string;
 }
 
 // Interfaz para items del carrito (debe coincidir con el componente padre)
@@ -131,10 +124,6 @@ export class PosVentasComponent implements OnInit, OnDestroy {
   clientes: Cliente[] = [];
   productos: Producto[] = [];
   inventarios: Inventario[] = [];
-
-  
-   // Variables para menú contextual
- itemsMenuAcciones: MenuItem[] = [];
   
   // ==================== POS - NUEVA VENTA ====================
   nuevaVenta: VentaRequest = this.initNuevaVenta();
@@ -209,13 +198,15 @@ export class PosVentasComponent implements OnInit, OnDestroy {
 
   // Descuentos y crédito
   aplicarDescuento = false;
+  
+  // Número de venta fijo (no cambiante)
+  numeroVentaActual: string = '';
   porcentajeDescuento = 0;
   esVentaCredito = false;
   cuotasCredito = 1;
 
   // Modales
   showClientModal = false;
-  showKeyboardHelp = false;
   mostrarCarritoExpandido = false;
 
   // Cliente modal
@@ -238,31 +229,6 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     { label: 'Nota de Venta', value: 'NOTA_VENTA' },
     { label: 'Ticket', value: 'TICKET' }
   ];
-  
-  estadosVenta: OpcionSelect[] = [
-    { label: 'Todos', value: '' },
-    { label: 'Pendiente', value: 'PENDIENTE' },
-    { label: 'Pagada', value: 'PAGADA' },
-    { label: 'Anulada', value: 'ANULADA' },
-    { label: 'Devuelta', value: 'DEVUELTA' }
-  ];
-
-// ==================== PASOS DEL PROCESO ====================
-  pasos: MenuItem[] = [
-    { label: 'Cliente', icon: 'pi pi-user' },
-    { label: 'Productos', icon: 'pi pi-shopping-cart' },
-    { label: 'Pago', icon: 'pi pi-credit-card' },
-    { label: 'Comprobante', icon: 'pi pi-file' }
-  ];
-  pasoActual = 0;
-
-  tabsInfo = [
-    { icon: 'pi pi-shopping-cart', label: 'Punto de Venta', shortLabel: 'POS' },
-    { icon: 'pi pi-history', label: 'Historial de Ventas', shortLabel: 'Historial' },
-    { icon: 'pi pi-chart-bar', label: 'Reportes y Analytics', shortLabel: 'Reportes' },
-    { icon: 'pi pi-cog', label: 'Configuración', shortLabel: 'Config' }
-  ];
-
 
   getColorMetrica(color: 'success' | 'info' | 'warning' | 'danger' | 'secondary'): string {
     const colores: Record<'success' | 'info' | 'warning' | 'danger' | 'secondary', string> = {
@@ -273,16 +239,6 @@ export class PosVentasComponent implements OnInit, OnDestroy {
       'secondary': 'from-purple-500 to-purple-600'
     };
     return colores[color] || 'from-gray-500 to-gray-600';
-  }
-
-   // Métodos auxiliares
-   getIconoTendencia(tendencia: Tendencia): string {
-    switch(tendencia.direccion) {
-      case 'up': return 'pi-arrow-up';
-      case 'down': return 'pi-arrow-down';
-      case 'neutral': return 'pi-minus';
-      default: return 'pi-minus';
-    }
   }
   
   // Series de comprobantes
@@ -849,6 +805,8 @@ seriesComprobante: { label: string, value: string }[] = [
     this.loadPermissions();
     this.inicializarEstadoCaja(); // Nuevo método para gestionar estado de caja
     this.cargarDatosIniciales();
+    // Generar número de venta una sola vez al iniciar
+    this.generarNumeroVenta();
       // ✅ FORZAR CARGA DE PRODUCTOS DIRECTAMENTE
     setTimeout(() => {
       this.cargarProductos();
@@ -1429,11 +1387,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
       }
 
       switch (event.key) {
-        case 'F1':
-          event.preventDefault();
-          this.showKeyboardHelp = true;
-          this.cdr.markForCheck();
-          break;
         case 'F3':
           event.preventDefault();
           this.openClientModal();
@@ -1821,6 +1774,9 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
     this.carrito = [];
     this.calcularTotales();
     
+    // Generar nuevo número de venta para la siguiente transacción
+    this.generarNumeroVenta();
+    
     // 🗑️ Notificación moderna de carrito limpio
     this.toastService.info(
       '🗑️ Carrito Limpio',
@@ -1990,16 +1946,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
   editarCliente() {
     // Implementar edición de cliente
     console.log('Editar cliente');
-  }
-
-  verHistorialCliente() {
-    // Implementar historial de cliente
-    console.log('Ver historial');
-  }
-
-  getPromedioCompras(cliente: Cliente): number {
-    if (!cliente.compras || cliente.compras === 0) return 0;
-    return (cliente.totalCompras || 0) / cliente.compras;
   }
 
   // ✅ ESCÁNER
@@ -2272,6 +2218,9 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
         this.aplicarDescuento = false;
         this.porcentajeDescuento = 0;
         
+        // Generar nuevo número de venta para la siguiente transacción
+        this.generarNumeroVenta();
+        
         // Mantener el tipo de comprobante seleccionado para la próxima venta
         this.nuevaVenta = {
           clienteId: 0,
@@ -2383,13 +2332,23 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
   }).format(valor);
 }
 
-  getNumeroVenta(): string {
+  /**
+   * Genera un nuevo número de venta (se ejecuta solo una vez)
+   */
+  private generarNumeroVenta(): void {
     const fecha = new Date();
     const año = fecha.getFullYear().toString().slice(-2);
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     const dia = fecha.getDate().toString().padStart(2, '0');
     const numero = Math.floor(Math.random() * 9999) + 1;
-    return `${año}${mes}${dia}-${numero.toString().padStart(4, '0')}`;
+    this.numeroVentaActual = `${año}${mes}${dia}-${numero.toString().padStart(4, '0')}`;
+  }
+
+  /**
+   * Retorna el número de venta actual (ya generado)
+   */
+  getNumeroVenta(): string {
+    return this.numeroVentaActual || 'Cargando...';
   }
 
   getCurrentDateTime(): string {
@@ -2428,7 +2387,6 @@ enviarComprobantePorEmail(venta: VentaResponse): void {
 
   cerrarModales() {
     this.showClientModal = false;
-    this.showKeyboardHelp = false;
     this.cerrarScanner();
     this.cdr.markForCheck();
   }
@@ -2794,7 +2752,6 @@ nuevaVentaRapida(): void {
     
     // Resetear todos los estados del POS
     this.activeTabIndex = 1;
-    this.pasoActual = 0;
     this.procesandoPago = false;
     this.procesandoVenta = false;
     this.progressPercentage = 0;
@@ -2867,7 +2824,6 @@ nuevaVentaRapida(): void {
     this.calcularTotales();
     
     // Resetear estados de interfaz
-    this.pasoActual = 0;
     this.codigoBusqueda = '';
     this.cantidadInput = 1;
     
@@ -2895,30 +2851,26 @@ nuevaVentaRapida(): void {
   }
 
   private cargarClientesRecientes() {
-    this.clientesRecientes = [
-      {
-        id: 1,
-        nombres: 'Juan Carlos',
-        apellidos: 'García López',
-        dni: '12345678',
-        email: 'juan.garcia@email.com',
-        telefono: '987654321',
-        compras: 5,
-        totalCompras: 850.50,
-        ultimaCompra: '2025-07-10'
+    // Cargar los 2 clientes más recientes desde el backend
+    this.clienteService.listarActivos().subscribe({
+      next: (clientes) => {
+        // Ordenar por fecha de creación y tomar los 2 más recientes
+        this.clientesRecientes = clientes
+          .sort((a: any, b: any) => {
+            const fechaA = new Date(a.fechaCreacion || a.createdAt || 0).getTime();
+            const fechaB = new Date(b.fechaCreacion || b.createdAt || 0).getTime();
+            return fechaB - fechaA; // Más reciente primero
+          })
+          .slice(0, 2); // Solo los 2 primeros
+        
+        console.log('✅ Clientes recientes cargados:', this.clientesRecientes.length);
       },
-      {
-        id: 2,
-        nombres: 'María Elena',
-        apellidos: 'Rodríguez Silva',
-        dni: '87654321',
-        email: 'maria.rodriguez@email.com',
-        telefono: '987123456',
-        compras: 12,
-        totalCompras: 1250.75,
-        ultimaCompra: '2025-07-11'
+      error: (error) => {
+        console.error('❌ Error al cargar clientes recientes:', error);
+        this.toastService.error('Error', 'No se pudieron cargar los clientes recientes');
+        this.clientesRecientes = []; // Array vacío en caso de error
       }
-    ];
+    });
   }
 
   private cargarClientesFiltrados() {
@@ -4231,7 +4183,6 @@ nuevaVentaRapida(): void {
           // Cerrar el diálogo de pago
           this.pagoDialog = false;
           this.procesandoPago = false;
-          this.pasoActual = 3;
           
           // 🎯 MOSTRAR COMPROBANTE DE LA VENTA COMPLETADA
           this.mostrarComprobanteVentaCompletada(venta);

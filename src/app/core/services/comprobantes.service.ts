@@ -79,12 +79,11 @@ export class ComprobantesService {
    */
   obtenerComprobantePorVenta(ventaId: number): Observable<ComprobanteResponse> {
     const url = `${this.API_URL}/venta/${ventaId}`;
-    console.log('📄 Obteniendo comprobante para venta ID:', ventaId);
-    console.log('🔗 URL completa:', url);
+    console.log('📄 Buscando comprobante para venta ID:', ventaId);
     return this.http.get<ComprobanteResponse>(url)
       .pipe(
-        tap(response => console.log('✅ Comprobante de venta obtenido:', response)),
-        catchError(this.handleError)
+        tap(response => console.log('✅ Comprobante de venta encontrado:', response.id)),
+        catchError(error => this.handleErrorSilencioso(error, ventaId))
       );
   }
 
@@ -237,7 +236,61 @@ export class ComprobantesService {
     }
     
     console.error('❌ Error en ComprobantesService:', errorMessage, error);
-    return throwError(() => new Error(errorMessage));
+    
+    // Crear un objeto de error que preserve el código de estado
+    const customError: any = new Error(errorMessage);
+    customError.status = error.status;
+    customError.originalError = error;
+    
+    return throwError(() => customError);
+  }
+
+  /**
+   * Manejo silencioso de errores para búsqueda de comprobantes
+   * (El error 404 es esperado cuando el comprobante no existe aún)
+   */
+  private handleErrorSilencioso(error: HttpErrorResponse, ventaId: number): Observable<never> {
+    let errorMessage = 'Error desconocido en el servicio de comprobantes';
+    
+    if (error.error instanceof ErrorEvent) {
+      // Error del lado del cliente
+      errorMessage = `Error de cliente: ${error.error.message}`;
+    } else {
+      // Error del lado del servidor
+      switch (error.status) {
+        case 400:
+          errorMessage = 'Solicitud incorrecta - Verifique los datos enviados';
+          break;
+        case 401:
+          errorMessage = 'No autorizado - Inicie sesión nuevamente';
+          break;
+        case 403:
+          errorMessage = 'Acceso denegado - No tiene permisos suficientes';
+          break;
+        case 404:
+          // No mostrar como error, es parte del flujo normal
+          console.log(`ℹ️ Comprobante no existe para venta ${ventaId} - Se generará automáticamente`);
+          errorMessage = 'Comprobante no encontrado';
+          break;
+        case 500:
+          errorMessage = 'Error interno del servidor';
+          break;
+        default:
+          errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
+      }
+    }
+    
+    // Solo mostrar como error si NO es 404
+    if (error.status !== 404) {
+      console.error('❌ Error en ComprobantesService:', errorMessage, error);
+    }
+    
+    // Crear un objeto de error que preserve el código de estado
+    const customError: any = new Error(errorMessage);
+    customError.status = error.status;
+    customError.originalError = error;
+    
+    return throwError(() => customError);
   }
 
   /**
