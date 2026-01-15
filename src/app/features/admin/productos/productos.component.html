@@ -1,22 +1,27 @@
- <app-toast-notification 
-    [toasts]="toastService.getCurrentToasts()"
-    (toastDismissed)="onToastDismissed($event)"
-  ></app-toast-notification>
-  
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<app-toast-notification
+  [toasts]="toastService.getCurrentToasts()"
+  (toastDismissed)="onToastDismissed($event)"
+></app-toast-notification>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
 <!-- Header corporativo con mejor jerarquía visual -->
-<div class="mb-8">
-  <div class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 shadow-lg border border-slate-200/50">
-    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-6 lg:gap-8">
-      
+<div class="mb-6">
+  <!-- Header principal con gradiente sutil -->
+  <div class="relative overflow-hidden bg-white  dark:bg-slate-900 from-slate-50 via-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 shadow-lg border border-slate-200/50">
+    <div
+      class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-6 lg:gap-8"
+    >
       <!-- Título principal -->
       <div>
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-indigo-600 p-2 rounded-lg shadow-lg">
-            <i class="pi pi-shopping-bag text-white text-2xl" aria-hidden="true"></i>
+            <i
+              class="pi pi-shopping-bag text-white text-2xl"
+              aria-hidden="true"
+            ></i>
           </div>
-          
+
           <div>
             <h1 class="text-3xl font-bold text-gray-900 m-0">
               Catálogo de Productos
@@ -27,32 +32,45 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Métricas específicas para PRODUCTOS (sin inventario) -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-shrink-0">
-        
         <!-- Total productos en catálogo -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="productos && productos.length > 0">
+        <div
+          class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+          *ngIf="productos && productos.length > 0"
+        >
           <div class="flex items-center gap-3">
-            <div class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl transition-colors duration-300">
-              <i class="pi pi-list text-blue-600 text-xl" aria-hidden="true"></i>
+            <div
+              class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl transition-colors duration-300"
+            >
+              <i
+                class="pi pi-list text-blue-600 text-xl"
+                aria-hidden="true"
+              ></i>
             </div>
             <div class="flex flex-col">
               <div class="text-2xl lg:text-3xl font-bold text-blue-700">
                 {{ productos.length | number }}
               </div>
-              <div class="text-xs lg:text-sm text-slate-600 ">Productos</div>
+              <div class="text-xs lg:text-sm text-slate-600">Productos</div>
             </div>
           </div>
         </div>
-        
+
         <!-- Categorías únicas -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="productos && productos.length > 0">
+        <div
+          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+          *ngIf="productos && productos.length > 0"
+        >
           <div class="flex items-center gap-3">
-            <div class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl transition-colors duration-300">
-              <i class="pi pi-tags text-purple-600 text-xl" aria-hidden="true"></i>
+            <div
+              class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl transition-colors duration-300"
+            >
+              <i
+                class="pi pi-tags text-purple-600 text-xl"
+                aria-hidden="true"
+              ></i>
             </div>
             <div class="flex flex-col">
               <div class="text-2xl lg:text-3xl font-bold text-purple-700">
@@ -62,17 +80,26 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Rango de precios -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="productos && productos.length > 0">
+        <div
+          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+          *ngIf="productos && productos.length > 0"
+        >
           <div class="flex items-center gap-3">
-            <div class="bg-emerald-50 group-hover:bg-emerald-100 p-3 rounded-xl transition-colors duration-300">
-              <i class="pi pi-dollar text-emerald-600 text-xl" aria-hidden="true"></i>
+            <div
+              class="bg-emerald-50 group-hover:bg-emerald-100 p-3 rounded-xl transition-colors duration-300"
+            >
+              <i
+                class="pi pi-dollar text-emerald-600 text-xl"
+                aria-hidden="true"
+              ></i>
             </div>
             <div class="flex flex-col">
               <div class="text-lg lg:text-xl font-bold text-emerald-700">
-                {{ getPrecioMinimo() | currency:'S/. ':'symbol':'1.0-0' }} - {{ getPrecioMaximo() | currency:'S/. ':'symbol':'1.0-0' }}
+                {{ getPrecioMinimo() | currency : "S/. " : "symbol" : "1.0-0" }}
+                -
+                {{ getPrecioMaximo() | currency : "S/. " : "symbol" : "1.0-0" }}
               </div>
               <div class="text-xs lg:text-sm text-slate-600">Rango Precios</div>
             </div>
@@ -80,17 +107,28 @@
         </div>
 
         <!-- Precio promedio -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="productos && productos.length > 0">
+        <div
+          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+          *ngIf="productos && productos.length > 0"
+        >
           <div class="flex items-center gap-3">
-            <div class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl transition-colors duration-300">
-              <i class="pi pi-chart-bar text-orange-600 text-xl" aria-hidden="true"></i>
+            <div
+              class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl transition-colors duration-300"
+            >
+              <i
+                class="pi pi-chart-bar text-orange-600 text-xl"
+                aria-hidden="true"
+              ></i>
             </div>
             <div class="flex flex-col">
               <div class="text-2xl lg:text-3xl font-bold text-orange-700">
-                {{ getPrecioPromedio() | currency:'S/. ':'symbol':'1.0-0' }}
+                {{
+                  getPrecioPromedio() | currency : "S/. " : "symbol" : "1.0-0"
+                }}
               </div>
-              <div class="text-xs lg:text-sm text-slate-600">Precio Promedio</div>
+              <div class="text-xs lg:text-sm text-slate-600">
+                Precio Promedio
+              </div>
             </div>
           </div>
         </div>
@@ -101,27 +139,31 @@
 
 <!-- Toolbar híbrido optimizado -->
 <div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-8">
-  <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6">
-    
+  <div
+    class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6"
+  >
     <!-- Acciones principales -->
     <div class="flex flex-wrap gap-3">
       <!-- Botón principal -->
-      <p-button 
-        *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}" 
-        label="Nuevo Producto" 
-        icon="pi pi-plus" 
+      <p-button
+        *appHasPermission="{
+          module: 'productos',
+          permission: permissionTypes.CREATE
+        }"
+        label="Nuevo Producto"
+        icon="pi pi-plus"
         size="large"
         severity="info"
-        class="shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
+        class="shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
         (click)="openNew()"
         pTooltip="Agregar nuevo producto al catálogo"
       />
-      
+
       <!-- 🆕 Acciones masivas con dropdown -->
-      <p-splitButton 
+      <p-splitButton
         *ngIf="selectedProductos.length > 0"
-        [label]="'Acciones (' + selectedProductos.length + ')'" 
-        icon="pi pi-cog" 
+        [label]="'Acciones (' + selectedProductos.length + ')'"
+        icon="pi pi-cog"
         severity="secondary"
         size="large"
         [model]="accionesMasivas"
@@ -129,28 +171,31 @@
         (onClick)="accionPrincipalMasiva()"
         pTooltip="Acciones para productos seleccionados"
       />
-      
+
       <!-- Acciones secundarias -->
       <div class="flex gap-2">
-        <p-button 
-          label="Importar" 
-          icon="pi pi-upload" 
+        <p-button
+          label="Importar"
+          icon="pi pi-upload"
           severity="success"
           [outlined]="true"
           size="large"
-          class="shadow-md hover:shadow-lg transition-all duration-300" 
+          class="shadow-md hover:shadow-lg transition-all duration-300"
           (click)="importarProductos()"
           pTooltip="Importar productos desde Excel"
         />
-        
-        <p-button 
-          *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
-          icon="pi pi-trash" 
+
+        <p-button
+          *appHasPermission="{
+            module: 'productos',
+            permission: permissionTypes.DELETE
+          }"
+          icon="pi pi-trash"
           severity="danger"
           [outlined]="true"
           size="large"
-          class="shadow-md hover:shadow-lg transition-all duration-300" 
-          (click)="deleteSelectedProductos()" 
+          class="shadow-md hover:shadow-lg transition-all duration-300"
+          (click)="deleteSelectedProductos()"
           [disabled]="!selectedProductos.length"
           pTooltip="Eliminar productos seleccionados"
         />
@@ -163,10 +208,10 @@
       <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
         <i class="pi pi-filter text-slate-600"></i>
         <span class="text-sm font-medium text-slate-700">Filtro:</span>
-        <p-select 
-          [(ngModel)]="selectedFiltro" 
-          [options]="filtrosRapidos" 
-          optionLabel="label" 
+        <p-select
+          [(ngModel)]="selectedFiltro"
+          [options]="filtrosRapidos"
+          optionLabel="label"
           optionValue="value"
           placeholder="Todos"
           class="w-36"
@@ -178,10 +223,10 @@
       <!-- Selector de vista -->
       <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
         <i class="pi pi-eye text-slate-600"></i>
-        <p-selectButton 
-          [(ngModel)]="currentView" 
-          [options]="viewOptions" 
-          optionLabel="label" 
+        <p-selectButton
+          [(ngModel)]="currentView"
+          [options]="viewOptions"
+          optionLabel="label"
           optionValue="value"
           size="small"
         />
@@ -189,20 +234,20 @@
 
       <!-- Utilidades -->
       <div class="flex gap-2">
-        <p-button 
-          icon="pi pi-refresh" 
-          severity="secondary" 
+        <p-button
+          icon="pi pi-refresh"
+          severity="secondary"
           [outlined]="true"
           [rounded]="true"
           size="large"
           pTooltip="Actualizar datos"
           class="shadow-md hover:shadow-lg transition-all duration-300"
-          (click)="loadProductos()" 
+          (click)="loadProductos()"
           [loading]="loading"
         />
-        <p-button 
-          icon="pi pi-download" 
-          severity="success" 
+        <p-button
+          icon="pi pi-download"
+          severity="success"
           [outlined]="true"
           [rounded]="true"
           size="large"
@@ -218,13 +263,20 @@
 
 <!-- Tabla con diseño más empresarial -->
 <div *ngIf="currentView === 'table'" class="mb-8">
-  <div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden">
+  <div
+    class="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden"
+  >
     <p-table
       #dt
       [value]="productosFiltrados"
       [rows]="15"
       [paginator]="true"
-      [globalFilterFields]="['nombre', 'descripcion', 'categoria.nombre', 'precio']"
+      [globalFilterFields]="[
+        'nombre',
+        'descripcion',
+        'categoria.nombre',
+        'precio'
+      ]"
       [totalRecords]="productosFiltrados.length"
       [(selection)]="selectedProductos"
       [rowHover]="true"
@@ -240,37 +292,44 @@
       <!-- Caption corporativo -->
       <ng-template pTemplate="caption">
         <div class="bg-gradient-to-r from-slate-50 to-blue-50 p-6">
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div
+            class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+          >
             <div class="flex items-center gap-4">
-              <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl">
+              <div
+                class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl"
+              >
                 <i class="pi pi-list text-white text-xl"></i>
               </div>
               <div>
-                <h3 class="text-2xl font-bold text-slate-800 mb-1">Catálogo de Productos</h3>
-                <p class="text-slate-600" *ngIf="productosFiltrados?.length">
-                  {{productosFiltrados.length}} de {{productos.length}} productos
+                <h3 class="text-2xl font-bold text-slate-800 mb-1">
+                  Catálogo de Productos
+                </h3>
+                <p class="text-slate-600" *ngIf="productosFiltrados.length">
+                  {{ productosFiltrados.length }} de
+                  {{ productos.length }} productos
                 </p>
               </div>
             </div>
-            
+
             <!-- Búsqueda global mejorada -->
             <div class="flex items-center gap-3">
               <div class="relative">
                 <p-iconfield class="w-80">
                   <p-inputicon styleClass="pi pi-search" />
-                  <input 
-                    pInputText 
-                    type="text" 
-                    (input)="onGlobalFilter(dt, $event)" 
-                    placeholder="Buscar en todos los campos..." 
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter(dt, $event)"
+                    placeholder="Buscar en todos los campos..."
                     class="w-full h-12 pl-10 rounded-xl border-slate-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
                   />
                 </p-iconfield>
               </div>
-              
+
               <!-- Filtros avanzados toggle -->
-              <p-button 
-                icon="pi pi-sliders-h" 
+              <p-button
+                icon="pi pi-sliders-h"
                 [outlined]="true"
                 severity="secondary"
                 size="large"
@@ -289,48 +348,60 @@
           <th style="width: 3rem" class="text-center">
             <p-tableHeaderCheckbox />
           </th>
-          <th style="width:6rem" class="text-center">
-            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
+          <th style="width: 6rem" class="text-center">
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+            >
               <i class="pi pi-image text-blue-600"></i>
               <span>Imagen</span>
             </div>
           </th>
-          <th pSortableColumn="codigo" style="min-width:10rem">
+          <th pSortableColumn="codigo" style="min-width: 10rem">
             <div class="flex items-center gap-2 font-bold text-slate-700">
               <i class="pi pi-barcode text-indigo-600"></i>
               <span>Código</span>
               <p-sortIcon field="codigo" />
             </div>
           </th>
-          <th pSortableColumn="nombre" style="min-width:20rem">
+          <th pSortableColumn="nombre" style="min-width: 20rem">
             <div class="flex items-center gap-2 font-bold text-slate-700">
               <i class="pi pi-shopping-bag text-emerald-600"></i>
               <span>Producto</span>
               <p-sortIcon field="nombre" />
             </div>
           </th>
-          <th pSortableColumn="marca" style="min-width:12rem">
+          <th pSortableColumn="marca" style="min-width: 12rem">
             <div class="flex items-center gap-2 font-bold text-slate-700">
               <i class="pi pi-building text-orange-600"></i>
               <span>Marca</span>
               <p-sortIcon field="marca" />
             </div>
           </th>
-          <th pSortableColumn="precioVenta" style="min-width:15rem" class="text-right">
-            <div class="flex items-center justify-end gap-2 font-bold text-slate-700">
+          <th
+            pSortableColumn="precioVenta"
+            style="min-width: 15rem"
+            class="text-right"
+          >
+            <div
+              class="flex items-center justify-end gap-2 font-bold text-slate-700"
+            >
               <i class="pi pi-dollar text-emerald-600"></i>
               <span>Precios</span>
               <p-sortIcon field="precioVenta" />
             </div>
           </th>
-          <th style="min-width:10rem" class="text-center">
-            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
+          <th style="min-width: 10rem" class="text-center">
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+            >
               <i class="pi pi-chart-line text-purple-600"></i>
               <span>Rentabilidad</span>
             </div>
           </th>
-          <th style="min-width:12rem" class="text-center">
-            <div class="flex items-center justify-center gap-2 font-bold text-slate-700">
+          <th style="min-width: 12rem" class="text-center">
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+            >
               <i class="pi pi-cog text-slate-600"></i>
               <span>Acciones</span>
             </div>
@@ -340,164 +411,225 @@
 
       <!-- Body optimizado -->
       <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
-        <tr class="hover:bg-blue-25 transition-all duration-200 border-b border-slate-100" 
-            [class.bg-slate-25]="rowIndex % 2 === 0">
+        <tr
+          class="hover:bg-blue-25 transition-all duration-200 border-b border-slate-100"
+          [class.bg-slate-25]="rowIndex % 2 === 0"
+        >
           <td class="text-center">
             <p-tableCheckbox [value]="producto" />
           </td>
-          
+
           <!-- Imagen profesional -->
           <td class="text-center">
             <div class="relative group">
-              <div class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-slate-200 group-hover:border-blue-400 transition-all duration-300">
-                <img 
-                  [src]="getImageUrl(producto)" 
+              <div
+                class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-slate-200 group-hover:border-blue-400 transition-all duration-300"
+              >
+                <img
+                  [src]="getImageUrl(producto)"
                   [alt]="producto.nombre"
                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   (error)="onImageError($event)"
                 />
               </div>
               <!-- Overlay con zoom -->
-              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div
+                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
+              >
                 <i class="pi pi-search-plus text-white text-lg"></i>
               </div>
             </div>
           </td>
-          
+
           <!-- Código mejorado -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="w-2 h-8 bg-gradient-to-b from-indigo-500 to-blue-600 rounded-full"></div>
+              <div
+                class="w-2 h-8 bg-gradient-to-b from-indigo-500 to-blue-600 rounded-full"
+              ></div>
               <div>
-                <p-tag 
-                  [value]="producto.codigo" 
-                  severity="contrast" 
+                <p-tag
+                  [value]="producto.codigo"
+                  severity="contrast"
                   class="font-mono text-sm font-bold"
                 />
               </div>
             </div>
           </td>
-          
+
           <!-- Producto con información rica -->
           <td>
             <div class="py-3 px-2">
               <!-- Nombre del producto -->
-              <div class="font-bold text-slate-900 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+              <div
+                class="font-bold text-slate-900 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors"
+              >
                 {{ producto.nombre }}
               </div>
-              
+
               <!-- Información principal -->
               <div class="flex items-center gap-3 text-sm text-slate-600 mb-3">
                 <!-- Modelo -->
-                <div class="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md">
+                <div
+                  class="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md"
+                >
                   <i class="pi pi-tag text-blue-500 text-xs"></i>
-                  <span class="font-medium text-blue-700">{{ producto.modelo }}</span>
+                  <span class="font-medium text-blue-700">{{
+                    producto.modelo
+                  }}</span>
                 </div>
-                
+
                 <!-- Separador -->
                 <div class="w-1 h-1 bg-slate-300 rounded-full"></div>
-                
+
                 <!-- Categoría (si existe) -->
-                <div class="flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-md" *ngIf="producto.categoria">
+                <div
+                  class="flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-md"
+                  *ngIf="producto.categoria"
+                >
                   <i class="pi pi-folder text-emerald-500 text-xs"></i>
-                  <span class="font-medium text-emerald-700">{{ producto.categoria }}</span>
+                  <span class="font-medium text-emerald-700">{{
+                    producto.categoria
+                  }}</span>
                 </div>
               </div>
-              
+
               <!-- Género con badge styled -->
               <div class="mb-3" *ngIf="producto.genero">
-                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
-                      [ngClass]="{
-                        'bg-blue-100 text-blue-800': producto.genero === 'hombre',
-                        'bg-pink-100 text-pink-800': producto.genero === 'mujer',
-                        'bg-purple-100 text-purple-800': producto.genero === 'unisex',
-                        'bg-gray-100 text-gray-800': !['hombre', 'mujer', 'unisex'].includes(producto.genero?.toLowerCase())
-                      }">
-                  <i class="pi" 
-                     [ngClass]="{
-                       'pi-mars': producto.genero === 'hombre',
-                       'pi-venus': producto.genero === 'mujer', 
-                       'pi-circle': producto.genero === 'unisex',
-                       'pi-question': !['hombre', 'mujer', 'unisex'].includes(producto.genero?.toLowerCase())
-                     }"></i>
+                <span
+                  class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': producto.genero === 'hombre',
+                    'bg-pink-100 text-pink-800': producto.genero === 'mujer',
+                    'bg-purple-100 text-purple-800':
+                      producto.genero === 'unisex',
+                    'bg-gray-100 text-gray-800': ![
+                      'hombre',
+                      'mujer',
+                      'unisex'
+                    ].includes(producto.genero?.toLowerCase())
+                  }"
+                >
+                  <i
+                    class="pi"
+                    [ngClass]="{
+                      'pi-mars': producto.genero === 'hombre',
+                      'pi-venus': producto.genero === 'mujer',
+                      'pi-circle': producto.genero === 'unisex',
+                      'pi-question': !['hombre', 'mujer', 'unisex'].includes(
+                        producto.genero?.toLowerCase()
+                      )
+                    }"
+                  ></i>
                   {{ producto.genero | titlecase }}
                 </span>
               </div>
-              
+
               <!-- Descripción -->
-              <div class="text-xs text-slate-600 bg-slate-50 border-l-3 border-slate-200 pl-3 py-2 rounded-r-lg line-clamp-3 italic" 
-                   *ngIf="producto.descripcion && producto.descripcion.trim()">
+              <div
+                class="text-xs text-slate-600 bg-slate-50 border-l-3 border-slate-200 pl-3 py-2 rounded-r-lg line-clamp-3 italic"
+                *ngIf="producto.descripcion && producto.descripcion.trim()"
+              >
                 <i class="pi pi-info-circle text-slate-400 mr-1"></i>
                 {{ producto.descripcion }}
               </div>
-              
+
               <!-- Placeholder cuando no hay descripción -->
-              <div class="text-xs text-slate-400 italic" 
-                   *ngIf="!producto.descripcion || !producto.descripcion.trim()">
+              <div
+                class="text-xs text-slate-400 italic"
+                *ngIf="!producto.descripcion || !producto.descripcion.trim()"
+              >
                 <i class="pi pi-minus-circle mr-1"></i>
                 Sin descripción
               </div>
             </div>
           </td>
-          
+
           <!-- Marca con logo -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center">
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center"
+              >
                 <i class="pi pi-building text-orange-600"></i>
               </div>
               <div>
-                <div class="font-semibold text-slate-800">{{ producto.marca }}</div>
+                <div class="font-semibold text-slate-800">
+                  {{ producto.marca }}
+                </div>
                 <div class="text-xs text-slate-500">Marca registrada</div>
               </div>
             </div>
           </td>
-          
+
           <!-- Precios con análisis financiero -->
           <td class="text-right">
-            <div class="bg-gradient-to-br from-slate-50 to-emerald-50 rounded-xl p-4 border border-slate-200/50">
+            <div
+              class="bg-gradient-to-br from-slate-50 to-emerald-50 rounded-xl p-4 border border-slate-200/50"
+            >
               <div class="space-y-2">
                 <div class="flex justify-between items-center text-sm">
                   <span class="text-slate-600 font-medium">Compra:</span>
                   <span class="text-emerald-700 font-bold">
-                    {{ producto.precioCompra | currency:'S/. ':'symbol':'1.2-2' }}
+                    {{
+                      producto.precioCompra
+                        | currency : "S/. " : "symbol" : "1.2-2"
+                    }}
                   </span>
                 </div>
                 <div class="border-t border-slate-200 pt-2">
                   <div class="flex justify-between items-center">
-                    <span class="text-slate-600 font-medium text-sm">Venta:</span>
+                    <span class="text-slate-600 font-medium text-sm"
+                      >Venta:</span
+                    >
                     <span class="text-blue-700 font-bold text-lg">
-                      {{ producto.precioVenta | currency:'S/. ':'symbol':'1.2-2' }}
+                      {{
+                        producto.precioVenta
+                          | currency : "S/. " : "symbol" : "1.2-2"
+                      }}
                     </span>
                   </div>
                 </div>
-                <div class="bg-emerald-50 rounded-lg p-2 border-t border-slate-200">
+                <div
+                  class="bg-emerald-50 rounded-lg p-2 border-t border-slate-200"
+                >
                   <div class="flex justify-between items-center text-xs">
                     <span class="text-emerald-700 font-medium">Ganancia:</span>
                     <span class="text-emerald-800 font-bold">
-                      {{ (producto.precioVenta - producto.precioCompra) | currency:'S/. ':'symbol':'1.2-2' }}
+                      {{
+                        producto.precioVenta - producto.precioCompra
+                          | currency : "S/. " : "symbol" : "1.2-2"
+                      }}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
           </td>
-          
+
           <!-- Rentabilidad con indicadores -->
           <td class="text-center">
             <div class="space-y-2">
               <div class="flex justify-center">
-                <p-tag 
-                  [value]="(calcularMargenGanancia(producto) | number:'1.0-1') + '%'"
-                  [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
+                <p-tag
+                  [value]="
+                    (calcularMargenGanancia(producto) | number : '1.0-1') + '%'
+                  "
+                  [severity]="
+                    getMargenSeverity(calcularMargenGanancia(producto))
+                  "
                   class="shadow-sm font-bold"
                 />
               </div>
               <div class="w-full bg-slate-200 rounded-full h-2">
-                <div 
+                <div
                   class="h-2 rounded-full transition-all duration-500"
-                  [ngClass]="getMargenColorClass(calcularMargenGanancia(producto))"
-                  [style.width.%]="Math.min(calcularMargenGanancia(producto), 100)"
+                  [ngClass]="
+                    getMargenColorClass(calcularMargenGanancia(producto))
+                  "
+                  [style.width.%]="
+                    Math.min(calcularMargenGanancia(producto), 100)
+                  "
                 ></div>
               </div>
               <div class="text-xs text-slate-500">
@@ -505,13 +637,13 @@
               </div>
             </div>
           </td>
-          
+
           <!-- Acciones mejoradas -->
           <td>
             <div class="flex gap-2 justify-center">
-              <p-button 
-                icon="pi pi-eye" 
-                [rounded]="true" 
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
                 [outlined]="true"
                 severity="info"
                 size="small"
@@ -519,10 +651,13 @@
                 class="hover:shadow-lg transition-all duration-300"
                 (click)="verDetallesProducto(producto)"
               />
-              <p-button 
-                *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
-                [rounded]="true" 
+              <p-button
+                *appHasPermission="{
+                  module: 'productos',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
+                [rounded]="true"
                 [outlined]="true"
                 severity="danger"
                 size="small"
@@ -530,9 +665,9 @@
                 class="hover:shadow-lg transition-all duration-300"
                 (click)="editProducto(producto)"
               />
-              <p-button 
-                icon="pi pi-copy" 
-                [rounded]="true" 
+              <p-button
+                icon="pi pi-copy"
+                [rounded]="true"
                 [outlined]="true"
                 severity="secondary"
                 size="small"
@@ -540,11 +675,14 @@
                 class="hover:shadow-lg transition-all duration-300"
                 (click)="duplicarProducto(producto)"
               />
-              <p-button 
-                *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
-                icon="pi pi-trash" 
-                severity="danger" 
-                [rounded]="true" 
+              <p-button
+                *appHasPermission="{
+                  module: 'productos',
+                  permission: permissionTypes.DELETE
+                }"
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
                 [outlined]="true"
                 size="small"
                 pTooltip="Eliminar permanentemente"
@@ -562,25 +700,30 @@
 <!-- Vista de Cards Premium Mejorada -->
 <div *ngIf="currentView === 'cards'" class="mb-6">
   <!-- 🆕 Grid mejorado con CSS Grid nativo -->
-  <div 
-    class="cards-grid gap-4 lg:gap-6" 
-    *ngIf="!loading; else loadingCards"
-  >
+  <div class="cards-grid gap-4 lg:gap-6" *ngIf="!loading; else loadingCards">
     <!-- Card de agregar producto -->
-    <div 
+    <div
       class="card-item"
-      *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}"
+      *appHasPermission="{
+        module: 'productos',
+        permission: permissionTypes.CREATE
+      }"
     >
-      <button 
+      <button
         type="button"
         class="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
         (click)="openNew()"
         aria-label="Agregar nuevo producto al catálogo"
       >
-        <div class="bg-indigo-100 p-4 lg:p-6 rounded-full mb-3 lg:mb-4 group-hover:bg-indigo-200 transition-colors duration-300">
+        <div
+          class="bg-indigo-100 p-4 lg:p-6 rounded-full mb-3 lg:mb-4 group-hover:bg-indigo-200 transition-colors duration-300"
+        >
           <i class="pi pi-plus text-2xl lg:text-3xl text-indigo-600"></i>
         </div>
-        <span class="text-lg lg:text-xl font-semibold text-gray-700 mb-2 text-center">Agregar Producto</span>
+        <span
+          class="text-lg lg:text-xl font-semibold text-gray-700 mb-2 text-center"
+          >Agregar Producto</span
+        >
         <span class="text-sm text-gray-500 text-center px-2">
           Clic para crear un nuevo producto en tu catálogo
         </span>
@@ -588,27 +731,31 @@
     </div>
 
     <!-- Cards de productos -->
-    <div 
-      class="card-item" 
+    <div
+      class="card-item"
       *ngFor="let producto of productosFiltrados; trackBy: trackByProducto"
     >
       <!-- Tu card de producto existente (sin cambios en el contenido) -->
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group">
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
+      >
         <!-- Header de imagen con overlay -->
         <div class="relative overflow-hidden">
-          <img 
-            [src]="getImageUrl(producto)" 
+          <img
+            [src]="getImageUrl(producto)"
             [alt]="producto.nombre"
             class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
             (error)="onImageError($event)"
             loading="lazy"
           />
-          
+
           <!-- Overlay con acciones rápidas -->
-          <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
+          >
             <div class="flex gap-2">
-              <p-button 
-                icon="pi pi-eye" 
+              <p-button
+                icon="pi pi-eye"
                 [rounded]="true"
                 size="small"
                 severity="info"
@@ -616,9 +763,12 @@
                 pTooltip="Ver detalles"
                 (click)="verDetallesProducto(producto)"
               />
-              <p-button 
-                *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
+              <p-button
+                *appHasPermission="{
+                  module: 'productos',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
                 [rounded]="true"
                 size="small"
                 class="bg-white bg-opacity-90 hover:bg-opacity-100"
@@ -627,43 +777,49 @@
               />
             </div>
           </div>
-          
+
           <!-- Tags superiores -->
           <div class="absolute top-3 left-3">
-            <p-tag 
+            <p-tag
               [value]="producto.codigo"
               severity="contrast"
               class="bg-white bg-opacity-90 text-gray-800 font-mono text-xs shadow-sm"
             />
           </div>
-          
+
           <div class="absolute top-3 right-3">
-            <p-tag 
-              [value]="(calcularMargenGanancia(producto) | number:'1.0-1') + '%'"
+            <p-tag
+              [value]="
+                (calcularMargenGanancia(producto) | number : '1.0-1') + '%'
+              "
               [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
               [icon]="getMargenIconClass(calcularMargenGanancia(producto))"
               class="shadow-sm"
             />
           </div>
         </div>
-        
+
         <!-- Contenido de la card (resto igual que tienes) -->
         <div class="p-5">
           <!-- Título y marca -->
           <div class="mb-4">
-            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">
-              {{producto.nombre}}
+            <h3
+              class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]"
+            >
+              {{ producto.nombre }}
             </h3>
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <i class="pi pi-building text-blue-500"></i>
-              <span class="font-medium">{{producto.marca}}</span>
+              <span class="font-medium">{{ producto.marca }}</span>
               <span class="text-gray-400" *ngIf="producto.modelo">•</span>
-              <span *ngIf="producto.modelo">{{producto.modelo}}</span>
+              <span *ngIf="producto.modelo">{{ producto.modelo }}</span>
             </div>
           </div>
-          
+
           <!-- Precios con diseño moderno -->
-          <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4">
+          <div
+            class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4"
+          >
             <div class="space-y-3">
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -671,7 +827,10 @@
                   <span class="text-sm font-medium text-gray-700">Compra</span>
                 </div>
                 <span class="text-green-600 font-bold">
-                  {{producto.precioCompra | currency:'S/. ':'symbol':'1.2-2'}}
+                  {{
+                    producto.precioCompra
+                      | currency : "S/. " : "symbol" : "1.2-2"
+                  }}
                 </span>
               </div>
               <div class="flex justify-between items-center">
@@ -680,38 +839,51 @@
                   <span class="text-sm font-medium text-gray-700">Venta</span>
                 </div>
                 <span class="text-blue-700 font-bold text-lg">
-                  {{producto.precioVenta | currency:'S/. ':'symbol':'1.2-2'}}
+                  {{
+                    producto.precioVenta
+                      | currency : "S/. " : "symbol" : "1.2-2"
+                  }}
                 </span>
               </div>
               <!-- Ganancia por unidad -->
               <div class="pt-2 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                  <span class="text-xs font-medium text-gray-600">Ganancia unitaria</span>
+                  <span class="text-xs font-medium text-gray-600"
+                    >Ganancia unitaria</span
+                  >
                   <span class="text-emerald-600 font-bold text-sm">
-                    {{(producto.precioVenta - producto.precioCompra) | currency:'S/. ':'symbol':'1.2-2'}}
+                    {{
+                      producto.precioVenta - producto.precioCompra
+                        | currency : "S/. " : "symbol" : "1.2-2"
+                    }}
                   </span>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <!-- Descripción -->
           <div *ngIf="producto.descripcion" class="mb-4">
             <p class="text-sm text-gray-600 line-clamp-3">
-              {{producto.descripcion}}
+              {{ producto.descripcion }}
             </p>
           </div>
-          
+
           <!-- Footer con fecha y acciones -->
-          <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+          <div
+            class="flex justify-between items-center pt-4 border-t border-gray-100"
+          >
             <div class="text-xs text-gray-500" *ngIf="producto.fechaCreacion">
               <i class="pi pi-calendar mr-1"></i>
-              {{producto.fechaCreacion | date:'dd/MM/yyyy'}}
+              {{ producto.fechaCreacion | date : "dd/MM/yyyy" }}
             </div>
             <div class="flex gap-2">
-              <p-button 
-                *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
+              <p-button
+                *appHasPermission="{
+                  module: 'productos',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
                 [outlined]="true"
                 size="small"
                 [rounded]="true"
@@ -719,10 +891,13 @@
                 class="hover:shadow-md transition-shadow duration-300"
                 (click)="editProducto(producto)"
               />
-              <p-button 
-                *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}"
-                icon="pi pi-trash" 
-                severity="danger" 
+              <p-button
+                *appHasPermission="{
+                  module: 'productos',
+                  permission: permissionTypes.DELETE
+                }"
+                icon="pi pi-trash"
+                severity="danger"
                 [outlined]="true"
                 size="small"
                 [rounded]="true"
@@ -736,12 +911,14 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Loading cards -->
   <ng-template #loadingCards>
     <div class="cards-grid gap-4 lg:gap-6">
-      <div class="card-item" *ngFor="let i of [1,2,3,4,5,6,7,8]">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="card-item" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]">
+        <div
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        >
           <div class="w-full h-56 bg-gray-200 animate-pulse"></div>
           <div class="p-5 space-y-3">
             <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -755,12 +932,12 @@
 </div>
 
 <!-- Diálogo premium para crear/editar producto -->
-<p-dialog 
-  [(visible)]="productoDialog" 
-  [style]="{width: '95vw', maxWidth: '1000px', height: '90vh'}" 
-  [modal]="true" 
+<p-dialog
+  [(visible)]="productoDialog"
+  [style]="{ width: '95vw', maxWidth: '1000px', height: '90vh' }"
+  [modal]="true"
   (onHide)="hideDialog()"
-  [contentStyle]="{'padding':'0', 'overflow': 'hidden', 'height': '90vh'}"
+  [contentStyle]="{ padding: '0', overflow: 'hidden', height: '90vh' }"
   [closable]="!loading"
   styleClass="zapatos-dialog-clean"
   [draggable]="false"
@@ -772,13 +949,12 @@
     <div class="dialog-scrollable-container">
       <!-- 🎨 Container principal limpio -->
       <div class="dialog-container-clean">
-        
         <!-- 🆕 Header personalizado integrado (sin el header del dialog) -->
         <div class="custom-dialog-header" *ngIf="!editMode">
           <div class="header-content">
             <div class="header-close-btn">
-              <p-button 
-                icon="pi pi-times" 
+              <p-button
+                icon="pi pi-times"
                 [rounded]="true"
                 [text]="true"
                 size="small"
@@ -795,7 +971,10 @@
               </div>
               <div class="header-text">
                 <h3 class="header-title">Agregar Nuevo Calzado</h3>
-                <p class="header-subtitle">Completa la información del producto para tu catálogo de zapatos</p>
+                <p class="header-subtitle">
+                  Completa la información del producto para tu catálogo de
+                  zapatos
+                </p>
               </div>
             </div>
           </div>
@@ -805,8 +984,8 @@
         <div class="custom-dialog-header-edit" *ngIf="editMode">
           <div class="header-content">
             <div class="header-close-btn">
-              <p-button 
-                icon="pi pi-times" 
+              <p-button
+                icon="pi pi-times"
                 [rounded]="true"
                 [text]="true"
                 size="small"
@@ -826,12 +1005,12 @@
                 <div class="header-meta">
                   <span class="meta-item">
                     <i class="pi pi-tag"></i>
-                    ID: {{producto.id}}
+                    ID: {{ producto.id }}
                   </span>
                   <span class="meta-divider">•</span>
                   <span class="meta-item">
                     <i class="pi pi-barcode"></i>
-                    {{producto.codigo}}
+                    {{ producto.codigo }}
                   </span>
                 </div>
               </div>
@@ -842,7 +1021,6 @@
         <!-- 🎨 Contenido principal con mejor layout -->
         <div class="dialog-body">
           <div class="grid grid-cols-12 gap-6">
-            
             <!-- 📸 Sección de imagen premium -->
             <div class="col-span-12 lg:col-span-4">
               <div class="image-section">
@@ -855,27 +1033,29 @@
                     <p>Foto principal del producto</p>
                   </div>
                 </div>
-                
+
                 <div class="image-container">
                   <div class="image-wrapper">
-                    <img 
-                      [src]="getImageUrl(producto)" 
-                      [alt]="producto.nombre || 'Calzado'" 
+                    <img
+                      [src]="getImageUrl(producto)"
+                      [alt]="producto.nombre || 'Calzado'"
                       class="product-image"
                       (error)="onImageError($event)"
                     />
                     <div class="image-overlay">
                       <div class="overlay-content">
                         <i class="pi pi-search-plus text-white text-2xl"></i>
-                        <span class="text-white text-sm mt-2">Vista previa</span>
+                        <span class="text-white text-sm mt-2"
+                          >Vista previa</span
+                        >
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="upload-section">
-                    <p-fileUpload 
-                      mode="basic" 
-                      accept="image/*" 
+                    <p-fileUpload
+                      mode="basic"
+                      accept="image/*"
                       [maxFileSize]="2000000"
                       chooseLabel="Cambiar Imagen"
                       chooseIcon="pi pi-camera"
@@ -885,7 +1065,7 @@
                       styleClass="upload-button"
                       pTooltip="Máximo 2MB, formatos: JPG, PNG, GIF"
                     />
-                    
+
                     <div class="upload-tips">
                       <div class="tip-item">
                         <i class="pi pi-info-circle text-emerald-500"></i>
@@ -904,15 +1084,14 @@
             <!-- 📝 Sección de detalles premium -->
             <div class="col-span-12 lg:col-span-8">
               <div class="details-section">
-                
                 <!-- 🆕 Configuración de código premium -->
                 <div class="form-section">
                   <div class="auto-code-card">
                     <div class="auto-code-header">
                       <div class="flex items-center gap-3">
-                        <p-checkbox 
-                          [(ngModel)]="generarCodigoAuto" 
-                          [binary]="true" 
+                        <p-checkbox
+                          [(ngModel)]="generarCodigoAuto"
+                          [binary]="true"
                           inputId="generarCodigo"
                           [disabled]="editMode"
                           styleClass="custom-checkbox"
@@ -924,13 +1103,23 @@
                       </div>
                     </div>
                     <div class="auto-code-body">
-                      <div class="code-preview" *ngIf="!editMode && generarCodigoAuto">
+                      <div
+                        class="code-preview"
+                        *ngIf="!editMode && generarCodigoAuto"
+                      >
                         <i class="pi pi-check-circle text-emerald-500"></i>
-                        <span>Se generará formato: MARCA-MODELO-AÑO (ej: NIKE-AIRMAX-2024)</span>
+                        <span
+                          >Se generará formato: MARCA-MODELO-AÑO (ej:
+                          NIKE-AIRMAX-2024)</span
+                        >
                       </div>
                       <div class="code-warning" *ngIf="editMode">
-                        <i class="pi pi-exclamation-triangle text-amber-500"></i>
-                        <span>El código no se puede cambiar en modo edición</span>
+                        <i
+                          class="pi pi-exclamation-triangle text-amber-500"
+                        ></i>
+                        <span
+                          >El código no se puede cambiar en modo edición</span
+                        >
                       </div>
                     </div>
                   </div>
@@ -938,7 +1127,6 @@
 
                 <!-- 🎨 Grid de campos principales -->
                 <div class="form-grid">
-                  
                   <!-- Código -->
                   <div class="form-field">
                     <label for="codigo" class="field-label">
@@ -949,32 +1137,47 @@
                       </div>
                     </label>
                     <div class="input-wrapper">
-                      <input 
-                        pInputText 
-                        id="codigo" 
-                        [(ngModel)]="producto.codigo" 
+                      <input
+                        pInputText
+                        id="codigo"
+                        [(ngModel)]="producto.codigo"
                         placeholder="Ej: NIKE-AM90-2024, ADIDAS-BOOST-001..."
                         [disabled]="generarCodigoAuto || editMode"
                         class="form-input"
-                        [ngClass]="{'input-error': submitted && !generarCodigoAuto && !producto.codigo?.trim()}"
+                        [ngClass]="{
+                          'input-error':
+                            submitted &&
+                            !generarCodigoAuto &&
+                            !producto.codigo?.trim()
+                        }"
                       />
                       <div class="input-icon">
                         <i class="pi pi-barcode"></i>
                       </div>
                     </div>
-                    
+
                     <div class="field-feedback">
-                      <div class="error-message" *ngIf="submitted && !generarCodigoAuto && !producto.codigo?.trim()">
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          submitted &&
+                          !generarCodigoAuto &&
+                          !producto.codigo?.trim()
+                        "
+                      >
                         <i class="pi pi-times-circle"></i>
                         El código es obligatorio
                       </div>
-                      <div class="success-message" *ngIf="generarCodigoAuto && !editMode">
+                      <div
+                        class="success-message"
+                        *ngIf="generarCodigoAuto && !editMode"
+                      >
                         <i class="pi pi-check-circle"></i>
                         Se generará automáticamente al guardar
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Nombre -->
                   <div class="form-field">
                     <label for="nombre" class="field-label">
@@ -985,32 +1188,40 @@
                       </div>
                     </label>
                     <div class="input-wrapper">
-                      <input 
-                        type="text" 
-                        pInputText 
-                        id="nombre" 
-                        [(ngModel)]="producto.nombre" 
+                      <input
+                        type="text"
+                        pInputText
+                        id="nombre"
+                        [(ngModel)]="producto.nombre"
                         placeholder="Ej: Zapatillas Nike Air Max 90, Botines Adidas..."
                         class="form-input"
-                        [ngClass]="{'input-error': submitted && !producto.nombre.trim()}"
+                        [ngClass]="{
+                          'input-error': submitted && !producto.nombre.trim()
+                        }"
                       />
                       <div class="input-icon">
                         <i class="pi pi-shopping-bag"></i>
                       </div>
                     </div>
-                    
+
                     <div class="field-feedback">
-                      <div class="error-message" *ngIf="submitted && !producto.nombre.trim()">
+                      <div
+                        class="error-message"
+                        *ngIf="submitted && !producto.nombre.trim()"
+                      >
                         <i class="pi pi-times-circle"></i>
                         El nombre es obligatorio
                       </div>
-                      <div class="info-message" *ngIf="!submitted || producto.nombre.trim()">
+                      <div
+                        class="info-message"
+                        *ngIf="!submitted || producto.nombre.trim()"
+                      >
                         <i class="pi pi-info-circle"></i>
                         Mínimo 3 caracteres
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Marca -->
                   <div class="form-field">
                     <label for="marca" class="field-label">
@@ -1027,24 +1238,32 @@
                         placeholder="Seleccionar marca"
                         class="form-dropdown"
                         [editable]="true"
-                        [ngClass]="{'dropdown-error': submitted && !producto.marca.trim()}"
+                        [ngClass]="{
+                          'dropdown-error': submitted && !producto.marca.trim()
+                        }"
                         optionLabel="label"
                         optionValue="value"
                       />
                     </div>
-                    
+
                     <div class="field-feedback">
-                      <div class="error-message" *ngIf="submitted && !producto.marca.trim()">
+                      <div
+                        class="error-message"
+                        *ngIf="submitted && !producto.marca.trim()"
+                      >
                         <i class="pi pi-times-circle"></i>
                         La marca es obligatoria
                       </div>
-                      <div class="info-message" *ngIf="!submitted || producto.marca.trim()">
+                      <div
+                        class="info-message"
+                        *ngIf="!submitted || producto.marca.trim()"
+                      >
                         <i class="pi pi-building"></i>
                         Principales marcas de calzado
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Modelo -->
                   <div class="form-field">
                     <label for="modelo" class="field-label">
@@ -1055,22 +1274,27 @@
                       </div>
                     </label>
                     <div class="input-wrapper">
-                      <input 
-                        type="text" 
-                        pInputText 
-                        id="modelo" 
-                        [(ngModel)]="producto.modelo" 
+                      <input
+                        type="text"
+                        pInputText
+                        id="modelo"
+                        [(ngModel)]="producto.modelo"
                         placeholder="Ej: Air Max 90, Stan Smith, Chuck Taylor..."
                         class="form-input"
-                        [ngClass]="{'input-error': submitted && !producto.modelo.trim()}"
+                        [ngClass]="{
+                          'input-error': submitted && !producto.modelo.trim()
+                        }"
                       />
                       <div class="input-icon">
                         <i class="pi pi-box"></i>
                       </div>
                     </div>
-                    
+
                     <div class="field-feedback">
-                      <div class="error-message" *ngIf="submitted && !producto.modelo.trim()">
+                      <div
+                        class="error-message"
+                        *ngIf="submitted && !producto.modelo.trim()"
+                      >
                         <i class="pi pi-times-circle"></i>
                         El modelo es obligatorio
                       </div>
@@ -1095,7 +1319,7 @@
                         optionValue="value"
                       />
                     </div>
-                    
+
                     <div class="field-feedback">
                       <div class="info-message">
                         <i class="pi pi-users"></i>
@@ -1122,7 +1346,7 @@
                         optionValue="value"
                       />
                     </div>
-                    
+
                     <div class="field-feedback">
                       <div class="info-message">
                         <i class="pi pi-tag"></i>
@@ -1143,7 +1367,7 @@
                       <p>Define los precios de compra y venta</p>
                     </div>
                   </div>
-                  
+
                   <div class="pricing-grid">
                     <!-- Precio de Compra -->
                     <div class="price-field">
@@ -1153,25 +1377,37 @@
                         <span class="required-indicator">*</span>
                       </label>
                       <div class="price-input-wrapper">
-                        <p-inputNumber 
-                          id="precioCompra" 
-                          [(ngModel)]="producto.precioCompra" 
+                        <p-inputNumber
+                          id="precioCompra"
+                          [(ngModel)]="producto.precioCompra"
                           placeholder="0.00"
                           [min]="0"
                           [step]="0.01"
                           prefix="S/. "
                           class="price-input"
-                          [ngClass]="{'price-error': submitted && (!producto.precioCompra || producto.precioCompra <= 0)}"
+                          [ngClass]="{
+                            'price-error':
+                              submitted &&
+                              (!producto.precioCompra ||
+                                producto.precioCompra <= 0)
+                          }"
                         />
                       </div>
                       <div class="field-feedback">
-                        <div class="error-message" *ngIf="submitted && (!producto.precioCompra || producto.precioCompra <= 0)">
+                        <div
+                          class="error-message"
+                          *ngIf="
+                            submitted &&
+                            (!producto.precioCompra ||
+                              producto.precioCompra <= 0)
+                          "
+                        >
                           <i class="pi pi-times-circle"></i>
                           Debe ser mayor a 0
                         </div>
                       </div>
                     </div>
-                    
+
                     <!-- Precio de Venta -->
                     <div class="price-field">
                       <label for="precioVenta" class="price-label">
@@ -1180,23 +1416,44 @@
                         <span class="required-indicator">*</span>
                       </label>
                       <div class="price-input-wrapper">
-                        <p-inputNumber 
-                          id="precioVenta" 
-                          [(ngModel)]="producto.precioVenta" 
+                        <p-inputNumber
+                          id="precioVenta"
+                          [(ngModel)]="producto.precioVenta"
                           placeholder="0.00"
                           [min]="0"
                           [step]="0.01"
                           prefix="S/. "
                           class="price-input"
-                          [ngClass]="{'price-error': submitted && (!producto.precioVenta || producto.precioVenta <= 0 || (producto.precioCompra && producto.precioVenta <= producto.precioCompra))}"
+                          [ngClass]="{
+                            'price-error':
+                              submitted &&
+                              (!producto.precioVenta ||
+                                producto.precioVenta <= 0 ||
+                                (producto.precioCompra &&
+                                  producto.precioVenta <=
+                                    producto.precioCompra))
+                          }"
                         />
                       </div>
                       <div class="field-feedback">
-                        <div class="error-message" *ngIf="submitted && (!producto.precioVenta || producto.precioVenta <= 0)">
+                        <div
+                          class="error-message"
+                          *ngIf="
+                            submitted &&
+                            (!producto.precioVenta || producto.precioVenta <= 0)
+                          "
+                        >
                           <i class="pi pi-times-circle"></i>
                           Debe ser mayor a 0
                         </div>
-                        <div class="error-message" *ngIf="submitted && producto.precioCompra && producto.precioVenta <= producto.precioCompra">
+                        <div
+                          class="error-message"
+                          *ngIf="
+                            submitted &&
+                            producto.precioCompra &&
+                            producto.precioVenta <= producto.precioCompra
+                          "
+                        >
                           <i class="pi pi-times-circle"></i>
                           Debe ser mayor al precio de compra
                         </div>
@@ -1204,9 +1461,16 @@
                     </div>
                   </div>
                 </div>
-              
+
                 <!-- 📊 Análisis de rentabilidad premium -->
-                <div class="profitability-section" *ngIf="producto.precioCompra && producto.precioVenta && producto.precioCompra > 0">
+                <div
+                  class="profitability-section"
+                  *ngIf="
+                    producto.precioCompra &&
+                    producto.precioVenta &&
+                    producto.precioCompra > 0
+                  "
+                >
                   <div class="profitability-card">
                     <div class="profitability-header">
                       <div class="header-icon">
@@ -1217,23 +1481,35 @@
                         <p>Ganancia y margen por par vendido</p>
                       </div>
                     </div>
-                    
+
                     <div class="profitability-content">
                       <div class="profit-metrics">
                         <div class="metric-item profit-amount">
                           <div class="metric-value">
-                            {{ (producto.precioVenta - producto.precioCompra) | currency:'S/. ':'symbol':'1.2-2' }}
+                            {{
+                              producto.precioVenta - producto.precioCompra
+                                | currency : "S/. " : "symbol" : "1.2-2"
+                            }}
                           </div>
                           <div class="metric-label">
                             <i class="pi pi-money-bill"></i>
                             Ganancia por par
                           </div>
                         </div>
-                        
+
                         <div class="metric-item profit-percentage">
-                          <div class="metric-value" 
-                               [ngClass]="getProfitColorClass(calcularMargenGanancia(producto))">
-                            {{ calcularMargenGanancia(producto) | number:'1.1-1' }}%
+                          <div
+                            class="metric-value"
+                            [ngClass]="
+                              getProfitColorClass(
+                                calcularMargenGanancia(producto)
+                              )
+                            "
+                          >
+                            {{
+                              calcularMargenGanancia(producto)
+                                | number : "1.1-1"
+                            }}%
                           </div>
                           <div class="metric-label">
                             <i class="pi pi-percentage"></i>
@@ -1241,22 +1517,35 @@
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="profit-tips">
-                        <div class="tip-card" [ngClass]="getProfitTipClass(calcularMargenGanancia(producto))">
+                        <div
+                          class="tip-card"
+                          [ngClass]="
+                            getProfitTipClass(calcularMargenGanancia(producto))
+                          "
+                        >
                           <div class="tip-icon">
                             <i class="pi pi-lightbulb"></i>
                           </div>
                           <div class="tip-content">
-                            <span class="tip-title">{{ getProfitTipTitle(calcularMargenGanancia(producto)) }}</span>
-                            <span class="tip-message">{{ getProfitTipMessage(calcularMargenGanancia(producto)) }}</span>
+                            <span class="tip-title">{{
+                              getProfitTipTitle(
+                                calcularMargenGanancia(producto)
+                              )
+                            }}</span>
+                            <span class="tip-message">{{
+                              getProfitTipMessage(
+                                calcularMargenGanancia(producto)
+                              )
+                            }}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- 📝 Descripción premium -->
                 <div class="description-section">
                   <div class="section-header">
@@ -1268,20 +1557,20 @@
                       <p>Información adicional y características</p>
                     </div>
                   </div>
-                  
+
                   <div class="description-field">
                     <div class="textarea-wrapper">
-                      <textarea 
-                        pInputTextarea 
+                      <textarea
+                        pInputTextarea
                         id="descripcion"
-                        [(ngModel)]="producto.descripcion" 
-                        rows="4" 
+                        [(ngModel)]="producto.descripcion"
+                        rows="4"
                         placeholder="Ej: Material de la suela, tipo de cierre, características especiales, tecnologías, colores disponibles..."
                         class="description-textarea"
                         [maxlength]="500"
                       ></textarea>
                     </div>
-                    
+
                     <div class="description-footer">
                       <div class="description-tips">
                         <div class="tip-item">
@@ -1290,14 +1579,19 @@
                         </div>
                       </div>
                       <div class="character-count" *ngIf="producto.descripcion">
-                        <span class="count-text">{{producto.descripcion.length || 0}}/500</span>
+                        <span class="count-text"
+                          >{{ producto.descripcion.length || 0 }}/500</span
+                        >
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <!-- 📅 Información adicional en modo edición -->
-                <div class="info-section" *ngIf="editMode && producto.fechaCreacion">
+                <div
+                  class="info-section"
+                  *ngIf="editMode && producto.fechaCreacion"
+                >
                   <div class="info-card">
                     <div class="info-header">
                       <i class="pi pi-calendar"></i>
@@ -1306,16 +1600,29 @@
                     <div class="info-content">
                       <div class="info-item" *ngIf="producto.fechaCreacion">
                         <i class="pi pi-plus-circle text-emerald-500"></i>
-                        <span><strong>Creado:</strong> {{producto.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</span>
+                        <span
+                          ><strong>Creado:</strong>
+                          {{
+                            producto.fechaCreacion | date : "dd/MM/yyyy HH:mm"
+                          }}</span
+                        >
                       </div>
-                      <div class="info-item" *ngIf="producto.fechaActualizacion">
+                      <div
+                        class="info-item"
+                        *ngIf="producto.fechaActualizacion"
+                      >
                         <i class="pi pi-refresh text-emerald-500"></i>
-                        <span><strong>Actualizado:</strong> {{producto.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</span>
+                        <span
+                          ><strong>Actualizado:</strong>
+                          {{
+                            producto.fechaActualizacion
+                              | date : "dd/MM/yyyy HH:mm"
+                          }}</span
+                        >
                       </div>
                     </div>
                   </div>
                 </div>
-              
               </div>
             </div>
           </div>
@@ -1337,19 +1644,19 @@
       </div>
 
       <div class="footer-actions">
-        <p-button 
-          label="Cancelar" 
-          icon="pi pi-times" 
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
           severity="secondary"
           [outlined]="true"
-          (click)="hideDialog()" 
+          (click)="hideDialog()"
           [disabled]="loading"
           styleClass="cancel-button"
         />
-        <p-button 
-          [label]="editMode ? 'Actualizar Producto' : 'Crear Producto'" 
+        <p-button
+          [label]="editMode ? 'Actualizar Producto' : 'Crear Producto'"
           [icon]="editMode ? 'pi pi-check' : 'pi pi-plus'"
-          (click)="saveProducto()" 
+          (click)="saveProducto()"
           [loading]="loading"
           styleClass="save-button"
         />
@@ -1359,12 +1666,16 @@
 </p-dialog>
 
 <!-- Modal de Detalles del Producto -->
-<p-dialog 
-  [(visible)]="detalleProductoDialog" 
-  [style]="{width: '90vw', maxWidth: '800px', height: '90vh'}" 
-  [modal]="true" 
+<p-dialog
+  [(visible)]="detalleProductoDialog"
+  [style]="{ width: '90vw', maxWidth: '800px', height: '90vh' }"
+  [modal]="true"
   (onHide)="hideDetalleDialog()"
-  [contentStyle]="{'padding':'0', 'overflow': 'hidden', 'height': 'calc(90vh - 80px)'}"
+  [contentStyle]="{
+    padding: '0',
+    overflow: 'hidden',
+    height: 'calc(90vh - 80px)'
+  }"
   styleClass="zapatos-detalle-dialog"
   [showHeader]="false"
   [draggable]="false"
@@ -1372,16 +1683,14 @@
 >
   <!-- 🆕 Container scrollable principal -->
   <div class="detalle-scrollable-wrapper" *ngIf="productoDetalle">
-    
     <div class="detalle-container">
-      
       <!-- 🆕 Header personalizado con info del producto -->
       <div class="detalle-header">
         <div class="header-background"></div>
         <div class="header-content">
           <div class="header-close">
-            <p-button 
-              icon="pi pi-times" 
+            <p-button
+              icon="pi pi-times"
               [rounded]="true"
               [text]="true"
               size="small"
@@ -1391,7 +1700,7 @@
               styleClass="close-button-detalle"
             />
           </div>
-          
+
           <div class="header-main">
             <div class="header-icon">
               <i class="pi pi-eye text-white text-2xl"></i>
@@ -1399,9 +1708,9 @@
             <div class="header-text">
               <h2 class="header-title">Detalles del Producto</h2>
               <div class="header-subtitle">
-                <span class="product-code">{{productoDetalle.codigo}}</span>
+                <span class="product-code">{{ productoDetalle.codigo }}</span>
                 <span class="separator">•</span>
-                <span class="product-brand">{{productoDetalle.marca}}</span>
+                <span class="product-brand">{{ productoDetalle.marca }}</span>
               </div>
             </div>
           </div>
@@ -1411,14 +1720,13 @@
       <!-- 🎨 Contenido principal -->
       <div class="detalle-body">
         <div class="grid grid-cols-12 gap-6">
-          
           <!-- 📸 Sección de imagen premium -->
           <div class="col-span-12 lg:col-span-5">
             <div class="image-showcase">
               <div class="image-container">
                 <div class="image-wrapper">
-                  <img 
-                    [src]="getImageUrl(productoDetalle)" 
+                  <img
+                    [src]="getImageUrl(productoDetalle)"
                     [alt]="productoDetalle.nombre"
                     class="product-image"
                     (error)="onImageError($event)"
@@ -1430,22 +1738,21 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- 🏷️ Badge de código -->
                 <div class="code-badge">
                   <div class="badge-content">
                     <i class="pi pi-barcode text-slate-600"></i>
-                    <span class="code-text">{{productoDetalle.codigo}}</span>
+                    <span class="code-text">{{ productoDetalle.codigo }}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <!-- 📝 Información detallada premium -->
           <div class="col-span-12 lg:col-span-7">
             <div class="info-sections">
-              
               <!-- 🆕 Información básica -->
               <div class="info-card basic-info">
                 <div class="card-header">
@@ -1454,39 +1761,52 @@
                   </div>
                   <h3 class="card-title">Información Básica</h3>
                 </div>
-                
+
                 <div class="card-content">
                   <div class="product-title">
-                    <h1 class="title-text">{{productoDetalle.nombre}}</h1>
+                    <h1 class="title-text">{{ productoDetalle.nombre }}</h1>
                     <div class="title-meta">
                       <span class="meta-item">
                         <i class="pi pi-building text-emerald-600"></i>
-                        <strong>{{productoDetalle.marca}}</strong>
+                        <strong>{{ productoDetalle.marca }}</strong>
                       </span>
                       <span class="meta-separator">•</span>
                       <span class="meta-item">
                         <i class="pi pi-box text-purple-600"></i>
-                        {{productoDetalle.modelo}}
+                        {{ productoDetalle.modelo }}
                       </span>
                     </div>
-                    
+
                     <!-- 🆕 Información adicional de zapatería -->
-                    <div class="additional-info" *ngIf="productoDetalle.genero || productoDetalle.modelo">
+                    <div
+                      class="additional-info"
+                      *ngIf="productoDetalle.genero || productoDetalle.modelo"
+                    >
                       <div class="info-badges">
-                        <div class="info-badge gender" *ngIf="productoDetalle.genero">
+                        <div
+                          class="info-badge gender"
+                          *ngIf="productoDetalle.genero"
+                        >
                           <i class="pi pi-users"></i>
-                          <span>{{getGeneroLabel(productoDetalle.genero)}}</span>
+                          <span>{{
+                            getGeneroLabel(productoDetalle.genero)
+                          }}</span>
                         </div>
-                        <div class="info-badge type" *ngIf="productoDetalle.modelo">
+                        <div
+                          class="info-badge type"
+                          *ngIf="productoDetalle.modelo"
+                        >
                           <i class="pi pi-tag"></i>
-                          <span>{{getTipoCalzadoLabel(productoDetalle.modelo)}}</span>
+                          <span>{{
+                            getTipoCalzadoLabel(productoDetalle.modelo)
+                          }}</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <!-- 💰 Análisis financiero premium -->
               <div class="info-card pricing-info">
                 <div class="card-header">
@@ -1495,7 +1815,7 @@
                   </div>
                   <h3 class="card-title">Análisis Financiero</h3>
                 </div>
-                
+
                 <div class="card-content">
                   <div class="pricing-grid">
                     <!-- Precio de Compra -->
@@ -1505,10 +1825,13 @@
                         <span class="price-label">Precio de Compra</span>
                       </div>
                       <div class="price-value purchase-price">
-                        {{productoDetalle.precioCompra | currency:'S/. ':'symbol':'1.2-2'}}
+                        {{
+                          productoDetalle.precioCompra
+                            | currency : "S/. " : "symbol" : "1.2-2"
+                        }}
                       </div>
                     </div>
-                    
+
                     <!-- Precio de Venta -->
                     <div class="price-item sale">
                       <div class="price-header">
@@ -1516,10 +1839,13 @@
                         <span class="price-label">Precio de Venta</span>
                       </div>
                       <div class="price-value sale-price">
-                        {{productoDetalle.precioVenta | currency:'S/. ':'symbol':'1.2-2'}}
+                        {{
+                          productoDetalle.precioVenta
+                            | currency : "S/. " : "symbol" : "1.2-2"
+                        }}
                       </div>
                     </div>
-                    
+
                     <!-- Ganancia -->
                     <div class="price-item profit">
                       <div class="price-header">
@@ -1527,10 +1853,14 @@
                         <span class="price-label">Ganancia por Par</span>
                       </div>
                       <div class="price-value profit-value">
-                        {{(productoDetalle.precioVenta - productoDetalle.precioCompra) | currency:'S/. ':'symbol':'1.2-2'}}
+                        {{
+                          productoDetalle.precioVenta -
+                            productoDetalle.precioCompra
+                            | currency : "S/. " : "symbol" : "1.2-2"
+                        }}
                       </div>
                     </div>
-                    
+
                     <!-- Margen -->
                     <div class="price-item margin">
                       <div class="price-header">
@@ -1538,30 +1868,65 @@
                         <span class="price-label">Margen de Ganancia</span>
                       </div>
                       <div class="margin-content">
-                        <div class="margin-value" [ngClass]="getMargenColorClass(calcularMargenGanancia(productoDetalle))">
-                          {{ calcularMargenGanancia(productoDetalle) | number:'1.1-1' }}%
+                        <div
+                          class="margin-value"
+                          [ngClass]="
+                            getMargenColorClass(
+                              calcularMargenGanancia(productoDetalle)
+                            )
+                          "
+                        >
+                          {{
+                            calcularMargenGanancia(productoDetalle)
+                              | number : "1.1-1"
+                          }}%
                         </div>
                         <div class="margin-badge">
-                          <span class="badge" [ngClass]="getMargenBadgeClass(calcularMargenGanancia(productoDetalle))">
-                            {{ getMargenLabel(calcularMargenGanancia(productoDetalle)) }}
+                          <span
+                            class="badge"
+                            [ngClass]="
+                              getMargenBadgeClass(
+                                calcularMargenGanancia(productoDetalle)
+                              )
+                            "
+                          >
+                            {{
+                              getMargenLabel(
+                                calcularMargenGanancia(productoDetalle)
+                              )
+                            }}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- 📊 Gráfico visual del margen -->
                   <div class="margin-visual">
                     <div class="visual-header">
                       <span class="visual-title">Rentabilidad Visual</span>
-                      <span class="visual-percentage">{{ calcularMargenGanancia(productoDetalle) | number:'1.1-1' }}%</span>
+                      <span class="visual-percentage"
+                        >{{
+                          calcularMargenGanancia(productoDetalle)
+                            | number : "1.1-1"
+                        }}%</span
+                      >
                     </div>
                     <div class="progress-container">
                       <div class="progress-bar">
-                        <div 
+                        <div
                           class="progress-fill"
-                          [ngClass]="getMargenProgressClass(calcularMargenGanancia(productoDetalle))"
-                          [style.width.%]="Math.min(calcularMargenGanancia(productoDetalle), 100)"
+                          [ngClass]="
+                            getMargenProgressClass(
+                              calcularMargenGanancia(productoDetalle)
+                            )
+                          "
+                          [style.width.%]="
+                            Math.min(
+                              calcularMargenGanancia(productoDetalle),
+                              100
+                            )
+                          "
                         ></div>
                       </div>
                       <div class="progress-labels">
@@ -1573,23 +1938,28 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- 📝 Descripción -->
-              <div class="info-card description-info" *ngIf="productoDetalle.descripcion">
+              <div
+                class="info-card description-info"
+                *ngIf="productoDetalle.descripcion"
+              >
                 <div class="card-header">
                   <div class="header-icon">
                     <i class="pi pi-file-edit"></i>
                   </div>
                   <h3 class="card-title">Descripción del Producto</h3>
                 </div>
-                
+
                 <div class="card-content">
                   <div class="description-content">
-                    <p class="description-text">{{productoDetalle.descripcion}}</p>
+                    <p class="description-text">
+                      {{ productoDetalle.descripcion }}
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               <!-- 📅 Información del registro -->
               <div class="info-card registry-info">
                 <div class="card-header">
@@ -1598,32 +1968,47 @@
                   </div>
                   <h3 class="card-title">Información del Registro</h3>
                 </div>
-                
+
                 <div class="card-content">
                   <div class="registry-grid">
-                    <div class="registry-item" *ngIf="productoDetalle.fechaCreacion">
+                    <div
+                      class="registry-item"
+                      *ngIf="productoDetalle.fechaCreacion"
+                    >
                       <div class="registry-icon created">
                         <i class="pi pi-plus-circle"></i>
                       </div>
                       <div class="registry-content">
                         <div class="registry-label">Fecha de Creación</div>
-                        <div class="registry-value">{{productoDetalle.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</div>
+                        <div class="registry-value">
+                          {{
+                            productoDetalle.fechaCreacion
+                              | date : "dd/MM/yyyy HH:mm"
+                          }}
+                        </div>
                       </div>
                     </div>
-                    
-                    <div class="registry-item" *ngIf="productoDetalle.fechaActualizacion">
+
+                    <div
+                      class="registry-item"
+                      *ngIf="productoDetalle.fechaActualizacion"
+                    >
                       <div class="registry-icon updated">
                         <i class="pi pi-refresh"></i>
                       </div>
                       <div class="registry-content">
                         <div class="registry-label">Última Actualización</div>
-                        <div class="registry-value">{{productoDetalle.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</div>
+                        <div class="registry-value">
+                          {{
+                            productoDetalle.fechaActualizacion
+                              | date : "dd/MM/yyyy HH:mm"
+                          }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
         </div>
@@ -1633,29 +2018,34 @@
       <div class="detalle-spacer"></div>
     </div>
   </div>
-  
+
   <ng-template pTemplate="footer">
     <div class="detalle-footer">
       <div class="footer-info">
         <div class="info-item">
           <i class="pi pi-clock text-slate-500"></i>
-          <span class="text-slate-600">Actualizado: {{getCurrentTime() | date:'HH:mm'}}</span>
+          <span class="text-slate-600"
+            >Actualizado: {{ getCurrentTime() | date : "HH:mm" }}</span
+          >
         </div>
       </div>
-      
+
       <div class="footer-actions">
-        <p-button 
-          label="Cerrar" 
-          icon="pi pi-times" 
+        <p-button
+          label="Cerrar"
+          icon="pi pi-times"
           severity="secondary"
           [outlined]="true"
           (click)="hideDetalleDialog()"
           styleClass="close-action"
         />
-        <p-button 
-          *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}"
-          label="Editar Producto" 
-          icon="pi pi-pencil" 
+        <p-button
+          *appHasPermission="{
+            module: 'productos',
+            permission: permissionTypes.EDIT
+          }"
+          label="Editar Producto"
+          icon="pi pi-pencil"
           (click)="editProducto(productoDetalle!); hideDetalleDialog()"
           styleClass="edit-action"
         />

@@ -11,31 +11,29 @@
     left: 2rem;
     transition:
         transform var(--layout-section-transition-duration),
-        left var(--layout-section-transition-duration);
+        left var(--layout-section-transition-duration),
+        box-shadow 0.3s ease;
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);
-    padding: 1rem 1rem;
+    padding: 1.25rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     
-    // Mejorar scrollbar con colores pastel
+    // Scrollbar semi-minimalista
     &::-webkit-scrollbar {
         width: 6px;
     }
     
     &::-webkit-scrollbar-track {
-        background: rgba(147, 197, 253, 0.05);  /* Azul pastel muy suave */
+        background: rgba(148, 163, 184, 0.08);
         border-radius: 10px;
     }
     
     &::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, 
-            rgb(147, 197, 253) 0%,    /* Azul pastel */
-            rgb(196, 181, 253) 100%); /* Púrpura pastel */
+        background: var(--primary-color-alpha-40);
         border-radius: 10px;
         
         &:hover {
-            background: linear-gradient(180deg, 
-                rgb(134, 239, 172) 0%,    /* Verde pastel */
-                rgb(147, 197, 253) 100%); /* Azul pastel */
+            background: var(--primary-color-alpha-60);
         }
     }
 }
@@ -49,32 +47,31 @@
         margin-bottom: 0.5rem;
         
         > .layout-menuitem-root-text {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             font-weight: 700;
             color: var(--text-color-secondary);
-            margin: 1.5rem 0 0.75rem 0;
+            margin: 1.75rem 0 0.875rem 0;
             padding: 0 0.75rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             display: flex;
             align-items: center;
+            opacity: 0.8;
             
-            // Línea decorativa con gradiente pastel
+            // Línea decorativa simple
             &:after {
                 content: '';
                 flex: 1;
-                height: 2px;
+                height: 1px;
                 background: linear-gradient(90deg, 
-                    rgb(147, 197, 253) 0%,      /* Azul pastel */
-                    rgb(196, 181, 253) 50%,     /* Púrpura pastel */
+                    var(--primary-color-alpha-40) 0%,
                     transparent 100%);
                 margin-left: 0.75rem;
-                border-radius: 2px;
             }
             
             // Primera sección sin margen superior
             &:first-child {
-                margin-top: 0;
+                margin-top: 0.5rem;
             }
         }
 
@@ -115,94 +112,75 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.875rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 0.25rem;
-            transition:
-                all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.75rem 0.875rem;
+            border-radius: 10px;
+            margin-bottom: 0.125rem;
+            transition: all 0.2s ease;
             border: 2px solid transparent;
 
             .layout-menuitem-icon {
-                margin-right: 0.75rem;
-                font-size: 1.25rem;
-                width: 2rem;
-                height: 2rem;
+                margin-right: 0.875rem;
+                font-size: 1.1rem;
+                width: 1.75rem;
+                height: 1.75rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border-radius: 10px;
-                background: linear-gradient(135deg, 
-                    rgba(147, 197, 253, 0.2) 0%,    /* Azul pastel suave */
-                    rgba(196, 181, 253, 0.15) 100%); /* Púrpura pastel suave */
-                color: rgb(59, 130, 246);            /* Azul medio */
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border-radius: 8px;
+                background: var(--primary-color-alpha-10);
+                color: var(--primary-color);
+                transition: all 0.2s ease;
                 flex-shrink: 0;
             }
             
             .layout-menuitem-text {
                 flex: 1;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                font-weight: 500;
+                transition: all 0.2s ease;
             }
 
             .layout-submenu-toggler {
-                font-size: 0.875rem;
+                font-size: 0.8rem;
                 margin-left: auto;
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                opacity: 0.6;
+                transition: transform 0.2s ease;
+                opacity: 0.5;
             }
 
             &.active-route {
-                font-weight: 700;
+                font-weight: 600;
                 color: var(--primary-color);
-                background: linear-gradient(135deg, 
-                    rgba(147, 197, 253, 0.15) 0%,    /* Azul pastel */
-                    rgba(196, 181, 253, 0.1) 100%);  /* Púrpura pastel */
-                border-left: 4px solid rgb(96, 165, 250);  /* Azul pastel vibrante */
-                border-radius: 12px;
-                box-shadow: 0 2px 12px rgba(147, 197, 253, 0.25);  /* Sombra azul pastel */
-                transform: translateX(4px);
+                background: var(--primary-color-alpha-10);
+                border-left: 3px solid var(--primary-color);
+                padding-left: calc(0.875rem - 3px);
+                box-shadow: 0 1px 2px var(--primary-color-alpha-10);
                 
                 .layout-menuitem-icon {
-                    background: linear-gradient(135deg, 
-                        rgb(147, 197, 253) 0%,       /* Azul pastel */
-                        rgb(167, 139, 250) 100%);    /* Púrpura pastel */
-                    color: white;
-                    box-shadow: 0 4px 16px rgba(147, 197, 253, 0.4);
-                    transform: scale(1.05);
+                    background: var(--primary-color);
+                    color: var(--primary-color-text);
+                    box-shadow: 0 2px 8px var(--primary-color-alpha-20);
                 }
                 
                 .layout-menuitem-text {
-                    font-weight: 700;
-                    color: rgb(59, 130, 246);  /* Azul medio */
+                    font-weight: 600;
+                    color: var(--primary-color);
                 }
                 
                 .layout-submenu-toggler {
                     opacity: 1;
-                    color: rgb(96, 165, 250);  /* Azul pastel vibrante */
+                    color: var(--primary-color);
                 }
             }
 
             &:hover {
-                background: linear-gradient(135deg, 
-                    rgba(167, 243, 208, 0.12) 0%,    /* Verde pastel */
-                    rgba(147, 197, 253, 0.12) 100%); /* Azul pastel */
-                transform: translateX(4px);
-                border-left: 4px solid rgb(134, 239, 172);  /* Verde pastel vibrante */
-                border-radius: 12px;
+                background: var(--primary-color-alpha-5);
                 
                 .layout-menuitem-icon {
-                    background: linear-gradient(135deg, 
-                        rgb(134, 239, 172) 0%,       /* Verde pastel */
-                        rgb(147, 197, 253) 100%);    /* Azul pastel */
-                    color: white;
-                    transform: scale(1.08);
-                    box-shadow: 0 4px 16px rgba(134, 239, 172, 0.35);
+                    background: var(--primary-color-alpha-15);
+                    color: var(--primary-color);
                 }
                 
                 .layout-submenu-toggler {
-                    opacity: 1;
-                    transform: translateX(2px);
-                    color: rgb(74, 222, 128);  /* Verde pastel vibrante */
+                    opacity: 0.8;
                 }
             }
 
@@ -210,13 +188,9 @@
                 @include focused-inset();
             }
             
-            // Efecto ripple mejorado
+            // Efecto al hacer clic
             &:active {
-                transform: translateX(4px) scale(0.98);
-                
-                .layout-menuitem-icon {
-                    transform: scale(0.95);
-                }
+                transform: scale(0.98);
             }
         }
 
@@ -226,7 +200,7 @@
             margin-top: 0.25rem;
             margin-bottom: 0.5rem;
             padding-left: 0.5rem;
-            border-left: 2px solid rgba(196, 181, 253, 0.3);  /* Púrpura pastel suave */
+            border-left: 2px solid var(--primary-color-alpha-20);
             margin-left: 1rem;
 
             li {

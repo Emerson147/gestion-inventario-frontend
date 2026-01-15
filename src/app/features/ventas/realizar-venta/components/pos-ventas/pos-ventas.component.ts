@@ -229,6 +229,8 @@ export class PosVentasComponent implements OnInit, OnDestroy {
     { label: 'Nota de Venta', value: 'NOTA_VENTA' },
     { label: 'Ticket', value: 'TICKET' }
   ];
+isMobile: any;
+productosRecomendados: any;
 
   getColorMetrica(color: 'success' | 'info' | 'warning' | 'danger' | 'secondary'): string {
     const colores: Record<'success' | 'info' | 'warning' | 'danger' | 'secondary', string> = {

@@ -1,10 +1,17 @@
-import {Component, ElementRef, ViewChild, AfterViewInit, OnInit, inject} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AppFloatingConfigurator } from '../../shared/components/layout/component/app.floatingconfigurator';
 import { ToastModule } from 'primeng/toast';
 import { PasswordModule } from 'primeng/password';
@@ -13,7 +20,7 @@ import { MessageService } from 'primeng/api';
 import { AnimationService } from '../../core/animations/animation.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 // import {GsapSpinnerComponent} from '../../shared/components/gsap-spinner/gsap-spinner.component';
-import {NgxSpinnerModule, NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 interface LoginResponse {
   token: string;
@@ -29,11 +36,21 @@ interface LoginResponse {
   selector: 'app-auth',
   standalone: true,
   providers: [MessageService],
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ReactiveFormsModule,
-    AppFloatingConfigurator, ToastModule, PasswordModule, FloatLabelModule, ProgressSpinnerModule, NgxSpinnerModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    RouterLink,
+    AppFloatingConfigurator,
+    ToastModule,
+    PasswordModule,
+    FloatLabelModule,
+    ProgressSpinnerModule,
+    NgxSpinnerModule,
+  ],
   templateUrl: './login.component.html',
-
-
 })
 export class LoginComponent implements OnInit, AfterViewInit {
   username = '';
@@ -98,7 +115,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     // this.loading = true; // Activa el spinner de carga
 
-    const buttonElement = this.loginButton?.nativeElement?.querySelector('button');
+    const buttonElement =
+      this.loginButton?.nativeElement?.querySelector('button');
     if (buttonElement && this.animationsEnabled) {
       this.animService.buttonLoadingAnimation(buttonElement);
     }
@@ -131,14 +149,22 @@ export class LoginComponent implements OnInit, AfterViewInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: `Bienvenido ${response.username}`
+            detail: `Bienvenido ${response.username}`,
           });
 
           setTimeout(() => {
-            if (this.cardContainer && this.cardContainer.nativeElement && this.animationsEnabled) {
-              this.animService.successExit(this.cardContainer.nativeElement, {}, () => {
-                this.authService.redirectBasedOnRole();
-              });
+            if (
+              this.cardContainer &&
+              this.cardContainer.nativeElement &&
+              this.animationsEnabled
+            ) {
+              this.animService.successExit(
+                this.cardContainer.nativeElement,
+                {},
+                () => {
+                  this.authService.redirectBasedOnRole();
+                }
+              );
             } else {
               this.authService.redirectBasedOnRole();
             }
@@ -151,18 +177,21 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (buttonElement && this.animationsEnabled) {
           this.animService.buttonErrorAnimation(buttonElement);
         }
-        if (this.loginForm && this.loginForm.nativeElement && this.animationsEnabled) {
+        if (
+          this.loginForm &&
+          this.loginForm.nativeElement &&
+          this.animationsEnabled
+        ) {
           this.animService.shakeElement(this.loginForm.nativeElement);
         }
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error?.mensaje || 'Error al iniciar sesión'
+          detail: error.error?.mensaje || 'Error al iniciar sesión',
         });
-      }
+      },
     });
   }
-
 
   private showInvalidFormMessage() {
     const formElement = document.querySelector('.login-form');
@@ -174,7 +203,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       severity: 'warn',
       summary: 'Advertencia',
       detail: 'Por favor, completa todos los campos',
-      life: 4000
+      life: 4000,
     });
   }
 
@@ -191,13 +220,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   private animateDialog() {
-    if (!this.forgotDialog || !this.forgotDialog.nativeElement || !this.animationsEnabled) return;
+    if (
+      !this.forgotDialog ||
+      !this.forgotDialog.nativeElement ||
+      !this.animationsEnabled
+    )
+      return;
 
     const dialog = this.forgotDialog.nativeElement;
     this.animService.dialogEntrance(dialog);
 
     // Animar los elementos internos
-    const dialogElements = dialog.querySelectorAll('h2, p, p-floatLabel, .flex');
+    const dialogElements = dialog.querySelectorAll(
+      'h2, p, p-floatLabel, .flex'
+    );
     this.animService.dialogContentEntrance(dialogElements);
   }
 }

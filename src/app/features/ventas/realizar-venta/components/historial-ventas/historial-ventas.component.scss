@@ -42,19 +42,19 @@
 .sidebar-filtros {
   scrollbar-width: thin;
   scrollbar-color: rgb(203 213 225) rgb(248 250 252);
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgb(248 250 252);
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgb(203 213 225);
     border-radius: 3px;
-    
+
     &:hover {
       background: rgb(148 163 184);
     }
@@ -68,7 +68,7 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-  
+
   &::-webkit-scrollbar {
     display: none;
   }

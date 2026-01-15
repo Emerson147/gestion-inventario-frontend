@@ -5,12 +5,24 @@
 }
 
 /* Animación escalonada para las tarjetas */
-.inventory-entrance:nth-child(1) { animation-delay: 0.1s; }
-.inventory-entrance:nth-child(2) { animation-delay: 0.2s; }
-.inventory-entrance:nth-child(3) { animation-delay: 0.3s; }
-.inventory-entrance:nth-child(4) { animation-delay: 0.4s; }
-.inventory-entrance:nth-child(5) { animation-delay: 0.5s; }
-.inventory-entrance:nth-child(6) { animation-delay: 0.6s; }
+.inventory-entrance:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.inventory-entrance:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.inventory-entrance:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.inventory-entrance:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.inventory-entrance:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.inventory-entrance:nth-child(6) {
+  animation-delay: 0.6s;
+}
 
 /* Efecto pulse para valores críticos */
 .pulse-value {
@@ -30,7 +42,8 @@
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
   }
   50% {
@@ -49,7 +62,7 @@
 /* Hover effect para filas de tabla */
 ::ng-deep .p-datatable .p-datatable-tbody > tr {
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%) !important;
     transform: scale(1.005);
@@ -70,11 +83,11 @@
   font-weight: 600;
   padding: 1rem 0.75rem;
   border: none !important;
-  
+
   &:first-child {
     border-top-left-radius: 0.75rem;
   }
-  
+
   &:last-child {
     border-top-right-radius: 0.75rem;
   }
@@ -98,7 +111,7 @@
   font-weight: 500;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -118,7 +131,7 @@
   font-size: 0.75rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: scale(1.05);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
@@ -134,7 +147,7 @@
   color: white;
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
@@ -157,7 +170,7 @@
   padding: 0.75rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -175,7 +188,7 @@
   gap: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
@@ -186,16 +199,16 @@
 
 ::ng-deep .p-button-rounded.p-button-text {
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: scale(1.1);
     background-color: var(--hover-bg-color) !important;
   }
-  
+
   &.hover\:bg-blue-50:hover {
     --hover-bg-color: #eff6ff;
   }
-  
+
   &.hover\:bg-red-50:hover {
     --hover-bg-color: #fef2f2;
   }
@@ -240,11 +253,11 @@
   .inventory-entrance {
     min-width: 100px;
   }
-  
+
   .text-2xl {
     font-size: 1.5rem;
   }
-  
+
   .text-sm {
     font-size: 0.75rem;
   }
@@ -262,28 +275,28 @@
   transition: all 0.3s ease;
   cursor: pointer;
   min-height: 3rem;
-  
+
   &.primary-btn {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
     }
   }
-  
+
   &.danger-btn {
     background: #fef2f2;
     color: #dc2626;
     border: 1px solid #fecaca;
-    
+
     &:hover:not(.disabled) {
       background: #fee2e2;
       transform: translateY(-1px);
     }
-    
+
     &.disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -291,7 +304,7 @@
       color: #9ca3af;
     }
   }
-  
+
   .btn-icon {
     width: 2rem;
     height: 2rem;
@@ -301,25 +314,25 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  
+
   .btn-content {
     display: flex;
     flex-direction: column;
     text-align: left;
-    
+
     .btn-title {
       font-size: 0.875rem;
       font-weight: 600;
       line-height: 1.2;
     }
-    
+
     .btn-subtitle {
       font-size: 0.75rem;
       opacity: 0.8;
       line-height: 1;
     }
   }
-  
+
   .btn-text {
     font-size: 0.875rem;
     font-weight: 500;
@@ -338,12 +351,12 @@
   border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
-  
+
   .quick-icon {
     width: 1.75rem;
     height: 1.75rem;
@@ -352,7 +365,7 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .quick-label {
     font-size: 0.75rem;
     font-weight: 500;
@@ -378,13 +391,13 @@
     border-radius: 0.5rem;
     font-size: 0.75rem;
     font-weight: 500;
-    
+
     &.active {
       background: #dbeafe;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
     }
-    
+
     .badge-count {
       background: #1d4ed8;
       color: white;
@@ -424,18 +437,18 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover:not(.disabled) {
     background: #f9fafb;
     border-color: #d1d5db;
     transform: translateY(-1px);
   }
-  
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
   .secondary-icon {
     color: #6b7280;
     font-size: 0.875rem;
@@ -453,20 +466,20 @@
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover:not(.disabled) {
     background: #d1fae5;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
   }
-  
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
     background: #f9fafb;
     border-color: #e5e7eb;
   }
-  
+
   .export-icon {
     width: 1.75rem;
     height: 1.75rem;
@@ -475,7 +488,7 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .export-text {
     font-size: 0.75rem;
     font-weight: 500;
@@ -488,7 +501,7 @@
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #f3f4f6;
-  
+
   .status-content {
     display: flex;
     align-items: center;
@@ -509,7 +522,7 @@
   border-radius: 0.375rem;
   font-size: 0.75rem;
   font-weight: 500;
-  
+
   .remove-filter {
     background: none;
     border: none;
@@ -517,7 +530,7 @@
     cursor: pointer;
     padding: 0.125rem;
     border-radius: 0.125rem;
-    
+
     &:hover {
       background: #bfdbfe;
     }
@@ -531,13 +544,13 @@
       display: none;
     }
   }
-  
+
   .quick-action-btn {
     .quick-label {
       display: none;
     }
   }
-  
+
   .results-counter,
   .export-text {
     display: none;
@@ -582,7 +595,7 @@
     flex-direction: column;
     max-height: 90vh;
   }
-  
+
   /* Header personalizado sin padding extra */
   .p-dialog-header {
     padding: 0 !important;
@@ -593,45 +606,45 @@
     z-index: 10;
     background: white;
   }
-  
+
   /* Contenido del diálogo con scroll */
   .p-dialog-content {
     padding: 0 !important;
     overflow-y: auto !important;
     overflow-x: hidden;
     flex: 1;
-    
+
     /* Scrollbar personalizada y más ancha para mejor visibilidad */
     &::-webkit-scrollbar {
       width: 10px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #e2e8f0;
       border-radius: 10px;
       margin: 4px 0;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: linear-gradient(180deg, #3b82f6, #6366f1);
       border-radius: 10px;
       border: 2px solid #e2e8f0;
-      
+
       &:hover {
         background: linear-gradient(180deg, #2563eb, #4f46e5);
         border-color: #cbd5e1;
       }
-      
+
       &:active {
         background: linear-gradient(180deg, #1e40af, #3730a3);
       }
     }
-    
+
     /* Firefox scrollbar */
     scrollbar-width: thin;
     scrollbar-color: #3b82f6 #e2e8f0;
   }
-  
+
   /* Footer sin padding extra y fijo al fondo */
   .p-dialog-footer {
     padding: 0 !important;
@@ -641,37 +654,37 @@
     bottom: 0;
     z-index: 10;
   }
-  
+
   /* Sombra superior cuando hay scroll */
   .p-dialog-content {
     &::before {
-      content: '';
+      content: "";
       position: sticky;
       top: 0;
       left: 0;
       right: 0;
       height: 10px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent);
       opacity: 0;
       transition: opacity 0.3s ease;
       pointer-events: none;
       z-index: 1;
     }
-    
+
     &.has-scroll::before {
       opacity: 1;
     }
   }
-  
+
   /* Sombra inferior cuando hay más contenido */
   .p-dialog-footer::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -10px;
     left: 0;
     right: 0;
     height: 10px;
-    background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
     pointer-events: none;
   }
 }
@@ -680,12 +693,12 @@
 ::ng-deep .p-selectbutton {
   .p-button {
     transition: all 0.3s ease;
-    
+
     &:hover:not(.p-disabled):not(.p-highlight) {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    
+
     &.p-highlight {
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
@@ -698,33 +711,33 @@
   .ng-invalid.ng-dirty {
     border-color: #ef4444 !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    
+
     &:focus {
       border-color: #dc2626 !important;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
     }
   }
-  
+
   /* Inputs y selects mejorados */
   .p-inputtext,
   .p-dropdown,
   .p-inputnumber input {
     transition: all 0.3s ease;
-    
+
     &:focus {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
     }
   }
-  
+
   /* InputNumber buttons mejorados */
   .p-inputnumber-button {
     transition: all 0.2s ease;
-    
+
     &:hover {
       transform: scale(1.05);
     }
-    
+
     &:active {
       transform: scale(0.98);
     }
@@ -733,7 +746,8 @@
 
 /* Efecto de pulsación para botones críticos */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -761,7 +775,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -772,9 +786,9 @@
 .premium-card {
   position: relative;
   overflow: hidden;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
@@ -813,9 +827,9 @@ select {
 .loading-state {
   pointer-events: none;
   opacity: 0.6;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background: rgba(255, 255, 255, 0.8);
@@ -831,7 +845,7 @@ select {
     animation: fadeInBounce 0.6s ease-out, fadeOutAfterDelay 0.5s 3s forwards;
     pointer-events: none;
   }
-  
+
   &.scrolled .scroll-indicator {
     opacity: 0;
     transform: translateY(-10px);
@@ -863,7 +877,7 @@ select {
 /* Mejora del scroll suave */
 ::ng-deep .p-dialog-content {
   scroll-behavior: smooth;
-  
+
   /* Padding bottom para asegurar que el último elemento sea visible */
   > div {
     padding-bottom: 2rem;
@@ -878,18 +892,18 @@ select {
     border-color: #059669;
     font-weight: 600;
     padding: 0.75rem 1.25rem;
-    
+
     &:hover {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
-    
+
     &:focus {
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
   }
-  
+
   .p-splitbutton-menubutton {
     border-left: 1px solid rgba(255, 255, 255, 0.3);
   }
@@ -899,25 +913,25 @@ select {
 ::ng-deep .p-menu {
   .p-menuitem-link {
     padding: 0.75rem 1rem;
-    
+
     &:hover {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     }
   }
-  
+
   .p-menuitem-icon {
     font-size: 1.1rem;
     margin-right: 0.75rem;
-    
+
     &.pi-file-excel {
       color: #10b981;
     }
-    
+
     &.pi-file-pdf {
       color: #ef4444;
     }
   }
-  
+
   .p-menuitem-text {
     font-weight: 500;
   }

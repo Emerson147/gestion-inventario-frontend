@@ -1,10 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import {Observable, tap} from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {jwtDecode} from 'jwt-decode';
-import {Router} from '@angular/router';
-import {environment} from '../../../environments/environment';
-
+import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface JwtResponse {
   token: string;
@@ -21,7 +20,6 @@ interface CambiarPasswordRequest {
   newPassword: string;
 }
 
-
 interface DecodedToken {
   sub: string;
   roles: string;
@@ -34,9 +32,12 @@ interface LoginRequest {
 }
 
 interface RegistroRequest {
+  nombre: string;
+  apellidos: string;
   username: string;
   email: string;
   password: string;
+  roles: string[];
 }
 
 interface MensajeResponse {
@@ -44,66 +45,84 @@ interface MensajeResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   private apiUrl = `${environment.apiUrl}api/auth`;
 
   private http = inject(HttpClient);
   private router = inject(Router);
 
   login(loginRequest: LoginRequest): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
-      tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
+    return this.http
+      .post<JwtResponse>(`${this.apiUrl}/login`, loginRequest)
+      .pipe(
+        tap((response) => {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('refreshToken', response.refreshToken);
 
-        // Almacenar informacion del usuario relevante
-        localStorage.setItem('user', JSON.stringify({
-          id: response.id,
-          username: response.username,
-          email: response.email,
-          roles: response.roles
-        }));
-      })
-    );
+          // Almacenar informacion del usuario relevante
+          localStorage.setItem(
+            'user',
+            JSON.stringify({
+              id: response.id,
+              username: response.username,
+              email: response.email,
+              roles: response.roles,
+            })
+          );
+        })
+      );
   }
 
   registro(registroRequest: RegistroRequest): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.apiUrl}/registro`, registroRequest);
-  }
-
-  refreshToken(refreshToken: string): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.apiUrl}/refresh-token`, refreshToken).pipe(
-      tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
-      })
+    return this.http.post<JwtResponse>(
+      `${this.apiUrl}/registro`,
+      registroRequest
     );
   }
 
-  cambiarPassword(cambiarPasswordRequest: CambiarPasswordRequest): Observable<MensajeResponse> {
-    return this.http.post<MensajeResponse>(`${this.apiUrl}/cambiar-password`, cambiarPasswordRequest);
+  refreshToken(refreshToken: string): Observable<JwtResponse> {
+    return this.http
+      .post<JwtResponse>(`${this.apiUrl}/refresh-token`, refreshToken)
+      .pipe(
+        tap((response) => {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('refreshToken', response.refreshToken);
+        })
+      );
+  }
+
+  cambiarPassword(
+    cambiarPasswordRequest: CambiarPasswordRequest
+  ): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(
+      `${this.apiUrl}/cambiar-password`,
+      cambiarPasswordRequest
+    );
   }
 
   logout(token: string): Observable<MensajeResponse> {
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
-    return this.http.post<MensajeResponse>(`${this.apiUrl}/logout`, null, { headers }).pipe(
-      tap(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-      })
-    );
+    return this.http
+      .post<MensajeResponse>(`${this.apiUrl}/logout`, null, { headers })
+      .pipe(
+        tap(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+        })
+      );
   }
 
   validarToken(token: string): Observable<MensajeResponse> {
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
-    return this.http.get<MensajeResponse>(`${this.apiUrl}/validar-token`, { headers });
+    return this.http.get<MensajeResponse>(`${this.apiUrl}/validar-token`, {
+      headers,
+    });
   }
 
   getToken(): string | null {
@@ -129,11 +148,11 @@ export class AuthService {
     if (token) {
       try {
         const decoded: DecodedToken = jwtDecode(token);
-        
+
         // Manejar diferentes formatos de roles
         if (typeof decoded.roles === 'string') {
           // Si es un string, separar por comas
-          return decoded.roles.split(',').map(role => role.trim());
+          return decoded.roles.split(',').map((role) => role.trim());
         } else if (Array.isArray(decoded.roles)) {
           // Si ya es un array
           return decoded.roles;
@@ -205,14 +224,13 @@ export class AuthService {
           // En caso de error, limpiar igualmente
           this.clearSession();
           this.router.navigate(['/login']);
-        }
+        },
       });
     } else {
       this.clearSession();
       this.router.navigate(['/login']);
     }
   }
-
 
   getCurrentUserRole() {
     return '';

@@ -31,7 +31,7 @@ import { ProductoService } from '../../../core/services/producto.service';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { environment } from '../../../../environments/environment';
 import { finalize, forkJoin, catchError, of, firstValueFrom, switchMap, tap } from 'rxjs';
-import { AlertaNegocio, AnalyticsService, KPIMetrics, OptimizacionPrecio } from '../../../core/services/analytics.service';
+import { AnalyticsService, KPIMetrics, OptimizacionPrecio } from '../../../core/services/analytics.service';
 import { EnterpriseIntegrationService, SincronizacionResult } from '../../../core/services/enterprise-integration.service';
 import { MenuModule } from 'primeng/menu';
 import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
@@ -201,12 +201,10 @@ export class ProductosComponent implements OnInit {
 
    // 🆕 NUEVAS PROPIEDADES EMPRESARIALES
   kpiMetrics: KPIMetrics | null = null;
-  alertasNegocio: AlertaNegocio[] = [];
   optimizacionesDialog = false;
   optimizacionesSugeridas: OptimizacionPrecioSeleccionable[] = [];
   productosMap = new Map<number, Producto>();
   dashboardEjecutivoDialog = false;
-  alertasDialog = false;
   sincronizandoERP = false;
 
   // 🆕 Nuevos filtros avanzados
@@ -215,8 +213,7 @@ export class ProductosComponent implements OnInit {
     margenMinimo: null as number | null,
     margenMaximo: null as number | null,
     fechaDesde: null as Date | null,
-    fechaHasta: null as Date | null,
-    soloPorductosConAlertas: false
+    fechaHasta: null as Date | null
   };
 
   marcasCalzado = [
@@ -271,16 +268,6 @@ export class ProductosComponent implements OnInit {
   ngOnInit(): void {
     this.inicializarAccionesMasivas();
     this.loadProductos();
-    this.cargarDatosEmpresariales(); // 🆕 Nueva función
-    this.productosMap = new Map(
-      this.productos
-        .filter(p => p.id !== undefined && p.id !== null) // Filtrar IDs válidos
-        .map(p => [p.id!, p]) // El ! indica que sabemos que id no es undefined después del filter
-    );
-  }
-
-  get alertasAltaSeveridad(): number {
-    return this.alertasNegocio.filter(a => a.severidad === 'HIGH').length;
   }
 
   onToggleSeleccionTodas(event: ToggleEvent): void {
@@ -318,42 +305,11 @@ export class ProductosComponent implements OnInit {
     return this.getSelectedOptimizations().length > 0;
   }
 
-   /**
-   * Carga datos empresariales en paralelo
-   */
-  private async cargarDatosEmpresariales(): Promise<void> {
-    try {
-      // Cargar KPIs y alertas en paralelo
-      const [kpis, alertas] = await Promise.all([
-        firstValueFrom(this.analyticsService.getKPIMetrics()),
-        firstValueFrom(this.analyticsService.getAlertasNegocio())
-      ]);
-
-      this.kpiMetrics = kpis;
-      this.alertasNegocio = alertas;
-
-      // Mostrar notificación si hay alertas críticas
-      const alertasCriticas = alertas.filter(a => a.severidad === 'HIGH');
-      if (alertasCriticas.length > 0) {
-        this.showWarning(`Tienes ${alertasCriticas.length} alertas críticas de negocio`);
-      }
-    } catch (error) {
-      console.error('Error cargando datos empresariales:', error);
-    }
-  }
-
   /**
    * 📊 Abrir dashboard ejecutivo
    */
   abrirDashboardEjecutivo(): void {
     this.dashboardEjecutivoDialog = true;
-  }
-
-  /**
-   * 🚨 Ver alertas de negocio
-   */
-  verAlertasNegocio(): void {
-    this.alertasDialog = true;
   }
 
   /**
@@ -425,15 +381,6 @@ export class ProductosComponent implements OnInit {
       );
     }
 
-    // Filtro productos con alertas
-    if (this.filtroAvanzado.soloPorductosConAlertas) {
-      const productosConAlertas = this.alertasNegocio
-        .filter(a => a.productoId)
-        .map(a => a.productoId);
-      
-      productos = productos.filter(p => productosConAlertas.includes(p.id));
-    }
-
     this.productosFiltrados = productos;
   }
 
@@ -449,24 +396,6 @@ export class ProductosComponent implements OnInit {
     }
   }
 
-  getSeveridadColor(severidad: string): string {
-    switch (severidad) {
-      case 'HIGH': return 'danger';
-      case 'MEDIUM': return 'warning';
-      case 'LOW': return 'info';
-      default: return 'secondary';
-    }
-  }
-
-  getAlertIcon(tipo: string): string {
-    switch (tipo) {
-      case 'MARGEN_BAJO': return 'pi pi-exclamation-triangle';
-      case 'STOCK_CRITICO': return 'pi pi-box';
-      case 'OPORTUNIDAD_VENTA': return 'pi pi-chart-line';
-      case 'PRECIO_COMPETENCIA': return 'pi pi-dollar';
-      default: return 'pi pi-info-circle';
-    }
-  }
   // ========== MÉTODOS DE CARGA ==========
 
   loadProductos(): void {
@@ -530,17 +459,6 @@ export class ProductosComponent implements OnInit {
   }
 
 
-  getProductoPorId(alertaProductoId: number): Producto | undefined {
-    return this.productos.find(p => p.id === alertaProductoId);
-  }
-
-  verDetallesProductoPorId(alertaProductoId: number): void {
-    const producto = this.getProductoPorId(alertaProductoId);
-    if (producto) {
-      this.verDetallesProducto(producto);
-    }
-  }
-  
   /**
    * 👇 Muestra detalles del producto en modal
    */

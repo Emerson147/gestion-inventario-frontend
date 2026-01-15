@@ -1,16 +1,42 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, ChildrenOutletContexts } from '@angular/router';
 import { environment } from './environments/environment';
+import { routeAnimations } from './app/core/animations/route.animations';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  template: '<router-outlet></router-outlet>',
+  template: `
+    <div [@routeAnimations]="getRouteAnimationData()">
+      <router-outlet></router-outlet>
+    </div>
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+        position: relative;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+    `,
+  ],
+  animations: [routeAnimations],
 })
 export class AppComponent implements OnInit {
   title = 'gestion-inventario-frontend';
 
-  // 👈 Agregar este método
+  constructor(private contexts: ChildrenOutletContexts) {}
+
+  getRouteAnimationData() {
+    const routeData =
+      this.contexts.getContext('primary')?.route?.snapshot?.data;
+    return (
+      routeData?.['animation'] ??
+      this.contexts.getContext('primary')?.route?.snapshot?.routeConfig?.path
+    );
+  }
+
   ngOnInit() {
     console.log('=== DIAGNÓSTICO DE ENVIRONMENT ===');
     console.log('Environment completo:', environment);

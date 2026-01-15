@@ -14,18 +14,16 @@ import { LayoutService } from '../service/layout.service';
     imports: [CommonModule, RouterModule, RippleModule],
     template: `
         <ng-container>
-            <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text">{{ item.label }}</div>
-            <a *ngIf="(!item.routerLink || item.items) && item.visible !== false" [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" pRipple>
-                <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
-                <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
+            <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text text-xs font-semibold text-surface-500 uppercase mb-2 mt-4 px-4">{{ item.label }}</div>
+            <a *ngIf="(!item.routerLink || item.items) && item.visible !== false" [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" pRipple
+               class="flex items-center cursor-pointer p-2 rounded-md text-surface-700 transition-colors duration-200 hover:bg-surface-100 hover:text-primary-600">
             </a>
             <a
                 *ngIf="item.routerLink && !item.items && item.visible !== false"
                 (click)="itemClick($event)"
                 [ngClass]="item.styleClass"
                 [routerLink]="item.routerLink"
-                routerLinkActive="active-route"
+                routerLinkActive="bg-primary-50 text-primary-600 font-semibold"
                 [routerLinkActiveOptions]="item.routerLinkActiveOptions || { paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
                 [fragment]="item.fragment"
                 [queryParamsHandling]="item.queryParamsHandling"
@@ -37,13 +35,14 @@ import { LayoutService } from '../service/layout.service';
                 [attr.target]="item.target"
                 tabindex="0"
                 pRipple
+                class="flex items-center cursor-pointer p-3 rounded-md text-surface-700 transition-colors duration-200 hover:bg-surface-100 hover:text-primary-600"
             >
-                <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
-                <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
+                <i [ngClass]="item.icon" class="layout-menuitem-icon mr-2 text-lg"></i>
+                <span class="layout-menuitem-text font-medium">{{ item.label }}</span>
+                <i class="pi pi-fw pi-angle-down layout-submenu-toggler ml-auto" *ngIf="item.items"></i>
             </a>
 
-            <ul *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation">
+            <ul *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation" class="pl-4">
                 <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
                     <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child['badgeClass']"></li>
                 </ng-template>

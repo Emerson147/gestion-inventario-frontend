@@ -1,302 +1,373 @@
 <p-toast position="top-right" [life]="4000" />
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
 <!-- Header con dashboard metrics mejorado -->
 <div class="mb-6">
   <!-- Header principal con gradiente sutil -->
-  <div class="bg-gradient-to-r from-white via-indigo-50 to-white rounded-xl p-6 shadow-sm border border-gray-100">
-    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+  <div
+    class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 sm:p-8 border border-surface-200 dark:border-surface-700"
+  >
+    <!-- Decorative gradient background -->
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-purple-950/10 pointer-events-none"
+    ></div>
+
+    <div
+      class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4"
+    >
       <!-- Título principal -->
       <div>
-        <div class="flex items-center gap-3 mb-2">
-          <div class="bg-indigo-600 p-2 rounded-lg shadow-lg">
+        <div class="flex items-center gap-4 mb-2">
+          <div
+            class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
+          >
             <i class="pi pi-users text-white text-xl"></i>
           </div>
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0">Gestión de Usuarios</h1>
-            <p class="text-gray-600 mt-1 mb-0">Administra usuarios, roles y permisos del sistema</p>
+            <h1
+              class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight"
+            >
+              Gestión de Usuarios
+            </h1>
+            <p
+              class="text-surface-600 dark:text-surface-400 mt-1 mb-0 text-sm font-medium"
+            >
+              Administra usuarios, roles y permisos del sistema
+            </p>
           </div>
         </div>
       </div>
-      
+
       <!-- Dashboard metrics con hover effects -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-shrink-0">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-shrink-0">
         <!-- Total usuarios -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="users?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
-              <i class="pi pi-list text-blue-600 text-xl" aria-hidden="true"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-600">{{ calcularMetricasUsuarios().total }}</div>
-              <div class="text-sm text-gray-600 font-medium">Total Usuarios</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Usuarios activos -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="users?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-green-50 group-hover:bg-green-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
-              <i class="pi pi-check-circle text-green-600 text-xl" aria-hidden="true"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-green-600">{{ calcularMetricasUsuarios().activos }}</div>
-              <div class="text-sm text-gray-600 font-medium">Usuarios Activos</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Administradores -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="calcularMetricasUsuarios().admins > 0">
-          <div class="flex items-center gap-3">
-            <div class="bg-red-50 group-hover:bg-red-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
-              <i class="pi pi-crown text-red-600 text-xl" aria-hidden="true"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-red-600">{{ calcularMetricasUsuarios().admins }}</div>
-              <div class="text-sm text-gray-600 font-medium">Administradores</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Usuarios seleccionados -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="selectedUsers?.length">
-          <div class="flex items-center gap-3">
-            <div class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
-              <i class="pi pi-check-square text-orange-600 text-xl" aria-hidden="true"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-orange-600">{{ selectedUsers.length }}</div>
-              <div class="text-sm text-gray-600 font-medium">Seleccionados</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Nuevos usuarios (últimos 30 días) -->
-        <div class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" 
-             *ngIf="calcularMetricasUsuarios().nuevosUsuarios > 0">
-          <div class="flex items-center gap-3">
-            <div class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl mb-3 mx-auto w-fit transition-colors duration-300">
-              <i class="pi pi-user-plus text-purple-600 text-xl" aria-hidden="true"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-purple-600">{{ calcularMetricasUsuarios().nuevosUsuarios }}</div>
-              <div class="text-sm text-gray-600 font-medium">Nuevos (30d)</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Toolbar mejorado con diseño más limpio -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-    <!-- Acciones principales -->
-    <div class="flex flex-wrap gap-3">
-      <p-button 
-        *appHasPermission="{module: 'usuarios', permission: permissionTypes.CREATE}" 
-        label="Nuevo Usuario" 
-        icon="pi pi-plus" 
-        size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="openNew()"
-        pTooltip="Crear un nuevo usuario"
-      />
-      <p-button 
-        *appHasPermission="{module: 'usuarios', permission: permissionTypes.DELETE}"
-        [label]="'Eliminar (' + (selectedUsers.length || 0) + ')'" 
-        icon="pi pi-trash" 
-        severity="danger"
-        [outlined]="true"
-        size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="deleteSelectedUsers()" 
-        [disabled]="!selectedUsers.length"
-        pTooltip="Eliminar usuarios seleccionados"
-      />
-      <!-- Botón de exportar seleccionados -->
-      <p-button 
-        label="Exportar Seleccionados" 
-        icon="pi pi-download"
-        severity="info"
-        [outlined]="true"
-        size="large"
-        class="shadow-sm hover:shadow-md transition-all duration-300" 
-        (click)="exportarSeleccionados()" 
-        [disabled]="!selectedUsers.length"
-        pTooltip="Exportar usuarios seleccionados a Excel"
-      />
-    </div>
-
-    <!-- Controles de vista y utilidades -->
-    <div class="flex flex-wrap items-center gap-3">
-      <!-- Selector de vista mejorado -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm font-medium text-gray-700">Vista:</span>
-        <p-selectButton 
-          [(ngModel)]="currentView" 
-          [options]="viewOptions" 
-          optionLabel="label" 
-          optionValue="value"
-          size="small"
-          class="shadow-sm"
+        <div
+          class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700 hover:border-blue-300/60 dark:hover:border-blue-600/60 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
+          *ngIf="users?.length"
         >
-          <ng-template let-option pTemplate="option">
-            <i [class]="option.icon" class="mr-2"></i>
-            {{option.label}}
-          </ng-template>
-        </p-selectButton>
-      </div>
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-transparent dark:from-blue-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          ></div>
+          <div class="relative flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+            >
+              <i class="pi pi-list text-white text-sm" aria-hidden="true"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {{ calcularMetricasUsuarios().total }}
+              </div>
+              <div
+                class="text-xs text-surface-600 dark:text-surface-400 font-semibold"
+              >
+                Total Usuarios
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <!-- Utilidades -->
-      <div class="flex gap-2">
-        <p-button 
-          icon="pi pi-refresh" 
-          severity="secondary" 
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Actualizar lista"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="loadUsers()" 
-        />
-        <p-button 
-          icon="pi pi-download" 
-          severity="success" 
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Exportar todos a Excel"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="exportarExcel()"
-          [disabled]="!usersFiltrados.length"
-        />
-        <p-button 
-          icon="pi pi-chart-bar" 
-          severity="info" 
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Ver estadísticas"
-          class="shadow-sm hover:shadow-md transition-all duration-300"
-          (click)="mostrarEstadisticas()"
-        />
+        <!-- Usuarios activos -->
+        <div
+          class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700 hover:border-emerald-300/60 dark:hover:border-emerald-600/60 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300"
+          *ngIf="users?.length"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-emerald-50/30 via-transparent to-transparent dark:from-emerald-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          ></div>
+          <div class="relative flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+            >
+              <i
+                class="pi pi-check-circle text-white text-sm"
+                aria-hidden="true"
+              ></i>
+            </div>
+            <div>
+              <div
+                class="text-2xl font-bold text-emerald-600 dark:text-emerald-400"
+              >
+                {{ calcularMetricasUsuarios().activos }}
+              </div>
+              <div
+                class="text-xs text-surface-600 dark:text-surface-400 font-semibold"
+              >
+                Usuarios Activos
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Administradores -->
+        <div
+          class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700 hover:border-rose-300/60 dark:hover:border-rose-600/60 hover:shadow-lg hover:shadow-rose-500/10 transition-all duration-300"
+          *ngIf="calcularMetricasUsuarios().admins > 0"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-rose-50/30 via-transparent to-transparent dark:from-rose-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          ></div>
+          <div class="relative flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-rose-500 to-rose-600 dark:from-rose-400 dark:to-rose-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+            >
+              <i class="pi pi-crown text-white text-sm" aria-hidden="true"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-rose-600 dark:text-rose-400">
+                {{ calcularMetricasUsuarios().admins }}
+              </div>
+              <div
+                class="text-xs text-surface-600 dark:text-surface-400 font-semibold"
+              >
+                Administradores
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nuevos usuarios (últimos 30 días) -->
+        <div
+          class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700 hover:border-purple-300/60 dark:hover:border-purple-600/60 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+          *ngIf="calcularMetricasUsuarios().nuevosUsuarios > 0"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-transparent dark:from-purple-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          ></div>
+          <div class="relative flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+            >
+              <i
+                class="pi pi-user-plus text-white text-sm"
+                aria-hidden="true"
+              ></i>
+            </div>
+            <div>
+              <div
+                class="text-2xl font-bold text-purple-600 dark:text-purple-400"
+              >
+                {{ calcularMetricasUsuarios().nuevosUsuarios }}
+              </div>
+              <div
+                class="text-xs text-surface-600 dark:text-surface-400 font-semibold"
+              >
+                Nuevos (30d)
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Panel de filtros con diseño más moderno -->
+<!-- Toolbar estilo dashboard limpio -->
+<div
+  class="bg-surface-0 dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 p-3 sm:p-4 mb-6"
+>
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+  >
+    <!-- Acciones principales -->
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <button
+        *appHasPermission="{
+          module: 'usuarios',
+          permission: permissionTypes.CREATE
+        }"
+        (click)="openNew()"
+        class="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30"
+      >
+        <i class="pi pi-plus text-sm"></i>
+        <span class="hidden xs:inline">Nuevo</span>
+        <span class="hidden sm:inline">Usuario</span>
+      </button>
+
+      <button
+        *appHasPermission="{
+          module: 'usuarios',
+          permission: permissionTypes.DELETE
+        }"
+        (click)="deleteSelectedUsers()"
+        [disabled]="!selectedUsers.length"
+        class="p-2.5 sm:px-4 sm:py-2.5 bg-surface-50 dark:bg-surface-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300 hover:text-red-600 disabled:opacity-50"
+        pTooltip="Eliminar seleccionados"
+      >
+        <i class="pi pi-trash text-sm"></i>
+        <span *ngIf="selectedUsers.length" class="hidden sm:inline"
+          >({{ selectedUsers.length }})</span
+        >
+      </button>
+
+      <div
+        class="hidden sm:block w-px h-6 bg-surface-200 dark:bg-surface-700"
+      ></div>
+
+      <p-selectButton
+        [(ngModel)]="currentView"
+        [options]="viewOptions"
+        optionValue="value"
+        size="small"
+      >
+        <ng-template let-option pTemplate="option">
+          <i [class]="option.icon"></i>
+        </ng-template>
+      </p-selectButton>
+    </div>
+
+    <!-- Utilidades -->
+    <div class="flex items-center justify-end gap-2">
+      <button
+        (click)="loadUsers()"
+        class="p-2.5 bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-xl border border-surface-200 dark:border-surface-700 transition-all duration-200 text-surface-600 dark:text-surface-400"
+        pTooltip="Actualizar"
+      >
+        <i class="pi pi-refresh text-sm"></i>
+      </button>
+      <button
+        (click)="exportarExcel()"
+        [disabled]="!usersFiltrados.length"
+        class="p-2.5 bg-surface-50 dark:bg-surface-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-emerald-300 transition-all duration-200 text-surface-600 dark:text-surface-400 hover:text-emerald-600 disabled:opacity-50"
+        pTooltip="Exportar"
+      >
+        <i class="pi pi-download text-sm"></i>
+      </button>
+      <button
+        (click)="mostrarEstadisticas()"
+        class="p-2.5 bg-surface-50 dark:bg-surface-800 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-blue-300 transition-all duration-200 text-surface-600 dark:text-surface-400 hover:text-blue-600"
+        pTooltip="Estadísticas"
+      >
+        <i class="pi pi-chart-bar text-sm"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de filtros estilo dashboard -->
 <div class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <p-panel 
-      header="Filtros Avanzados" 
-      [toggleable]="true" 
+  <div
+    class="bg-surface-0 dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden"
+  >
+    <p-panel
+      header="Filtros Avanzados"
+      [toggleable]="true"
       [collapsed]="filtrosPanelCollapsed"
       (onToggle)="onFiltrosPanelToggle($event)"
       styleClass="border-0 shadow-none"
     >
       <ng-template pTemplate="header">
         <div class="flex items-center gap-2">
-          <div class="bg-purple-100 p-2 rounded-lg">
-            <i class="pi pi-filter text-purple-600"></i>
+          <div
+            class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 rounded-lg flex items-center justify-center"
+          >
+            <i class="pi pi-filter text-white text-sm"></i>
           </div>
-          <span class="font-semibold text-gray-800">Filtros Avanzados</span>
-          <p-tag 
-            *ngIf="getTotalFiltrosActivos() > 0" 
-            [value]="getTotalFiltrosActivos() + ' activo' + (getTotalFiltrosActivos() > 1 ? 's' : '')"
+          <span class="font-semibold text-surface-800 dark:text-surface-200"
+            >Filtros Avanzados</span
+          >
+          <p-tag
+            *ngIf="getTotalFiltrosActivos() > 0"
+            [value]="
+              getTotalFiltrosActivos() +
+              ' activo' +
+              (getTotalFiltrosActivos() > 1 ? 's' : '')
+            "
             severity="info"
             size="small"
           />
         </div>
       </ng-template>
-      
-      <div class="grid gap-4 pt-4">
-        <!-- Búsqueda general con icono -->
-        <div class="col-12 md:col-4">
-          <label for="busquedaGeneral" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-search mr-2 text-purple-600"></i>
-            Búsqueda General
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 pt-4">
+        <!-- Búsqueda general -->
+        <div class="lg:col-span-4">
+          <label
+            for="busquedaGeneral"
+            class="block font-semibold mb-2 text-surface-700 dark:text-surface-300 text-sm"
+          >
+            <i
+              class="pi pi-search mr-2 text-indigo-600 dark:text-indigo-400"
+            ></i>
+            Búsqueda
           </label>
           <p-iconfield class="w-full">
             <p-inputicon styleClass="pi pi-search" />
-            <input 
-              pInputText 
+            <input
+              pInputText
               id="busquedaGeneral"
-              [(ngModel)]="filtroTexto" 
+              [(ngModel)]="filtroTexto"
               (input)="aplicarFiltros()"
-              placeholder="Buscar por nombre, usuario, email..."
-              class="w-full h-12 text-base rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Nombre, usuario, email..."
+              class="w-full h-11 text-sm rounded-lg"
             />
           </p-iconfield>
         </div>
-        
-        <!-- Filtro de rol mejorado -->
-        <div class="col-12 md:col-3">
-          <label for="filtroRol" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-users mr-2 text-green-600"></i>
+
+        <!-- Filtro de rol -->
+        <div class="lg:col-span-3">
+          <label
+            for="filtroRol"
+            class="block font-semibold mb-2 text-surface-700 dark:text-surface-300 text-sm"
+          >
+            <i
+              class="pi pi-users mr-2 text-emerald-600 dark:text-emerald-400"
+            ></i>
             Rol
           </label>
-          <p-select 
+          <p-select
             id="filtroRol"
             [(ngModel)]="filtroRol"
             [options]="rolesDisponibles"
-            placeholder="Todos los roles"
+            placeholder="Todos"
             [showClear]="true"
-            [filter]="true"
-            filterPlaceholder="Buscar rol..."
             class="w-full"
-            styleClass="h-12"
+            styleClass="h-11"
             (onChange)="aplicarFiltros()"
           />
         </div>
-        
+
         <!-- Filtro de estado -->
-        <div class="col-12 md:col-3">
-          <label for="filtroEstado" class="block font-semibold mb-3 text-gray-700">
-            <i class="pi pi-check-circle mr-2 text-blue-600"></i>
+        <div class="lg:col-span-3">
+          <label
+            for="filtroEstado"
+            class="block font-semibold mb-2 text-surface-700 dark:text-surface-300 text-sm"
+          >
+            <i
+              class="pi pi-check-circle mr-2 text-blue-600 dark:text-blue-400"
+            ></i>
             Estado
           </label>
-          <p-select 
+          <p-select
             id="filtroEstado"
             [(ngModel)]="filtroEstado"
             [options]="statusOptions"
             optionLabel="label"
             optionValue="value"
-            placeholder="Todos los estados"
+            placeholder="Todos"
             [showClear]="true"
             class="w-full"
-            styleClass="h-12"
+            styleClass="h-11"
             (onChange)="aplicarFiltros()"
           />
         </div>
-        
-        <!-- Acciones de filtro -->
-        <div class="col-12 md:col-2 flex items-end">
-          <div class="w-full space-y-2">
-            <p-button 
-              label="Limpiar Todo" 
-              icon="pi pi-filter-slash" 
-              severity="secondary" 
-              [outlined]="true"
-              size="small"
+
+        <!-- Acciones -->
+        <div class="lg:col-span-2 flex items-end">
+          <div class="w-full flex gap-2">
+            <button
               (click)="limpiarFiltros()"
-              class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
-            />
-            <p-button 
-              label="Buscar" 
-              icon="pi pi-search" 
-              size="small"
+              class="flex-1 h-11 px-3 bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 text-sm font-medium transition-all"
+            >
+              <i class="pi pi-filter-slash"></i>
+            </button>
+            <button
               (click)="aplicarFiltros()"
-              class="w-full h-12 shadow-sm hover:shadow-md transition-all duration-300"
-            />
+              class="flex-1 h-11 px-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white text-sm font-medium transition-all"
+            >
+              <i class="pi pi-search"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -304,9 +375,25 @@
   </div>
 </div>
 
-<!-- Vista de Tabla Modernizada -->
+<!-- Vista de Tabla (mejor en pantallas grandes) -->
 <div *ngIf="currentView === 'table'" class="mb-6">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <!-- Sugerencia móvil -->
+  <div
+    class="block lg:hidden mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800"
+  >
+    <div
+      class="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-400"
+    >
+      <i class="pi pi-info-circle"></i>
+      <span
+        >Desliza horizontalmente o usa la vista de cards para mejor experiencia
+        en móvil</span
+      >
+    </div>
+  </div>
+  <div
+    class="bg-surface-0 dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 overflow-x-auto"
+  >
     <p-table
       #dt
       [value]="usersFiltrados"
@@ -314,7 +401,7 @@
       [paginator]="true"
       [totalRecords]="usersFiltrados.length"
       [globalFilterFields]="['nombres', 'apellidos', 'username', 'email']"
-      [tableStyle]="{'min-width': '75rem'}"
+      [tableStyle]="{ 'min-width': '75rem' }"
       [(selection)]="selectedUsers"
       [rowHover]="true"
       dataKey="id"
@@ -325,90 +412,145 @@
       [alwaysShowPaginator]="true"
       styleClass="p-datatable-gridlines p-datatable-striped"
     >
-      <!-- Caption modernizado -->
+      <!-- Caption limpio -->
       <ng-template pTemplate="caption">
-        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 border-b border-gray-200">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <div class="bg-purple-600 p-2 rounded-lg">
-                <i class="pi pi-list text-white"></i>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-800 m-0">Lista de Usuarios</h3>
-                <p class="text-sm text-gray-600 mt-1" *ngIf="usersFiltrados?.length">
-                  {{usersFiltrados.length}} usuarios encontrados
-                </p>
-              </div>
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm"
+            >
+              <i class="pi pi-list text-white"></i>
             </div>
-            <div class="flex gap-3">
-              <p-iconfield>
-                <p-inputicon styleClass="pi pi-search" />
-                <input 
-                  pInputText 
-                  type="text" 
-                  (input)="onGlobalFilter(dt, $event)" 
-                  placeholder="Búsqueda rápida..." 
-                  class="w-80 h-10 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </p-iconfield>
+            <div>
+              <h3
+                class="text-lg font-bold text-surface-800 dark:text-surface-200 m-0"
+              >
+                Lista de Usuarios
+              </h3>
+              <p
+                class="text-sm text-surface-600 dark:text-surface-400 mt-0.5"
+                *ngIf="usersFiltrados?.length"
+              >
+                {{ usersFiltrados.length }} usuarios encontrados
+              </p>
             </div>
+          </div>
+          <div class="flex gap-3">
+            <p-iconfield>
+              <p-inputicon styleClass="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Búsqueda rápida..."
+                class="w-64 h-10 rounded-lg"
+              />
+            </p-iconfield>
           </div>
         </div>
       </ng-template>
 
-      <!-- Header modernizado -->
+      <!-- Header -->
       <ng-template pTemplate="header">
-        <tr class="bg-gray-50">
-          <th style="width: 3rem" class="text-center border-b-2 border-gray-200">
+        <tr class="bg-surface-50 dark:bg-surface-800">
+          <th
+            style="width: 3rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
             <p-tableHeaderCheckbox />
           </th>
-          <th style="width:10rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th
+            style="width: 10rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-user text-purple-600"></i>
               Avatar
             </div>
           </th>
-          <th pSortableColumn="username" style="min-width:12rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
+          <th
+            pSortableColumn="username"
+            style="min-width: 12rem"
+            class="border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-at text-blue-600"></i>
               Usuario
               <p-sortIcon field="username" />
             </div>
           </th>
-          <th pSortableColumn="nombres" style="min-width:15rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
+          <th
+            pSortableColumn="nombres"
+            style="min-width: 15rem"
+            class="border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-user text-green-600"></i>
               Información Personal
               <p-sortIcon field="nombres" />
             </div>
           </th>
-          <th pSortableColumn="email" style="min-width:15rem" class="border-b-2 border-gray-200">
-            <div class="flex items-center gap-2 font-bold text-gray-700">
+          <th
+            pSortableColumn="email"
+            style="min-width: 15rem"
+            class="border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-envelope text-orange-600"></i>
               Email
               <p-sortIcon field="email" />
             </div>
           </th>
-          <th style="min-width:10rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th
+            style="min-width: 10rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-users text-indigo-600"></i>
               Roles
             </div>
           </th>
-          <th style="min-width:8rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th
+            style="min-width: 8rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-power-off text-emerald-600"></i>
               Estado
             </div>
           </th>
-          <th style="min-width:10rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th
+            style="min-width: 10rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-calendar text-pink-600"></i>
               Fecha Registro
             </div>
           </th>
-          <th style="min-width:12rem" class="text-center border-b-2 border-gray-200">
-            <div class="flex items-center justify-center gap-2 font-bold text-gray-700">
+          <th
+            style="min-width: 12rem"
+            class="text-center border-b-2 border-surface-200 dark:border-surface-700"
+          >
+            <div
+              class="flex items-center justify-center gap-2 font-bold text-surface-700 dark:text-surface-300"
+            >
               <i class="pi pi-cog text-gray-600"></i>
               Acciones
             </div>
@@ -416,17 +558,19 @@
         </tr>
       </ng-template>
 
-      <!-- Body de la tabla modernizado -->
+      <!-- Body -->
       <ng-template pTemplate="body" let-usuario let-rowIndex="rowIndex">
-        <tr class="hover:bg-purple-50 transition-colors duration-200" [class.bg-blue-25]="rowIndex % 2 === 0">
+        <tr
+          class="hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors duration-200"
+        >
           <td class="text-center">
             <p-tableCheckbox [value]="usuario" />
           </td>
-          
+
           <!-- Avatar con información -->
           <td class="text-center">
             <div class="flex justify-center">
-              <p-avatar 
+              <p-avatar
                 [image]="getAvatarUrl(usuario)"
                 [label]="getInitials(usuario)"
                 size="large"
@@ -436,53 +580,73 @@
               />
             </div>
           </td>
-          
+
           <!-- Usuario con username -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="bg-blue-100 p-2 rounded-lg">
-                <i class="pi pi-at text-blue-600 text-sm"></i>
+              <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                <i
+                  class="pi pi-at text-blue-600 dark:text-blue-400 text-sm"
+                ></i>
               </div>
               <div>
-                <div class="font-bold text-gray-900 text-lg">{{ usuario.username }}</div>
-                <div class="text-sm text-gray-500">ID: {{ usuario.id }}</div>
+                <div
+                  class="font-bold text-surface-900 dark:text-surface-100 text-lg"
+                >
+                  {{ usuario.username }}
+                </div>
+                <div class="text-sm text-surface-500 dark:text-surface-400">
+                  ID: {{ usuario.id }}
+                </div>
               </div>
             </div>
           </td>
-          
+
           <!-- Información personal -->
           <td>
             <div class="py-2">
-              <div class="font-bold text-gray-900 text-lg mb-1">{{ usuario.nombres }} {{ usuario.apellidos }}</div>
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <i class="pi pi-user text-gray-400"></i>
+              <div
+                class="font-bold text-surface-900 dark:text-surface-100 text-lg mb-1"
+              >
+                {{ usuario.nombres }} {{ usuario.apellidos }}
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400"
+              >
+                <i class="pi pi-user text-surface-400"></i>
                 <span>{{ usuario.nombres }}</span>
-                <span class="text-gray-400">•</span>
+                <span class="text-surface-400">•</span>
                 <span>{{ usuario.apellidos }}</span>
               </div>
             </div>
           </td>
-          
+
           <!-- Email con verificación -->
           <td>
             <div class="flex items-center gap-3">
-              <div class="bg-orange-100 p-2 rounded-lg">
-                <i class="pi pi-envelope text-orange-600"></i>
+              <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
+                <i
+                  class="pi pi-envelope text-orange-600 dark:text-orange-400"
+                ></i>
               </div>
               <div>
-                <div class="font-semibold text-gray-800">{{ usuario.email }}</div>
-                <div class="text-xs text-gray-500">
+                <div
+                  class="font-semibold text-surface-800 dark:text-surface-200"
+                >
+                  {{ usuario.email }}
+                </div>
+                <div class="text-xs text-surface-500 dark:text-surface-400">
                   <i class="pi pi-check-circle text-green-500 mr-1"></i>
                   Verificado
                 </div>
               </div>
             </div>
           </td>
-          
+
           <!-- Roles con chips -->
           <td class="text-center">
             <div class="flex flex-wrap justify-center gap-1">
-              <p-chip 
+              <p-chip
                 *ngFor="let rol of usuario.roles || []"
                 [label]="getRoleLabel([rol])"
                 [icon]="getRoleIcon([rol])"
@@ -491,18 +655,23 @@
               />
             </div>
           </td>
-          
+
           <!-- Estado con switch -->
           <td class="text-center">
             <div class="flex flex-col items-center gap-2">
-              <p-tag 
+              <p-tag
                 [value]="getStatusLabel(usuario.activo)"
                 [severity]="getStatusSeverity(usuario.activo)"
-                [icon]="usuario.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'"
+                [icon]="
+                  usuario.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'
+                "
                 class="shadow-md hover:shadow-lg transition-shadow duration-300"
               />
-              <p-inputSwitch 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
+              <p-inputSwitch
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.EDIT
+                }"
                 [(ngModel)]="usuario.activo"
                 (onChange)="toggleEstadoUsuario(usuario)"
                 pTooltip="Cambiar estado del usuario"
@@ -510,25 +679,32 @@
               />
             </div>
           </td>
-          
+
           <!-- Fecha con formato moderno -->
           <td class="text-center">
-            <div *ngIf="usuario.fechaCreacion; else sinFecha" class="bg-pink-50 rounded-lg p-2">
-              <div class="font-semibold text-gray-800">{{usuario.fechaCreacion | date:'dd/MM/yyyy'}}</div>
-              <small class="text-gray-500">{{usuario.fechaCreacion | date:'HH:mm'}}</small>
+            <div
+              *ngIf="usuario.fechaCreacion; else sinFecha"
+              class="bg-pink-50 dark:bg-pink-900/20 rounded-lg p-2"
+            >
+              <div class="font-semibold text-surface-800 dark:text-surface-200">
+                {{ usuario.fechaCreacion | date : "dd/MM/yyyy" }}
+              </div>
+              <small class="text-surface-500 dark:text-surface-400">{{
+                usuario.fechaCreacion | date : "HH:mm"
+              }}</small>
             </div>
             <ng-template #sinFecha>
-              <span class="text-gray-400 italic">No disponible</span>
+              <span class="text-surface-400 italic">No disponible</span>
             </ng-template>
           </td>
-          
+
           <!-- Acciones con hover -->
           <td>
             <div class="flex gap-2 justify-center">
               <!-- Botón Ver Detalles -->
-              <p-button 
-                icon="pi pi-eye" 
-                [rounded]="true" 
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
                 [outlined]="true"
                 severity="info"
                 size="small"
@@ -537,10 +713,13 @@
                 (click)="verDetallesUsuario(usuario)"
               />
               <!-- Botón Editar -->
-              <p-button 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
-                [rounded]="true" 
+              <p-button
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
+                [rounded]="true"
                 [outlined]="true"
                 size="small"
                 pTooltip="Editar usuario"
@@ -548,11 +727,14 @@
                 (click)="editUser(usuario)"
               />
               <!-- Botón Eliminar -->
-              <p-button 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.DELETE}"
-                icon="pi pi-trash" 
-                severity="danger" 
-                [rounded]="true" 
+              <p-button
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.DELETE
+                }"
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
                 [outlined]="true"
                 size="small"
                 pTooltip="Eliminar usuario"
@@ -564,23 +746,32 @@
         </tr>
       </ng-template>
 
-      <!-- Empty message modernizado -->
+      <!-- Empty message -->
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="9" class="text-center py-12">
             <div class="flex flex-col items-center gap-6">
-              <div class="bg-gray-100 p-8 rounded-full">
-                <i class="pi pi-users text-6xl text-gray-400"></i>
+              <div class="bg-surface-100 dark:bg-surface-800 p-8 rounded-full">
+                <i class="pi pi-users text-6xl text-surface-400"></i>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-gray-700 mb-2">No se encontraron usuarios</div>
-                <div class="text-gray-500 mb-6">No hay usuarios que coincidan con los filtros aplicados</div>
-                <p-button 
-                  *appHasPermission="{module: 'usuarios', permission: permissionTypes.CREATE}"
-                  label="Crear Primer Usuario" 
-                  icon="pi pi-plus" 
+                <div
+                  class="text-2xl font-bold text-surface-700 dark:text-surface-200 mb-2"
+                >
+                  No se encontraron usuarios
+                </div>
+                <div class="text-surface-500 dark:text-surface-400 mb-6">
+                  No hay usuarios que coincidan con los filtros aplicados
+                </div>
+                <p-button
+                  *appHasPermission="{
+                    module: 'usuarios',
+                    permission: permissionTypes.CREATE
+                  }"
+                  label="Crear Primer Usuario"
+                  icon="pi pi-plus"
                   size="large"
-                  class="shadow-lg hover:shadow-xl transition-all duration-300" 
+                  class="shadow-lg hover:shadow-xl transition-all duration-300"
                   (click)="openNew()"
                 />
               </div>
@@ -595,8 +786,13 @@
           <td colspan="9">
             <div class="flex items-center justify-center py-8">
               <div class="flex items-center gap-3">
-                <i class="pi pi-spin pi-spinner text-purple-600 text-2xl"></i>
-                <span class="text-lg font-medium text-gray-600">Cargando usuarios...</span>
+                <i
+                  class="pi pi-spin pi-spinner text-indigo-600 dark:text-indigo-400 text-2xl"
+                ></i>
+                <span
+                  class="text-lg font-medium text-surface-600 dark:text-surface-400"
+                  >Cargando usuarios...</span
+                >
               </div>
             </div>
           </td>
@@ -609,13 +805,25 @@
 <!-- Vista de Cards Premium Mejorada -->
 <div *ngIf="currentView === 'cards'" class="mb-6">
   <div class="grid" *ngIf="!loading">
-    <div class="col-12 sm:col-6 lg:col-4 xl:col-3" *ngFor="let usuario of usersFiltrados; trackBy: trackByUsuario">
+    <div
+      class="col-12 sm:col-6 lg:col-4 xl:col-3"
+      *ngFor="let usuario of usersFiltrados; trackBy: trackByUsuario"
+    >
       <!-- Card con hover y animaciones mejoradas -->
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group">
+      <div
+        class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 hover:border-purple-300/60 dark:hover:border-purple-600/60 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full"
+      >
+        <!-- Subtle gradient overlay on hover -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-transparent dark:from-purple-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        ></div>
+
         <!-- Header de usuario con avatar -->
-        <div class="relative bg-gradient-to-r from-purple-500 to-indigo-600 p-6 text-white">
+        <div
+          class="relative bg-gradient-to-r from-purple-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700 p-6 text-white"
+        >
           <div class="flex items-center gap-4">
-            <p-avatar 
+            <p-avatar
               [image]="getAvatarUrl(usuario)"
               [label]="getInitials(usuario)"
               size="xlarge"
@@ -623,66 +831,85 @@
               class="border-4 border-white shadow-lg"
             />
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-white mb-1">{{ usuario.nombres }} {{ usuario.apellidos }}</h3>
+              <h3 class="text-xl font-bold text-white mb-1">
+                {{ usuario.nombres }} {{ usuario.apellidos }}
+              </h3>
               <div class="text-purple-100 text-sm">{{ usuario.username }}</div>
             </div>
           </div>
-          
+
           <!-- Estado en esquina -->
           <div class="absolute top-4 right-4">
-            <p-tag 
+            <p-tag
               [value]="getStatusLabel(usuario.activo)"
               [severity]="getStatusSeverity(usuario.activo)"
-              [icon]="usuario.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'"
+              [icon]="
+                usuario.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'
+              "
               class="bg-white/20 text-white border-white/20"
             />
           </div>
-          
+
           <!-- Overlay con acciones rápidas -->
-          <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
+          >
             <div class="flex gap-2">
-              <p-button 
-                icon="pi pi-eye" 
+              <p-button
+                icon="pi pi-eye"
                 [rounded]="true"
                 size="small"
                 severity="info"
-                class="bg-white bg-opacity-90 hover:bg-opacity-100"
+                class="bg-white bg-opacity-90 hover:bg-opacity-100 shadow-lg"
                 pTooltip="Ver detalles"
                 (click)="verDetallesUsuario(usuario)"
               />
-              <p-button 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
+              <p-button
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
                 [rounded]="true"
                 size="small"
-                class="bg-white bg-opacity-90 hover:bg-opacity-100"
+                class="bg-white bg-opacity-90 hover:bg-opacity-100 shadow-lg"
                 pTooltip="Editar"
                 (click)="editUser(usuario)"
               />
             </div>
           </div>
         </div>
-        
+
         <!-- Contenido de la card -->
-        <div class="p-5">
+        <div class="relative p-5">
           <!-- Email y contacto -->
           <div class="mb-4">
             <div class="flex items-center gap-3 mb-3">
-              <div class="bg-orange-100 p-2 rounded-lg">
-                <i class="pi pi-envelope text-orange-600"></i>
+              <div
+                class="w-9 h-9 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 rounded-lg flex items-center justify-center"
+              >
+                <i class="pi pi-envelope text-white text-sm"></i>
               </div>
               <div class="flex-1">
-                <div class="font-medium text-gray-900">{{ usuario.email }}</div>
-                <div class="text-xs text-gray-500">Email principal</div>
+                <div class="font-medium text-slate-900 dark:text-slate-100">
+                  {{ usuario.email }}
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">
+                  Email principal
+                </div>
               </div>
             </div>
           </div>
-          
+
           <!-- Roles con chips modernos -->
           <div class="mb-4">
-            <div class="text-sm font-medium text-gray-700 mb-2 block">Roles asignados:</div>
+            <div
+              class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block"
+            >
+              Roles asignados:
+            </div>
             <div class="flex flex-wrap gap-1">
-              <p-chip 
+              <p-chip
                 *ngFor="let rol of usuario.roles || []"
                 [label]="getRoleLabel([rol])"
                 [icon]="getRoleIcon([rol])"
@@ -691,41 +918,63 @@
               />
             </div>
           </div>
-          
+
           <!-- Información adicional -->
-          <div class="bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4 mb-4">
+          <div
+            class="bg-gradient-to-r from-slate-50 to-purple-50/50 dark:from-slate-800/50 dark:to-purple-950/20 rounded-xl p-4 mb-4 border border-slate-100 dark:border-slate-700/50"
+          >
             <div class="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div class="text-gray-600">Estado:</div>
-                <div class="font-semibold" [class]="usuario.activo ? 'text-green-600' : 'text-red-600'">
+                <div class="text-slate-600 dark:text-slate-400">Estado:</div>
+                <div
+                  class="font-semibold"
+                  [class]="
+                    usuario.activo
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-rose-600 dark:text-rose-400'
+                  "
+                >
                   {{ getStatusLabel(usuario.activo) }}
                 </div>
               </div>
               <div>
-                <div class="text-gray-600">Roles:</div>
-                <div class="font-semibold text-indigo-600">{{ usuario.roles.length || 0 }}</div>
+                <div class="text-slate-600 dark:text-slate-400">Roles:</div>
+                <div class="font-semibold text-indigo-600 dark:text-indigo-400">
+                  {{ usuario.roles.length || 0 }}
+                </div>
               </div>
             </div>
           </div>
-          
+
           <!-- Footer con fecha y acciones -->
-          <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-            <div class="text-xs text-gray-500" *ngIf="usuario.fechaCreacion">
+          <div
+            class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800"
+          >
+            <div
+              class="text-xs text-slate-500 dark:text-slate-400"
+              *ngIf="usuario.fechaCreacion"
+            >
               <i class="pi pi-calendar mr-1"></i>
-              Registrado: {{usuario.fechaCreacion | date:'dd/MM/yyyy'}}
+              Registrado: {{ usuario.fechaCreacion | date : "dd/MM/yyyy" }}
             </div>
             <div class="flex gap-2">
               <!-- Switch de estado -->
-              <p-inputSwitch 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
+              <p-inputSwitch
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.EDIT
+                }"
                 [(ngModel)]="usuario.activo"
                 (onChange)="toggleEstadoUsuario(usuario)"
                 pTooltip="Activar/Desactivar usuario"
                 size="small"
               />
-              <p-button 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
-                icon="pi pi-pencil" 
+              <p-button
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.EDIT
+                }"
+                icon="pi pi-pencil"
                 [outlined]="true"
                 size="small"
                 [rounded]="true"
@@ -733,10 +982,13 @@
                 class="hover:shadow-md transition-shadow duration-300"
                 (click)="editUser(usuario)"
               />
-              <p-button 
-                *appHasPermission="{module: 'usuarios', permission: permissionTypes.DELETE}"
-                icon="pi pi-trash" 
-                severity="danger" 
+              <p-button
+                *appHasPermission="{
+                  module: 'usuarios',
+                  permission: permissionTypes.DELETE
+                }"
+                icon="pi pi-trash"
+                severity="danger"
                 [outlined]="true"
                 size="small"
                 [rounded]="true"
@@ -749,10 +1001,16 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Card de agregar nuevo usuario mejorada -->
-    <div class="col-12 sm:col-6 lg:col-4 xl:col-3" *appHasPermission="{module: 'usuarios', permission: permissionTypes.CREATE}">
-      <button 
+    <div
+      class="col-12 sm:col-6 lg:col-4 xl:col-3"
+      *appHasPermission="{
+        module: 'usuarios',
+        permission: permissionTypes.CREATE
+      }"
+    >
+      <button
         type="button"
         class="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-indigo-50 transition-all duration-300 cursor-pointer group min-h-[400px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
         (click)="openNew()"
@@ -760,20 +1018,33 @@
         (keydown.space)="openNew()"
         aria-label="Agregar nuevo usuario"
       >
-        <div class="bg-purple-100 p-6 rounded-full mb-4 group-hover:bg-purple-200 transition-colors duration-300">
+        <div
+          class="bg-purple-100 p-6 rounded-full mb-4 group-hover:bg-purple-200 transition-colors duration-300"
+        >
           <i class="pi pi-user-plus text-3xl text-purple-600"></i>
         </div>
-        <span class="text-xl font-semibold text-gray-700 mb-2">Agregar Usuario</span>
-        <span class="text-sm text-gray-500 text-center">Clic para crear un nuevo usuario en el sistema</span>
+        <span class="text-xl font-semibold text-gray-700 mb-2"
+          >Agregar Usuario</span
+        >
+        <span class="text-sm text-gray-500 text-center"
+          >Clic para crear un nuevo usuario en el sistema</span
+        >
       </button>
     </div>
   </div>
-  
+
   <ng-template #loadingCards>
     <div class="grid">
-      <div class="col-12 sm:col-6 lg:col-4 xl:col-3" *ngFor="let i of [1,2,3,4,5,6,7,8]">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div class="w-full h-32 bg-gradient-to-r from-purple-200 to-indigo-200 animate-pulse"></div>
+      <div
+        class="col-12 sm:col-6 lg:col-4 xl:col-3"
+        *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]"
+      >
+        <div
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <div
+            class="w-full h-32 bg-gradient-to-r from-purple-200 to-indigo-200 animate-pulse"
+          ></div>
           <div class="p-5 space-y-3">
             <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
             <div class="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
@@ -786,43 +1057,60 @@
 </div>
 
 <!-- Diálogo premium para crear/editar usuario -->
-<p-dialog 
-  [(visible)]="userDialog" 
-  [style]="{width: '800px', height: 'auto'}" 
-  [header]="editMode ? 'Editar Usuario' : 'Nuevo Usuario'" 
-  [modal]="true" 
+<p-dialog
+  [(visible)]="userDialog"
+  [style]="{ width: '800px', height: 'auto' }"
+  [header]="editMode ? 'Editar Usuario' : 'Nuevo Usuario'"
+  [modal]="true"
   (onHide)="hideDialog()"
-  [contentStyle]="{'padding':'0'}"
+  [contentStyle]="{ padding: '0' }"
   styleClass="user-dialog-header"
 >
   <ng-template pTemplate="content">
-    <div class="p-6">
+    <div class="p-6 bg-surface-50 dark:bg-surface-950">
       <!-- Indicador de modo -->
-      <div class="mb-4" *ngIf="editMode">
-        <div class="bg-blue-50 border border-blue-200 rounded p-3 flex items-center gap-2">
-          <i class="pi pi-info-circle text-blue-600"></i>
-          <span class="text-blue-800 text-sm">Editando usuario existente</span>
+      <div class="mb-5" *ngIf="editMode">
+        <div
+          class="relative overflow-hidden bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200/60 dark:border-blue-700/60 rounded-xl p-4 flex items-center gap-3"
+        >
+          <div
+            class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg flex items-center justify-center"
+          >
+            <i class="pi pi-info-circle text-white text-sm"></i>
+          </div>
+          <span class="text-blue-800 dark:text-blue-200 text-sm font-medium"
+            >Editando usuario existente</span
+          >
         </div>
       </div>
 
       <div class="grid">
         <!-- Sección de avatar -->
         <div class="col-12 md:col-4">
-          <div class="block font-bold mb-3">
-            <i class="pi pi-user mr-2"></i>
+          <div
+            class="block font-bold mb-4 text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-user mr-2 text-indigo-600 dark:text-indigo-400"></i>
             Avatar del Usuario
           </div>
           <div class="text-center">
             <div class="mb-4">
-              <p-avatar 
-                [image]="getAvatarUrl(user)"
-                [label]="getInitials(user)"
-                size="xlarge"
-                shape="circle"
-                class="shadow-lg border-4 border-gray-200"
-              />
+              <div class="relative inline-block">
+                <p-avatar
+                  [image]="getAvatarUrl(user)"
+                  [label]="getInitials(user)"
+                  size="xlarge"
+                  shape="circle"
+                  class="shadow-lg border-4 border-white dark:border-surface-700"
+                />
+                <div
+                  class="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-md"
+                >
+                  <i class="pi pi-user text-white text-xs"></i>
+                </div>
+              </div>
             </div>
-            <small class="text-gray-500 block">
+            <small class="text-surface-500 dark:text-surface-400 block">
               Avatar generado automáticamente con las iniciales
             </small>
           </div>
@@ -833,176 +1121,249 @@
           <div class="grid">
             <!-- Información personal -->
             <div class="col-12">
-              <div class="bg-purple-50 rounded-lg p-3 mb-4">
-                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                  <i class="pi pi-user text-purple-600"></i>
+              <div
+                class="flex items-center gap-2 mb-4 pb-3 border-b border-surface-200 dark:border-surface-700"
+              >
+                <div
+                  class="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center"
+                >
+                  <i class="pi pi-user text-white text-xs"></i>
+                </div>
+                <h5
+                  class="font-bold text-surface-800 dark:text-surface-200 m-0"
+                >
                   Información Personal
                 </h5>
               </div>
             </div>
-            
+
             <!-- Nombres -->
             <div class="col-12 md:col-6">
               <label for="nombres" class="block font-bold mb-3">
                 <i class="pi pi-user mr-2"></i>
                 Nombres*
               </label>
-              <input 
-                type="text" 
-                pInputText 
-                id="nombres" 
-                [(ngModel)]="user.nombres" 
+              <input
+                type="text"
+                pInputText
+                id="nombres"
+                [(ngModel)]="user.nombres"
                 placeholder="Ej: Juan Carlos"
                 class="w-full"
-                [ngClass]="{'ng-invalid': submitted && !user.nombres.trim()}"
+                [ngClass]="{ 'ng-invalid': submitted && !user.nombres.trim() }"
                 autocomplete="given-name"
               />
-              <small class="text-red-500 block mt-1" *ngIf="submitted && !user.nombres?.trim()">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && !user.nombres?.trim()"
+              >
                 Los nombres son obligatorios.
               </small>
             </div>
-            
+
             <!-- Apellidos -->
             <div class="col-12 md:col-6">
               <label for="apellidos" class="block font-bold mb-3">
                 <i class="pi pi-user mr-2"></i>
                 Apellidos*
               </label>
-              <input 
-                type="text" 
-                pInputText 
-                id="apellidos" 
-                [(ngModel)]="user.apellidos" 
+              <input
+                type="text"
+                pInputText
+                id="apellidos"
+                [(ngModel)]="user.apellidos"
                 placeholder="Ej: Pérez Rodríguez"
                 class="w-full"
-                [ngClass]="{'ng-invalid': submitted && !user.apellidos.trim()}"
+                [ngClass]="{
+                  'ng-invalid': submitted && !user.apellidos.trim()
+                }"
                 autocomplete="family-name"
               />
-              <small class="text-red-500 block mt-1" *ngIf="submitted && !user.apellidos?.trim()">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && !user.apellidos?.trim()"
+              >
                 Los apellidos son obligatorios.
               </small>
             </div>
-            
+
             <!-- Credenciales de acceso -->
             <div class="col-12">
-              <div class="bg-blue-50 rounded-lg p-3 mb-4 mt-4">
-                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                  <i class="pi pi-key text-blue-600"></i>
+              <div
+                class="flex items-center gap-2 mb-4 mt-4 pb-3 border-b border-surface-200 dark:border-surface-700"
+              >
+                <div
+                  class="w-6 h-6 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center"
+                >
+                  <i class="pi pi-key text-white text-xs"></i>
+                </div>
+                <h5
+                  class="font-bold text-surface-800 dark:text-surface-200 m-0"
+                >
                   Credenciales de Acceso
                 </h5>
               </div>
             </div>
-            
+
             <!-- Username -->
             <div class="col-12 md:col-6">
               <label for="username" class="block font-bold mb-3">
                 <i class="pi pi-at mr-2"></i>
                 Nombre de Usuario*
               </label>
-              <input 
-                type="text" 
-                pInputText 
-                id="username" 
-                [(ngModel)]="user.username" 
+              <input
+                type="text"
+                pInputText
+                id="username"
+                [(ngModel)]="user.username"
                 placeholder="Ej: jperez, admin, ventas01"
                 class="w-full"
-                [ngClass]="{'ng-invalid': submitted && !user.username.trim()}"
+                [ngClass]="{ 'ng-invalid': submitted && !user.username.trim() }"
                 autocomplete="username"
               />
-              <small class="text-red-500 block mt-1" *ngIf="submitted && !user.username?.trim()">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && !user.username?.trim()"
+              >
                 El nombre de usuario es obligatorio.
               </small>
-              <small class="text-gray-500 block mt-1" *ngIf="!submitted || user.username?.trim()">
+              <small
+                class="text-gray-500 block mt-1"
+                *ngIf="!submitted || user.username?.trim()"
+              >
                 Único en el sistema, sin espacios
               </small>
             </div>
-            
+
             <!-- Email -->
             <div class="col-12 md:col-6">
               <label for="email" class="block font-bold mb-3">
                 <i class="pi pi-envelope mr-2"></i>
                 Email*
               </label>
-              <input 
-                type="email" 
-                pInputText 
-                id="email" 
-                [(ngModel)]="user.email" 
+              <input
+                type="email"
+                pInputText
+                id="email"
+                [(ngModel)]="user.email"
                 placeholder="ejemplo@empresa.com"
                 class="w-full"
-                [ngClass]="{'ng-invalid': submitted && (!user.email.trim() || !isValidEmail(user.email))}"
+                [ngClass]="{
+                  'ng-invalid':
+                    submitted &&
+                    (!user.email.trim() || !isValidEmail(user.email))
+                }"
                 autocomplete="email"
               />
-              <small class="text-red-500 block mt-1" *ngIf="submitted && !user.email?.trim()">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && !user.email?.trim()"
+              >
                 El email es obligatorio.
               </small>
-              <small class="text-red-500 block mt-1" *ngIf="submitted && user.email?.trim() && !isValidEmail(user.email)">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="
+                  submitted && user.email?.trim() && !isValidEmail(user.email)
+                "
+              >
                 Debe ingresar un email válido.
               </small>
             </div>
-            
+
             <!-- Contraseña -->
             <div class="col-12">
               <label for="password" class="block font-bold mb-3">
                 <i class="pi pi-lock mr-2"></i>
-                Contraseña 
-                <span *ngIf="editMode" class="text-gray-500 font-normal">(Dejar en blanco para mantener actual)</span>
+                Contraseña
+                <span *ngIf="editMode" class="text-gray-500 font-normal"
+                  >(Dejar en blanco para mantener actual)</span
+                >
                 <span *ngIf="!editMode" class="text-red-500">*</span>
               </label>
               <div class="flex items-center gap-3">
-                <p-password 
-                  id="password" 
-                  [(ngModel)]="user.password" 
+                <p-password
+                  id="password"
+                  [(ngModel)]="user.password"
                   [required]="!editMode"
                   [feedback]="true"
                   [toggleMask]="true"
                   autocomplete="new-password"
                   (ngModelChange)="calculatePasswordStrength($event)"
                   class="flex-1"
-                  [ngClass]="{'ng-invalid': submitted && ((!editMode && !user.password) || (user.password && !isValidPassword(user.password)))}"
+                  [ngClass]="{
+                    'ng-invalid':
+                      submitted &&
+                      ((!editMode && !user.password) ||
+                        (user.password && !isValidPassword(user.password)))
+                  }"
                   placeholder="Mínimo 8 caracteres, incluir mayúscula, minúscula, número y símbolo"
                 />
-                <p-tag 
+                <p-tag
                   *ngIf="user.password"
                   [severity]="getPasswordStrengthColor()"
                   [value]="getPasswordStrengthText()"
                   class="min-w-[80px] text-center"
                 />
               </div>
-              <small class="text-red-500 block mt-1" *ngIf="submitted && !editMode && !user.password">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && !editMode && !user.password"
+              >
                 La contraseña es obligatoria para nuevos usuarios.
               </small>
-              <small class="text-red-500 block mt-1" *ngIf="submitted && user.password && !isValidPassword(user.password)">
-                Debe contener: mayúscula, minúscula, número y carácter especial (8+ caracteres).
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="
+                  submitted && user.password && !isValidPassword(user.password)
+                "
+              >
+                Debe contener: mayúscula, minúscula, número y carácter especial
+                (8+ caracteres).
               </small>
-              
+
               <!-- Indicador visual de fortaleza -->
-              <div *ngIf="user.password" class="mt-2">
-                <div class="password-strength-indicator w-full bg-gray-200 rounded-full">
-                  <div 
-                    class="password-strength-indicator transition-all duration-300"
+              <div *ngIf="user.password" class="mt-3">
+                <div
+                  class="h-2 w-full bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden shadow-inner"
+                >
+                  <div
+                    class="h-full transition-all duration-300 rounded-full"
                     [style.width.%]="passwordStrength"
                     [ngClass]="{
-                      'bg-red-500': passwordStrength < 50,
-                      'bg-yellow-500': passwordStrength >= 50 && passwordStrength < 75,
-                      'bg-green-500': passwordStrength >= 75
+                      'bg-gradient-to-r from-red-500 to-red-600 shadow-lg shadow-red-500/50':
+                        passwordStrength < 50,
+                      'bg-gradient-to-r from-amber-500 to-yellow-500 shadow-lg shadow-amber-500/50':
+                        passwordStrength >= 50 && passwordStrength < 75,
+                      'bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/50':
+                        passwordStrength >= 75
                     }"
                   ></div>
                 </div>
-                <small class="text-gray-600">Fortaleza: {{passwordStrength}}%</small>
+                <small class="text-surface-600 dark:text-surface-400 mt-1 block"
+                  >Fortaleza: {{ passwordStrength }}%</small
+                >
               </div>
             </div>
-            
+
             <!-- Permisos y roles -->
             <div class="col-12">
-              <div class="bg-green-50 rounded-lg p-3 mb-4 mt-4">
-                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                  <i class="pi pi-users text-green-600"></i>
+              <div
+                class="flex items-center gap-2 mb-4 mt-4 pb-3 border-b border-surface-200 dark:border-surface-700"
+              >
+                <div
+                  class="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center"
+                >
+                  <i class="pi pi-users text-white text-xs"></i>
+                </div>
+                <h5
+                  class="font-bold text-surface-800 dark:text-surface-200 m-0"
+                >
                   Permisos y Roles
                 </h5>
               </div>
             </div>
-            
+
             <!-- Roles -->
             <div class="col-12">
               <label for="roles" class="block font-bold mb-3">
@@ -1010,28 +1371,69 @@
                 Roles del Usuario*
               </label>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div *ngFor="let roleOption of roleOptions" class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                  <p-checkbox 
+                <div
+                  *ngFor="let roleOption of roleOptions"
+                  class="relative overflow-hidden flex items-center gap-3 p-4 border border-surface-200 dark:border-surface-700 rounded-xl hover:shadow-lg transition-all duration-300 group bg-surface-0 dark:bg-surface-800"
+                >
+                  <div
+                    class="absolute inset-0 bg-surface-50/50 dark:bg-surface-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  ></div>
+                  <p-checkbox
                     [value]="roleOption.value"
                     [(ngModel)]="user.roles"
                     [inputId]="'role-' + roleOption.value"
+                    class="relative z-10"
                   />
-                  <label [for]="'role-' + roleOption.value" class="flex-1 cursor-pointer">
+                  <label
+                    [for]="'role-' + roleOption.value"
+                    class="flex-1 cursor-pointer relative z-10"
+                  >
                     <div class="flex items-center gap-2">
-                      <i [class]="roleOption.icon" [ngClass]="'text-' + roleOption.color + '-600'"></i>
+                      <div
+                        class="w-8 h-8 rounded-lg flex items-center justify-center"
+                        [ngClass]="
+                          'bg-' +
+                          roleOption.color +
+                          '-100 dark:bg-' +
+                          roleOption.color +
+                          '-900/30'
+                        "
+                      >
+                        <i
+                          [class]="roleOption.icon"
+                          [ngClass]="
+                            'text-' +
+                            roleOption.color +
+                            '-600 dark:text-' +
+                            roleOption.color +
+                            '-400 text-sm'
+                          "
+                        ></i>
+                      </div>
                       <div>
-                        <div class="font-semibold text-gray-800">{{ roleOption.label }}</div>
-                        <div class="text-xs text-gray-600">{{ roleOption.description }}</div>
+                        <div
+                          class="font-semibold text-surface-800 dark:text-surface-200"
+                        >
+                          {{ roleOption.label }}
+                        </div>
+                        <div
+                          class="text-xs text-surface-600 dark:text-surface-400"
+                        >
+                          {{ roleOption.description }}
+                        </div>
                       </div>
                     </div>
                   </label>
                 </div>
               </div>
-              <small class="text-red-500 block mt-1" *ngIf="submitted && (!user.roles || !user.roles.length)">
+              <small
+                class="text-red-500 block mt-1"
+                *ngIf="submitted && (!user.roles || !user.roles.length)"
+              >
                 Debe seleccionar al menos un rol.
               </small>
             </div>
-            
+
             <!-- Estado -->
             <div class="col-12 md:col-6">
               <label for="activo" class="block font-bold mb-3">
@@ -1039,32 +1441,67 @@
                 Estado del Usuario
               </label>
               <div class="flex items-center gap-3">
-                <p-inputSwitch 
-                  [(ngModel)]="user.activo"
-                  inputId="activo"
-                />
-                <label for="activo" class="font-medium" [class]="user.activo ? 'text-green-600' : 'text-red-600'">
+                <p-inputSwitch [(ngModel)]="user.activo" inputId="activo" />
+                <label
+                  for="activo"
+                  class="font-medium"
+                  [class]="user.activo ? 'text-green-600' : 'text-red-600'"
+                >
                   {{ getStatusLabel(user.activo) }}
                 </label>
               </div>
               <small class="text-gray-500 block mt-1">
-                {{ user.activo ? 'El usuario puede acceder al sistema' : 'El usuario no puede acceder al sistema' }}
+                {{
+                  user.activo
+                    ? "El usuario puede acceder al sistema"
+                    : "El usuario no puede acceder al sistema"
+                }}
               </small>
             </div>
 
             <!-- Información adicional en modo edición -->
             <div class="col-12" *ngIf="editMode && user.fechaCreacion">
-              <div class="bg-gray-50 rounded-lg p-3 mt-4">
-                <h6 class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <i class="pi pi-calendar"></i>
+              <div
+                class="relative overflow-hidden bg-slate-50/80 dark:bg-slate-800/50 rounded-xl p-4 mt-4 border border-slate-200/60 dark:border-slate-700/60"
+              >
+                <h6
+                  class="font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2"
+                >
+                  <div
+                    class="w-6 h-6 bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-400 dark:to-slate-500 rounded-lg flex items-center justify-center"
+                  >
+                    <i class="pi pi-calendar text-white text-xs"></i>
+                  </div>
                   Información del Registro
                 </h6>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
-                  <div *ngIf="user.fechaCreacion">
-                    <strong>Registrado:</strong> {{user.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+                <div
+                  class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-700 dark:text-slate-300"
+                >
+                  <div
+                    *ngIf="user.fechaCreacion"
+                    class="flex items-center gap-2"
+                  >
+                    <i
+                      class="pi pi-plus-circle text-emerald-600 dark:text-emerald-400"
+                    ></i>
+                    <span
+                      ><strong>Registrado:</strong>
+                      {{ user.fechaCreacion | date : "dd/MM/yyyy HH:mm" }}</span
+                    >
                   </div>
-                  <div *ngIf="user.fechaActualizacion">
-                    <strong>Última actualización:</strong> {{user.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}
+                  <div
+                    *ngIf="user.fechaActualizacion"
+                    class="flex items-center gap-2"
+                  >
+                    <i
+                      class="pi pi-refresh text-blue-600 dark:text-blue-400"
+                    ></i>
+                    <span
+                      ><strong>Última actualización:</strong>
+                      {{
+                        user.fechaActualizacion | date : "dd/MM/yyyy HH:mm"
+                      }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -1076,231 +1513,465 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-3 px-6 pb-4">
-      <p-button 
-        label="Cancelar" 
-        icon="pi pi-times" 
-        class="p-button-text" 
-        (click)="hideDialog()" 
+    <div
+      class="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/50"
+    >
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text p-button-secondary"
+        (click)="hideDialog()"
         [disabled]="loading"
       />
-      <p-button 
-        [label]="editMode ? 'Actualizar Usuario' : 'Crear Usuario'" 
-        icon="pi pi-check" 
-        (click)="saveUser()" 
+      <p-button
+        [label]="editMode ? 'Actualizar Usuario' : 'Crear Usuario'"
+        icon="pi pi-check"
+        (click)="saveUser()"
         [loading]="loading"
+        class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 border-0 shadow-lg shadow-purple-500/30"
       />
     </div>
   </ng-template>
 </p-dialog>
 
-<!-- Modal de Detalles del Usuario -->
-<p-dialog 
-  [(visible)]="detalleUsuarioDialog" 
-  [style]="{width: '700px'}" 
-  header="Detalles del Usuario" 
-  [modal]="true" 
+<!-- Modal de Detalles del Usuario - Diseño limpio -->
+<p-dialog
+  [(visible)]="detalleUsuarioDialog"
+  [style]="{ width: '550px' }"
+  [modal]="true"
   (onHide)="hideDetalleUsuarioDialog()"
+  [contentStyle]="{ padding: '0' }"
+  [showHeader]="false"
 >
-  <div *ngIf="usuarioDetalle" class="p-4">
-    <div class="grid">
-      <!-- Avatar y información básica -->
-      <div class="col-12 md:col-4 text-center">
-        <p-avatar 
+  <div *ngIf="usuarioDetalle" class="bg-surface-0 dark:bg-surface-900">
+    <!-- Header con avatar centrado -->
+    <div
+      class="relative p-6 text-center border-b border-surface-200 dark:border-surface-700"
+    >
+      <button
+        (click)="hideDetalleUsuarioDialog()"
+        class="absolute top-4 right-4 p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 transition-colors"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+      <div class="mb-4">
+        <p-avatar
           [image]="getAvatarUrl(usuarioDetalle)"
           [label]="getInitials(usuarioDetalle)"
           size="xlarge"
           shape="circle"
-          class="shadow-lg border-4 border-gray-200 mb-4"
-        />
-        <h4 class="font-bold text-gray-800 mb-1">{{ usuarioDetalle.nombres }} {{ usuarioDetalle.apellidos }}</h4>
-        <p class="text-gray-600 mb-3">{{ usuarioDetalle.username }}</p>
-        <p-tag 
-          [value]="getStatusLabel(usuarioDetalle.activo)"
-          [severity]="getStatusSeverity(usuarioDetalle.activo)"
-          [icon]="usuarioDetalle.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'"
-          class="shadow-sm"
+          class="shadow-xl border-4 border-surface-100 dark:border-surface-800"
         />
       </div>
-      
-      <!-- Información detallada -->
-      <div class="col-12 md:col-8">
-        <div class="space-y-4">
-          <!-- Información de contacto -->
-          <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4">
-            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <i class="pi pi-envelope text-blue-600"></i>
-              Información de Contacto
-            </h4>
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <i class="pi pi-envelope text-gray-500"></i>
-                <span class="font-semibold">Email:</span>
-                <span>{{ usuarioDetalle.email }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Roles y permisos -->
-          <div class="bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4">
-            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <i class="pi pi-users text-purple-600"></i>
-              Roles y Permisos
-            </h4>
-            <div class="flex flex-wrap gap-2">
-              <p-chip 
-                *ngFor="let rol of usuarioDetalle.roles || []"
-                [label]="getRoleLabel([rol])"
-                [icon]="getRoleIcon([rol])"
-                [styleClass]="'p-chip-' + getRoleColor([rol])"
-              />
-            </div>
-          </div>
-          
-          <!-- Fechas del sistema -->
-          <div class="bg-gray-50 rounded-lg p-3">
-            <h4 class="font-bold text-gray-800 mb-2">Información del Sistema</h4>
-            <div class="text-sm text-gray-600 space-y-1">
-              <div *ngIf="usuarioDetalle.fechaCreacion">
-                <strong>Registrado:</strong> {{usuarioDetalle.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}
-              </div>
-              <div *ngIf="usuarioDetalle.fechaActualizacion">
-                <strong>Última actualización:</strong> {{usuarioDetalle.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}
-              </div>
-              <div>
-                <strong>ID del sistema:</strong> {{usuarioDetalle.id}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-3">
-      <p-button 
-        label="Cerrar" 
-        icon="pi pi-times" 
-        class="p-button-text" 
-        (click)="hideDetalleUsuarioDialog()" 
-      />
-      <p-button 
-        *appHasPermission="{module: 'usuarios', permission: permissionTypes.EDIT}"
-        label="Editar Usuario" 
-        icon="pi pi-pencil" 
-        (click)="editUser(usuarioDetalle!); hideDetalleUsuarioDialog()" 
+      <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-1">
+        {{ usuarioDetalle.nombres }} {{ usuarioDetalle.apellidos }}
+      </h3>
+      <p class="text-surface-500 dark:text-surface-400 text-sm mb-3">
+        &#64;{{ usuarioDetalle.username }}
+      </p>
+      <p-tag
+        [value]="getStatusLabel(usuarioDetalle.activo)"
+        [severity]="getStatusSeverity(usuarioDetalle.activo)"
       />
     </div>
-  </ng-template>
-</p-dialog>
 
-<!-- Modal de Estadísticas -->
-<p-dialog 
-  [(visible)]="estadisticasDialog" 
-  [style]="{width: '900px'}" 
-  header="Estadísticas de Usuarios" 
-  [modal]="true" 
-  (onHide)="hideEstadisticasDialog()"
->
-  <div class="grid" *ngIf="users?.length; else noStats">
-    <!-- Resumen general -->
-    <div class="col-12">
-      <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 mb-4">
-        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i class="pi pi-chart-bar text-purple-600"></i>
-          Resumen General de Usuarios
-        </h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-purple-600">{{getEstadisticas().total}}</div>
-            <div class="text-sm text-gray-600">Total Usuarios</div>
+    <!-- Contenido en lista limpia -->
+    <div class="p-6 space-y-4">
+      <!-- Email -->
+      <div class="flex items-center gap-4">
+        <div
+          class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-envelope text-blue-600 dark:text-blue-400"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+          >
+            Email
           </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">{{getEstadisticas().activos}}</div>
-            <div class="text-sm text-gray-600">Usuarios Activos</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-blue-600">{{getEstadisticas().porcentajeActivos}}%</div>
-            <div class="text-sm text-gray-600">% Activos</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-orange-600">{{getEstadisticas().nuevosUsuarios}}</div>
-            <div class="text-sm text-gray-600">Nuevos (30 días)</div>
+          <div
+            class="text-surface-900 dark:text-surface-100 font-medium truncate"
+          >
+            {{ usuarioDetalle.email }}
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Análisis por roles -->
-    <div class="col-12 md:col-6">
-      <div class="bg-white rounded-xl p-4 border border-gray-200">
-        <h4 class="font-bold text-gray-800 mb-3">Distribución por Roles</h4>
-        <div class="space-y-3">
-          <div *ngFor="let rolestat of getEstadisticas().roleStats" 
-               class="flex justify-between items-center p-3 rounded-lg"
-               [ngClass]="'bg-' + rolestat.color + '-50'">
-            <div class="flex items-center gap-2">
-              <i [class]="rolestat.icon" [ngClass]="'text-' + rolestat.color + '-600'"></i>
-              <span [ngClass]="'text-' + rolestat.color + '-700'">{{ rolestat.label }}</span>
-            </div>
-            <span class="font-bold" [ngClass]="'text-' + rolestat.color + '-700'">{{ rolestat.count }} usuarios</span>
-          </div>
+
+      <!-- Roles -->
+      <div class="flex items-start gap-4">
+        <div
+          class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-users text-indigo-600 dark:text-indigo-400"></i>
         </div>
-      </div>
-    </div>
-    
-    <!-- Usuarios recientes -->
-    <div class="col-12 md:col-6">
-      <div class="bg-white rounded-xl p-4 border border-gray-200">
-        <h4 class="font-bold text-gray-800 mb-3">Usuarios Recientes</h4>
-        <div class="space-y-3">
-          <div *ngFor="let usuario of getEstadisticas().usuariosRecientes" 
-               class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-            <p-avatar 
-              [image]="getAvatarUrl(usuario)"
-              [label]="getInitials(usuario)"
-              size="normal"
-              shape="circle"
-            />
-            <div class="flex-1">
-              <div class="font-semibold text-gray-800">{{ usuario.nombres }} {{ usuario.apellidos }}</div>
-              <div class="text-xs text-gray-500">{{ usuario.fechaCreacion | date:'dd/MM/yyyy' }}</div>
-            </div>
-            <p-tag 
-              [value]="getStatusLabel(usuario.activo)"
-              [severity]="getStatusSeverity(usuario.activo)"
+        <div class="flex-1">
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 font-medium mb-2"
+          >
+            Roles
+          </div>
+          <div class="flex flex-wrap gap-1">
+            <p-chip
+              *ngFor="let rol of usuarioDetalle.roles || []"
+              [label]="getRoleLabel([rol])"
               size="small"
             />
           </div>
         </div>
       </div>
+
+      <!-- Fecha registro -->
+      <div class="flex items-center gap-4" *ngIf="usuarioDetalle.fechaCreacion">
+        <div
+          class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-calendar text-emerald-600 dark:text-emerald-400"></i>
+        </div>
+        <div class="flex-1">
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+          >
+            Registrado
+          </div>
+          <div class="text-surface-900 dark:text-surface-100 font-medium">
+            {{ usuarioDetalle.fechaCreacion | date : "dd MMM yyyy, HH:mm" }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Última actualización -->
+      <div
+        class="flex items-center gap-4"
+        *ngIf="usuarioDetalle.fechaActualizacion"
+      >
+        <div
+          class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-refresh text-amber-600 dark:text-amber-400"></i>
+        </div>
+        <div class="flex-1">
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+          >
+            Última actualización
+          </div>
+          <div class="text-surface-900 dark:text-surface-100 font-medium">
+            {{
+              usuarioDetalle.fechaActualizacion | date : "dd MMM yyyy, HH:mm"
+            }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ID -->
+      <div class="flex items-center gap-4">
+        <div
+          class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-hashtag text-surface-600 dark:text-surface-400"></i>
+        </div>
+        <div class="flex-1">
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+          >
+            ID
+          </div>
+          <div class="text-surface-900 dark:text-surface-100 font-mono text-sm">
+            {{ usuarioDetalle.id }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer simple -->
+    <div
+      class="flex gap-2 p-4 border-t border-surface-200 dark:border-surface-700"
+    >
+      <button
+        (click)="hideDetalleUsuarioDialog()"
+        class="flex-1 py-2.5 px-4 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-xl text-surface-700 dark:text-surface-300 font-medium transition-all"
+      >
+        Cerrar
+      </button>
+      <button
+        *appHasPermission="{
+          module: 'usuarios',
+          permission: permissionTypes.EDIT
+        }"
+        (click)="editUser(usuarioDetalle!); hideDetalleUsuarioDialog()"
+        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl text-white font-medium shadow-lg shadow-indigo-500/30 transition-all flex items-center justify-center gap-2"
+      >
+        <i class="pi pi-pencil text-sm"></i>
+        <span>Editar</span>
+      </button>
     </div>
   </div>
-  
-  <ng-template #noStats>
-    <div class="text-center py-8">
-      <div class="bg-gray-100 p-8 rounded-full inline-block mb-4">
-        <i class="pi pi-chart-bar text-4xl text-gray-400"></i>
+</p-dialog>
+
+<!-- Modal de Estadísticas -->
+<p-dialog
+  [(visible)]="estadisticasDialog"
+  [style]="{ width: '900px' }"
+  header="Estadísticas de Usuarios"
+  [modal]="true"
+  (onHide)="hideEstadisticasDialog()"
+  [contentStyle]="{ padding: '0' }"
+  styleClass="user-dialog-header"
+>
+  <div
+    class="p-6 bg-slate-50/50 dark:bg-slate-900/50"
+    *ngIf="users?.length; else noStats"
+  >
+    <div class="grid">
+      <!-- Resumen general -->
+      <div class="col-12">
+        <div
+          class="relative overflow-hidden bg-gradient-to-r from-purple-50/80 to-indigo-50/50 dark:from-purple-950/30 dark:to-indigo-950/20 rounded-2xl p-6 mb-5 border border-purple-100/60 dark:border-purple-800/40 shadow-lg shadow-purple-500/10"
+        >
+          <h3
+            class="text-xl font-bold text-slate-800 dark:text-slate-200 mb-5 flex items-center gap-2"
+          >
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-lg"
+            >
+              <i class="pi pi-chart-bar text-white"></i>
+            </div>
+            Resumen General de Usuarios
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div
+              class="text-center p-4 bg-white/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <div
+                class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent"
+              >
+                {{ getEstadisticas().total }}
+              </div>
+              <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Total Usuarios
+              </div>
+            </div>
+            <div
+              class="text-center p-4 bg-white/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <div
+                class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent"
+              >
+                {{ getEstadisticas().activos }}
+              </div>
+              <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Usuarios Activos
+              </div>
+            </div>
+            <div
+              class="text-center p-4 bg-white/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <div
+                class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
+              >
+                {{ getEstadisticas().porcentajeActivos }}%
+              </div>
+              <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                % Activos
+              </div>
+            </div>
+            <div
+              class="text-center p-4 bg-white/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <div
+                class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent"
+              >
+                {{ getEstadisticas().nuevosUsuarios }}
+              </div>
+              <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Nuevos (30 días)
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <h3 class="text-lg font-bold text-gray-700 mb-2">No hay datos disponibles</h3>
-      <p class="text-gray-500">Agrega usuarios para ver las estadísticas del sistema</p>
+
+      <!-- Análisis por roles -->
+      <div class="col-12 md:col-6">
+        <div
+          class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200/60 dark:border-slate-700/60 shadow-lg shadow-slate-500/10"
+        >
+          <h4
+            class="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"
+          >
+            <div
+              class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 rounded-lg flex items-center justify-center"
+            >
+              <i class="pi pi-chart-pie text-white text-sm"></i>
+            </div>
+            Distribución por Roles
+          </h4>
+          <div class="space-y-3">
+            <div
+              *ngFor="let rolestat of getEstadisticas().roleStats"
+              class="relative overflow-hidden flex justify-between items-center p-4 rounded-xl border transition-all duration-300 hover:shadow-lg"
+              [ngClass]="
+                'bg-' +
+                rolestat.color +
+                '-50/50 dark:bg-' +
+                rolestat.color +
+                '-950/20 border-' +
+                rolestat.color +
+                '-200/60 dark:border-' +
+                rolestat.color +
+                '-800/40 hover:shadow-' +
+                rolestat.color +
+                '-500/20'
+              "
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center"
+                  [ngClass]="
+                    'bg-' +
+                    rolestat.color +
+                    '-100 dark:bg-' +
+                    rolestat.color +
+                    '-900/30'
+                  "
+                >
+                  <i
+                    [class]="rolestat.icon"
+                    [ngClass]="
+                      'text-' +
+                      rolestat.color +
+                      '-600 dark:text-' +
+                      rolestat.color +
+                      '-400'
+                    "
+                  ></i>
+                </div>
+                <span
+                  class="font-medium"
+                  [ngClass]="
+                    'text-' +
+                    rolestat.color +
+                    '-800 dark:text-' +
+                    rolestat.color +
+                    '-300'
+                  "
+                  >{{ rolestat.label }}</span
+                >
+              </div>
+              <span
+                class="font-bold text-lg"
+                [ngClass]="
+                  'text-' +
+                  rolestat.color +
+                  '-700 dark:text-' +
+                  rolestat.color +
+                  '-400'
+                "
+                >{{ rolestat.count }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usuarios recientes -->
+      <div class="col-12 md:col-6">
+        <div
+          class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200/60 dark:border-slate-700/60 shadow-lg shadow-slate-500/10"
+        >
+          <h4
+            class="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"
+          >
+            <div
+              class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg flex items-center justify-center"
+            >
+              <i class="pi pi-users text-white text-sm"></i>
+            </div>
+            Usuarios Recientes
+          </h4>
+          <div class="space-y-3">
+            <div
+              *ngFor="let usuario of getEstadisticas().usuariosRecientes"
+              class="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-700/30 rounded-xl transition-all duration-300 border border-transparent hover:border-slate-200/60 dark:hover:border-slate-700/60"
+            >
+              <div class="relative">
+                <p-avatar
+                  [image]="getAvatarUrl(usuario)"
+                  [label]="getInitials(usuario)"
+                  size="normal"
+                  shape="circle"
+                  class="shadow-md"
+                />
+                <div
+                  class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-slate-800 dark:text-slate-200">
+                  {{ usuario.nombres }} {{ usuario.apellidos }}
+                </div>
+                <div
+                  class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"
+                >
+                  <i class="pi pi-calendar text-[10px]"></i>
+                  {{ usuario.fechaCreacion | date : "dd/MM/yyyy" }}
+                </div>
+              </div>
+              <p-tag
+                [value]="getStatusLabel(usuario.activo)"
+                [severity]="getStatusSeverity(usuario.activo)"
+                size="small"
+                class="shadow-sm"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noStats>
+    <div class="text-center py-12 px-6">
+      <div class="relative inline-block mb-6">
+        <div
+          class="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-full flex items-center justify-center"
+        >
+          <i
+            class="pi pi-chart-bar text-5xl text-slate-400 dark:text-slate-500"
+          ></i>
+        </div>
+        <div
+          class="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"
+        >
+          <i class="pi pi-info-circle text-white text-xs"></i>
+        </div>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">
+        No hay datos disponibles
+      </h3>
+      <p class="text-slate-500 dark:text-slate-400">
+        Agrega usuarios para ver las estadísticas del sistema
+      </p>
     </div>
   </ng-template>
-  
+
   <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-3">
-      <p-button 
-        label="Cerrar" 
+    <div
+      class="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/50"
+    >
+      <p-button
+        label="Cerrar"
         icon="pi pi-times"
-        class="p-button-text" 
-        (click)="hideEstadisticasDialog()" 
+        class="p-button-text p-button-secondary"
+        (click)="hideEstadisticasDialog()"
       />
-      <p-button 
-        label="Exportar Estadísticas" 
-        icon="pi pi-download" 
+      <p-button
+        label="Exportar Estadísticas"
+        icon="pi pi-download"
         severity="info"
-        (click)="exportarEstadisticas()" 
+        (click)="exportarEstadisticas()"
+        class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border-0 shadow-lg shadow-blue-500/30"
       />
     </div>
   </ng-template>
