@@ -917,7 +917,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     this.movimiento = this.createEmptyMovimientoResponse();
     this.loadProductos();
     this.loadAlmacenes();
-    this.generarDatosSimulados();
+    this.loadTodosLosInventarios();
   }
 
   ngAfterViewInit(): void {
@@ -1433,6 +1433,26 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   // ========== MÉTODOS DE CARGA (Manteniendo funcionalidad original) ==========
 
+  loadTodosLosInventarios(): void {
+    this.loading = true;
+    this.inventarioService.getAllInventarios().subscribe({
+      next: (inventarios) => {
+        this.inventariosTotales = Array.isArray(inventarios)
+          ? inventarios
+          : [inventarios];
+        this.inventariosFiltrados = [...this.inventariosTotales];
+        this.generarDatosSimulados();
+        this.loading = false;
+      },
+      error: (error) => {
+        this.handleError(error, 'No se pudo cargar los inventarios');
+        this.inventariosFiltrados = [];
+        this.inventariosTotales = [];
+        this.loading = false;
+      },
+    });
+  }
+
   loadProductos(): void {
     this.isLoadingProductos = true;
     this.productoService.getProducts(0, 1000).subscribe({
@@ -1526,13 +1546,15 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           },
         });
     } else {
-      this.inventariosFiltrados = [];
+      // Si no hay producto seleccionado, mostrar todos los inventarios
+      this.inventariosFiltrados = [...this.inventariosTotales];
+      this.generarDatosSimulados();
     }
   }
 
   limpiarFiltros(): void {
     this.productoSeleccionadoFiltro = null;
-    this.inventariosFiltrados = [];
+    this.inventariosFiltrados = [...this.inventariosTotales];
     this.selectedInventarios = [];
     this.filtrosInventario = {
       producto: '',
@@ -1549,6 +1571,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       valorMin: null,
       valorMax: null,
     };
+    this.generarDatosSimulados();
   }
 
   // === MOVIMIENTOS INVENTARIO
