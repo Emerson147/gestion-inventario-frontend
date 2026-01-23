@@ -100,6 +100,26 @@ export class InventarioService {
   }
 
   /**
+   * Obtener todos los inventarios sin paginación (para exportación)
+   * Usa el endpoint principal con un tamaño de página grande para obtener todos los registros
+   */
+  getAllInventarios(): Observable<Inventario[]> {
+    const params = new HttpParams()
+      .set('page', '0')
+      .set('size', '100000') // Tamaño grande para obtener todos
+      .set('sortBy', 'id')
+      .set('sortDir', 'asc');
+
+    return this.http.get<PagedResponse<Inventario>>(this.apiUrl, { params }).pipe(
+      map(response => response.contenido || []),
+      catchError(error => {
+        console.error('Error al obtener todos los inventarios:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Crear nuevo inventario
    */
   crearInventario(inventario: InventarioRequest): Observable<Inventario> {

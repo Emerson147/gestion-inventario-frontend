@@ -1975,18 +1975,45 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   exportarTodo(): void {
-    // Determinar qué datos exportar: todos o todos del producto filtrado
-    const datosAExportar = this.productoSeleccionadoFiltro
-      ? this.inventariosTotales.filter(
-          (inv) => inv.producto?.id === this.productoSeleccionadoFiltro?.id,
-        )
-      : this.inventariosTotales;
+    // Si hay un producto seleccionado en el filtro, exportar todos sus inventarios
+    if (this.productoSeleccionadoFiltro) {
+      const datosAExportar = this.inventariosTotales.filter(
+        (inv) => inv.producto?.id === this.productoSeleccionadoFiltro?.id,
+      );
 
-    if (!datosAExportar?.length) {
-      this.showWarning('No hay datos para exportar');
-      return;
+      if (!datosAExportar?.length) {
+        this.showWarning('No hay datos para exportar');
+        return;
+      }
+
+      this.exportarDatos(
+        datosAExportar,
+        `inventario_completo_${this.productoSeleccionadoFiltro.codigo}`,
+      );
+    } else {
+      // Si no hay producto seleccionado, cargar todos los inventarios del sistema
+      this.loading = true;
+      this.showInfo('Cargando todos los inventarios para exportar...');
+
+      this.inventarioService.getAllInventarios().subscribe({
+        next: (inventarios) => {
+          this.loading = false;
+          if (!inventarios || inventarios.length === 0) {
+            this.showWarning('No hay datos para exportar');
+            return;
+          }
+
+          this.exportarDatos(inventarios, 'inventario_completo_todos');
+        },
+        error: (error) => {
+          this.loading = false;
+          this.handleError(error, 'Error al cargar los inventarios para exportar');
+        },
+      });
     }
+  }
 
+  private exportarDatos(datosAExportar: InventarioExtendido[], nombreArchivo: string): void {
     import('xlsx')
       .then((xlsx) => {
         const dataToExport = datosAExportar.map((inventario) => ({
@@ -2022,11 +2049,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           bookType: 'xlsx',
           type: 'array',
         });
-
-        // Nombre del archivo según si hay filtro de producto o no
-        const nombreArchivo = this.productoSeleccionadoFiltro
-          ? `inventario_completo_${this.productoSeleccionadoFiltro.codigo}`
-          : 'inventario_completo_todos';
 
         this.guardarArchivo(excelBuffer, nombreArchivo);
 
