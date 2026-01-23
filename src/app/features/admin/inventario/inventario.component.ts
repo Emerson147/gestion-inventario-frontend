@@ -2022,19 +2022,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           Código: inventario.producto?.codigo || '',
           Color: inventario.color?.nombre || '',
           Talla: inventario.talla?.numero || '',
-          Almacén: inventario.almacen?.nombre || '',
           Cantidad: inventario.cantidad,
-          Estado: inventario.estado,
-          'Valor Unitario': inventario.valorUnitario || 0,
-          'Valor Total': inventario.valorTotal || 0,
-          'Stock Mínimo': inventario.stockMinimo || 0,
-          'Categoría ABC': inventario.categoriaABC || '',
-          Rotación: inventario.rotacion || 0,
-          Ubicación: inventario.ubicacionAlmacen || '',
-          Lote: inventario.lote || '',
-          'Fecha Vencimiento': inventario.fechaVencimiento
-            ? new Date(inventario.fechaVencimiento).toLocaleDateString()
-            : '',
           'Última Actualización': new Date(
             inventario.fechaActualizacion,
           ).toLocaleString(),
