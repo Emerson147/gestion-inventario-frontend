@@ -6,131 +6,152 @@
 <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
 <!-- Header corporativo con mejor jerarquía visual -->
+<!-- Header Clean del Dashboard (Adaptado para Productos) -->
 <div class="mb-6">
-  <!-- Header principal con gradiente sutil -->
-  <div class="relative overflow-hidden bg-white  dark:bg-slate-900 from-slate-50 via-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 shadow-lg border border-slate-200/50">
+  <div
+    class="relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/60 dark:border-slate-700/60"
+  >
+    <!-- Decorative gradient background -->
     <div
-      class="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-6 lg:gap-8"
+      class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-purple-950/10 pointer-events-none"
+    ></div>
+
+    <div
+      class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4"
     >
       <!-- Título principal -->
-      <div>
-        <div class="flex items-center gap-3 mb-2">
-          <div class="bg-indigo-600 p-2 rounded-lg shadow-lg">
-            <i
-              class="pi pi-shopping-bag text-white text-2xl"
-              aria-hidden="true"
-            ></i>
-          </div>
-
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0">
-              Catálogo de Productos
-            </h1>
-            <p class="text-gray-600 mt-1 mb-0">
-              Gestiona la información de tus productos
-            </p>
-          </div>
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
+        >
+          <i class="pi pi-shopping-bag text-white text-xl"></i>
+        </div>
+        <div>
+          <h1
+            class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white m-0 tracking-tight"
+          >
+            Catálogo de Productos
+          </h1>
+          <p
+            class="text-slate-600 dark:text-slate-400 mt-1 mb-0 text-sm font-medium"
+          >
+            Gestiona la información de tus productos
+          </p>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <!-- Métricas específicas para PRODUCTOS (sin inventario) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-shrink-0">
-        <!-- Total productos en catálogo -->
+<!-- KPIs Principales en cards clean (Adaptado) -->
+<div
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6"
+  *ngIf="productos && productos.length > 0"
+>
+  <!-- Total productos -->
+  <div
+    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+  >
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+    ></div>
+    <div class="relative flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-blue-50 dark:bg-blue-900/20"
+      >
+        <i class="pi pi-list text-blue-600 dark:text-blue-400 text-xl"></i>
+      </div>
+      <div>
         <div
-          class="bg-white backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-          *ngIf="productos && productos.length > 0"
+          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
-          <div class="flex items-center gap-3">
-            <div
-              class="bg-blue-50 group-hover:bg-blue-100 p-3 rounded-xl transition-colors duration-300"
-            >
-              <i
-                class="pi pi-list text-blue-600 text-xl"
-                aria-hidden="true"
-              ></i>
-            </div>
-            <div class="flex flex-col">
-              <div class="text-2xl lg:text-3xl font-bold text-blue-700">
-                {{ productos.length | number }}
-              </div>
-              <div class="text-xs lg:text-sm text-slate-600">Productos</div>
-            </div>
-          </div>
+          Total Productos
         </div>
-
-        <!-- Categorías únicas -->
-        <div
-          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-          *ngIf="productos && productos.length > 0"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="bg-purple-50 group-hover:bg-purple-100 p-3 rounded-xl transition-colors duration-300"
-            >
-              <i
-                class="pi pi-tags text-purple-600 text-xl"
-                aria-hidden="true"
-              ></i>
-            </div>
-            <div class="flex flex-col">
-              <div class="text-2xl lg:text-3xl font-bold text-purple-700">
-                {{ getCategorias() | number }}
-              </div>
-              <div class="text-xs lg:text-sm text-slate-600">Categorías</div>
-            </div>
-          </div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          {{ productos.length | number }}
         </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Rango de precios -->
+  <!-- Categorías -->
+  <div
+    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+  >
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+    ></div>
+    <div class="relative flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-purple-50 dark:bg-purple-900/20"
+      >
+        <i class="pi pi-tags text-purple-600 dark:text-purple-400 text-xl"></i>
+      </div>
+      <div>
         <div
-          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-          *ngIf="productos && productos.length > 0"
+          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
-          <div class="flex items-center gap-3">
-            <div
-              class="bg-emerald-50 group-hover:bg-emerald-100 p-3 rounded-xl transition-colors duration-300"
-            >
-              <i
-                class="pi pi-dollar text-emerald-600 text-xl"
-                aria-hidden="true"
-              ></i>
-            </div>
-            <div class="flex flex-col">
-              <div class="text-lg lg:text-xl font-bold text-emerald-700">
-                {{ getPrecioMinimo() | currency : "S/. " : "symbol" : "1.0-0" }}
-                -
-                {{ getPrecioMaximo() | currency : "S/. " : "symbol" : "1.0-0" }}
-              </div>
-              <div class="text-xs lg:text-sm text-slate-600">Rango Precios</div>
-            </div>
-          </div>
+          Categorías
         </div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          {{ getCategorias() | number }}
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Precio promedio -->
+  <!-- Rango de Precios -->
+  <div
+    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+  >
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent dark:from-emerald-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+    ></div>
+    <div class="relative flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-emerald-50 dark:bg-emerald-900/20"
+      >
+        <i
+          class="pi pi-dollar text-emerald-600 dark:text-emerald-400 text-xl"
+        ></i>
+      </div>
+      <div>
         <div
-          class="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-          *ngIf="productos && productos.length > 0"
+          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
-          <div class="flex items-center gap-3">
-            <div
-              class="bg-orange-50 group-hover:bg-orange-100 p-3 rounded-xl transition-colors duration-300"
-            >
-              <i
-                class="pi pi-chart-bar text-orange-600 text-xl"
-                aria-hidden="true"
-              ></i>
-            </div>
-            <div class="flex flex-col">
-              <div class="text-2xl lg:text-3xl font-bold text-orange-700">
-                {{
-                  getPrecioPromedio() | currency : "S/. " : "symbol" : "1.0-0"
-                }}
-              </div>
-              <div class="text-xs lg:text-sm text-slate-600">
-                Precio Promedio
-              </div>
-            </div>
-          </div>
+          Rango Precios
+        </div>
+        <div class="text-lg font-bold text-slate-900 dark:text-white">
+          {{ getPrecioMinimo() | currency: "S/. " : "symbol" : "1.0-0" }} -
+          {{ getPrecioMaximo() | currency: "S/. " : "symbol" : "1.0-0" }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Precio Promedio -->
+  <div
+    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+  >
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent dark:from-orange-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+    ></div>
+    <div class="relative flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-orange-50 dark:bg-orange-900/20"
+      >
+        <i
+          class="pi pi-chart-bar text-orange-600 dark:text-orange-400 text-xl"
+        ></i>
+      </div>
+      <div>
+        <div
+          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
+        >
+          Precio Promedio
+        </div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          {{ getPrecioPromedio() | currency: "S/. " : "symbol" : "1.0-0" }}
         </div>
       </div>
     </div>
@@ -138,7 +159,10 @@
 </div>
 
 <!-- Toolbar híbrido optimizado -->
-<div class="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-8">
+<!-- Toolbar híbrido optimizado -->
+<div
+  class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-6 mb-6"
+>
   <div
     class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6"
   >
@@ -148,7 +172,7 @@
       <p-button
         *appHasPermission="{
           module: 'productos',
-          permission: permissionTypes.CREATE
+          permission: permissionTypes.CREATE,
         }"
         label="Nuevo Producto"
         icon="pi pi-plus"
@@ -188,7 +212,7 @@
         <p-button
           *appHasPermission="{
             module: 'productos',
-            permission: permissionTypes.DELETE
+            permission: permissionTypes.DELETE,
           }"
           icon="pi pi-trash"
           severity="danger"
@@ -262,9 +286,9 @@
 </div>
 
 <!-- Tabla con diseño más empresarial -->
-<div *ngIf="currentView === 'table'" class="mb-8">
+<div *ngIf="currentView === 'table'" class="mb-6">
   <div
-    class="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden"
+    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden"
   >
     <p-table
       #dt
@@ -275,7 +299,7 @@
         'nombre',
         'descripcion',
         'categoria.nombre',
-        'precio'
+        'precio',
       ]"
       [totalRecords]="productosFiltrados.length"
       [(selection)]="selectedProductos"
@@ -291,7 +315,9 @@
     >
       <!-- Caption corporativo -->
       <ng-template pTemplate="caption">
-        <div class="bg-gradient-to-r from-slate-50 to-blue-50 p-6">
+        <div
+          class="bg-slate-50 dark:bg-slate-800/50 p-6 border-b border-slate-200/60 dark:border-slate-700/60"
+        >
           <div
             class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
           >
@@ -344,7 +370,9 @@
 
       <!-- Header mejorado -->
       <ng-template pTemplate="header">
-        <tr class="bg-gradient-to-r from-slate-100 to-slate-50">
+        <tr
+          class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+        >
           <th style="width: 3rem" class="text-center">
             <p-tableHeaderCheckbox />
           </th>
@@ -506,8 +534,8 @@
                     'bg-gray-100 text-gray-800': ![
                       'hombre',
                       'mujer',
-                      'unisex'
-                    ].includes(producto.genero?.toLowerCase())
+                      'unisex',
+                    ].includes(producto.genero?.toLowerCase()),
                   }"
                 >
                   <i
@@ -518,7 +546,7 @@
                       'pi-circle': producto.genero === 'unisex',
                       'pi-question': !['hombre', 'mujer', 'unisex'].includes(
                         producto.genero?.toLowerCase()
-                      )
+                      ),
                     }"
                   ></i>
                   {{ producto.genero | titlecase }}
@@ -573,7 +601,7 @@
                   <span class="text-emerald-700 font-bold">
                     {{
                       producto.precioCompra
-                        | currency : "S/. " : "symbol" : "1.2-2"
+                        | currency: "S/. " : "symbol" : "1.2-2"
                     }}
                   </span>
                 </div>
@@ -585,7 +613,7 @@
                     <span class="text-blue-700 font-bold text-lg">
                       {{
                         producto.precioVenta
-                          | currency : "S/. " : "symbol" : "1.2-2"
+                          | currency: "S/. " : "symbol" : "1.2-2"
                       }}
                     </span>
                   </div>
@@ -598,7 +626,7 @@
                     <span class="text-emerald-800 font-bold">
                       {{
                         producto.precioVenta - producto.precioCompra
-                          | currency : "S/. " : "symbol" : "1.2-2"
+                          | currency: "S/. " : "symbol" : "1.2-2"
                       }}
                     </span>
                   </div>
@@ -613,7 +641,7 @@
               <div class="flex justify-center">
                 <p-tag
                   [value]="
-                    (calcularMargenGanancia(producto) | number : '1.0-1') + '%'
+                    (calcularMargenGanancia(producto) | number: '1.0-1') + '%'
                   "
                   [severity]="
                     getMargenSeverity(calcularMargenGanancia(producto))
@@ -654,7 +682,7 @@
               <p-button
                 *appHasPermission="{
                   module: 'productos',
-                  permission: permissionTypes.EDIT
+                  permission: permissionTypes.EDIT,
                 }"
                 icon="pi pi-pencil"
                 [rounded]="true"
@@ -678,7 +706,7 @@
               <p-button
                 *appHasPermission="{
                   module: 'productos',
-                  permission: permissionTypes.DELETE
+                  permission: permissionTypes.DELETE,
                 }"
                 icon="pi pi-trash"
                 severity="danger"
@@ -706,12 +734,12 @@
       class="card-item"
       *appHasPermission="{
         module: 'productos',
-        permission: permissionTypes.CREATE
+        permission: permissionTypes.CREATE,
       }"
     >
       <button
         type="button"
-        class="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
+        class="w-full h-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
         (click)="openNew()"
         aria-label="Agregar nuevo producto al catálogo"
       >
@@ -721,10 +749,12 @@
           <i class="pi pi-plus text-2xl lg:text-3xl text-indigo-600"></i>
         </div>
         <span
-          class="text-lg lg:text-xl font-semibold text-gray-700 mb-2 text-center"
+          class="text-lg lg:text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2 text-center"
           >Agregar Producto</span
         >
-        <span class="text-sm text-gray-500 text-center px-2">
+        <span
+          class="text-sm text-slate-500 dark:text-slate-400 text-center px-2"
+        >
           Clic para crear un nuevo producto en tu catálogo
         </span>
       </button>
@@ -737,7 +767,7 @@
     >
       <!-- Tu card de producto existente (sin cambios en el contenido) -->
       <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
+        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
       >
         <!-- Header de imagen con overlay -->
         <div class="relative overflow-hidden">
@@ -766,7 +796,7 @@
               <p-button
                 *appHasPermission="{
                   module: 'productos',
-                  permission: permissionTypes.EDIT
+                  permission: permissionTypes.EDIT,
                 }"
                 icon="pi pi-pencil"
                 [rounded]="true"
@@ -790,7 +820,7 @@
           <div class="absolute top-3 right-3">
             <p-tag
               [value]="
-                (calcularMargenGanancia(producto) | number : '1.0-1') + '%'
+                (calcularMargenGanancia(producto) | number: '1.0-1') + '%'
               "
               [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
               [icon]="getMargenIconClass(calcularMargenGanancia(producto))"
@@ -804,57 +834,65 @@
           <!-- Título y marca -->
           <div class="mb-4">
             <h3
-              class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]"
+              class="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem]"
             >
               {{ producto.nombre }}
             </h3>
-            <div class="flex items-center gap-2 text-sm text-gray-600">
+            <div
+              class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
+            >
               <i class="pi pi-building text-blue-500"></i>
               <span class="font-medium">{{ producto.marca }}</span>
-              <span class="text-gray-400" *ngIf="producto.modelo">•</span>
+              <span class="text-slate-400" *ngIf="producto.modelo">•</span>
               <span *ngIf="producto.modelo">{{ producto.modelo }}</span>
             </div>
           </div>
 
           <!-- Precios con diseño moderno -->
           <div
-            class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4"
+            class="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/20 rounded-xl p-4 mb-4"
           >
             <div class="space-y-3">
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span class="text-sm font-medium text-gray-700">Compra</span>
+                  <span
+                    class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    >Compra</span
+                  >
                 </div>
                 <span class="text-green-600 font-bold">
                   {{
                     producto.precioCompra
-                      | currency : "S/. " : "symbol" : "1.2-2"
+                      | currency: "S/. " : "symbol" : "1.2-2"
                   }}
                 </span>
               </div>
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span class="text-sm font-medium text-gray-700">Venta</span>
+                  <span
+                    class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    >Venta</span
+                  >
                 </div>
                 <span class="text-blue-700 font-bold text-lg">
                   {{
-                    producto.precioVenta
-                      | currency : "S/. " : "symbol" : "1.2-2"
+                    producto.precioVenta | currency: "S/. " : "symbol" : "1.2-2"
                   }}
                 </span>
               </div>
               <!-- Ganancia por unidad -->
-              <div class="pt-2 border-t border-gray-200">
+              <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
                 <div class="flex justify-between items-center">
-                  <span class="text-xs font-medium text-gray-600"
+                  <span
+                    class="text-xs font-medium text-slate-600 dark:text-slate-400"
                     >Ganancia unitaria</span
                   >
                   <span class="text-emerald-600 font-bold text-sm">
                     {{
                       producto.precioVenta - producto.precioCompra
-                        | currency : "S/. " : "symbol" : "1.2-2"
+                        | currency: "S/. " : "symbol" : "1.2-2"
                     }}
                   </span>
                 </div>
@@ -864,24 +902,27 @@
 
           <!-- Descripción -->
           <div *ngIf="producto.descripcion" class="mb-4">
-            <p class="text-sm text-gray-600 line-clamp-3">
+            <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3">
               {{ producto.descripcion }}
             </p>
           </div>
 
           <!-- Footer con fecha y acciones -->
           <div
-            class="flex justify-between items-center pt-4 border-t border-gray-100"
+            class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700"
           >
-            <div class="text-xs text-gray-500" *ngIf="producto.fechaCreacion">
+            <div
+              class="text-xs text-slate-500 dark:text-slate-400"
+              *ngIf="producto.fechaCreacion"
+            >
               <i class="pi pi-calendar mr-1"></i>
-              {{ producto.fechaCreacion | date : "dd/MM/yyyy" }}
+              {{ producto.fechaCreacion | date: "dd/MM/yyyy" }}
             </div>
             <div class="flex gap-2">
               <p-button
                 *appHasPermission="{
                   module: 'productos',
-                  permission: permissionTypes.EDIT
+                  permission: permissionTypes.EDIT,
                 }"
                 icon="pi pi-pencil"
                 [outlined]="true"
@@ -894,7 +935,7 @@
               <p-button
                 *appHasPermission="{
                   module: 'productos',
-                  permission: permissionTypes.DELETE
+                  permission: permissionTypes.DELETE,
                 }"
                 icon="pi pi-trash"
                 severity="danger"
@@ -1148,7 +1189,7 @@
                           'input-error':
                             submitted &&
                             !generarCodigoAuto &&
-                            !producto.codigo?.trim()
+                            !producto.codigo?.trim(),
                         }"
                       />
                       <div class="input-icon">
@@ -1196,7 +1237,7 @@
                         placeholder="Ej: Zapatillas Nike Air Max 90, Botines Adidas..."
                         class="form-input"
                         [ngClass]="{
-                          'input-error': submitted && !producto.nombre.trim()
+                          'input-error': submitted && !producto.nombre.trim(),
                         }"
                       />
                       <div class="input-icon">
@@ -1239,7 +1280,7 @@
                         class="form-dropdown"
                         [editable]="true"
                         [ngClass]="{
-                          'dropdown-error': submitted && !producto.marca.trim()
+                          'dropdown-error': submitted && !producto.marca.trim(),
                         }"
                         optionLabel="label"
                         optionValue="value"
@@ -1282,7 +1323,7 @@
                         placeholder="Ej: Air Max 90, Stan Smith, Chuck Taylor..."
                         class="form-input"
                         [ngClass]="{
-                          'input-error': submitted && !producto.modelo.trim()
+                          'input-error': submitted && !producto.modelo.trim(),
                         }"
                       />
                       <div class="input-icon">
@@ -1389,7 +1430,7 @@
                             'price-error':
                               submitted &&
                               (!producto.precioCompra ||
-                                producto.precioCompra <= 0)
+                                producto.precioCompra <= 0),
                           }"
                         />
                       </div>
@@ -1431,7 +1472,7 @@
                                 producto.precioVenta <= 0 ||
                                 (producto.precioCompra &&
                                   producto.precioVenta <=
-                                    producto.precioCompra))
+                                    producto.precioCompra)),
                           }"
                         />
                       </div>
@@ -1488,7 +1529,7 @@
                           <div class="metric-value">
                             {{
                               producto.precioVenta - producto.precioCompra
-                                | currency : "S/. " : "symbol" : "1.2-2"
+                                | currency: "S/. " : "symbol" : "1.2-2"
                             }}
                           </div>
                           <div class="metric-label">
@@ -1508,7 +1549,7 @@
                           >
                             {{
                               calcularMargenGanancia(producto)
-                                | number : "1.1-1"
+                                | number: "1.1-1"
                             }}%
                           </div>
                           <div class="metric-label">
@@ -1603,7 +1644,7 @@
                         <span
                           ><strong>Creado:</strong>
                           {{
-                            producto.fechaCreacion | date : "dd/MM/yyyy HH:mm"
+                            producto.fechaCreacion | date: "dd/MM/yyyy HH:mm"
                           }}</span
                         >
                       </div>
@@ -1616,7 +1657,7 @@
                           ><strong>Actualizado:</strong>
                           {{
                             producto.fechaActualizacion
-                              | date : "dd/MM/yyyy HH:mm"
+                              | date: "dd/MM/yyyy HH:mm"
                           }}</span
                         >
                       </div>
@@ -1674,7 +1715,7 @@
   [contentStyle]="{
     padding: '0',
     overflow: 'hidden',
-    height: 'calc(90vh - 80px)'
+    height: 'calc(90vh - 80px)',
   }"
   styleClass="zapatos-detalle-dialog"
   [showHeader]="false"
@@ -1827,7 +1868,7 @@
                       <div class="price-value purchase-price">
                         {{
                           productoDetalle.precioCompra
-                            | currency : "S/. " : "symbol" : "1.2-2"
+                            | currency: "S/. " : "symbol" : "1.2-2"
                         }}
                       </div>
                     </div>
@@ -1841,7 +1882,7 @@
                       <div class="price-value sale-price">
                         {{
                           productoDetalle.precioVenta
-                            | currency : "S/. " : "symbol" : "1.2-2"
+                            | currency: "S/. " : "symbol" : "1.2-2"
                         }}
                       </div>
                     </div>
@@ -1856,7 +1897,7 @@
                         {{
                           productoDetalle.precioVenta -
                             productoDetalle.precioCompra
-                            | currency : "S/. " : "symbol" : "1.2-2"
+                            | currency: "S/. " : "symbol" : "1.2-2"
                         }}
                       </div>
                     </div>
@@ -1878,7 +1919,7 @@
                         >
                           {{
                             calcularMargenGanancia(productoDetalle)
-                              | number : "1.1-1"
+                              | number: "1.1-1"
                           }}%
                         </div>
                         <div class="margin-badge">
@@ -1908,7 +1949,7 @@
                       <span class="visual-percentage"
                         >{{
                           calcularMargenGanancia(productoDetalle)
-                            | number : "1.1-1"
+                            | number: "1.1-1"
                         }}%</span
                       >
                     </div>
@@ -1983,7 +2024,7 @@
                         <div class="registry-value">
                           {{
                             productoDetalle.fechaCreacion
-                              | date : "dd/MM/yyyy HH:mm"
+                              | date: "dd/MM/yyyy HH:mm"
                           }}
                         </div>
                       </div>
@@ -2001,7 +2042,7 @@
                         <div class="registry-value">
                           {{
                             productoDetalle.fechaActualizacion
-                              | date : "dd/MM/yyyy HH:mm"
+                              | date: "dd/MM/yyyy HH:mm"
                           }}
                         </div>
                       </div>
@@ -2025,7 +2066,7 @@
         <div class="info-item">
           <i class="pi pi-clock text-slate-500"></i>
           <span class="text-slate-600"
-            >Actualizado: {{ getCurrentTime() | date : "HH:mm" }}</span
+            >Actualizado: {{ getCurrentTime() | date: "HH:mm" }}</span
           >
         </div>
       </div>
@@ -2042,7 +2083,7 @@
         <p-button
           *appHasPermission="{
             module: 'productos',
-            permission: permissionTypes.EDIT
+            permission: permissionTypes.EDIT,
           }"
           label="Editar Producto"
           icon="pi pi-pencil"

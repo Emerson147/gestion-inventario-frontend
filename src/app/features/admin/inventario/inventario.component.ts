@@ -30,8 +30,6 @@ import { BadgeModule } from 'primeng/badge';
 import { TabViewModule } from 'primeng/tabview';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { SplitButtonModule } from 'primeng/splitbutton';
-import { MenuItem } from 'primeng/api';
 import { SliderModule } from 'primeng/slider';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { KnobModule } from 'primeng/knob';
@@ -46,6 +44,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { OrganizationChartModule } from 'primeng/organizationchart';
 import { TreeTableModule } from 'primeng/treetable';
 import { ScrollerModule } from 'primeng/scroller';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import {
@@ -208,9 +207,8 @@ interface InventarioExtendido extends Inventario {
     OrganizationChartModule,
     TreeTableModule,
     ScrollerModule,
-    ScrollerModule,
-    HasPermissionDirective,
     SplitButtonModule,
+    HasPermissionDirective,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './inventario.component.html',
@@ -654,16 +652,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   // ========== PERMISOS ==========
   permissionTypes = PermissionType;
 
-  // ========== CONFIGURACIÓN ==========
-  viewOptions: ViewOption[] = [
-    { label: 'Dashboard', value: 'dashboard', icon: 'pi pi-chart-pie' },
-    { label: 'Vista Cards', value: 'cards', icon: 'pi pi-th-large' },
-    { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
-    { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' },
-    { label: 'Movimientos', value: 'movements', icon: 'pi pi-history' },
-  ];
-
-  exportOptions: MenuItem[] = [
+  // ========== OPCIONES DE EXPORTACIÓN ==========
+  exportOptions = [
     {
       label: 'Exportar Todo',
       icon: 'pi pi-file-excel',
@@ -671,6 +661,22 @@ export class InventarioComponent implements OnInit, AfterViewInit {
         this.exportarTodo();
       },
     },
+    {
+      label: 'Exportar Filtrado',
+      icon: 'pi pi-filter',
+      command: () => {
+        this.exportarExcel();
+      },
+    },
+  ];
+
+  // ========== CONFIGURACIÓN ==========
+  viewOptions: ViewOption[] = [
+    { label: 'Dashboard', value: 'dashboard', icon: 'pi pi-chart-pie' },
+    { label: 'Vista Cards', value: 'cards', icon: 'pi pi-th-large' },
+    { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
+    { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' },
+    { label: 'Movimientos', value: 'movements', icon: 'pi pi-history' },
   ];
 
   estadosInventario: {
@@ -961,64 +967,54 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   /**
    * 👇 Genera datos simulados para demostración (con valores consistentes)
    */
-  /**
-   * 👇 Genera datos simulados para demostración (con valores consistentes)
-   */
-  generarDatosSimulados(
-    inventarios: InventarioExtendido[] = this.inventariosFiltrados,
-  ): InventarioExtendido[] {
+  generarDatosSimulados(): void {
     // Simular datos extendidos para los inventarios existentes
-    const inventariosSimulados = inventarios.map((inventario, index) => {
-      // Usar índice para generar valores consistentes
-      const seed = index * 12345;
+    this.inventariosFiltrados = this.inventariosFiltrados.map(
+      (inventario, index) => {
+        // Usar índice para generar valores consistentes
+        const seed = index * 12345;
 
-      const invExtendido = {
-        ...inventario,
-        valorUnitario: 20 + (seed % 100),
-        rotacion: 1 + (seed % 12),
-        diasSinMovimiento: seed % 90,
-        stockMinimo: Math.floor(inventario.cantidad * 0.2),
-        stockMaximo: Math.floor(inventario.cantidad * 2),
-        puntoReorden: Math.floor(inventario.cantidad * 0.3),
-        categoriaABC: ['A', 'B', 'C'][index % 3] as 'A' | 'B' | 'C',
-        tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as
-          | 'SUBIENDO'
-          | 'BAJANDO'
-          | 'ESTABLE',
-        prediccionDemanda: 10 + (seed % 50),
-        fechaUltimoMovimiento: new Date(
-          Date.now() - (seed % 30) * 24 * 60 * 60 * 1000,
-        ),
-        proveedorPrincipal: ['Proveedor A', 'Proveedor B', 'Proveedor C'][
-          index % 3
-        ],
-        tiempoReposicion: 5 + (seed % 15),
-        costo: 10 + (seed % 80),
-        margen: 20 + (seed % 50),
-        ubicacionAlmacen: `Pasillo ${index + 1}-Estante ${(seed % 10) + 1}`,
-        lote: `LT${String(index + 1).padStart(4, '0')}`,
-        fechaVencimiento: new Date(
-          Date.now() + (seed % 365) * 24 * 60 * 60 * 1000,
-        ),
-        movimientos: [],
-      };
+        return {
+          ...inventario,
+          valorUnitario: 20 + (seed % 100),
+          rotacion: 1 + (seed % 12),
+          diasSinMovimiento: seed % 90,
+          stockMinimo: Math.floor(inventario.cantidad * 0.2),
+          stockMaximo: Math.floor(inventario.cantidad * 2),
+          puntoReorden: Math.floor(inventario.cantidad * 0.3),
+          categoriaABC: ['A', 'B', 'C'][index % 3] as 'A' | 'B' | 'C',
+          tendencia: ['SUBIENDO', 'BAJANDO', 'ESTABLE'][index % 3] as
+            | 'SUBIENDO'
+            | 'BAJANDO'
+            | 'ESTABLE',
+          prediccionDemanda: 10 + (seed % 50),
+          fechaUltimoMovimiento: new Date(
+            Date.now() - (seed % 30) * 24 * 60 * 60 * 1000,
+          ),
+          proveedorPrincipal: ['Proveedor A', 'Proveedor B', 'Proveedor C'][
+            index % 3
+          ],
+          tiempoReposicion: 5 + (seed % 15),
+          costo: 10 + (seed % 80),
+          margen: 20 + (seed % 50),
+          ubicacionAlmacen: `Pasillo ${index + 1}-Estante ${(seed % 10) + 1}`,
+          lote: `LT${String(index + 1).padStart(4, '0')}`,
+          fechaVencimiento: new Date(
+            Date.now() + (seed % 365) * 24 * 60 * 60 * 1000,
+          ),
+          movimientos: [],
+        };
+      },
+    );
 
-      // Calcular valor total
-      if (invExtendido.valorUnitario) {
-        invExtendido.valorTotal =
-          invExtendido.cantidad * invExtendido.valorUnitario;
+    // Calcular valor total para cada inventario
+    this.inventariosFiltrados.forEach((inventario) => {
+      if (inventario.valorUnitario) {
+        inventario.valorTotal = inventario.cantidad * inventario.valorUnitario;
       }
-
-      return invExtendido;
     });
 
-    // Si estamos actualizando la vista principal, guardamos la referencia
-    if (inventarios === this.inventariosFiltrados) {
-      this.inventariosFiltrados = inventariosSimulados;
-      this.updateChartData();
-    }
-
-    return inventariosSimulados;
+    this.updateChartData();
   }
 
   /**
@@ -1930,15 +1926,15 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   // ========== EXPORTACIÓN (Manteniendo y expandiendo funcionalidad original) ==========
 
-  exportarExcel(data: InventarioExtendido[] = this.inventariosFiltrados): void {
-    if (!data?.length) {
+  exportarExcel(): void {
+    if (!this.inventariosFiltrados?.length) {
       this.showWarning('No hay datos para exportar');
       return;
     }
 
     import('xlsx')
       .then((xlsx) => {
-        const dataToExport = data.map((inventario) => ({
+        const dataToExport = this.inventariosFiltrados.map((inventario) => ({
           Serie: inventario.serie || '',
           Producto: inventario.producto?.nombre || '',
           Código: inventario.producto?.codigo || '',
@@ -1971,7 +1967,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           bookType: 'xlsx',
           type: 'array',
         });
-        this.guardarArchivo(excelBuffer, 'inventario_detallado');
+        this.guardarArchivo(excelBuffer, 'inventario_filtrado');
       })
       .catch(() => {
         this.showError('Error al cargar la biblioteca de exportación');
@@ -1979,34 +1975,68 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   exportarTodo(): void {
-    this.loading = true;
-    this.showInfo('Preparando exportación completa...');
+    // Determinar qué datos exportar: todos o todos del producto filtrado
+    const datosAExportar = this.productoSeleccionadoFiltro
+      ? this.inventariosTotales.filter(
+          (inv) => inv.producto?.id === this.productoSeleccionadoFiltro?.id,
+        )
+      : this.inventariosTotales;
 
-    // Obtener todos los inventarios (usando un tamaño de página grande)
-    this.inventarioService.obtenerInventarios(0, 10000).subscribe({
-      next: (response) => {
-        const todosInventarios = response.contenido || [];
-        if (todosInventarios.length === 0) {
-          this.showWarning('No hay inventarios para exportar');
-          this.loading = false;
-          return;
-        }
+    if (!datosAExportar?.length) {
+      this.showWarning('No hay datos para exportar');
+      return;
+    }
 
-        // Aplicar la simulación de datos para mantener consistencia con la vista
-        const inventariosCompletos =
-          this.generarDatosSimulados(todosInventarios);
+    import('xlsx')
+      .then((xlsx) => {
+        const dataToExport = datosAExportar.map((inventario) => ({
+          Serie: inventario.serie || '',
+          Producto: inventario.producto?.nombre || '',
+          Código: inventario.producto?.codigo || '',
+          Color: inventario.color?.nombre || '',
+          Talla: inventario.talla?.numero || '',
+          Almacén: inventario.almacen?.nombre || '',
+          Cantidad: inventario.cantidad,
+          Estado: inventario.estado,
+          'Valor Unitario': inventario.valorUnitario || 0,
+          'Valor Total': inventario.valorTotal || 0,
+          'Stock Mínimo': inventario.stockMinimo || 0,
+          'Categoría ABC': inventario.categoriaABC || '',
+          Rotación: inventario.rotacion || 0,
+          Ubicación: inventario.ubicacionAlmacen || '',
+          Lote: inventario.lote || '',
+          'Fecha Vencimiento': inventario.fechaVencimiento
+            ? new Date(inventario.fechaVencimiento).toLocaleDateString()
+            : '',
+          'Última Actualización': new Date(
+            inventario.fechaActualizacion,
+          ).toLocaleString(),
+        }));
 
-        this.exportarExcel(inventariosCompletos);
-        this.loading = false;
+        const worksheet = xlsx.utils.json_to_sheet(dataToExport);
+        const workbook = {
+          Sheets: { Inventario: worksheet },
+          SheetNames: ['Inventario'],
+        };
+        const excelBuffer = xlsx.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        // Nombre del archivo según si hay filtro de producto o no
+        const nombreArchivo = this.productoSeleccionadoFiltro
+          ? `inventario_completo_${this.productoSeleccionadoFiltro.codigo}`
+          : 'inventario_completo_todos';
+
+        this.guardarArchivo(excelBuffer, nombreArchivo);
+
         this.showSuccess(
-          `Exportación completada: ${inventariosCompletos.length} registros`,
+          `Exportados ${dataToExport.length} registros exitosamente`,
         );
-      },
-      error: (error) => {
-        this.handleError(error, 'Error al obtener todos los inventarios');
-        this.loading = false;
-      },
-    });
+      })
+      .catch(() => {
+        this.showError('Error al cargar la biblioteca de exportación');
+      });
   }
 
   private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {

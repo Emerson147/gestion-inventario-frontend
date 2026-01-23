@@ -28,11 +28,29 @@ import { TooltipModule } from 'primeng/tooltip'; // 👈 Nuevo import
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Producto } from '../../../core/models/product.model';
 import { ProductoService } from '../../../core/services/producto.service';
-import { PermissionService, PermissionType } from '../../../core/services/permission.service';
+import {
+  PermissionService,
+  PermissionType,
+} from '../../../core/services/permission.service';
 import { environment } from '../../../../environments/environment';
-import { finalize, forkJoin, catchError, of, firstValueFrom, switchMap, tap } from 'rxjs';
-import { AnalyticsService, KPIMetrics, OptimizacionPrecio } from '../../../core/services/analytics.service';
-import { EnterpriseIntegrationService, SincronizacionResult } from '../../../core/services/enterprise-integration.service';
+import {
+  finalize,
+  forkJoin,
+  catchError,
+  of,
+  firstValueFrom,
+  switchMap,
+  tap,
+} from 'rxjs';
+import {
+  AnalyticsService,
+  KPIMetrics,
+  OptimizacionPrecio,
+} from '../../../core/services/analytics.service';
+import {
+  EnterpriseIntegrationService,
+  SincronizacionResult,
+} from '../../../core/services/enterprise-integration.service';
 import { MenuModule } from 'primeng/menu';
 import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -110,14 +128,13 @@ interface TableFilter {
     ToolbarModule,
     MenuModule,
     HasPermissionDirective,
-    ToastNotificationComponent
+    ToastNotificationComponent,
   ],
   providers: [MessageService, ConfirmationService, CurrencyPipe],
   templateUrl: './productos.component.html',
-  styleUrls: ['./productos.component.scss']
+  styleUrls: ['./productos.component.scss'],
 })
 export class ProductosComponent implements OnInit {
-
   // ========== DATOS Y ESTADO ==========
   productos: Producto[] = [];
   productosFiltrados: Producto[] = [];
@@ -152,54 +169,53 @@ export class ProductosComponent implements OnInit {
   // ========== CONFIGURACIÓN ==========
   viewOptions: ViewOption[] = [
     { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
-    { label: 'Tarjetas', value: 'cards', icon: 'pi pi-th-large' }
+    { label: 'Tarjetas', value: 'cards', icon: 'pi pi-th-large' },
   ];
 
-    // Propiedades para acciones masivas
-    accionesMasivas: AccionMasiva[] = [];
+  // Propiedades para acciones masivas
+  accionesMasivas: AccionMasiva[] = [];
 
-    /**
+  /**
    * 🚀 Inicializa las acciones masivas disponibles
    */
-    private inicializarAccionesMasivas(): void {
-      this.accionesMasivas = [
-        {
-          label: 'Exportar Seleccionados',
-          icon: 'pi pi-download',
-          command: () => this.exportarSeleccionados()
-        },
-        {
-          label: 'Cambiar Precios en Lote',
-          icon: 'pi pi-dollar',
-          command: () => this.cambiarPreciosLote()
-        },
-        { separator: true } as AccionMasiva,
-        {
-          label: 'Duplicar Productos',
-          icon: 'pi pi-copy',
-          command: () => this.duplicarProductos()
-        },
-        {
-          label: 'Actualizar Códigos',
-          icon: 'pi pi-refresh',
-          command: () => this.actualizarCodigosLote()
-        }
-      ];
-    }
+  private inicializarAccionesMasivas(): void {
+    this.accionesMasivas = [
+      {
+        label: 'Exportar Seleccionados',
+        icon: 'pi pi-download',
+        command: () => this.exportarSeleccionados(),
+      },
+      {
+        label: 'Cambiar Precios en Lote',
+        icon: 'pi pi-dollar',
+        command: () => this.cambiarPreciosLote(),
+      },
+      { separator: true } as AccionMasiva,
+      {
+        label: 'Duplicar Productos',
+        icon: 'pi pi-copy',
+        command: () => this.duplicarProductos(),
+      },
+      {
+        label: 'Actualizar Códigos',
+        icon: 'pi pi-refresh',
+        command: () => this.actualizarCodigosLote(),
+      },
+    ];
+  }
 
-    /**
+  /**
    * 🎯 Acción principal del split button (la más común)
    */
-    accionPrincipalMasiva(): void {
-      // La acción más común - exportar
-      this.exportarSeleccionados();
-    }
-  
+  accionPrincipalMasiva(): void {
+    // La acción más común - exportar
+    this.exportarSeleccionados();
+  }
 
   // ========== PERMISOS ==========
   permissionTypes = PermissionType;
 
-   // 🆕 NUEVAS PROPIEDADES EMPRESARIALES
+  // 🆕 NUEVAS PROPIEDADES EMPRESARIALES
   kpiMetrics: KPIMetrics | null = null;
   optimizacionesDialog = false;
   optimizacionesSugeridas: OptimizacionPrecioSeleccionable[] = [];
@@ -213,7 +229,7 @@ export class ProductosComponent implements OnInit {
     margenMinimo: null as number | null,
     margenMaximo: null as number | null,
     fechaDesde: null as Date | null,
-    fechaHasta: null as Date | null
+    fechaHasta: null as Date | null,
   };
 
   marcasCalzado = [
@@ -231,7 +247,7 @@ export class ProductosComponent implements OnInit {
     { label: 'Dr. Martens', value: 'Dr. Martens' },
     { label: 'Caterpillar', value: 'Caterpillar' },
     { label: 'Clarks', value: 'Clarks' },
-    { label: 'Otro', value: 'Otro' }
+    { label: 'Otro', value: 'Otro' },
   ];
 
   generosCalzado = [
@@ -239,7 +255,7 @@ export class ProductosComponent implements OnInit {
     { label: 'Mujer', value: 'mujer' },
     { label: 'Niño', value: 'nino' },
     { label: 'Niña', value: 'nina' },
-    { label: 'Unisex', value: 'unisex' }
+    { label: 'Unisex', value: 'unisex' },
   ];
 
   modeloCalzado = [
@@ -252,15 +268,20 @@ export class ProductosComponent implements OnInit {
     { label: 'Chinelas', value: 'chinelas' },
     { label: 'Zapatos de Seguridad', value: 'zapatos_seguridad' },
     { label: 'Zapatos de Vestir', value: 'zapatos_vestir' },
-    { label: 'Otros', value: 'otros' }
+    { label: 'Otros', value: 'otros' },
   ];
 
   private readonly productoService: ProductoService = inject(ProductoService);
   private readonly messageService: MessageService = inject(MessageService);
-  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
-  private readonly permissionService: PermissionService = inject(PermissionService);
-  private readonly analyticsService: AnalyticsService = inject(AnalyticsService);
-  private readonly enterpriseService: EnterpriseIntegrationService = inject(EnterpriseIntegrationService);
+  private readonly confirmationService: ConfirmationService =
+    inject(ConfirmationService);
+  private readonly permissionService: PermissionService =
+    inject(PermissionService);
+  private readonly analyticsService: AnalyticsService =
+    inject(AnalyticsService);
+  private readonly enterpriseService: EnterpriseIntegrationService = inject(
+    EnterpriseIntegrationService,
+  );
   private readonly currencyPipe: CurrencyPipe = inject(CurrencyPipe);
   public readonly toastService: ToastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
@@ -272,16 +293,18 @@ export class ProductosComponent implements OnInit {
 
   onToggleSeleccionTodas(event: ToggleEvent): void {
     const checked = event.checked;
-    this.optimizacionesSugeridas.forEach(optimizacion => {
+    this.optimizacionesSugeridas.forEach((optimizacion) => {
       optimizacion.selected = checked;
     });
   }
 
-   getNombreProductoRapido(productoId: number): string {
-    return this.productosMap.get(productoId)?.nombre || 'Producto no encontrado';
+  getNombreProductoRapido(productoId: number): string {
+    return (
+      this.productosMap.get(productoId)?.nombre || 'Producto no encontrado'
+    );
   }
 
-    /**
+  /**
    * Calcula el impacto total estimado de las optimizaciones seleccionadas
    */
   get impactoTotalSeleccionado(): number {
@@ -290,15 +313,15 @@ export class ProductosComponent implements OnInit {
     }, 0);
   }
 
-    /**
+  /**
    * Verifica si hay al menos una optimización seleccionada
    */
   get hayOptimizacionesSeleccionadas(): boolean {
-    return this.optimizacionesSugeridas.some(o => o.selected);
+    return this.optimizacionesSugeridas.some((o) => o.selected);
   }
 
   getSelectedOptimizations(): OptimizacionPrecioSeleccionable[] {
-    return this.optimizacionesSugeridas.filter(o => o.selected);
+    return this.optimizacionesSugeridas.filter((o) => o.selected);
   }
 
   hasSelectedOptimizations(): boolean {
@@ -321,9 +344,9 @@ export class ProductosComponent implements OnInit {
     try {
       const resultado = await firstValueFrom(
         this.enterpriseService.sincronizarConERP({
-          productos: this.productos
+          productos: this.productos,
           // 🆕 Remover incluirPrecios e incluirStock si no existen en DatosSincronizacion
-        })
+        }),
       );
 
       this.mostrarResultadoSincronizacion(resultado);
@@ -337,19 +360,25 @@ export class ProductosComponent implements OnInit {
   /**
    * 📈 Aplicar optimizaciones seleccionadas
    */
-  async aplicarOptimizaciones(optimizaciones: OptimizacionPrecioSeleccionable[]): Promise<void> {
+  async aplicarOptimizaciones(
+    optimizaciones: OptimizacionPrecioSeleccionable[],
+  ): Promise<void> {
     this.loading = true;
 
     try {
       for (const opt of optimizaciones) {
-        const producto = this.productos.find(p => p.id === opt.productoId);
+        const producto = this.productos.find((p) => p.id === opt.productoId);
         if (producto) {
           producto.precioVenta = opt.precioOptimizado;
-          await firstValueFrom(this.productoService.updateProduct(producto.id!, producto));
+          await firstValueFrom(
+            this.productoService.updateProduct(producto.id!, producto),
+          );
         }
       }
 
-      this.showSuccess(`${optimizaciones.length} precios optimizados correctamente`);
+      this.showSuccess(
+        `${optimizaciones.length} precios optimizados correctamente`,
+      );
       this.loadProductos();
       this.optimizacionesDialog = false;
     } catch (error) {
@@ -367,17 +396,25 @@ export class ProductosComponent implements OnInit {
 
     // Filtro por margen
     if (this.filtroAvanzado.margenMinimo !== null) {
-      productos = productos.filter(p => this.calcularMargenGanancia(p) >= this.filtroAvanzado.margenMinimo!);
+      productos = productos.filter(
+        (p) =>
+          this.calcularMargenGanancia(p) >= this.filtroAvanzado.margenMinimo!,
+      );
     }
 
     if (this.filtroAvanzado.margenMaximo !== null) {
-      productos = productos.filter(p => this.calcularMargenGanancia(p) <= this.filtroAvanzado.margenMaximo!);
+      productos = productos.filter(
+        (p) =>
+          this.calcularMargenGanancia(p) <= this.filtroAvanzado.margenMaximo!,
+      );
     }
 
     // Filtro por fecha
     if (this.filtroAvanzado.fechaDesde) {
-      productos = productos.filter(p => 
-        p.fechaCreacion && new Date(p.fechaCreacion) >= this.filtroAvanzado.fechaDesde!
+      productos = productos.filter(
+        (p) =>
+          p.fechaCreacion &&
+          new Date(p.fechaCreacion) >= this.filtroAvanzado.fechaDesde!,
       );
     }
 
@@ -386,13 +423,19 @@ export class ProductosComponent implements OnInit {
 
   // 🆕 MÉTODOS DE UTILIDAD
 
-  private mostrarResultadoSincronizacion(resultado: SincronizacionResult): void {
+  private mostrarResultadoSincronizacion(
+    resultado: SincronizacionResult,
+  ): void {
     if (resultado.exitosos > 0) {
-      this.showSuccess(`${resultado.exitosos} productos sincronizados exitosamente`);
+      this.showSuccess(
+        `${resultado.exitosos} productos sincronizados exitosamente`,
+      );
     }
-    
+
     if (resultado.fallidos > 0) {
-      this.showWarning(`${resultado.fallidos} productos fallaron en la sincronización`);
+      this.showWarning(
+        `${resultado.fallidos} productos fallaron en la sincronización`,
+      );
     }
   }
 
@@ -400,7 +443,7 @@ export class ProductosComponent implements OnInit {
 
   loadProductos(): void {
     this.loading = true;
-    
+
     this.productoService.getProducts(0, 1000).subscribe({
       next: (response) => {
         this.productos = response.contenido || [];
@@ -412,12 +455,14 @@ export class ProductosComponent implements OnInit {
       },
       complete: () => {
         this.loading = false;
-      }
+      },
     });
   }
 
   private extractMarcas(): void {
-    const marcasSet = new Set(this.productos.map(p => p.marca).filter(Boolean));
+    const marcasSet = new Set(
+      this.productos.map((p) => p.marca).filter(Boolean),
+    );
     this.marcasDisponibles = Array.from(marcasSet).sort();
   }
 
@@ -427,9 +472,11 @@ export class ProductosComponent implements OnInit {
    * 👇 Calcula el valor total del inventario
    */
   calcularValorTotal(): number {
-    return this.productos?.reduce((total, producto) => {
-      return total + (producto.precioVenta || 0);
-    }, 0) || 0;
+    return (
+      this.productos?.reduce((total, producto) => {
+        return total + (producto.precioVenta || 0);
+      }, 0) || 0
+    );
   }
 
   /**
@@ -458,7 +505,6 @@ export class ProductosComponent implements OnInit {
     this.filtrosPanelCollapsed = event.collapsed;
   }
 
-
   /**
    * 👇 Muestra detalles del producto en modal
    */
@@ -481,13 +527,21 @@ export class ProductosComponent implements OnInit {
     const productos = this.productos || [];
     const total = productos.length;
     const valorTotal = this.calcularValorTotal();
-    const promedioMargen = productos.length > 0 
-      ? productos.reduce((sum, p) => sum + this.calcularMargenGanancia(p), 0) / productos.length 
-      : 0;
-    
-    const marcas = new Set(productos.map(p => p.marca)).size;
-    const productosMayorMargen = productos.filter(p => this.calcularMargenGanancia(p) >= 50).length;
-    const productosMargenBajo = productos.filter(p => this.calcularMargenGanancia(p) < 20).length;
+    const promedioMargen =
+      productos.length > 0
+        ? productos.reduce(
+            (sum, p) => sum + this.calcularMargenGanancia(p),
+            0,
+          ) / productos.length
+        : 0;
+
+    const marcas = new Set(productos.map((p) => p.marca)).size;
+    const productosMayorMargen = productos.filter(
+      (p) => this.calcularMargenGanancia(p) >= 50,
+    ).length;
+    const productosMargenBajo = productos.filter(
+      (p) => this.calcularMargenGanancia(p) < 20,
+    ).length;
 
     return {
       total,
@@ -496,8 +550,14 @@ export class ProductosComponent implements OnInit {
       marcas,
       productosMayorMargen,
       productosMargenBajo,
-      productoMasCaro: productos.reduce((max, p) => (p.precioVenta || 0) > (max.precioVenta || 0) ? p : max, productos[0]),
-      productoMasBarato: productos.reduce((min, p) => (p.precioVenta || 0) < (min.precioVenta || 0) ? p : min, productos[0])
+      productoMasCaro: productos.reduce(
+        (max, p) => ((p.precioVenta || 0) > (max.precioVenta || 0) ? p : max),
+        productos[0],
+      ),
+      productoMasBarato: productos.reduce(
+        (min, p) => ((p.precioVenta || 0) < (min.precioVenta || 0) ? p : min),
+        productos[0],
+      ),
     };
   }
 
@@ -514,27 +574,39 @@ export class ProductosComponent implements OnInit {
 
     try {
       const xlsx = await import('xlsx');
-      
-      const dataToExport = this.selectedProductos.map(producto => ({
-        'ID': producto.id || '',
-        'Código': producto.codigo || '',
-        'Nombre': producto.nombre || '',
-        'Marca': producto.marca || '',
-        'Modelo': producto.modelo || '',
-        'Descripción': producto.descripcion || '',
+
+      const dataToExport = this.selectedProductos.map((producto) => ({
+        ID: producto.id || '',
+        Código: producto.codigo || '',
+        Nombre: producto.nombre || '',
+        Marca: producto.marca || '',
+        Modelo: producto.modelo || '',
+        Descripción: producto.descripcion || '',
         'Precio Compra': producto.precioCompra || 0,
         'Precio Venta': producto.precioVenta || 0,
         'Margen %': this.calcularMargenGanancia(producto).toFixed(2),
-        'Ganancia Unitaria': ((producto.precioVenta || 0) - (producto.precioCompra || 0)).toFixed(2),
-        'Fecha Creación': producto.fechaCreacion ? new Date(producto.fechaCreacion).toLocaleString() : 'N/A'
+        'Ganancia Unitaria': (
+          (producto.precioVenta || 0) - (producto.precioCompra || 0)
+        ).toFixed(2),
+        'Fecha Creación': producto.fechaCreacion
+          ? new Date(producto.fechaCreacion).toLocaleString()
+          : 'N/A',
       }));
-      
+
       const worksheet = xlsx.utils.json_to_sheet(dataToExport);
-      const workbook = { Sheets: { 'Productos_Seleccionados': worksheet }, SheetNames: ['Productos_Seleccionados'] };
-      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const workbook = {
+        Sheets: { Productos_Seleccionados: worksheet },
+        SheetNames: ['Productos_Seleccionados'],
+      };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
       this.guardarArchivo(excelBuffer, 'productos_seleccionados');
-      
-      this.showSuccess(`${this.selectedProductos.length} productos seleccionados exportados correctamente`);
+
+      this.showSuccess(
+        `${this.selectedProductos.length} productos seleccionados exportados correctamente`,
+      );
     } catch (error) {
       this.handleError(error, 'Error al exportar productos seleccionados');
     }
@@ -548,7 +620,7 @@ export class ProductosComponent implements OnInit {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: 'Selecciona productos para cambiar precios'
+        detail: 'Selecciona productos para cambiar precios',
       });
       return;
     }
@@ -560,9 +632,10 @@ export class ProductosComponent implements OnInit {
       icon: 'pi pi-dollar',
       accept: () => {
         // Por ahora, incrementar precios en 10%
-        this.selectedProductos.forEach(producto => {
+        this.selectedProductos.forEach((producto) => {
           if (producto.precioVenta) {
-            producto.precioVenta = Math.round(producto.precioVenta * 1.1 * 100) / 100;
+            producto.precioVenta =
+              Math.round(producto.precioVenta * 1.1 * 100) / 100;
           }
         });
 
@@ -570,12 +643,11 @@ export class ProductosComponent implements OnInit {
         this.messageService.add({
           severity: 'info',
           summary: 'Simulación',
-          detail: 'Precios incrementados en 10% (simulación)'
+          detail: 'Precios incrementados en 10% (simulación)',
         });
-      }
+      },
     });
   }
-
 
   /**
    * 👇 Duplica productos seleccionados
@@ -586,37 +658,37 @@ export class ProductosComponent implements OnInit {
       header: 'Confirmar Duplicación',
       icon: 'pi pi-copy',
       accept: () => {
-          this.selectedProductos.forEach(producto => {
-            const productosDuplicado = {
-              ...producto,
-              id: undefined, // Nuevo ID
-              codigo: `${producto.codigo}_COPY`,
-              nombre: `${producto.nombre} (Copia)`
-            };
-            
-            this.productoService.createProduct(productosDuplicado).subscribe({
-              next: () => {
-                this.messageService.add({
-                  severity: 'success',
-                  summary: 'Éxito',
-                  detail: 'Productos duplicados correctamente'
-                });
-                this.loadProductos();
-              },
-              error: () => {
-                this.messageService.add({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: 'Error al duplicar productos'
-                });
-              }
-            });
-          });
-        }
-      });
-    }
+        this.selectedProductos.forEach((producto) => {
+          const productosDuplicado = {
+            ...producto,
+            id: undefined, // Nuevo ID
+            codigo: `${producto.codigo}_COPY`,
+            nombre: `${producto.nombre} (Copia)`,
+          };
 
-     /**
+          this.productoService.createProduct(productosDuplicado).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Éxito',
+                detail: 'Productos duplicados correctamente',
+              });
+              this.loadProductos();
+            },
+            error: () => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al duplicar productos',
+              });
+            },
+          });
+        });
+      },
+    });
+  }
+
+  /**
    * 🔄 Actualizar códigos automáticamente
    */
   actualizarCodigosLote(): void {
@@ -624,7 +696,7 @@ export class ProductosComponent implements OnInit {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: 'Selecciona productos para actualizar códigos'
+        detail: 'Selecciona productos para actualizar códigos',
       });
       return;
     }
@@ -635,7 +707,7 @@ export class ProductosComponent implements OnInit {
       icon: 'pi pi-refresh',
       accept: () => {
         const timestamp = Date.now();
-        
+
         this.selectedProductos.forEach((producto, index) => {
           producto.codigo = `PROD_${timestamp}_${String(index + 1).padStart(3, '0')}`;
         });
@@ -643,9 +715,9 @@ export class ProductosComponent implements OnInit {
         this.messageService.add({
           severity: 'info',
           summary: 'Simulación',
-          detail: 'Códigos actualizados (simulación)'
+          detail: 'Códigos actualizados (simulación)',
         });
-      }
+      },
     });
   }
 
@@ -657,26 +729,31 @@ export class ProductosComponent implements OnInit {
     // Filtro por texto (nombre, código, marca, modelo)
     if (this.filtroTexto) {
       const texto = this.filtroTexto.toLowerCase();
-      productos = productos.filter(p => 
-        p.nombre?.toLowerCase().includes(texto) ||
-        p.codigo?.toLowerCase().includes(texto) ||
-        p.marca?.toLowerCase().includes(texto) ||
-        p.modelo?.toLowerCase().includes(texto)
+      productos = productos.filter(
+        (p) =>
+          p.nombre?.toLowerCase().includes(texto) ||
+          p.codigo?.toLowerCase().includes(texto) ||
+          p.marca?.toLowerCase().includes(texto) ||
+          p.modelo?.toLowerCase().includes(texto),
       );
     }
 
     // Filtro por marca
     if (this.filtroMarca) {
-      productos = productos.filter(p => p.marca === this.filtroMarca);
+      productos = productos.filter((p) => p.marca === this.filtroMarca);
     }
 
     // Filtro por rango de precios
     if (this.filtroPrecioMin !== null) {
-      productos = productos.filter(p => (p.precioVenta || 0) >= this.filtroPrecioMin!);
+      productos = productos.filter(
+        (p) => (p.precioVenta || 0) >= this.filtroPrecioMin!,
+      );
     }
 
     if (this.filtroPrecioMax !== null) {
-      productos = productos.filter(p => (p.precioVenta || 0) <= this.filtroPrecioMax!);
+      productos = productos.filter(
+        (p) => (p.precioVenta || 0) <= this.filtroPrecioMax!,
+      );
     }
 
     this.productosFiltrados = productos;
@@ -698,7 +775,7 @@ export class ProductosComponent implements OnInit {
       this.showError('No tiene permisos para crear productos');
       return;
     }
-    
+
     this.editMode = false;
     this.producto = this.initProducto();
     this.generarCodigoAuto = true;
@@ -712,7 +789,7 @@ export class ProductosComponent implements OnInit {
       this.showError('No tiene permisos para editar productos');
       return;
     }
-    
+
     this.editMode = true;
     this.producto = { ...producto };
     this.generarCodigoAuto = false;
@@ -723,17 +800,18 @@ export class ProductosComponent implements OnInit {
 
   saveProducto(): void {
     this.submitted = true;
-    
+
     if (!this.isValidProducto()) {
       return;
     }
-    
+
     this.loading = true;
-    
-    const saveOperation = this.editMode && this.producto.id
-      ? this.updateExistingProduct()
-      : this.createNewProduct();
-      
+
+    const saveOperation =
+      this.editMode && this.producto.id
+        ? this.updateExistingProduct()
+        : this.createNewProduct();
+
     saveOperation
       .pipe(
         switchMap((productoGuardado) => {
@@ -744,61 +822,66 @@ export class ProductosComponent implements OnInit {
         }),
         finalize(() => {
           this.loading = false;
-        })
+        }),
       )
       .subscribe({
         next: (result) => {
           if (result) {
-            this.showSuccess(this.editMode ? 'Producto actualizado correctamente' : 'Producto creado correctamente');
+            this.showSuccess(
+              this.editMode
+                ? 'Producto actualizado correctamente'
+                : 'Producto creado correctamente',
+            );
             this.hideDialog();
             this.loadProductos();
           }
         },
-        error: (error) => this.handleError(error, 'Error al procesar el producto')
+        error: (error) =>
+          this.handleError(error, 'Error al procesar el producto'),
       });
   }
 
   private updateExistingProduct() {
-    return this.productoService.updateProduct(this.producto.id!, this.producto)
+    return this.productoService
+      .updateProduct(this.producto.id!, this.producto)
       .pipe(
         tap(() => console.log('Producto actualizado exitosamente')),
         catchError((error) => {
           this.handleError(error, 'No se pudo actualizar el producto');
           return of(null);
-        })
+        }),
       );
   }
-  
+
   private createNewProduct() {
     // 🔍 Log 1: Verificar datos antes de enviar
     console.log('=== CREANDO PRODUCTO ===');
     console.log('Datos del producto a enviar:', this.producto);
     console.log('Tipo de datos:', typeof this.producto);
     console.log('JSON stringify:', JSON.stringify(this.producto));
-    
-    return this.productoService.createProduct(this.producto)
-      .pipe(
-        tap((response) => {
-          // ✅ Log de éxito
-          console.log('✅ Producto creado exitosamente:', response);
-          console.log('Response completo:', JSON.stringify(response));
-          this.producto.id = response.id;
-        }),
-        catchError((error) => {
-          // ❌ Logs detallados de error
-          console.error('❌ ERROR AL CREAR PRODUCTO:');
-          console.error('Error completo:', error);
-          console.error('Status:', error.status);
-          console.error('Status Text:', error.statusText);
-          console.error('Error message:', error.error);
-          console.error('Error details:', error.error?.message);
-          console.error('Error validation:', error.error?.errors);
-          console.error('URL:', error.url);
-          
-          this.handleError(error, 'No se pudo crear el producto');
-          return of(null);
-        })
-      );
+
+    return this.productoService.createProduct(this.producto).pipe(
+      tap((response) => {
+        // ✅ Log de éxito
+        console.log('✅ Producto creado exitosamente:', response);
+        console.log('Response completo:', JSON.stringify(response));
+        this.producto.id = response.id;
+      }),
+      catchError((error) => {
+        // ❌ Logs detallados de error
+        console.error('❌ ERROR AL CREAR PRODUCTO:');
+        console.error('Error completo:', error);
+        console.error('Status:', error.status);
+        console.error('Status Text:', error.statusText);
+        console.error('Error message:', error.error);
+        console.error('Error details:', error.error?.message);
+        console.error('Error validation:', error.error?.errors);
+        console.error('URL:', error.url);
+
+        this.handleError(error, 'No se pudo crear el producto');
+        return of(null);
+      }),
+    );
   }
 
   deleteProducto(producto: Producto): void {
@@ -808,24 +891,29 @@ export class ProductosComponent implements OnInit {
     }
 
     if (!producto.id) return;
-    
+
     this.confirmationService.confirm({
       message: `¿Está seguro que desea eliminar el producto "${producto.nombre}"?`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.loading = true;
-        this.productoService.deleteProduct(producto.id!)
-          .pipe(finalize(() => this.loading = false))
+        this.productoService
+          .deleteProduct(producto.id!)
+          .pipe(finalize(() => (this.loading = false)))
           .subscribe({
             next: () => {
               this.showSuccess('Producto eliminado correctamente');
               this.loadProductos();
               this.selectedProductos = [];
             },
-            error: (error) => this.handleError(error, 'No se pudo eliminar el producto (puede tener inventario asociado)')
+            error: (error) =>
+              this.handleError(
+                error,
+                'No se pudo eliminar el producto (puede tener inventario asociado)',
+              ),
           });
-      }
+      },
     });
   }
 
@@ -836,12 +924,12 @@ export class ProductosComponent implements OnInit {
     }
 
     if (!this.selectedProductos.length) return;
-    
+
     this.confirmationService.confirm({
       message: `¿Está seguro que desea eliminar los ${this.selectedProductos.length} productos seleccionados?`,
       header: 'Confirmar eliminación múltiple',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => this.processMultipleDelete()
+      accept: () => this.processMultipleDelete(),
     });
   }
 
@@ -850,9 +938,9 @@ export class ProductosComponent implements OnInit {
   onUpload(event: { files?: File[] }): void {
     const file = event.files?.[0];
     if (!file) return;
-    
+
     this.setupImagePreview(file);
-    
+
     if (this.editMode && this.producto.id) {
       this.subirImagenProductoExistente(this.producto.id, file);
     } else {
@@ -872,70 +960,77 @@ export class ProductosComponent implements OnInit {
   private subirImagenProductoExistente(productoId: number, file: File): void {
     const formData = new FormData();
     formData.append('imagen', file);
-    
+
     this.loading = true;
-    
-    this.productoService.uploadImage(productoId, formData)
-      .pipe(finalize(() => this.loading = false))
+
+    this.productoService
+      .uploadImage(productoId, formData)
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (response) => {
           // 🆕 Type guard para verificar la estructura de la respuesta
-          if (response && typeof response === 'object' && 'imagen' in response) {
+          if (
+            response &&
+            typeof response === 'object' &&
+            'imagen' in response
+          ) {
             this.producto.imagen = (response as { imagen: string }).imagen;
             this.showSuccess('Imagen subida correctamente');
             this.resetImageState();
             this.loadProductos();
           }
         },
-        error: (error) => this.handleError(error, 'No se pudo subir la imagen')
+        error: (error) => this.handleError(error, 'No se pudo subir la imagen'),
       });
   }
 
   private subirImagenParaProducto(productoId: number) {
     if (!this.imagenParaSubir) return of(null);
-  
+
     const formData = new FormData();
     formData.append('imagen', this.imagenParaSubir);
-    
-    return this.productoService.uploadImage(productoId, formData)
-      .pipe(
-        tap((response) => {
-          // 🆕 Type guard para verificar la estructura de la respuesta
-          if (response && typeof response === 'object' && 'imagen' in response) {
-            this.producto.imagen = (response as { imagen: string }).imagen;
-          }
-        }),
-        catchError(() => {
-          this.showWarning('El producto se guardó pero hubo un error al subir la imagen');
-          return of(null);
-        })
-      );
+
+    return this.productoService.uploadImage(productoId, formData).pipe(
+      tap((response) => {
+        // 🆕 Type guard para verificar la estructura de la respuesta
+        if (response && typeof response === 'object' && 'imagen' in response) {
+          this.producto.imagen = (response as { imagen: string }).imagen;
+        }
+      }),
+      catchError(() => {
+        this.showWarning(
+          'El producto se guardó pero hubo un error al subir la imagen',
+        );
+        return of(null);
+      }),
+    );
   }
 
   getImageUrl(producto: Producto): string {
     if (this.previewImageUrl) {
       return this.previewImageUrl;
     }
-    
+
     if (producto?.imagen) {
       if (producto.imagen.startsWith('http')) {
         return producto.imagen;
       }
       return `${environment.apiUrl}api/files/uploads/${producto.imagen}`;
     }
-    
+
     return 'assets/images/placeholder-product.jpg';
   }
 
   /**
- * ️ Maneja errores de carga de imágenes
- */
-onImageError(event: ErrorEvent): void {
-  const target = event.target as HTMLImageElement;
-  if (target) {
-    target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25ibGU8L3RleHQ+PC9zdmc+';
+   * ️ Maneja errores de carga de imágenes
+   */
+  onImageError(event: ErrorEvent): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src =
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25ibGU8L3RleHQ+PC9zdmc+';
+    }
   }
-}
 
   // ========== VALIDACIONES (Manteniendo funcionalidad original) ==========
 
@@ -980,22 +1075,23 @@ onImageError(event: ErrorEvent): void {
 
   private async processMultipleDelete(): Promise<void> {
     this.loading = true;
-    
+
     try {
       const deleteOperations = this.selectedProductos
-        .filter(producto => producto.id)
-        .map(producto => 
-          this.productoService.deleteProduct(producto.id!)
-            .pipe(catchError(() => of(false)))
+        .filter((producto) => producto.id)
+        .map((producto) =>
+          this.productoService
+            .deleteProduct(producto.id!)
+            .pipe(catchError(() => of(false))),
         );
-        
+
       if (deleteOperations.length === 0) {
         this.loading = false;
         return;
       }
 
       const results = await firstValueFrom(forkJoin(deleteOperations));
-      const successful = results.filter(result => result !== false).length;
+      const successful = results.filter((result) => result !== false).length;
       const failed = results.length - successful;
 
       this.showDeleteResults(successful, failed);
@@ -1012,9 +1108,11 @@ onImageError(event: ErrorEvent): void {
     if (successful > 0) {
       this.showSuccess(`${successful} productos eliminados correctamente`);
     }
-    
+
     if (failed > 0) {
-      this.showWarning(`${failed} productos no pudieron ser eliminados (pueden tener inventario asociado)`);
+      this.showWarning(
+        `${failed} productos no pudieron ser eliminados (pueden tener inventario asociado)`,
+      );
     }
   }
 
@@ -1055,17 +1153,21 @@ onImageError(event: ErrorEvent): void {
   Math = Math; // Para usar Math en la plantilla
 
   calcularMargenGanancia(producto: Producto): number {
-    if (!producto.precioCompra || !producto.precioVenta || producto.precioCompra === 0) {
+    if (
+      !producto.precioCompra ||
+      !producto.precioVenta ||
+      producto.precioCompra === 0
+    ) {
       return 0;
     }
-    
+
     const ganancia = producto.precioVenta - producto.precioCompra;
     const margen = (ganancia / producto.precioCompra) * 100;
-    
+
     return Math.round(margen * 100) / 100; // Redondear a 2 decimales
   }
 
-    /**
+  /**
    * 🎨 Obtiene la severity del margen para el tag
    **/
   getMargenSeverity(margen: number): string {
@@ -1075,16 +1177,15 @@ onImageError(event: ErrorEvent): void {
     return 'danger';
   }
 
-   /**
+  /**
    * 🌈 Obtiene la clase de color para la barra de progreso
    */
-   getMargenColorClass(margen: number): string {
+  getMargenColorClass(margen: number): string {
     if (margen >= 40) return 'bg-gradient-to-r from-emerald-500 to-green-600';
     if (margen >= 25) return 'bg-gradient-to-r from-blue-500 to-indigo-600';
     if (margen >= 15) return 'bg-gradient-to-r from-yellow-500 to-orange-600';
     return 'bg-gradient-to-r from-red-500 to-red-600';
   }
-
 
   /**
    * 🎨 Obtiene clase de color para el margen de ganancia
@@ -1105,26 +1206,27 @@ onImageError(event: ErrorEvent): void {
     return 'tip-warning';
   }
 
-    /**
+  /**
    * 🏆 Obtiene título del tip de rentabilidad
    */
-    getProfitTipTitle(margen: number): string {
-      if (margen >= 40) return '¡Excelente Rentabilidad!';
-      if (margen >= 25) return 'Buena Rentabilidad';
-      if (margen >= 15) return 'Rentabilidad Aceptable';
-      return 'Margen Bajo';
-    }
+  getProfitTipTitle(margen: number): string {
+    if (margen >= 40) return '¡Excelente Rentabilidad!';
+    if (margen >= 25) return 'Buena Rentabilidad';
+    if (margen >= 15) return 'Rentabilidad Aceptable';
+    return 'Margen Bajo';
+  }
 
-    /**
+  /**
    * 💬 Obtiene mensaje del tip de rentabilidad
    */
   getProfitTipMessage(margen: number): string {
-    if (margen >= 40) return 'Este producto tiene un margen excelente para calzado deportivo';
+    if (margen >= 40)
+      return 'Este producto tiene un margen excelente para calzado deportivo';
     if (margen >= 25) return 'Margen competitivo para el mercado de zapatillas';
     if (margen >= 15) return 'Considera optimizar costos o ajustar precios';
     return 'Revisa la estrategia de precios para mejorar rentabilidad';
   }
-  
+
   // ========== EXPORTACIÓN (Manteniendo funcionalidad original) ==========
 
   async exportarExcel(): Promise<void> {
@@ -1135,25 +1237,37 @@ onImageError(event: ErrorEvent): void {
 
     try {
       const xlsx = await import('xlsx');
-      
-      const dataToExport = this.productosFiltrados.map(producto => ({
-        'ID': producto.id || '',
-        'Código': producto.codigo || '',
-        'Nombre': producto.nombre || '',
-        'Marca': producto.marca || '',
-        'Modelo': producto.modelo || '',
-        'Descripción': producto.descripcion || '',
+
+      const dataToExport = this.productosFiltrados.map((producto) => ({
+        ID: producto.id || '',
+        Código: producto.codigo || '',
+        Nombre: producto.nombre || '',
+        Marca: producto.marca || '',
+        Modelo: producto.modelo || '',
+        Descripción: producto.descripcion || '',
         'Precio Compra': producto.precioCompra || 0,
         'Precio Venta': producto.precioVenta || 0,
         'Margen %': this.calcularMargenGanancia(producto).toFixed(2),
-        'Ganancia Unitaria': ((producto.precioVenta || 0) - (producto.precioCompra || 0)).toFixed(2),
-        'Fecha Creación': producto.fechaCreacion ? new Date(producto.fechaCreacion).toLocaleString() : 'N/A',
-        'Última Actualización': producto.fechaActualizacion ? new Date(producto.fechaActualizacion).toLocaleString() : 'N/A'
+        'Ganancia Unitaria': (
+          (producto.precioVenta || 0) - (producto.precioCompra || 0)
+        ).toFixed(2),
+        'Fecha Creación': producto.fechaCreacion
+          ? new Date(producto.fechaCreacion).toLocaleString()
+          : 'N/A',
+        'Última Actualización': producto.fechaActualizacion
+          ? new Date(producto.fechaActualizacion).toLocaleString()
+          : 'N/A',
       }));
-      
+
       const worksheet = xlsx.utils.json_to_sheet(dataToExport);
-      const workbook = { Sheets: { 'Productos': worksheet }, SheetNames: ['Productos'] };
-      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const workbook = {
+        Sheets: { Productos: worksheet },
+        SheetNames: ['Productos'],
+      };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
       this.guardarArchivo(excelBuffer, 'productos');
     } catch (error) {
       this.handleError(error, 'Error al exportar a Excel');
@@ -1161,7 +1275,9 @@ onImageError(event: ErrorEvent): void {
   }
 
   private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
-    const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const data = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
     link.download = `${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
@@ -1183,7 +1299,7 @@ onImageError(event: ErrorEvent): void {
       precioVenta: 0,
       imagen: '',
       fechaCreacion: undefined,
-      fechaActualizacion: undefined
+      fechaActualizacion: undefined,
     };
   }
 
@@ -1207,10 +1323,13 @@ onImageError(event: ErrorEvent): void {
 
   private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
-    const errorMessage = error instanceof Error ? error.message : 
-                        typeof error === 'object' && error !== null && 'message' in error ? 
-                        (error as { message: string }).message : defaultMessage;
-    
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message: string }).message
+          : defaultMessage;
+
     this.toastService.error('Error', errorMessage);
   }
 
@@ -1218,255 +1337,267 @@ onImageError(event: ErrorEvent): void {
    * Exporta las estadísticas del inventario a Excel
    */
   async exportarEstadisticas(): Promise<void> {
-  if (!this.productos?.length) {
-    this.showWarning('No hay datos para exportar estadísticas');
-    return;
+    if (!this.productos?.length) {
+      this.showWarning('No hay datos para exportar estadísticas');
+      return;
+    }
+
+    try {
+      const xlsx = await import('xlsx');
+      const stats = this.getEstadisticas();
+
+      // Datos de resumen
+      const resumenData = [
+        ['RESUMEN DEL INVENTARIO', ''],
+        ['Total de Productos', stats.total],
+        ['Valor Total del Inventario', stats.valorTotal],
+        ['Margen Promedio (%)', stats.promedioMargen.toFixed(2)],
+        ['Marcas Diferentes', stats.marcas],
+        ['Productos con Alto Margen (≥50%)', stats.productosMayorMargen],
+        ['Productos con Bajo Margen (<20%)', stats.productosMargenBajo],
+        ['', ''],
+        ['PRODUCTOS DESTACADOS', ''],
+        ['Producto Más Caro', stats.productoMasCaro?.nombre || 'N/A'],
+        ['Precio Más Alto', stats.productoMasCaro?.precioVenta || 0],
+        ['Producto Más Económico', stats.productoMasBarato?.nombre || 'N/A'],
+        ['Precio Más Bajo', stats.productoMasBarato?.precioVenta || 0],
+      ];
+
+      // Análisis por marca
+      const marcasAnalisis = this.productos.reduce(
+        (acc, producto) => {
+          const marca = producto.marca || 'Sin marca';
+          if (!acc[marca]) {
+            acc[marca] = {
+              cantidad: 0,
+              valorTotal: 0,
+              margenPromedio: 0,
+              margenes: [],
+            };
+          }
+          acc[marca].cantidad++;
+          acc[marca].valorTotal += producto.precioVenta || 0;
+          const margen = this.calcularMargenGanancia(producto);
+          acc[marca].margenes.push(margen);
+          return acc;
+        },
+        {} as Record<string, MarcaAnalisis>,
+      );
+
+      const marcasData = [
+        ['ANÁLISIS POR MARCA', '', '', ''],
+        ['Marca', 'Cantidad', 'Valor Total', 'Margen Promedio (%)'],
+        ...Object.entries(marcasAnalisis).map(([marca, data]) => [
+          marca,
+          data.cantidad,
+          data.valorTotal,
+          (
+            data.margenes.reduce((sum, m) => sum + m, 0) / data.margenes.length
+          ).toFixed(2),
+        ]),
+      ];
+
+      // Crear hojas
+      const resumenSheet = xlsx.utils.aoa_to_sheet(resumenData);
+      const marcasSheet = xlsx.utils.aoa_to_sheet(marcasData);
+
+      const workbook = {
+        Sheets: {
+          Resumen: resumenSheet,
+          'Análisis por Marca': marcasSheet,
+        },
+        SheetNames: ['Resumen', 'Análisis por Marca'],
+      };
+
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+      this.guardarArchivo(excelBuffer, 'estadisticas_inventario');
+
+      this.showSuccess('Estadísticas exportadas correctamente');
+      this.hideEstadisticasDialog();
+    } catch (error) {
+      this.handleError(error, 'Error al exportar estadísticas');
+    }
   }
 
-  try {
-    const xlsx = await import('xlsx');
-    const stats = this.getEstadisticas();
-    
-    // Datos de resumen
-    const resumenData = [
-      ['RESUMEN DEL INVENTARIO', ''],
-      ['Total de Productos', stats.total],
-      ['Valor Total del Inventario', stats.valorTotal],
-      ['Margen Promedio (%)', stats.promedioMargen.toFixed(2)],
-      ['Marcas Diferentes', stats.marcas],
-      ['Productos con Alto Margen (≥50%)', stats.productosMayorMargen],
-      ['Productos con Bajo Margen (<20%)', stats.productosMargenBajo],
-      ['', ''],
-      ['PRODUCTOS DESTACADOS', ''],
-      ['Producto Más Caro', stats.productoMasCaro?.nombre || 'N/A'],
-      ['Precio Más Alto', stats.productoMasCaro?.precioVenta || 0],
-      ['Producto Más Económico', stats.productoMasBarato?.nombre || 'N/A'],
-      ['Precio Más Bajo', stats.productoMasBarato?.precioVenta || 0]
-    ];
+  // Funciones adicionales para el componente
 
-    // Análisis por marca
-    const marcasAnalisis = this.productos.reduce((acc, producto) => {
-      const marca = producto.marca || 'Sin marca';
-      if (!acc[marca]) {
-        acc[marca] = {
-          cantidad: 0,
-          valorTotal: 0,
-          margenPromedio: 0,
-          margenes: []
-        };
-      }
-      acc[marca].cantidad++;
-      acc[marca].valorTotal += producto.precioVenta || 0;
-      const margen = this.calcularMargenGanancia(producto);
-      acc[marca].margenes.push(margen);
-      return acc;
-    }, {} as Record<string, MarcaAnalisis>);
-
-    const marcasData = [
-      ['ANÁLISIS POR MARCA', '', '', ''],
-      ['Marca', 'Cantidad', 'Valor Total', 'Margen Promedio (%)'],
-      ...Object.entries(marcasAnalisis).map(([marca, data]) => [
-        marca,
-        data.cantidad,
-        data.valorTotal,
-        (data.margenes.reduce((sum, m) => sum + m, 0) / data.margenes.length).toFixed(2)
-      ])
-    ];
-
-    // Crear hojas
-    const resumenSheet = xlsx.utils.aoa_to_sheet(resumenData);
-    const marcasSheet = xlsx.utils.aoa_to_sheet(marcasData);
-    
-    const workbook = {
-      Sheets: {
-        'Resumen': resumenSheet,
-        'Análisis por Marca': marcasSheet
-      },
-      SheetNames: ['Resumen', 'Análisis por Marca']
-    };
-
-    const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-    this.guardarArchivo(excelBuffer, 'estadisticas_inventario');
-    
-    this.showSuccess('Estadísticas exportadas correctamente');
-    this.hideEstadisticasDialog();
-  } catch (error) {
-    this.handleError(error, 'Error al exportar estadísticas');
+  getCurrentTime(): Date {
+    return new Date();
   }
-}
 
+  getMargenPromedio(): number {
+    if (!this.productos?.length) return 0;
+    const total = this.productos.reduce(
+      (sum, p) => sum + this.calcularMargenGanancia(p),
+      0,
+    );
+    return total / this.productos.length;
+  }
 
-// Funciones adicionales para el componente
+  getInventoryHealthPercentage(): number {
+    if (!this.productos?.length) return 0;
+    const productosConBuenMargen = this.productos.filter(
+      (p) => this.calcularMargenGanancia(p) >= 20,
+    ).length;
+    return Math.round((productosConBuenMargen / this.productos.length) * 100);
+  }
 
-getCurrentTime(): Date {
-  return new Date();
-}
+  getInventoryHealthColor(): string {
+    const health = this.getInventoryHealthPercentage();
+    if (health >= 70) return 'text-emerald-700';
+    if (health >= 40) return 'text-orange-700';
+    return 'text-red-700';
+  }
 
-getMargenPromedio(): number {
-  if (!this.productos?.length) return 0;
-  const total = this.productos.reduce((sum, p) => sum + this.calcularMargenGanancia(p), 0);
-  return total / this.productos.length;
-}
-
-getInventoryHealthPercentage(): number {
-  if (!this.productos?.length) return 0;
-  const productosConBuenMargen = this.productos.filter(p => this.calcularMargenGanancia(p) >= 20).length;
-  return Math.round((productosConBuenMargen / this.productos.length) * 100);
-}
-
-getInventoryHealthColor(): string {
-  const health = this.getInventoryHealthPercentage();
-  if (health >= 70) return 'text-emerald-700';
-  if (health >= 40) return 'text-orange-700';
-  return 'text-red-700';
-}
-
-/**
+  /**
    * 📝 Obtiene el texto descriptivo de rentabilidad
    */
-getRentabilidadTexto(margen: number): string {
-  if (margen >= 40) return 'Excelente';
-  if (margen >= 25) return 'Bueno';
-  if (margen >= 15) return 'Regular';
-  if (margen > 0) return 'Bajo';
-  return 'Sin ganancia';
-}
-
-
-selectedFiltro = 'todos'; // Variable para el modelo seleccionado
-
-// Filtros rápidos (mantener como array de opciones)
-filtrosRapidos = [
-  { label: 'Todos los productos', value: 'todos' },
-  { label: 'Alto margen (>50%)', value: 'alto_margen' },
-  { label: 'Margen regular (20-50%)', value: 'margen_regular' },
-  { label: 'Bajo margen (<20%)', value: 'bajo_margen' },
-  { label: 'Productos premium', value: 'premium' },
-  { label: 'Agregados hoy', value: 'nuevos' }
-];
-
-  
-aplicarFiltroRapido(): void {
-  // Implementar lógica de filtrado rápido
-  switch (this.selectedFiltro) {
-    case 'alto_margen':
-      this.productosFiltrados = this.productos.filter(p => this.calcularMargenGanancia(p) > 50);
-      break;
-    case 'margen_regular':
-      this.productosFiltrados = this.productos.filter(p => {
-        const margen = this.calcularMargenGanancia(p);
-        return margen >= 20 && margen <= 50;
-      });
-      break;
-    case 'bajo_margen':
-      this.productosFiltrados = this.productos.filter(p => this.calcularMargenGanancia(p) < 20);
-      break;
-    // ... más casos
-    default:
-      this.productosFiltrados = [...this.productos];
+  getRentabilidadTexto(margen: number): string {
+    if (margen >= 40) return 'Excelente';
+    if (margen >= 25) return 'Bueno';
+    if (margen >= 15) return 'Regular';
+    if (margen > 0) return 'Bajo';
+    return 'Sin ganancia';
   }
-}
 
-duplicarProducto(producto: Producto): void {
-  const productoDuplicado = {
-    ...producto,
-    id: undefined,
-    codigo: `${producto.codigo}-COPY`,
-    nombre: `${producto.nombre} (Copia)`,
-    fechaCreacion: new Date().toISOString(), //  Convertir a string
-    fechaActualizacion: new Date().toISOString() //  Convertir a string
-  };
-  this.producto = productoDuplicado;
-  this.editMode = false;
-  this.productoDialog = true;
-}
+  selectedFiltro = 'todos'; // Variable para el modelo seleccionado
 
-importarProductos(): void {
-  // Implementar lógica de importación
-  this.messageService.add({
-    severity: 'info',
-    summary: 'Función disponible',
-    detail: 'Funcionalidad de importación en desarrollo'
-  });
-}
+  // Filtros rápidos (mantener como array de opciones)
+  filtrosRapidos = [
+    { label: 'Todos los productos', value: 'todos' },
+    { label: 'Alto margen (>50%)', value: 'alto_margen' },
+    { label: 'Margen regular (20-50%)', value: 'margen_regular' },
+    { label: 'Bajo margen (<20%)', value: 'bajo_margen' },
+    { label: 'Productos premium', value: 'premium' },
+    { label: 'Agregados hoy', value: 'nuevos' },
+  ];
 
-abrirConfiguracion(): void {
-  // Implementar panel de configuración
-  this.messageService.add({
-    severity: 'info',
-    summary: 'Configuración',
-    detail: 'Panel de configuración en desarrollo'
-  });
-}
-
-toggleFiltrosAvanzados(): void {
-  this.filtrosPanelCollapsed = !this.filtrosPanelCollapsed;
-}
-
-/**
- * Obtiene el número de categorías únicas
- */
-getCategorias(): number {
-  if (!this.productos || this.productos.length === 0) {
-    return 0;
+  aplicarFiltroRapido(): void {
+    // Implementar lógica de filtrado rápido
+    switch (this.selectedFiltro) {
+      case 'alto_margen':
+        this.productosFiltrados = this.productos.filter(
+          (p) => this.calcularMargenGanancia(p) > 50,
+        );
+        break;
+      case 'margen_regular':
+        this.productosFiltrados = this.productos.filter((p) => {
+          const margen = this.calcularMargenGanancia(p);
+          return margen >= 20 && margen <= 50;
+        });
+        break;
+      case 'bajo_margen':
+        this.productosFiltrados = this.productos.filter(
+          (p) => this.calcularMargenGanancia(p) < 20,
+        );
+        break;
+      // ... más casos
+      default:
+        this.productosFiltrados = [...this.productos];
+    }
   }
-  
-  const categoriasUnicas = new Set(
-    this.productos
-      .filter(p => p.marca)
-      .map(p => p.marca)
-  );
-  
-  return categoriasUnicas.size;
-}
 
-/**
- * Obtiene el precio mínimo del catálogo
- */
-getPrecioMinimo(): number {
-  if (!this.productos || this.productos.length === 0) {
-    return 0;
+  duplicarProducto(producto: Producto): void {
+    const productoDuplicado = {
+      ...producto,
+      id: undefined,
+      codigo: `${producto.codigo}-COPY`,
+      nombre: `${producto.nombre} (Copia)`,
+      fechaCreacion: new Date().toISOString(), //  Convertir a string
+      fechaActualizacion: new Date().toISOString(), //  Convertir a string
+    };
+    this.producto = productoDuplicado;
+    this.editMode = false;
+    this.productoDialog = true;
   }
-  
-  const precios = this.productos
-    .filter(p => p.precioCompra && p.precioCompra > 0)
-    .map(p => p.precioCompra);
-    
-  return precios.length > 0 ? Math.min(...precios) : 0;
-}
 
-/**
- * Obtiene el precio máximo del catálogo
- */
-getPrecioMaximo(): number {
-  if (!this.productos || this.productos.length === 0) {
-    return 0;
+  importarProductos(): void {
+    // Implementar lógica de importación
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Función disponible',
+      detail: 'Funcionalidad de importación en desarrollo',
+    });
   }
-  
-  const precios = this.productos
-    .filter(p => p.precioVenta && p.precioVenta > 0)
-    .map(p => p.precioVenta);
-    
-  return precios.length > 0 ? Math.max(...precios) : 0;
-}
 
-/**
- * Calcula el precio promedio del catálogo
- */
-getPrecioPromedio(): number {
-  if (!this.productos || this.productos.length === 0) {
-    return 0;
+  abrirConfiguracion(): void {
+    // Implementar panel de configuración
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Configuración',
+      detail: 'Panel de configuración en desarrollo',
+    });
   }
-  
-  const precios = this.productos
-    .filter(p => p.precioVenta && p.precioVenta > 0)
-    .map(p => p.precioVenta);
-    
-  if (precios.length === 0) return 0;
-  
-  const suma = precios.reduce((acc, precio) => acc + precio, 0);
-  return suma / precios.length;
-}
+
+  toggleFiltrosAvanzados(): void {
+    this.filtrosPanelCollapsed = !this.filtrosPanelCollapsed;
+  }
+
+  /**
+   * Obtiene el número de categorías únicas
+   */
+  getCategorias(): number {
+    if (!this.productos || this.productos.length === 0) {
+      return 0;
+    }
+
+    const categoriasUnicas = new Set(
+      this.productos.filter((p) => p.marca).map((p) => p.marca),
+    );
+
+    return categoriasUnicas.size;
+  }
+
+  /**
+   * Obtiene el precio mínimo del catálogo
+   */
+  getPrecioMinimo(): number {
+    if (!this.productos || this.productos.length === 0) {
+      return 0;
+    }
+
+    const precios = this.productos
+      .filter((p) => p.precioCompra && p.precioCompra > 0)
+      .map((p) => p.precioCompra);
+
+    return precios.length > 0 ? Math.min(...precios) : 0;
+  }
+
+  /**
+   * Obtiene el precio máximo del catálogo
+   */
+  getPrecioMaximo(): number {
+    if (!this.productos || this.productos.length === 0) {
+      return 0;
+    }
+
+    const precios = this.productos
+      .filter((p) => p.precioVenta && p.precioVenta > 0)
+      .map((p) => p.precioVenta);
+
+    return precios.length > 0 ? Math.max(...precios) : 0;
+  }
+
+  /**
+   * Calcula el precio promedio del catálogo
+   */
+  getPrecioPromedio(): number {
+    if (!this.productos || this.productos.length === 0) {
+      return 0;
+    }
+
+    const precios = this.productos
+      .filter((p) => p.precioVenta && p.precioVenta > 0)
+      .map((p) => p.precioVenta);
+
+    if (precios.length === 0) return 0;
+
+    const suma = precios.reduce((acc, precio) => acc + precio, 0);
+    return suma / precios.length;
+  }
 
   /**
    * 🖼️ Mejora del manejo de imágenes con lazy loading
@@ -1478,10 +1609,10 @@ getPrecioPromedio(): number {
     }
   }
 
-   /**
+  /**
    * 🎨 Obtiene la clase CSS para el margen según el valor
    */
-   getMargenIconClass(margen: number): string {
+  getMargenIconClass(margen: number): string {
     return margen > 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down';
   }
 
@@ -1491,7 +1622,7 @@ getPrecioPromedio(): number {
   getProductoTooltip(producto: Producto): string {
     const margen = this.calcularMargenGanancia(producto);
     const ganancia = producto.precioVenta - producto.precioCompra;
-    
+
     return `
       Margen: ${margen.toFixed(1)}%
       Ganancia: ${this.currencyPipe.transform(ganancia, 'S/. ', 'symbol', '1.2-2')}
@@ -1499,35 +1630,35 @@ getPrecioPromedio(): number {
     `;
   }
 
-    /**
+  /**
    * 📱 Detecta si estamos en vista móvil para optimizar cards
    */
-    get isMobileView(): boolean {
-      return window.innerWidth < 768;
-    }
-  
-    /**
-     * 🔢 Obtiene el número de columnas según el tamaño de pantalla
-     */
-    getGridColumns(): number {
-      const width = window.innerWidth;
-      if (width < 576) return 1;      // xs
-      if (width < 768) return 2;      // sm
-      if (width < 992) return 3;      // md
-      if (width < 1200) return 4;     // lg
-      return 4;                       // xl+
-    }
+  get isMobileView(): boolean {
+    return window.innerWidth < 768;
+  }
 
-      /**
+  /**
+   * 🔢 Obtiene el número de columnas según el tamaño de pantalla
+   */
+  getGridColumns(): number {
+    const width = window.innerWidth;
+    if (width < 576) return 1; // xs
+    if (width < 768) return 2; // sm
+    if (width < 992) return 3; // md
+    if (width < 1200) return 4; // lg
+    return 4; // xl+
+  }
+
+  /**
    * 🏷️ Obtiene la etiqueta del género
    */
   getGeneroLabel(genero: string): string {
     const generos: Record<string, string> = {
-      'hombre': 'Hombre',
-      'mujer': 'Mujer',
-      'nino': 'Niño',
-      'nina': 'Niña',
-      'unisex': 'Unisex'
+      hombre: 'Hombre',
+      mujer: 'Mujer',
+      nino: 'Niño',
+      nina: 'Niña',
+      unisex: 'Unisex',
     };
     return generos[genero] || genero;
   }
@@ -1537,21 +1668,20 @@ getPrecioPromedio(): number {
    */
   getTipoCalzadoLabel(tipo: string): string {
     const tipos: Record<string, string> = {
-      'zapatillas_deportivas': 'Zapatillas Deportivas',
-      'zapatillas_casual': 'Zapatillas Casual',
-      'zapatos_formales': 'Zapatos Formales',
-      'botines': 'Botines',
-      'botas': 'Botas',
-      'sandalias': 'Sandalias',
-      'chinelas': 'Chinelas',
-      'zapatos_seguridad': 'Zapatos de Seguridad',
-      'zapatos_vestir': 'Zapatos de Vestir',
-      'otros': 'Otros'
+      zapatillas_deportivas: 'Zapatillas Deportivas',
+      zapatillas_casual: 'Zapatillas Casual',
+      zapatos_formales: 'Zapatos Formales',
+      botines: 'Botines',
+      botas: 'Botas',
+      sandalias: 'Sandalias',
+      chinelas: 'Chinelas',
+      zapatos_seguridad: 'Zapatos de Seguridad',
+      zapatos_vestir: 'Zapatos de Vestir',
+      otros: 'Otros',
     };
     return tipos[tipo] || tipo;
   }
 
-   
   /**
    * 🏆 Obtiene clase para badge de margen
    */
@@ -1582,7 +1712,7 @@ getPrecioPromedio(): number {
     return 'Bajo';
   }
 
-    // ========================================
+  // ========================================
   // MÉTODOS DE NOTIFICACIONES MODERNAS
   // ========================================
 
@@ -1593,5 +1723,4 @@ getPrecioPromedio(): number {
     this.toastService.dismiss(toastId);
     this.cdr.markForCheck();
   }
-
 }
