@@ -5,7 +5,7 @@
       <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
       <i class="pi pi-spin pi-spinner text-5xl text-indigo-600 relative"></i>
     </div>
-    <span class="ml-4 text-lg font-semibold text-slate-700 dark:text-slate-300">Cargando métricas del sistema...</span>
+    <span class="ml-4 text-lg font-semibold text-surface-700 dark:text-surface-300">Cargando métricas del sistema...</span>
   </div>
 </div>
 
@@ -25,7 +25,7 @@
   
 <!-- Categorías/Marcas Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-emerald-300/60 dark:hover:border-emerald-600/60 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700 hover:border-emerald-300/60 dark:hover:border-emerald-600/60 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/producto']">
     
     <!-- Subtle gradient overlay -->
@@ -34,8 +34,8 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Marcas/Categorías</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Marcas/Categorías</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
             {{data.category}}
           </div>
           <div class="flex items-center gap-2 text-sm">
@@ -43,17 +43,17 @@
               <i class="pi pi-arrow-up text-xs"></i>
               {{metrics?.crecimientoMensual | number:'1.1-1'}}%
             </span>
-            <span class="text-slate-500 dark:text-slate-400">vs mes anterior</span>
+            <span class="text-surface-500 dark:text-surface-400">vs mes anterior</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-500 rounded-2xl shadow-lg shadow-emerald-500/20 group-hover:scale-110 group-hover:shadow-emerald-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-tags text-white text-2xl"></i>
+          <i class="pi pi-tags text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ver todas las marcas</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ver todas las marcas</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>
@@ -61,7 +61,7 @@
 
 <!-- Productos Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-300/60 dark:hover:border-indigo-600/60 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700/60 hover:border-indigo-300/60 dark:hover:border-indigo-600/60 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/producto']">
     
     <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/30 via-transparent to-transparent dark:from-indigo-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -69,8 +69,8 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Total Productos</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Total Productos</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
             {{data.product}}
           </div>
           <div class="flex items-center gap-2 text-sm">
@@ -78,17 +78,17 @@
               <i class="pi pi-exclamation-triangle text-xs"></i>
               {{metrics?.productosStockCritico || 0}}
             </span>
-            <span class="text-slate-500 dark:text-slate-400">en stock crítico</span>
+            <span class="text-surface-500 dark:text-surface-400">en stock crítico</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-2xl shadow-lg shadow-indigo-500/20 group-hover:scale-110 group-hover:shadow-indigo-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-shopping-bag text-white text-2xl"></i>
+          <i class="pi pi-shopping-bag text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Gestionar inventario</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Gestionar inventario</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@
 
 <!-- Ventas del Día Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-rose-300/60 dark:hover:border-rose-600/60 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700/60 hover:border-rose-300/60 dark:hover:border-rose-600/60 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/realizar-venta']">
     
     <div class="absolute inset-0 bg-gradient-to-br from-rose-50/30 via-transparent to-transparent dark:from-rose-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -104,25 +104,25 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Ventas de Hoy</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Ventas de Hoy</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
             {{data.bill}}
           </div>
           <div class="flex items-center gap-2 text-sm">
             <span class="text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">
               S/. {{metrics?.ventasTotalesHoy | number:'1.2-2'}}
             </span>
-            <span class="text-slate-500 dark:text-slate-400">total vendido</span>
+            <span class="text-surface-500 dark:text-surface-400">total vendido</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-rose-500 to-rose-600 dark:from-rose-400 dark:to-rose-500 rounded-2xl shadow-lg shadow-rose-500/20 group-hover:scale-110 group-hover:shadow-rose-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-shopping-cart text-white text-2xl"></i>
+          <i class="pi pi-shopping-cart text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Ver reporte de ventas</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Ver reporte de ventas</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>
@@ -130,7 +130,7 @@
 
 <!-- Almacenes Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-300/60 dark:hover:border-blue-600/60 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700/60 hover:border-blue-300/60 dark:hover:border-blue-600/60 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/almacen']">
     
     <div class="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-transparent dark:from-blue-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -138,25 +138,25 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Almacenes Activos</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Almacenes Activos</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {{data.warehouse}}
           </div>
           <div class="flex items-center gap-2 text-sm">
             <span class="text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-500/10 px-2 py-1 rounded-lg">
               S/. {{metrics?.valorTotalInventario | number:'1.0-0'}}
             </span>
-            <span class="text-slate-500 dark:text-slate-400">valor en stock</span>
+            <span class="text-surface-500 dark:text-surface-400">valor en stock</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-2xl shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:shadow-blue-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-warehouse text-white text-2xl"></i>
+          <i class="pi pi-warehouse text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Administrar almacenes</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Administrar almacenes</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@
 
 <!-- Usuarios Activos Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-purple-300/60 dark:hover:border-purple-600/60 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700/60 hover:border-purple-300/60 dark:hover:border-purple-600/60 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/usuario']">
     
     <div class="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-transparent dark:from-purple-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -172,8 +172,8 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Usuarios Activos</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Usuarios Activos</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
             {{data.users}}
           </div>
           <div class="flex items-center gap-2 text-sm">
@@ -181,17 +181,17 @@
               <i class="pi pi-user-plus text-xs"></i>
               {{metrics?.usuariosNuevos || 0}}
             </span>
-            <span class="text-slate-500 dark:text-slate-400">nuevos este mes</span>
+            <span class="text-surface-500 dark:text-surface-400">nuevos este mes</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 rounded-2xl shadow-lg shadow-purple-500/20 group-hover:scale-110 group-hover:shadow-purple-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-users text-white text-2xl"></i>
+          <i class="pi pi-users text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Gestionar usuarios</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Gestionar usuarios</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>
@@ -199,7 +199,7 @@
 
 <!-- Ticket Promedio Card -->
 <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-  <div class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700/60 hover:border-amber-300/60 dark:hover:border-amber-600/60 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer"
+  <div class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 border border-surface-200/60 dark:border-surface-700/60 hover:border-amber-300/60 dark:hover:border-amber-600/60 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer"
        [routerLink]="['/pages/realizar-venta']">
     
     <div class="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-transparent to-transparent dark:from-amber-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -207,26 +207,26 @@
     <div class="relative">
       <div class="flex justify-between mb-5">
         <div class="flex-1">
-          <span class="block text-slate-500 dark:text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">Ticket Promedio</span>
-          <div class="text-slate-900 dark:text-slate-100 font-bold text-4xl mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+          <span class="block text-surface-500 dark:text-surface-400 font-semibold mb-3 text-xs uppercase tracking-wider">Ticket Promedio</span>
+          <div class="text-surface-900 dark:text-surface-100 font-bold text-4xl mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
             S/. {{metrics?.ticketPromedio | number:'1.2-2'}}
           </div>
           <div class="flex items-center gap-2 text-sm">
-            <span class="text-slate-600 dark:text-slate-400 font-semibold flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+            <span class="text-surface-600 dark:text-surface-400 font-semibold flex items-center gap-1 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-lg">
               <i class="pi pi-calendar text-xs"></i>
               S/. {{metrics?.ventasTotalesMes | number:'1.0-0'}}
             </span>
-            <span class="text-slate-500 dark:text-slate-400">ventas del mes</span>
+            <span class="text-surface-500 dark:text-surface-400">ventas del mes</span>
           </div>
         </div>
         <div class="flex items-center justify-center bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 rounded-2xl shadow-lg shadow-amber-500/20 group-hover:scale-110 group-hover:shadow-amber-500/30 transition-all duration-300" 
              style="width: 4rem; height: 4rem">
-          <i class="pi pi-wallet text-white text-2xl"></i>
+          <i class="pi pi-wallet text-surface-0 text-2xl"></i>
         </div>
       </div>
-      <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Análisis financiero</span>
-        <i class="pi pi-arrow-right text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-2 transition-all"></i>
+      <div class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-800">
+        <span class="text-sm font-medium text-surface-600 dark:text-surface-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Análisis financiero</span>
+        <i class="pi pi-arrow-right text-surface-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-2 transition-all"></i>
       </div>
     </div>
   </div>

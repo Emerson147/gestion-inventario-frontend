@@ -1,7 +1,7 @@
 <!-- Header Clean del Dashboard -->
 <div class="mb-6">
   <div
-    class="relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/60 dark:border-slate-700/60"
+    class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 sm:p-8 border border-surface-200 dark:border-surface-700"
   >
     <!-- Decorative gradient background -->
     <div
@@ -20,12 +20,12 @@
         </div>
         <div>
           <h1
-            class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white m-0 tracking-tight"
+            class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight"
           >
             Dashboard Ejecutivo
           </h1>
           <p
-            class="text-slate-600 dark:text-slate-400 mt-1 mb-0 text-sm font-medium"
+            class="text-surface-600 dark:text-surface-400 mt-1 mb-0 text-sm font-medium"
           >
             Panel de control y métricas del sistema
           </p>
@@ -42,11 +42,11 @@
 >
   <div
     *ngFor="let kpi of kpis; trackBy: trackByKpiId"
-    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
   >
     <!-- Subtle gradient overlay on hover -->
     <div
-      class="absolute inset-0 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-800/30 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+      class="absolute inset-0 bg-gradient-to-br from-surface-50/50 to-transparent dark:from-surface-800/30 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
     ></div>
 
     <div class="relative">
@@ -70,24 +70,24 @@
           <i [class]="getTendenciaIcon(kpi.tendencia)" class="text-[10px]"></i>
           <span
             >{{ kpi.porcentajeCambio > 0 ? "+" : ""
-            }}{{ kpi.porcentajeCambio | number : "1.1-1" }}%</span
+            }}{{ kpi.porcentajeCambio | number: "1.1-1" }}%</span
           >
         </div>
       </div>
 
       <div>
         <div
-          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1.5"
+          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1.5"
         >
           {{ kpi.titulo }}
         </div>
         <div
-          class="text-2xl font-bold text-slate-900 dark:text-white mb-1 transition-colors"
+          class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-1 transition-colors"
         >
           {{ formatearValor(kpi.valor, kpi.tipo) }}
         </div>
         <div
-          class="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-1 font-medium"
+          class="text-[11px] text-surface-600 dark:text-surface-400 line-clamp-1 font-medium"
         >
           {{ kpi.descripcion }}
         </div>
@@ -125,36 +125,36 @@
 
 <!-- Footer del dashboard con información adicional -->
 <div
-  class="mt-6 p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60"
+  class="mt-6 p-4 sm:p-5 bg-surface-0 dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700"
 >
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div class="flex flex-wrap items-center gap-3 sm:gap-4">
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
         <span
-          class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium"
+          class="text-xs sm:text-sm text-surface-600 dark:text-surface-400 font-medium"
           >Actualización manual disponible</span
         >
       </div>
       <div
-        class="hidden sm:block w-px h-4 bg-slate-200 dark:bg-slate-700"
+        class="hidden sm:block w-px h-4 bg-surface-200 dark:bg-surface-700"
       ></div>
       <div class="flex items-center gap-2">
         <i class="pi pi-database text-indigo-500 text-sm"></i>
         <span
-          class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium"
+          class="text-xs sm:text-sm text-surface-600 dark:text-surface-400 font-medium"
           >{{ kpis.length }} métricas activas</span
         >
       </div>
       <div
-        class="hidden sm:block w-px h-4 bg-slate-200 dark:bg-slate-700"
+        class="hidden sm:block w-px h-4 bg-surface-200 dark:bg-surface-700"
       ></div>
       <div class="flex items-center gap-2">
-        <i class="pi pi-clock text-slate-500 text-sm"></i>
+        <i class="pi pi-clock text-surface-500 text-sm"></i>
         <span
-          class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium"
+          class="text-xs sm:text-sm text-surface-600 dark:text-surface-400 font-medium"
           >Última actualización:
-          {{ ultimaActualizacion | date : "shortTime" }}</span
+          {{ ultimaActualizacion | date: "shortTime" }}</span
         >
       </div>
     </div>
@@ -163,7 +163,7 @@
       <button
         (click)="actualizarDatos()"
         [disabled]="loading"
-        class="flex-1 sm:flex-none px-4 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow"
+        class="flex-1 sm:flex-none px-4 py-2.5 bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-surface-700 dark:text-surface-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow"
       >
         <i
           class="pi text-sm"
@@ -187,10 +187,10 @@
 <!-- Loading Overlay -->
 <div
   *ngIf="loading"
-  class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50"
+  class="fixed inset-0 bg-surface-900/60 backdrop-blur-md flex items-center justify-center z-50"
 >
   <div
-    class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 border border-slate-200/60 dark:border-slate-700/60"
+    class="bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 border border-surface-200 dark:border-surface-700"
   >
     <div class="relative">
       <div
@@ -198,7 +198,7 @@
       ></div>
       <i class="pi pi-spin pi-spinner text-5xl text-indigo-600 relative"></i>
     </div>
-    <p class="text-base font-semibold text-slate-700 dark:text-slate-300">
+    <p class="text-base font-semibold text-surface-700 dark:text-surface-300">
       Cargando datos del sistema...
     </p>
   </div>

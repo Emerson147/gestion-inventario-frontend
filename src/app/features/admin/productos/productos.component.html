@@ -9,7 +9,7 @@
 <!-- Header Clean del Dashboard (Adaptado para Productos) -->
 <div class="mb-6">
   <div
-    class="relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/60 dark:border-slate-700/60"
+    class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 sm:p-8 border border-surface-200/60 dark:border-surface-700/60"
   >
     <!-- Decorative gradient background -->
     <div
@@ -24,16 +24,16 @@
         <div
           class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
         >
-          <i class="pi pi-shopping-bag text-white text-xl"></i>
+          <i class="pi pi-shopping-bag text-surface-0 text-xl"></i>
         </div>
         <div>
           <h1
-            class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white m-0 tracking-tight"
+            class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight"
           >
             Catálogo de Productos
           </h1>
           <p
-            class="text-slate-600 dark:text-slate-400 mt-1 mb-0 text-sm font-medium"
+            class="text-surface-600 dark:text-surface-400 mt-1 mb-0 text-sm font-medium"
           >
             Gestiona la información de tus productos
           </p>
@@ -50,7 +50,7 @@
 >
   <!-- Total productos -->
   <div
-    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
   >
     <div
       class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -63,11 +63,11 @@
       </div>
       <div>
         <div
-          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
+          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
           Total Productos
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
           {{ productos.length | number }}
         </div>
       </div>
@@ -76,7 +76,7 @@
 
   <!-- Categorías -->
   <div
-    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
   >
     <div
       class="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -89,11 +89,11 @@
       </div>
       <div>
         <div
-          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
+          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
           Categorías
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
           {{ getCategorias() | number }}
         </div>
       </div>
@@ -102,7 +102,7 @@
 
   <!-- Rango de Precios -->
   <div
-    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
   >
     <div
       class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent dark:from-emerald-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -117,11 +117,11 @@
       </div>
       <div>
         <div
-          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
+          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
           Rango Precios
         </div>
-        <div class="text-lg font-bold text-slate-900 dark:text-white">
+        <div class="text-lg font-bold text-surface-900 dark:text-surface-0">
           {{ getPrecioMinimo() | currency: "S/. " : "symbol" : "1.0-0" }} -
           {{ getPrecioMaximo() | currency: "S/. " : "symbol" : "1.0-0" }}
         </div>
@@ -131,7 +131,7 @@
 
   <!-- Precio Promedio -->
   <div
-    class="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 transition-all duration-300 cursor-pointer"
+    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
   >
     <div
       class="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent dark:from-orange-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -146,11 +146,11 @@
       </div>
       <div>
         <div
-          class="text-slate-500 dark:text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
+          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
         >
           Precio Promedio
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
           {{ getPrecioPromedio() | currency: "S/. " : "symbol" : "1.0-0" }}
         </div>
       </div>
@@ -161,7 +161,7 @@
 <!-- Toolbar híbrido optimizado -->
 <!-- Toolbar híbrido optimizado -->
 <div
-  class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-6 mb-6"
+  class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 p-6 mb-6"
 >
   <div
     class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6"
@@ -229,9 +229,9 @@
     <!-- Controles avanzados -->
     <div class="flex flex-wrap items-center gap-4">
       <!-- 🆕 Filtro rápido mejorado -->
-      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-        <i class="pi pi-filter text-slate-600"></i>
-        <span class="text-sm font-medium text-slate-700">Filtro:</span>
+      <div class="flex items-center gap-3 bg-surface-50 rounded-xl p-3">
+        <i class="pi pi-filter text-surface-600"></i>
+        <span class="text-sm font-medium text-surface-700">Filtro:</span>
         <p-select
           [(ngModel)]="selectedFiltro"
           [options]="filtrosRapidos"
@@ -245,8 +245,8 @@
       </div>
 
       <!-- Selector de vista -->
-      <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-        <i class="pi pi-eye text-slate-600"></i>
+      <div class="flex items-center gap-3 bg-surface-50 rounded-xl p-3">
+        <i class="pi pi-eye text-surface-600"></i>
         <p-selectButton
           [(ngModel)]="currentView"
           [options]="viewOptions"
@@ -288,7 +288,7 @@
 <!-- Tabla con diseño más empresarial -->
 <div *ngIf="currentView === 'table'" class="mb-6">
   <div
-    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden"
+    class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 overflow-hidden"
   >
     <p-table
       #dt
@@ -316,7 +316,7 @@
       <!-- Caption corporativo -->
       <ng-template pTemplate="caption">
         <div
-          class="bg-slate-50 dark:bg-slate-800/50 p-6 border-b border-slate-200/60 dark:border-slate-700/60"
+          class="bg-surface-50 dark:bg-surface-800/50 p-6 border-b border-surface-200/60 dark:border-surface-700/60"
         >
           <div
             class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
@@ -325,13 +325,13 @@
               <div
                 class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl"
               >
-                <i class="pi pi-list text-white text-xl"></i>
+                <i class="pi pi-list text-surface-0 text-xl"></i>
               </div>
               <div>
-                <h3 class="text-2xl font-bold text-slate-800 mb-1">
+                <h3 class="text-2xl font-bold text-surface-800 mb-1">
                   Catálogo de Productos
                 </h3>
-                <p class="text-slate-600" *ngIf="productosFiltrados.length">
+                <p class="text-surface-600" *ngIf="productosFiltrados.length">
                   {{ productosFiltrados.length }} de
                   {{ productos.length }} productos
                 </p>
@@ -348,7 +348,7 @@
                     type="text"
                     (input)="onGlobalFilter(dt, $event)"
                     placeholder="Buscar en todos los campos..."
-                    class="w-full h-12 pl-10 rounded-xl border-slate-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
+                    class="w-full h-12 pl-10 rounded-xl border-surface-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
                   />
                 </p-iconfield>
               </div>
@@ -371,35 +371,35 @@
       <!-- Header mejorado -->
       <ng-template pTemplate="header">
         <tr
-          class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+          class="bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300"
         >
           <th style="width: 3rem" class="text-center">
             <p-tableHeaderCheckbox />
           </th>
           <th style="width: 6rem" class="text-center">
             <div
-              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+              class="flex items-center justify-center gap-2 font-bold text-surface-700"
             >
               <i class="pi pi-image text-blue-600"></i>
               <span>Imagen</span>
             </div>
           </th>
           <th pSortableColumn="codigo" style="min-width: 10rem">
-            <div class="flex items-center gap-2 font-bold text-slate-700">
+            <div class="flex items-center gap-2 font-bold text-surface-700">
               <i class="pi pi-barcode text-indigo-600"></i>
               <span>Código</span>
               <p-sortIcon field="codigo" />
             </div>
           </th>
           <th pSortableColumn="nombre" style="min-width: 20rem">
-            <div class="flex items-center gap-2 font-bold text-slate-700">
+            <div class="flex items-center gap-2 font-bold text-surface-700">
               <i class="pi pi-shopping-bag text-emerald-600"></i>
               <span>Producto</span>
               <p-sortIcon field="nombre" />
             </div>
           </th>
           <th pSortableColumn="marca" style="min-width: 12rem">
-            <div class="flex items-center gap-2 font-bold text-slate-700">
+            <div class="flex items-center gap-2 font-bold text-surface-700">
               <i class="pi pi-building text-orange-600"></i>
               <span>Marca</span>
               <p-sortIcon field="marca" />
@@ -411,7 +411,7 @@
             class="text-right"
           >
             <div
-              class="flex items-center justify-end gap-2 font-bold text-slate-700"
+              class="flex items-center justify-end gap-2 font-bold text-surface-700"
             >
               <i class="pi pi-dollar text-emerald-600"></i>
               <span>Precios</span>
@@ -420,7 +420,7 @@
           </th>
           <th style="min-width: 10rem" class="text-center">
             <div
-              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+              class="flex items-center justify-center gap-2 font-bold text-surface-700"
             >
               <i class="pi pi-chart-line text-purple-600"></i>
               <span>Rentabilidad</span>
@@ -428,9 +428,9 @@
           </th>
           <th style="min-width: 12rem" class="text-center">
             <div
-              class="flex items-center justify-center gap-2 font-bold text-slate-700"
+              class="flex items-center justify-center gap-2 font-bold text-surface-700"
             >
-              <i class="pi pi-cog text-slate-600"></i>
+              <i class="pi pi-cog text-surface-600"></i>
               <span>Acciones</span>
             </div>
           </th>
@@ -440,8 +440,8 @@
       <!-- Body optimizado -->
       <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
         <tr
-          class="hover:bg-blue-25 transition-all duration-200 border-b border-slate-100"
-          [class.bg-slate-25]="rowIndex % 2 === 0"
+          class="hover:bg-surface-50/20 transition-all duration-200 border-b border-surface-100"
+          [ngClass]="{ 'bg-surface-50/50': rowIndex % 2 === 0 }"
         >
           <td class="text-center">
             <p-tableCheckbox [value]="producto" />
@@ -451,7 +451,7 @@
           <td class="text-center">
             <div class="relative group">
               <div
-                class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-slate-200 group-hover:border-blue-400 transition-all duration-300"
+                class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-surface-200 group-hover:border-blue-400 transition-all duration-300"
               >
                 <img
                   [src]="getImageUrl(producto)"
@@ -464,7 +464,7 @@
               <div
                 class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
               >
-                <i class="pi pi-search-plus text-white text-lg"></i>
+                <i class="pi pi-search-plus text-surface-0 text-lg"></i>
               </div>
             </div>
           </td>
@@ -490,13 +490,15 @@
             <div class="py-3 px-2">
               <!-- Nombre del producto -->
               <div
-                class="font-bold text-slate-900 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors"
+                class="font-bold text-surface-900 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors"
               >
                 {{ producto.nombre }}
               </div>
 
               <!-- Información principal -->
-              <div class="flex items-center gap-3 text-sm text-slate-600 mb-3">
+              <div
+                class="flex items-center gap-3 text-sm text-surface-600 mb-3"
+              >
                 <!-- Modelo -->
                 <div
                   class="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md"
@@ -508,7 +510,7 @@
                 </div>
 
                 <!-- Separador -->
-                <div class="w-1 h-1 bg-slate-300 rounded-full"></div>
+                <div class="w-1 h-1 bg-surface-300 rounded-full"></div>
 
                 <!-- Categoría (si existe) -->
                 <div
@@ -555,16 +557,16 @@
 
               <!-- Descripción -->
               <div
-                class="text-xs text-slate-600 bg-slate-50 border-l-3 border-slate-200 pl-3 py-2 rounded-r-lg line-clamp-3 italic"
+                class="text-xs text-surface-600 bg-surface-50 border-l-3 border-surface-200 pl-3 py-2 rounded-r-lg line-clamp-3 italic"
                 *ngIf="producto.descripcion && producto.descripcion.trim()"
               >
-                <i class="pi pi-info-circle text-slate-400 mr-1"></i>
+                <i class="pi pi-info-circle text-surface-400 mr-1"></i>
                 {{ producto.descripcion }}
               </div>
 
               <!-- Placeholder cuando no hay descripción -->
               <div
-                class="text-xs text-slate-400 italic"
+                class="text-xs text-surface-400 italic"
                 *ngIf="!producto.descripcion || !producto.descripcion.trim()"
               >
                 <i class="pi pi-minus-circle mr-1"></i>
@@ -582,10 +584,10 @@
                 <i class="pi pi-building text-orange-600"></i>
               </div>
               <div>
-                <div class="font-semibold text-slate-800">
+                <div class="font-semibold text-surface-800">
                   {{ producto.marca }}
                 </div>
-                <div class="text-xs text-slate-500">Marca registrada</div>
+                <div class="text-xs text-surface-500">Marca registrada</div>
               </div>
             </div>
           </td>
@@ -593,11 +595,11 @@
           <!-- Precios con análisis financiero -->
           <td class="text-right">
             <div
-              class="bg-gradient-to-br from-slate-50 to-emerald-50 rounded-xl p-4 border border-slate-200/50"
+              class="bg-gradient-to-br from-surface-50 to-emerald-50 rounded-xl p-4 border border-surface-200/50"
             >
               <div class="space-y-2">
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-slate-600 font-medium">Compra:</span>
+                  <span class="text-surface-600 font-medium">Compra:</span>
                   <span class="text-emerald-700 font-bold">
                     {{
                       producto.precioCompra
@@ -605,9 +607,9 @@
                     }}
                   </span>
                 </div>
-                <div class="border-t border-slate-200 pt-2">
+                <div class="border-t border-surface-200 pt-2">
                   <div class="flex justify-between items-center">
-                    <span class="text-slate-600 font-medium text-sm"
+                    <span class="text-surface-600 font-medium text-sm"
                       >Venta:</span
                     >
                     <span class="text-blue-700 font-bold text-lg">
@@ -619,7 +621,7 @@
                   </div>
                 </div>
                 <div
-                  class="bg-emerald-50 rounded-lg p-2 border-t border-slate-200"
+                  class="bg-emerald-50 rounded-lg p-2 border-t border-surface-200"
                 >
                   <div class="flex justify-between items-center text-xs">
                     <span class="text-emerald-700 font-medium">Ganancia:</span>
@@ -649,7 +651,7 @@
                   class="shadow-sm font-bold"
                 />
               </div>
-              <div class="w-full bg-slate-200 rounded-full h-2">
+              <div class="w-full bg-surface-200 rounded-full h-2">
                 <div
                   class="h-2 rounded-full transition-all duration-500"
                   [ngClass]="
@@ -660,7 +662,7 @@
                   "
                 ></div>
               </div>
-              <div class="text-xs text-slate-500">
+              <div class="text-xs text-surface-500">
                 {{ getRentabilidadTexto(calcularMargenGanancia(producto)) }}
               </div>
             </div>
@@ -739,7 +741,7 @@
     >
       <button
         type="button"
-        class="w-full h-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
+        class="w-full h-full border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
         (click)="openNew()"
         aria-label="Agregar nuevo producto al catálogo"
       >
@@ -749,11 +751,11 @@
           <i class="pi pi-plus text-2xl lg:text-3xl text-indigo-600"></i>
         </div>
         <span
-          class="text-lg lg:text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2 text-center"
+          class="text-lg lg:text-xl font-semibold text-surface-700 dark:text-surface-200 mb-2 text-center"
           >Agregar Producto</span
         >
         <span
-          class="text-sm text-slate-500 dark:text-slate-400 text-center px-2"
+          class="text-sm text-surface-500 dark:text-surface-400 text-center px-2"
         >
           Clic para crear un nuevo producto en tu catálogo
         </span>
@@ -767,7 +769,7 @@
     >
       <!-- Tu card de producto existente (sin cambios en el contenido) -->
       <div
-        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
+        class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
       >
         <!-- Header de imagen con overlay -->
         <div class="relative overflow-hidden">
@@ -834,30 +836,30 @@
           <!-- Título y marca -->
           <div class="mb-4">
             <h3
-              class="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem]"
+              class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-2 line-clamp-2 min-h-[3.5rem]"
             >
               {{ producto.nombre }}
             </h3>
             <div
-              class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
+              class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400"
             >
               <i class="pi pi-building text-blue-500"></i>
               <span class="font-medium">{{ producto.marca }}</span>
-              <span class="text-slate-400" *ngIf="producto.modelo">•</span>
+              <span class="text-surface-400" *ngIf="producto.modelo">•</span>
               <span *ngIf="producto.modelo">{{ producto.modelo }}</span>
             </div>
           </div>
 
           <!-- Precios con diseño moderno -->
           <div
-            class="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/20 rounded-xl p-4 mb-4"
+            class="bg-gradient-to-r from-surface-50 to-blue-50 dark:from-surface-800 dark:to-blue-900/20 rounded-xl p-4 mb-4"
           >
             <div class="space-y-3">
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span
-                    class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
                     >Compra</span
                   >
                 </div>
@@ -872,7 +874,7 @@
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span
-                    class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
                     >Venta</span
                   >
                 </div>
@@ -883,10 +885,12 @@
                 </span>
               </div>
               <!-- Ganancia por unidad -->
-              <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <div
+                class="pt-2 border-t border-surface-200 dark:border-surface-700"
+              >
                 <div class="flex justify-between items-center">
                   <span
-                    class="text-xs font-medium text-slate-600 dark:text-slate-400"
+                    class="text-xs font-medium text-surface-600 dark:text-surface-400"
                     >Ganancia unitaria</span
                   >
                   <span class="text-emerald-600 font-bold text-sm">
@@ -902,17 +906,19 @@
 
           <!-- Descripción -->
           <div *ngIf="producto.descripcion" class="mb-4">
-            <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3">
+            <p
+              class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3"
+            >
               {{ producto.descripcion }}
             </p>
           </div>
 
           <!-- Footer con fecha y acciones -->
           <div
-            class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700"
+            class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-700"
           >
             <div
-              class="text-xs text-slate-500 dark:text-slate-400"
+              class="text-xs text-surface-500 dark:text-surface-400"
               *ngIf="producto.fechaCreacion"
             >
               <i class="pi pi-calendar mr-1"></i>
@@ -1008,7 +1014,7 @@
             </div>
             <div class="header-main">
               <div class="header-icon">
-                <i class="pi pi-plus text-white text-2xl"></i>
+                <i class="pi pi-plus text-surface-0 text-2xl"></i>
               </div>
               <div class="header-text">
                 <h3 class="header-title">Agregar Nuevo Calzado</h3>
@@ -1039,7 +1045,7 @@
             </div>
             <div class="header-main">
               <div class="header-icon-edit">
-                <i class="pi pi-pencil text-white text-xl"></i>
+                <i class="pi pi-pencil text-surface-0 text-xl"></i>
               </div>
               <div class="header-text">
                 <h3 class="header-title">Editando Producto</h3>
@@ -1085,8 +1091,10 @@
                     />
                     <div class="image-overlay">
                       <div class="overlay-content">
-                        <i class="pi pi-search-plus text-white text-2xl"></i>
-                        <span class="text-white text-sm mt-2"
+                        <i
+                          class="pi pi-search-plus text-surface-0 text-2xl"
+                        ></i>
+                        <span class="text-surface-0 text-sm mt-2"
                           >Vista previa</span
                         >
                       </div>
@@ -1744,7 +1752,7 @@
 
           <div class="header-main">
             <div class="header-icon">
-              <i class="pi pi-eye text-white text-2xl"></i>
+              <i class="pi pi-eye text-surface-0 text-2xl"></i>
             </div>
             <div class="header-text">
               <h2 class="header-title">Detalles del Producto</h2>
@@ -1774,8 +1782,12 @@
                   />
                   <div class="image-overlay">
                     <div class="overlay-content">
-                      <i class="pi pi-search-plus text-white text-3xl mb-2"></i>
-                      <span class="text-white font-medium">Vista ampliada</span>
+                      <i
+                        class="pi pi-search-plus text-surface-0 text-3xl mb-2"
+                      ></i>
+                      <span class="text-surface-0 font-medium"
+                        >Vista ampliada</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -1783,7 +1795,7 @@
                 <!-- 🏷️ Badge de código -->
                 <div class="code-badge">
                   <div class="badge-content">
-                    <i class="pi pi-barcode text-slate-600"></i>
+                    <i class="pi pi-barcode text-surface-600"></i>
                     <span class="code-text">{{ productoDetalle.codigo }}</span>
                   </div>
                 </div>
@@ -2064,8 +2076,8 @@
     <div class="detalle-footer">
       <div class="footer-info">
         <div class="info-item">
-          <i class="pi pi-clock text-slate-500"></i>
-          <span class="text-slate-600"
+          <i class="pi pi-clock text-surface-500"></i>
+          <span class="text-surface-600"
             >Actualizado: {{ getCurrentTime() | date: "HH:mm" }}</span
           >
         </div>
