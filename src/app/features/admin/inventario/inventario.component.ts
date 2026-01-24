@@ -1991,6 +1991,11 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           type: 'array',
         });
         this.guardarArchivo(excelBuffer, 'inventario_filtrado');
+        
+        const totalUnidades = this.inventariosFiltrados.reduce((sum, inv) => sum + (inv.cantidad || 0), 0);
+        this.showSuccess(
+          `Exportados ${dataToExport.length} registros con ${totalUnidades} unidades totales`,
+        );
       })
       .catch(() => {
         this.showError('Error al cargar la biblioteca de exportación');
@@ -2063,8 +2068,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
         this.guardarArchivo(excelBuffer, nombreArchivo);
 
+        const totalUnidades = datosAExportar.reduce((sum, inv) => sum + (inv.cantidad || 0), 0);
         this.showSuccess(
-          `Exportados ${dataToExport.length} registros exitosamente`,
+          `Exportados ${dataToExport.length} registros con ${totalUnidades} unidades totales`,
         );
       })
       .catch(() => {
