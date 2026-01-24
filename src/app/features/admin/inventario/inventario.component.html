@@ -471,7 +471,12 @@
     >
       <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
         <i class="pi pi-chart-pie text-blue-600"></i>
-        Resumen de Inventario: {{ productoSeleccionadoFiltro?.nombre }}
+        <ng-container *ngIf="productoSeleccionadoFiltro; else todosInventarios">
+          Resumen de Inventario: {{ productoSeleccionadoFiltro.nombre }}
+        </ng-container>
+        <ng-template #todosInventarios>
+          Resumen General del Inventario
+        </ng-template>
       </h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="text-center bg-white rounded-xl p-4 shadow-sm">
@@ -501,236 +506,269 @@
       </div>
     </div>
 
-    <!-- Grid de inventarios en cards premium -->
-    <div class="inventory-grid">
-      <div
-        *ngFor="
-          let inventario of inventariosFiltrados;
-          trackBy: trackByInventario
-        "
-        class="inventory-card bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 inventory-entrance"
-        (click)="mostrarDetalle(inventario)"
-        (keyup.enter)="mostrarDetalle(inventario)"
-        (keyup.space)="mostrarDetalle(inventario)"
-        tabindex="0"
-        role="button"
-        [attr.aria-label]="'Ver detalles del inventario ' + inventario.serie"
-      >
-        <!-- Header del inventario -->
+    <!-- Cards individuales solo cuando hay un producto filtrado -->
+    <div *ngIf="productoSeleccionadoFiltro; else sinFiltroMensaje">
+      <div class="inventory-grid">
         <div
-          class="p-4 text-white relative"
-          [ngClass]="getStockClass(inventario)"
+          *ngFor="
+            let inventario of inventariosFiltrados;
+            trackBy: trackByInventario
+          "
+          class="inventory-card bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 inventory-entrance"
+          (click)="mostrarDetalle(inventario)"
+          (keyup.enter)="mostrarDetalle(inventario)"
+          (keyup.space)="mostrarDetalle(inventario)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Ver detalles del inventario ' + inventario.serie"
         >
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                <i class="pi pi-box text-white"></i>
+          <!-- Header del inventario -->
+          <div
+            class="p-4 text-white relative"
+            [ngClass]="getStockClass(inventario)"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                  <i class="pi pi-box text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm m-0">{{ inventario.serie }}</h4>
+                  <p class="text-xs opacity-90 mt-1">
+                    {{ inventario.producto?.codigo }}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 class="font-bold text-sm m-0">{{ inventario.serie }}</h4>
-                <p class="text-xs opacity-90 mt-1">
-                  {{ inventario.producto?.codigo }}
-                </p>
+
+              <!-- Estado del inventario -->
+              <div class="text-right">
+                <p-tag
+                  [value]="inventario.estado"
+                  [severity]="getEstadoSeverity(inventario.estado)"
+                  [icon]="getEstadoIcon(inventario.estado)"
+                  styleClass="text-xs font-medium"
+                />
               </div>
             </div>
 
-            <!-- Estado del inventario -->
-            <div class="text-right">
-              <p-tag
-                [value]="inventario.estado"
-                [severity]="getEstadoSeverity(inventario.estado)"
-                [icon]="getEstadoIcon(inventario.estado)"
-                styleClass="text-xs font-medium"
-              />
-            </div>
-          </div>
-
-          <!-- Información de variante -->
-          <div class="grid grid-cols-2 gap-2 text-center">
-            <div class="bg-white bg-opacity-10 rounded-lg p-2">
-              <div class="flex items-center justify-center gap-1 mb-1">
-                <div
-                  class="w-3 h-3 rounded-full border border-white"
-                  [style.background-color]="
-                    inventario.color?.codigoHex || '#ccc'
-                  "
-                ></div>
+            <!-- Información de variante -->
+            <div class="grid grid-cols-2 gap-2 text-center">
+              <div class="bg-white bg-opacity-10 rounded-lg p-2">
+                <div class="flex items-center justify-center gap-1 mb-1">
+                  <div
+                    class="w-3 h-3 rounded-full border border-white"
+                    [style.background-color]="
+                      inventario.color?.codigoHex || '#ccc'
+                    "
+                  ></div>
+                  <div class="text-xs font-medium">
+                    {{ inventario.color?.nombre }}
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white bg-opacity-10 rounded-lg p-2">
                 <div class="text-xs font-medium">
-                  {{ inventario.color?.nombre }}
+                  Talla {{ inventario.talla?.numero }}
                 </div>
               </div>
             </div>
-            <div class="bg-white bg-opacity-10 rounded-lg p-2">
-              <div class="text-xs font-medium">
-                Talla {{ inventario.talla?.numero }}
+          </div>
+
+          <!-- Contenido del inventario -->
+          <div class="p-4">
+            <!-- Cantidad principal -->
+            <div class="text-center mb-4">
+              <div
+                class="text-4xl font-bold mb-1"
+                [ngClass]="{
+                  'text-red-600': inventario.cantidad === 0,
+                  'text-orange-600':
+                    inventario.cantidad > 0 && inventario.cantidad <= 10,
+                  'text-green-600': inventario.cantidad > 10,
+                }"
+              >
+                {{ inventario.cantidad }}
+              </div>
+              <div class="text-sm text-gray-600 font-medium">
+                Unidades disponibles
+              </div>
+
+              <!-- Barra de stock visual -->
+              <div class="mt-3" *ngIf="inventario.stockMaximo">
+                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    class="h-2 rounded-full transition-all duration-500"
+                    [ngClass]="{
+                      'bg-gradient-to-r from-red-400 to-red-600':
+                        inventario.cantidad === 0,
+                      'bg-gradient-to-r from-orange-400 to-orange-600':
+                        inventario.cantidad > 0 && inventario.cantidad <= 10,
+                      'bg-gradient-to-r from-green-400 to-green-600':
+                        inventario.cantidad > 10,
+                    }"
+                    [style.width.%]="
+                      calculateWidthPercentage(
+                        inventario.cantidad,
+                        inventario.stockMaximo || 100
+                      )
+                    "
+                  ></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>0</span>
+                  <span>{{ inventario.stockMaximo }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Contenido del inventario -->
-        <div class="p-4">
-          <!-- Cantidad principal -->
-          <div class="text-center mb-4">
+            <!-- Información del almacén -->
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i class="pi pi-building text-blue-600"></i>
+                <span class="font-medium text-gray-800 text-sm">Almacén</span>
+              </div>
+              <div class="text-gray-700 text-sm">
+                {{ inventario.almacen?.nombre }}
+              </div>
+              <div class="text-gray-500 text-xs">
+                {{ inventario.almacen?.ubicacion }}
+              </div>
+            </div>
+
+            <!-- Métricas adicionales -->
             <div
-              class="text-4xl font-bold mb-1"
-              [ngClass]="{
-                'text-red-600': inventario.cantidad === 0,
-                'text-orange-600':
-                  inventario.cantidad > 0 && inventario.cantidad <= 10,
-                'text-green-600': inventario.cantidad > 10,
-              }"
+              class="grid grid-cols-2 gap-3 mb-4"
+              *ngIf="inventario.valorUnitario"
             >
-              {{ inventario.cantidad }}
-            </div>
-            <div class="text-sm text-gray-600 font-medium">
-              Unidades disponibles
-            </div>
-
-            <!-- Barra de stock visual -->
-            <div class="mt-3" *ngIf="inventario.stockMaximo">
-              <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div
-                  class="h-2 rounded-full transition-all duration-500"
-                  [ngClass]="{
-                    'bg-gradient-to-r from-red-400 to-red-600':
-                      inventario.cantidad === 0,
-                    'bg-gradient-to-r from-orange-400 to-orange-600':
-                      inventario.cantidad > 0 && inventario.cantidad <= 10,
-                    'bg-gradient-to-r from-green-400 to-green-600':
-                      inventario.cantidad > 10,
-                  }"
-                  [style.width.%]="
-                    calculateWidthPercentage(
-                      inventario.cantidad,
-                      inventario.stockMaximo || 100
-                    )
-                  "
-                ></div>
+              <div class="text-center bg-gray-50 rounded-lg p-2">
+                <div class="font-bold text-blue-600">
+                  S/. {{ inventario.valorUnitario | number: "1.0-0" }}
+                </div>
+                <div class="text-xs text-gray-600">Valor Unit.</div>
               </div>
-              <div class="flex justify-between text-xs text-gray-500 mt-1">
-                <span>0</span>
-                <span>{{ inventario.stockMaximo }}</span>
+              <div class="text-center bg-gray-50 rounded-lg p-2">
+                <div class="font-bold text-green-600">
+                  S/. {{ inventario.valorTotal | number: "1.0-0" }}
+                </div>
+                <div class="text-xs text-gray-600">Valor Total</div>
               </div>
             </div>
-          </div>
 
-          <!-- Información del almacén -->
-          <div class="mb-4">
-            <div class="flex items-center gap-2 mb-2">
-              <i class="pi pi-building text-blue-600"></i>
-              <span class="font-medium text-gray-800 text-sm">Almacén</span>
-            </div>
-            <div class="text-gray-700 text-sm">
-              {{ inventario.almacen?.nombre }}
-            </div>
-            <div class="text-gray-500 text-xs">
-              {{ inventario.almacen?.ubicacion }}
-            </div>
-          </div>
-
-          <!-- Métricas adicionales -->
-          <div
-            class="grid grid-cols-2 gap-3 mb-4"
-            *ngIf="inventario.valorUnitario"
-          >
-            <div class="text-center bg-gray-50 rounded-lg p-2">
-              <div class="font-bold text-blue-600">
-                S/. {{ inventario.valorUnitario | number: "1.0-0" }}
+            <!-- Categoría ABC y tendencia -->
+            <div
+              class="flex items-center justify-between mb-4"
+              *ngIf="inventario.categoriaABC"
+            >
+              <p-chip
+                [label]="'ABC: ' + inventario.categoriaABC"
+                [styleClass]="'abc-' + inventario.categoriaABC.toLowerCase()"
+                size="small"
+              />
+              <div class="flex items-center gap-1" *ngIf="inventario.tendencia">
+                <i
+                  [class]="getTendenciaIcon(inventario.tendencia)"
+                  [style.color]="getTendenciaColor(inventario.tendencia)"
+                ></i>
+                <span class="text-xs text-gray-600">{{
+                  inventario.tendencia
+                }}</span>
               </div>
-              <div class="text-xs text-gray-600">Valor Unit.</div>
             </div>
-            <div class="text-center bg-gray-50 rounded-lg p-2">
-              <div class="font-bold text-green-600">
-                S/. {{ inventario.valorTotal | number: "1.0-0" }}
+
+            <!-- Ubicación en almacén -->
+            <div class="mb-4" *ngIf="inventario.ubicacionAlmacen">
+              <div class="flex items-center gap-2 mb-1">
+                <i class="pi pi-map-marker text-purple-600 text-sm"></i>
+                <span class="font-medium text-gray-800 text-sm">Ubicación</span>
               </div>
-              <div class="text-xs text-gray-600">Valor Total</div>
+              <div class="text-gray-600 text-xs">
+                {{ inventario.ubicacionAlmacen }}
+              </div>
             </div>
-          </div>
 
-          <!-- Categoría ABC y tendencia -->
-          <div
-            class="flex items-center justify-between mb-4"
-            *ngIf="inventario.categoriaABC"
-          >
-            <p-chip
-              [label]="'ABC: ' + inventario.categoriaABC"
-              [styleClass]="'abc-' + inventario.categoriaABC.toLowerCase()"
-              size="small"
-            />
-            <div class="flex items-center gap-1" *ngIf="inventario.tendencia">
-              <i
-                [class]="getTendenciaIcon(inventario.tendencia)"
-                [style.color]="getTendenciaColor(inventario.tendencia)"
-              ></i>
-              <span class="text-xs text-gray-600">{{
-                inventario.tendencia
-              }}</span>
+            <!-- Fecha de última actualización -->
+            <div class="text-xs text-gray-500 mb-4">
+              <i class="pi pi-clock mr-1"></i>
+              Actualizado:
+              {{ inventario.fechaActualizacion | date: "dd/MM/yyyy HH:mm" }}
             </div>
-          </div>
 
-          <!-- Ubicación en almacén -->
-          <div class="mb-4" *ngIf="inventario.ubicacionAlmacen">
-            <div class="flex items-center gap-2 mb-1">
-              <i class="pi pi-map-marker text-purple-600 text-sm"></i>
-              <span class="font-medium text-gray-800 text-sm">Ubicación</span>
+            <!-- Acciones del inventario -->
+            <div class="flex gap-2">
+              <p-button
+                label="Detalle"
+                icon="pi pi-eye"
+                size="small"
+                [outlined]="true"
+                class="flex-1"
+                (click)="mostrarDetalle(inventario); $event.stopPropagation()"
+              />
+              <p-button
+                icon="pi pi-history"
+                size="small"
+                severity="info"
+                [outlined]="true"
+                pTooltip="Ver movimientos"
+                (click)="mostrarMovimientos(inventario); $event.stopPropagation()"
+              />
+              <p-button
+                *appHasPermission="{
+                  module: 'inventario',
+                  permission: permissionTypes.EDIT,
+                }"
+                icon="pi pi-pencil"
+                size="small"
+                pTooltip="Editar"
+                (click)="editInventario(inventario); $event.stopPropagation()"
+              />
+              <p-button
+                *appHasPermission="{
+                  module: 'inventario',
+                  permission: permissionTypes.DELETE,
+                }"
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                [outlined]="true"
+                pTooltip="Eliminar"
+                (click)="eliminarInventario(inventario); $event.stopPropagation()"
+              />
             </div>
-            <div class="text-gray-600 text-xs">
-              {{ inventario.ubicacionAlmacen }}
-            </div>
-          </div>
-
-          <!-- Fecha de última actualización -->
-          <div class="text-xs text-gray-500 mb-4">
-            <i class="pi pi-clock mr-1"></i>
-            Actualizado:
-            {{ inventario.fechaActualizacion | date: "dd/MM/yyyy HH:mm" }}
-          </div>
-
-          <!-- Acciones del inventario -->
-          <div class="flex gap-2">
-            <p-button
-              label="Detalle"
-              icon="pi pi-eye"
-              size="small"
-              [outlined]="true"
-              class="flex-1"
-              (click)="mostrarDetalle(inventario); $event.stopPropagation()"
-            />
-            <p-button
-              icon="pi pi-history"
-              size="small"
-              severity="info"
-              [outlined]="true"
-              pTooltip="Ver movimientos"
-              (click)="mostrarMovimientos(inventario); $event.stopPropagation()"
-            />
-            <p-button
-              *appHasPermission="{
-                module: 'inventario',
-                permission: permissionTypes.EDIT,
-              }"
-              icon="pi pi-pencil"
-              size="small"
-              pTooltip="Editar"
-              (click)="editInventario(inventario); $event.stopPropagation()"
-            />
-            <p-button
-              *appHasPermission="{
-                module: 'inventario',
-                permission: permissionTypes.DELETE,
-              }"
-              icon="pi pi-trash"
-              severity="danger"
-              size="small"
-              [outlined]="true"
-              pTooltip="Eliminar"
-              (click)="eliminarInventario(inventario); $event.stopPropagation()"
-            />
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Mensaje cuando no hay filtro (mostrando todos los inventarios) -->
+    <ng-template #sinFiltroMensaje>
+      <div class="bg-white rounded-xl p-6 text-center border-2 border-dashed border-gray-300">
+        <div class="bg-blue-100 p-4 rounded-full inline-block mb-4">
+          <i class="pi pi-info-circle text-4xl text-blue-600"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">
+          Dashboard Optimizado
+        </h3>
+        <p class="text-gray-600 mb-4 max-w-2xl mx-auto">
+          Mostrando estadísticas de <strong>{{ inventariosTotales.length }} registros</strong>. 
+          Para ver los detalles individuales, selecciona un producto específico en el filtro superior 
+          o usa la <strong>Vista de Tabla</strong> / <strong>Vista de Cards</strong>.
+        </p>
+        <div class="flex gap-3 justify-center">
+          <p-button
+            label="Ver en Tabla"
+            icon="pi pi-table"
+            (click)="currentView = 'table'"
+            severity="info"
+          />
+          <p-button
+            label="Ver en Cards"
+            icon="pi pi-th-large"
+            (click)="currentView = 'cards'"
+            [outlined]="true"
+          />
+        </div>
+      </div>
+    </ng-template>
   </div>
 
   <ng-template #noDashboardData>
