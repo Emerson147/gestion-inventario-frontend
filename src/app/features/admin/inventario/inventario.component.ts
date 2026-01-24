@@ -45,6 +45,7 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { TreeTableModule } from 'primeng/treetable';
 import { ScrollerModule } from 'primeng/scroller';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { PaginatorModule } from 'primeng/paginator';
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import {
@@ -208,6 +209,7 @@ interface InventarioExtendido extends Inventario {
     TreeTableModule,
     ScrollerModule,
     SplitButtonModule,
+    PaginatorModule,
     HasPermissionDirective,
   ],
   providers: [MessageService, ConfirmationService],
@@ -594,6 +596,16 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   // ========== FILTROS ==========
   productoSeleccionadoFiltro: Producto | null = null;
 
+  // ========== PAGINACIÓN DASHBOARD ==========
+  dashboardPage = 0;
+  dashboardRows = 10; // Mostrar 10 cards por página
+  dashboardTotalRecords = 0;
+
+  // ========== PAGINACIÓN VISTA CARDS ==========
+  cardsPage = 0;
+  cardsRows = 10; // Mostrar 10 cards por página en vista cards
+  cardsTotalRecords = 0;
+
   // ========== FORMULARIO ==========
   inventario: InventarioExtendido = this.initInventario();
   productoSeleccionado: Producto | null = null;
@@ -817,6 +829,37 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     return this.inventariosFiltrados.filter(
       (i) => i.estado === EstadoInventario.AGOTADO,
     ).length;
+  }
+
+  get inventariosDashboardPaginados(): InventarioExtendido[] {
+    if (!this.productoSeleccionadoFiltro || !this.inventariosFiltrados?.length) {
+      return [];
+    }
+    const start = this.dashboardPage * this.dashboardRows;
+    const end = start + this.dashboardRows;
+    return this.inventariosFiltrados.slice(start, end);
+  }
+
+  // Método para manejar el cambio de página del paginador dashboard
+  onDashboardPageChange(event: any): void {
+    this.dashboardPage = event.page ?? 0;
+    this.dashboardRows = event.rows ?? 12;
+  }
+
+  // Getter para inventarios paginados en vista cards
+  get inventariosCardsPaginados(): InventarioExtendido[] {
+    if (!this.inventariosFiltrados?.length) {
+      return [];
+    }
+    const start = this.cardsPage * this.cardsRows;
+    const end = start + this.cardsRows;
+    return this.inventariosFiltrados.slice(start, end);
+  }
+
+  // Método para manejar el cambio de página en vista cards
+  onCardsPageChange(event: any): void {
+    this.cardsPage = event.page ?? 0;
+    this.cardsRows = event.rows ?? 12;
   }
 
   // Helper methods for template calculations
@@ -1537,6 +1580,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
             this.inventariosFiltrados = Array.isArray(inventarios)
               ? inventarios
               : [inventarios];
+            this.dashboardTotalRecords = this.inventariosFiltrados.length;
+            this.dashboardPage = 0; // Resetear a la primera página
+            this.cardsTotalRecords = this.inventariosFiltrados.length;
+            this.cardsPage = 0; // Resetear a la primera página
             this.generarDatosSimulados(); // Enriquecer con datos simulados
             this.loading = false;
           },
@@ -1546,12 +1593,15 @@ export class InventarioComponent implements OnInit, AfterViewInit {
               'No se pudo cargar el inventario de este producto',
             );
             this.inventariosFiltrados = [];
+            this.dashboardTotalRecords = 0;
             this.loading = false;
           },
         });
     } else {
       // Si no hay producto seleccionado, mostrar todos los inventarios
       this.inventariosFiltrados = [...this.inventariosTotales];
+      this.dashboardTotalRecords = 0;
+      this.dashboardPage = 0;
       this.generarDatosSimulados();
     }
   }
@@ -1560,6 +1610,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     this.productoSeleccionadoFiltro = null;
     this.inventariosFiltrados = [...this.inventariosTotales];
     this.selectedInventarios = [];
+    this.dashboardTotalRecords = 0;
+    this.dashboardPage = 0;
+    this.cardsTotalRecords = 0;
+    this.cardsPage = 0;
     this.filtrosInventario = {
       producto: '',
       almacen: null,

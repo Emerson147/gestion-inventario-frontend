@@ -511,7 +511,7 @@
       <div class="inventory-grid">
         <div
           *ngFor="
-            let inventario of inventariosFiltrados;
+            let inventario of inventariosDashboardPaginados;
             trackBy: trackByInventario
           "
           class="inventory-card bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 inventory-entrance"
@@ -737,6 +737,20 @@
           </div>
         </div>
       </div>
+      
+      <!-- Paginador para el dashboard -->
+      <div *ngIf="dashboardTotalRecords > dashboardRows" class="mt-6 flex justify-center">
+        <p-paginator
+          [rows]="dashboardRows"
+          [totalRecords]="dashboardTotalRecords"
+          [first]="dashboardPage * dashboardRows"
+          (onPageChange)="onDashboardPageChange($event)"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} variantes"
+          [rowsPerPageOptions]="[5, 10, 15, 20]"
+          styleClass="border-0 bg-transparent"
+        ></p-paginator>
+      </div>
     </div>
 
     <!-- Mensaje cuando no hay filtro (mostrando todos los inventarios) -->
@@ -821,7 +835,7 @@
     <div class="inventory-grid">
       <div
         *ngFor="
-          let inventario of inventariosFiltrados;
+          let inventario of inventariosCardsPaginados;
           trackBy: trackByInventario
         "
         class="inventory-card bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300"
@@ -925,6 +939,20 @@
           />
         </div>
       </div>
+    </div>
+
+    <!-- Paginador para la vista cards -->
+    <div *ngIf="cardsTotalRecords > cardsRows" class="mt-6 flex justify-center">
+      <p-paginator
+        [rows]="cardsRows"
+        [totalRecords]="cardsTotalRecords"
+        [first]="cardsPage * cardsRows"
+        (onPageChange)="onCardsPageChange($event)"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} inventarios"
+        [rowsPerPageOptions]="[5, 10, 15, 20]"
+        styleClass="border-0 bg-transparent"
+      ></p-paginator>
     </div>
   </div>
 
