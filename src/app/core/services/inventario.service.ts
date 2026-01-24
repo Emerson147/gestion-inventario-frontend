@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, forkJoin } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import { catchError, tap, shareReplay, map } from 'rxjs/operators';
+import { catchError, tap, shareReplay, map, switchMap } from 'rxjs/operators';
 import { Inventario, MovimientoInventario, PagedResponse, InventarioRequest, EstadoInventario } from '../models/inventario.model';
 import { InventarioStats, SugerenciaReposicion, InventarioValidationResult } from '../models/inventario-response.model';
 
@@ -42,12 +42,16 @@ export class InventarioService {
     sortDir = 'asc',
     filtros?: FiltrosInventario
   ): Observable<PagedResponse<Inventario>> {
+    // NO usar caché cuando se solicitan muchos registros (para exportación)
+    const useCache = size <= 200;
     const cacheKey = this.generateCacheKey('inventarios', { page, size, sortBy, sortDir, filtros });
 
-    // Verificar cache primero
-    const cached = this.getFromCache<PagedResponse<Inventario>>(cacheKey);
-    if (cached) {
-      return of(cached);
+    // Verificar cache solo si el tamaño es pequeño
+    if (useCache) {
+      const cached = this.getFromCache<PagedResponse<Inventario>>(cacheKey);
+      if (cached) {
+        return of(cached);
+      }
     }
 
     // Si no está en cache, hacer request
@@ -64,8 +68,10 @@ export class InventarioService {
 
     return this.http.get<PagedResponse<Inventario>>(this.apiUrl, { params }).pipe(
       tap(response => {
-        // Guardar en cache por 2 minutos
-        this.setCache(cacheKey, response, 2);
+        // Guardar en cache solo si el tamaño es pequeño
+        if (useCache) {
+          this.setCache(cacheKey, response, 2);
+        }
       }),
       catchError(error => {
         console.error('Error al cargar inventarios:', error);
@@ -101,17 +107,40 @@ export class InventarioService {
 
   /**
    * Obtener todos los inventarios sin paginación (para exportación)
-   * Usa el endpoint principal con un tamaño de página grande para obtener todos los registros
+   * Hace múltiples llamadas al backend con paginación automática para obtener TODOS los registros
    */
   getAllInventarios(): Observable<Inventario[]> {
-    const params = new HttpParams()
-      .set('page', '0')
-      .set('size', '100000') // Tamaño grande para obtener todos
-      .set('sortBy', 'id')
-      .set('sortDir', 'asc');
-
-    return this.http.get<PagedResponse<Inventario>>(this.apiUrl, { params }).pipe(
-      map(response => response.contenido || []),
+    const pageSize = 100; // Tamaño de página que el backend acepta
+    
+    // Primera llamada para saber el total de elementos
+    return this.obtenerInventarios(0, pageSize, 'id', 'asc').pipe(
+      switchMap(firstResponse => {
+        const totalElementos = firstResponse.totalElementos || 0;
+        const totalPaginas = Math.ceil(totalElementos / pageSize);
+        
+        console.log(`🔍 Total de inventarios en BD: ${totalElementos} (${totalPaginas} páginas)`);
+        
+        if (totalPaginas <= 1) {
+          // Si solo hay una página, retornar los datos de la primera llamada
+          return of(firstResponse.contenido || []);
+        }
+        
+        // Crear array de llamadas para las páginas restantes
+        const requests: Observable<PagedResponse<Inventario>>[] = [of(firstResponse)];
+        
+        for (let page = 1; page < totalPaginas; page++) {
+          requests.push(this.obtenerInventarios(page, pageSize, 'id', 'asc'));
+        }
+        
+        // Ejecutar todas las llamadas en paralelo y combinar resultados
+        return forkJoin(requests).pipe(
+          map(responses => {
+            const allInventarios = responses.flatMap(r => r.contenido || []);
+            console.log(`✅ Cargados ${allInventarios.length} de ${totalElementos} inventarios`);
+            return allInventarios;
+          })
+        );
+      }),
       catchError(error => {
         console.error('Error al obtener todos los inventarios:', error);
         return throwError(() => error);

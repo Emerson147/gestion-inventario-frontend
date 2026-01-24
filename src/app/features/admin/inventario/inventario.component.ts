@@ -1441,6 +1441,10 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           ? inventarios
           : [inventarios];
         this.inventariosFiltrados = [...this.inventariosTotales];
+        
+        // Log para verificar cuántos registros se cargaron
+        console.log(`✅ Inventarios cargados en memoria: ${this.inventariosTotales.length} registros`);
+        
         this.generarDatosSimulados();
         this.loading = false;
       },
@@ -2003,42 +2007,41 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   exportarTodo(): void {
-    // Si hay un producto seleccionado en el filtro, exportar todos sus inventarios
-    if (this.productoSeleccionadoFiltro) {
-      const datosAExportar = this.inventariosTotales.filter(
-        (inv) => inv.producto?.id === this.productoSeleccionadoFiltro?.id,
-      );
+    // SIEMPRE llamar al backend para obtener TODOS los inventarios, incluso si hay más de 100
+    this.loading = true;
+    this.showInfo('Cargando todos los inventarios del sistema para exportar...');
 
-      if (!datosAExportar?.length) {
-        this.showWarning('No hay datos para exportar');
-        return;
-      }
+    this.inventarioService.getAllInventarios().subscribe({
+      next: (inventarios) => {
+        this.loading = false;
+        if (!inventarios || inventarios.length === 0) {
+          this.showWarning('No hay datos para exportar');
+          return;
+        }
 
-      this.exportarDatos(
-        datosAExportar,
-        `inventario_completo_${this.productoSeleccionadoFiltro.codigo}`,
-      );
-    } else {
-      // Si no hay producto seleccionado, cargar todos los inventarios del sistema
-      this.loading = true;
-      this.showInfo('Cargando todos los inventarios para exportar...');
-
-      this.inventarioService.getAllInventarios().subscribe({
-        next: (inventarios) => {
-          this.loading = false;
-          if (!inventarios || inventarios.length === 0) {
-            this.showWarning('No hay datos para exportar');
+        // Si hay un producto seleccionado en el filtro, filtrar solo ese producto
+        let datosAExportar = inventarios;
+        let nombreArchivo = 'inventario_completo_todos';
+        
+        if (this.productoSeleccionadoFiltro) {
+          datosAExportar = inventarios.filter(
+            (inv) => inv.producto?.id === this.productoSeleccionadoFiltro?.id,
+          );
+          nombreArchivo = `inventario_completo_${this.productoSeleccionadoFiltro.codigo}`;
+          
+          if (!datosAExportar?.length) {
+            this.showWarning('No hay datos para exportar del producto seleccionado');
             return;
           }
+        }
 
-          this.exportarDatos(inventarios, 'inventario_completo_todos');
-        },
-        error: (error) => {
-          this.loading = false;
-          this.handleError(error, 'Error al cargar los inventarios para exportar');
-        },
-      });
-    }
+        this.exportarDatos(datosAExportar, nombreArchivo);
+      },
+      error: (error) => {
+        this.loading = false;
+        this.handleError(error, 'Error al cargar los inventarios para exportar');
+      },
+    });
   }
 
   private exportarDatos(datosAExportar: InventarioExtendido[], nombreArchivo: string): void {
