@@ -34,6 +34,7 @@ import { TagModule } from 'primeng/tag'; // 👈 Nuevo import
 import { RatingModule } from 'primeng/rating'; // 👈 Nuevo import
 import { AccordionModule } from 'primeng/accordion'; // 👈 Nuevo import
 import { SplitterModule } from 'primeng/splitter'; // 👈 Nuevo import
+import { GoogleMap, GoogleMapsModule, MapInfoWindow, MapMarker } from '@angular/google-maps';
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Almacen } from '../../../core/models/almacen.model';
@@ -43,7 +44,7 @@ import { finalize, forkJoin, catchError, of, firstValueFrom } from 'rxjs';
 
 interface ViewOption {
   label: string;
-  value: 'map' | 'grid' | 'list' | 'analytics' | 'zones';
+  value: 'map' | 'grid' | 'list';
   icon: string;
 }
 
@@ -165,12 +166,13 @@ interface FiltrosAlmacenes {
     RatingModule, 
     AccordionModule, 
     SplitterModule,
-    CheckboxModule, // 👈 Nuevo import
-    TagModule, // 👈 Nuevo import
-    RatingModule, // 👈 Nuevo import
-    AccordionModule, // 👈 Nuevo import
-    SplitterModule, // 👈 Nuevo import
-    HasPermissionDirective
+    CheckboxModule,
+    TagModule,
+    RatingModule,
+    AccordionModule,
+    SplitterModule,
+    HasPermissionDirective,
+    GoogleMapsModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './almacenes.component.html',
@@ -428,6 +430,76 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   Math = Math;
   
   @ViewChild('warehouseTable') warehouseTable!: ElementRef;
+  @ViewChild(GoogleMap, { static: false }) map!: GoogleMap;
+  @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow;
+  
+  // Configuración "Zen" del Mapa (Limpio, sin botones de Google)
+  mapOptions: google.maps.MapOptions = {
+    disableDefaultUI: true, // 👈 ESTO ES CLAVE: Quita los controles feos de Google
+    center: { lat: -12.0464, lng: -77.0428 }, // Lima, Perú (Coordenada default)
+    zoom: 12,
+    mapTypeId: 'roadmap' as any,
+    // Estilo visual limpio (opcional, para que sea grisáceo/zen)
+    styles: [
+      { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] } 
+    ]
+  };
+
+// Variables de control
+  zoom = 12;
+  tipoVistaMapa: string = 'roadmap';
+  
+  // Para el InfoWindow personalizado
+  infoWindowContent: any = null;
+
+// --- MÉTODOS DE CONTROL ZEN ---
+
+  // 1. Zoom In/Out (Conectados a tus botones flotantes)
+  zoomIn() {
+    this.zoom = (this.zoom || 12) + 1;
+  }
+
+  zoomOut() {
+    this.zoom = (this.zoom || 12) - 1;
+  }
+
+  // 2. Cambiar Vista (Satélite/Mapa)
+  cambiarTipoMapa(tipo: string) {
+    // Mapea tu p-selectButton a los tipos de Google
+    const mapTypes: any = {
+      'roadmap': google.maps.MapTypeId.ROADMAP,
+      'satellite': google.maps.MapTypeId.SATELLITE,
+      'terrain': google.maps.MapTypeId.TERRAIN
+    };
+    this.mapOptions = { ...this.mapOptions, mapTypeId: mapTypes[tipo] };
+  }
+
+  // 3. Centrar en Almacén (Al hacer click en la lista lateral)
+  centrarEnAlmacen(almacen: any) {
+    if (almacen.lat && almacen.lng) {
+      this.map.panTo({ lat: almacen.lat, lng: almacen.lng });
+      this.zoom = 15; // Acercar al seleccionar
+      this.infoWindowContent = almacen; // Preparar datos para el tooltip
+    }
+  }
+
+  // 4. Ver Todo (Ajustar límites para ver todos los puntos)
+  mostrarTodosAlmacenes() {
+    const bounds = new google.maps.LatLngBounds();
+    this.almacenes.forEach(a => {
+      if (a.ubicacionGeografica?.latitud && a.ubicacionGeografica?.longitud) {
+        bounds.extend({ lat: a.ubicacionGeografica.latitud, lng: a.ubicacionGeografica.longitud });
+      }
+    });
+    this.map.fitBounds(bounds);
+  }
+
+  // Helper para abrir InfoWindow al hacer click en un marcador
+  openInfoWindow(marker: MapMarker, almacen: any) {
+    this.infoWindowContent = almacen;
+    this.infoWindow.open(marker);
+  }
+
 
   // ========== DATOS Y ESTADO ==========
   almacenes: AlmacenExtendido[] = [];
@@ -539,9 +611,7 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
   viewOptions: ViewOption[] = [
     { label: 'Vista Grid', value: 'grid', icon: 'pi pi-th-large' },
     { label: 'Mapa', value: 'map', icon: 'pi pi-map' },
-    { label: 'Lista', value: 'list', icon: 'pi pi-list' },
-    { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' },
-    { label: 'Zonas', value: 'zones', icon: 'pi pi-sitemap' }
+    { label: 'Lista', value: 'list', icon: 'pi pi-list' }
   ];
 
   estadosAlmacen = [
@@ -1575,7 +1645,6 @@ export class AlmacenesComponent implements OnInit, AfterViewInit {
 
 // Estados adicionales para modales
 zonaSeleccionada: ZonaAlmacen | null = null;
-tipoVistaMapa: 'satellite' | 'roadmap' | 'terrain' = 'roadmap';
 filtroEstadoMapa: string | null = null;
 filtroTipoMapa: string | null = null;
 mostrarRutas = false;
@@ -1902,28 +1971,11 @@ aplicarCambiosZonas(): void {
     console.log('Iniciando redimensión de la zona:', zona.nombre);
   }
 
-/**
- * Métodos para el mapa
- */
-zoomIn(): void {
-  console.log('Zoom in');
-}
-
-zoomOut(): void {
-  console.log('Zoom out');
-}
 
 centrarMapa(): void {
   console.log('Centrar mapa');
 }
 
-mostrarTodosAlmacenes(): void {
-  console.log('Mostrar todos los almacenes');
-}
-
-centrarEnAlmacen(almacen: AlmacenExtendido): void {
-  console.log('Centrar en almacén:', almacen.nombre);
-}
 
 exportarMapa(): void {
   this.showSuccess('Funcionalidad de exportación de mapa');

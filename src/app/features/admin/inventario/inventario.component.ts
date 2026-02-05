@@ -46,6 +46,7 @@ import { TreeTableModule } from 'primeng/treetable';
 import { ScrollerModule } from 'primeng/scroller';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { PaginatorModule } from 'primeng/paginator';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import {
@@ -210,6 +211,7 @@ interface InventarioExtendido extends Inventario {
     ScrollerModule,
     SplitButtonModule,
     PaginatorModule,
+    DropdownModule,
     HasPermissionDirective,
   ],
   providers: [MessageService, ConfirmationService],
@@ -550,6 +552,7 @@ interface InventarioExtendido extends Inventario {
 export class InventarioComponent implements OnInit, AfterViewInit {
   // Make Math available in template
   Math = Math;
+  currentDate = new Date();
   isLoadingProductos = false;
   new:
     | string
@@ -687,8 +690,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     { label: 'Dashboard', value: 'dashboard', icon: 'pi pi-chart-pie' },
     { label: 'Vista Cards', value: 'cards', icon: 'pi pi-th-large' },
     { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
-    { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' },
-    { label: 'Movimientos', value: 'movements', icon: 'pi pi-history' },
+    { label: 'Analytics', value: 'analytics', icon: 'pi pi-chart-bar' }
   ];
 
   estadosInventario: {
@@ -1276,6 +1278,20 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   getStockClass(inventario: InventarioExtendido): string {
     const level = this.getStockLevel(inventario);
     return `stock-${level}`;
+  }
+
+  /**
+   * 👇 Obtiene color hexadecimal para el nivel de stock
+   */
+  getStockColorHex(inventario: InventarioExtendido): string {
+    const level = this.getStockLevel(inventario);
+    const colorMap = {
+      'critical': '#ef4444',
+      'low': '#f59e0b',
+      'good': '#10b981',
+      'high': '#3b82f6'
+    };
+    return colorMap[level];
   }
 
   /**

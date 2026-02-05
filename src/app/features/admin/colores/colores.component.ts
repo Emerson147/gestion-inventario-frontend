@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -64,6 +65,7 @@ interface ColorStats {
     CommonModule,
     FormsModule,
     ButtonModule,
+    CheckboxModule,
     ChipsModule,
     ColorPickerModule,
     ConfirmDialogModule,
@@ -246,10 +248,47 @@ interface ColorStats {
       );
       border-radius: 50%;
     }
+
+    /* Ajuste del Color Picker para que sea más grande y Zen */
+.color-picker-premium .p-colorpicker-preview {
+    width: 3rem !important; /* 48px */
+    height: 3rem !important;
+    border-radius: 0.75rem !important; /* rounded-xl */
+    border: 1px solid var(--p-surface-200) !important;
+}
+
+.dark .color-picker-premium .p-colorpicker-preview {
+    border-color: var(--p-surface-700) !important;
+}
+
+/* Animación de entrada de chips */
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
   `]
 })
 export class ColoresComponent implements OnInit, AfterViewInit {
   @ViewChild('coloresTable') coloresTable!: ElementRef;
+  @Input() loading: boolean = false; // Para activar el modo carga
+
+  textoCopiado: boolean = false; // Para mostrar el feedback visual
+
+  // Función nativa para copiar (No requiere importar nada extra)
+  copiarHex(hex: string) {
+    if (!hex) return;
+    
+    navigator.clipboard.writeText(hex).then(() => {
+      this.textoCopiado = true;
+      // Regresa al estado normal después de 1.5 segundos
+      setTimeout(() => {
+        this.textoCopiado = false;
+      }, 1500);
+    });
+  }
 
   // ========== DATOS Y ESTADO ==========
   colores: Color[] = [];
@@ -272,7 +311,6 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   // ========== ESTADO UI ==========
   visible = false;
   editMode = false;
-  loading = false;
   submitted = false;
   currentView: 'table' | 'palette' | 'grid' = 'palette';
   

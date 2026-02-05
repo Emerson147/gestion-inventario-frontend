@@ -5,2104 +5,1039 @@
 
 <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-<!-- Header corporativo con mejor jerarquía visual -->
-<!-- Header Clean del Dashboard (Adaptado para Productos) -->
-<div class="mb-6">
-  <div
-    class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 sm:p-8 border border-surface-200/60 dark:border-surface-700/60"
-  >
-    <!-- Decorative gradient background -->
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-purple-950/10 pointer-events-none"
-    ></div>
+<!-- Header del Catálogo de Productos -->
+<div class="bg-white dark:bg-surface-900 rounded-[2.5rem] p-8 mb-8 shadow-sm border border-surface-200 dark:border-surface-800 relative overflow-hidden group">
+  
+  <div class="absolute top-0 right-0 w-96 h-96 bg-surface-50 dark:bg-surface-800/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-50 pointer-events-none transition-transform duration-1000 group-hover:scale-110"></div>
 
-    <div
-      class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4"
-    >
-      <!-- Título principal -->
-      <div class="flex items-center gap-4">
-        <div
-          class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
-        >
-          <i class="pi pi-shopping-bag text-surface-0 text-xl"></i>
-        </div>
-        <div>
-          <h1
-            class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight"
-          >
-            Catálogo de Productos
-          </h1>
-          <p
-            class="text-surface-600 dark:text-surface-400 mt-1 mb-0 text-sm font-medium"
-          >
-            Gestiona la información de tus productos
-          </p>
-        </div>
+  <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
+    
+    <div class="flex items-center gap-5">
+      <div class="w-20 h-20 rounded-3xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-primary-600 dark:text-primary-400 border border-surface-100 dark:border-surface-700 shadow-inner">
+        <i class="pi pi-shopping-bag text-3xl"></i>
+      </div>
+      
+      <div>
+        <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-tight">
+          Catálogo Maestro
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1 mb-0 text-base flex items-center gap-2">
+          <span>Gestión de Inventario</span>
+          <span class="w-1 h-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
+          <span class="font-medium text-primary-600 dark:text-primary-400">Retail & Almacén</span>
+        </p>
       </div>
     </div>
+
+    <div class="w-full xl:w-auto bg-surface-50 dark:bg-surface-800/50 rounded-3xl p-1 border border-surface-100 dark:border-surface-700/50" *ngIf="productos && productos.length > 0">
+      <div class="flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-surface-200 dark:divide-surface-700">
+        
+        <div class="px-6 py-4 flex flex-col items-center sm:items-start min-w-[140px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-2">
+              <i class="pi pi-box text-blue-500"></i> Total SKUs
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none">
+              {{ productos.length | number }}
+           </span>
+        </div>
+
+        <div class="px-6 py-4 flex flex-col items-center sm:items-start min-w-[140px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-2">
+              <i class="pi pi-tags text-purple-500"></i> Categorías
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none">
+              {{ getCategorias() | number }}
+           </span>
+        </div>
+
+        <div class="px-6 py-4 flex flex-col items-center sm:items-start min-w-[160px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-2">
+              <i class="pi pi-chart-bar text-orange-500"></i> Ticket Prom.
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none">
+              {{ getPrecioPromedio() | currency: "S/. " : "symbol" : "1.0-0" }}
+           </span>
+        </div>
+
+        <div class="px-6 py-4 flex flex-col items-center sm:items-start">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-2">
+              <i class="pi pi-dollar text-emerald-500"></i> Rango Precios
+           </span>
+           <div class="flex items-baseline gap-1">
+              <span class="text-lg font-bold text-surface-700 dark:text-surface-200">
+                {{ getPrecioMinimo() | number:'1.0-0' }}
+              </span>
+              <span class="text-surface-400 text-xs">-</span>
+              <span class="text-lg font-bold text-surface-700 dark:text-surface-200">
+                {{ getPrecioMaximo() | currency: "S/. " : "symbol" : "1.0-0" }}
+              </span>
+           </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- KPIs Principales en cards clean (Adaptado) -->
-<div
-  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6"
-  *ngIf="productos && productos.length > 0"
->
-  <!-- Total productos -->
-  <div
-    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
-  >
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-    ></div>
-    <div class="relative flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-blue-50 dark:bg-blue-900/20"
-      >
-        <i class="pi pi-list text-blue-600 dark:text-blue-400 text-xl"></i>
-      </div>
-      <div>
-        <div
-          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
-        >
-          Total Productos
-        </div>
-        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-          {{ productos.length | number }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Categorías -->
-  <div
-    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
-  >
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-    ></div>
-    <div class="relative flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-purple-50 dark:bg-purple-900/20"
-      >
-        <i class="pi pi-tags text-purple-600 dark:text-purple-400 text-xl"></i>
-      </div>
-      <div>
-        <div
-          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
-        >
-          Categorías
-        </div>
-        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-          {{ getCategorias() | number }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rango de Precios -->
-  <div
-    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
-  >
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent dark:from-emerald-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-    ></div>
-    <div class="relative flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-emerald-50 dark:bg-emerald-900/20"
-      >
-        <i
-          class="pi pi-dollar text-emerald-600 dark:text-emerald-400 text-xl"
-        ></i>
-      </div>
-      <div>
-        <div
-          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
-        >
-          Rango Precios
-        </div>
-        <div class="text-lg font-bold text-surface-900 dark:text-surface-0">
-          {{ getPrecioMinimo() | currency: "S/. " : "symbol" : "1.0-0" }} -
-          {{ getPrecioMaximo() | currency: "S/. " : "symbol" : "1.0-0" }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Precio Promedio -->
-  <div
-    class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-xl p-4 border border-surface-200/60 dark:border-surface-700/60 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-lg hover:shadow-surface-200/50 dark:hover:shadow-surface-950/50 transition-all duration-300 cursor-pointer"
-  >
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent dark:from-orange-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-    ></div>
-    <div class="relative flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300 bg-orange-50 dark:bg-orange-900/20"
-      >
-        <i
-          class="pi pi-chart-bar text-orange-600 dark:text-orange-400 text-xl"
-        ></i>
-      </div>
-      <div>
-        <div
-          class="text-surface-500 dark:text-surface-400 text-[10px] font-semibold uppercase tracking-wider mb-1"
-        >
-          Precio Promedio
-        </div>
-        <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-          {{ getPrecioPromedio() | currency: "S/. " : "symbol" : "1.0-0" }}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Toolbar híbrido optimizado -->
-<!-- Toolbar híbrido optimizado -->
-<div
-  class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 p-6 mb-6"
->
-  <div
-    class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6"
-  >
-    <!-- Acciones principales -->
-    <div class="flex flex-wrap gap-3">
-      <!-- Botón principal -->
-      <p-button
-        *appHasPermission="{
-          module: 'productos',
-          permission: permissionTypes.CREATE,
-        }"
-        label="Nuevo Producto"
-        icon="pi pi-plus"
-        size="large"
-        severity="info"
-        class="shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+<!-- Toolbar limpia estilo dashboard -->
+<div class="sticky top-4 z-40 mb-8 px-2">
+  <div class="bg-white dark:bg-surface-900 rounded-2xl p-3 shadow-lg border border-surface-200 dark:border-surface-700 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300">
+    
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+      
+      <button
+        *appHasPermission="{ module: 'productos', permission: permissionTypes.CREATE }"
         (click)="openNew()"
-        pTooltip="Agregar nuevo producto al catálogo"
-      />
+        class="group relative px-6 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl font-bold transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/20 hover:-translate-y-0.5 active:scale-95 flex items-center gap-3 overflow-hidden flex-1 sm:flex-none justify-center shadow-md"
+      >
+        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        <i class="pi pi-plus text-sm"></i>
+        <span>Nuevo Producto</span>
+      </button>
 
-      <!-- 🆕 Acciones masivas con dropdown -->
-      <p-splitButton
-        *ngIf="selectedProductos.length > 0"
-        [label]="'Acciones (' + selectedProductos.length + ')'"
-        icon="pi pi-cog"
-        severity="secondary"
-        size="large"
-        [model]="accionesMasivas"
-        class="shadow-md hover:shadow-lg transition-all duration-300"
-        (onClick)="accionPrincipalMasiva()"
-        pTooltip="Acciones para productos seleccionados"
-      />
-
-      <!-- Acciones secundarias -->
-      <div class="flex gap-2">
-        <p-button
-          label="Importar"
-          icon="pi pi-upload"
-          severity="success"
-          [outlined]="true"
-          size="large"
-          class="shadow-md hover:shadow-lg transition-all duration-300"
-          (click)="importarProductos()"
-          pTooltip="Importar productos desde Excel"
-        />
-
-        <p-button
-          *appHasPermission="{
-            module: 'productos',
-            permission: permissionTypes.DELETE,
-          }"
-          icon="pi pi-trash"
-          severity="danger"
-          [outlined]="true"
-          size="large"
-          class="shadow-md hover:shadow-lg transition-all duration-300"
-          (click)="deleteSelectedProductos()"
-          [disabled]="!selectedProductos.length"
-          pTooltip="Eliminar productos seleccionados"
-        />
+      <div *ngIf="selectedProductos?.length" class="animate-fade-in flex items-center ml-1 flex-1 sm:flex-none">
+          <button
+            *appHasPermission="{ module: 'productos', permission: permissionTypes.DELETE }"
+            (click)="deleteSelectedProductos()"
+            class="w-full sm:w-auto px-5 py-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 border border-red-100 dark:border-red-900/50 hover:shadow-md active:scale-95"
+          >
+            <i class="pi pi-trash text-sm"></i>
+            <span>Eliminar ({{ selectedProductos.length }})</span>
+          </button>
       </div>
     </div>
 
-    <!-- Controles avanzados -->
-    <div class="flex flex-wrap items-center gap-4">
-      <!-- 🆕 Filtro rápido mejorado -->
-      <div class="flex items-center gap-3 bg-surface-50 rounded-xl p-3">
-        <i class="pi pi-filter text-surface-600"></i>
-        <span class="text-sm font-medium text-surface-700">Filtro:</span>
-        <p-select
-          [(ngModel)]="selectedFiltro"
-          [options]="filtrosRapidos"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Todos"
-          class="w-36"
-          size="small"
-          (onChange)="aplicarFiltroRapido()"
-        />
+    <div class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 p-1.5 rounded-xl border border-surface-100 dark:border-surface-700 w-full sm:w-auto justify-between sm:justify-end">
+      
+      <div class="flex bg-white dark:bg-surface-900 rounded-lg p-1 shadow-sm border border-surface-100 dark:border-surface-700">
+        <button 
+            *ngFor="let option of viewOptions"
+            (click)="currentView = option.value"
+            class="w-9 h-9 flex items-center justify-center rounded-md transition-all duration-200 relative"
+            [ngClass]="currentView === option.value 
+                ? 'bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 shadow-md scale-105 z-10' 
+                : 'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'"
+            pTooltip="{{ option.icon.includes('table') ? 'Vista Tabla' : 'Vista Tarjetas' }}"
+            tooltipPosition="top">
+            <i [class]="option.icon"></i>
+        </button>
       </div>
 
-      <!-- Selector de vista -->
-      <div class="flex items-center gap-3 bg-surface-50 rounded-xl p-3">
-        <i class="pi pi-eye text-surface-600"></i>
-        <p-selectButton
-          [(ngModel)]="currentView"
-          [options]="viewOptions"
-          optionLabel="label"
-          optionValue="value"
-          size="small"
-        />
+      <div class="w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1"></div>
+
+      <div class="flex gap-1">
+          <button
+            (click)="loadProductos()"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-surface-500 hover:text-surface-900 dark:hover:text-surface-0 hover:bg-white dark:hover:bg-surface-700 transition-all active:scale-90"
+            pTooltip="Actualizar Lista">
+            <i class="pi pi-refresh" [class.animate-spin]="loading"></i>
+          </button>
+
+          <button
+            (click)="exportarExcel()"
+            [disabled]="!productosFiltrados.length"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-surface-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all active:scale-90 disabled:opacity-30 disabled:hover:bg-transparent"
+            pTooltip="Exportar a Excel">
+            <i class="pi pi-download"></i>
+          </button>
+
+          <button
+            (click)="importarProductos()"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-surface-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all active:scale-90"
+            pTooltip="Importar Productos">
+            <i class="pi pi-upload"></i>
+          </button>
       </div>
 
-      <!-- Utilidades -->
-      <div class="flex gap-2">
-        <p-button
-          icon="pi pi-refresh"
-          severity="secondary"
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Actualizar datos"
-          class="shadow-md hover:shadow-lg transition-all duration-300"
-          (click)="loadProductos()"
-          [loading]="loading"
-        />
-        <p-button
-          icon="pi pi-download"
-          severity="success"
-          [outlined]="true"
-          [rounded]="true"
-          size="large"
-          pTooltip="Exportar a Excel"
-          class="shadow-md hover:shadow-lg transition-all duration-300"
-          (click)="exportarExcel()"
-          [disabled]="!productosFiltrados.length"
-        />
-      </div>
     </div>
   </div>
 </div>
 
-<!-- Tabla con diseño más empresarial -->
-<div *ngIf="currentView === 'table'" class="mb-6">
-  <div
-    class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 overflow-hidden"
-  >
+
+<!-- Vista de Tabla (mejor en pantallas grandes) -->
+<div *ngIf="currentView === 'table'" class="mb-8 animate-fade-in">
+  
+  <div class="block lg:hidden mb-4 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-800/30 flex items-center gap-3">
+    <i class="pi pi-info-circle text-amber-500 text-xl"></i>
+    <span class="text-sm text-amber-700 dark:text-amber-400 font-medium">
+      Desliza la tabla o usa la vista de Tarjetas para ver mejor en tu móvil.
+    </span>
+  </div>
+
+  <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-[2rem] overflow-hidden shadow-sm transition-colors duration-300">
+    
     <p-table
       #dt
       [value]="productosFiltrados"
-      [rows]="15"
+      [rows]="10"
       [paginator]="true"
-      [globalFilterFields]="[
-        'nombre',
-        'descripcion',
-        'categoria.nombre',
-        'precio',
-      ]"
       [totalRecords]="productosFiltrados.length"
+      [globalFilterFields]="['nombre', 'codigo', 'marca', 'modelo']"
       [(selection)]="selectedProductos"
       [rowHover]="true"
       dataKey="id"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} productos"
-      [rowsPerPageOptions]="[10, 15, 25, 50, 100]"
+      currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      [rowsPerPageOptions]="[5, 10, 20]"
       [loading]="loading"
-      styleClass="p-datatable-lg p-datatable-gridlines"
-      [scrollable]="true"
-      scrollHeight="600px"
+      [tableStyle]="{ 'min-width': '85rem' }"
+      styleClass="p-datatable-lg"
     >
-      <!-- Caption corporativo -->
+      
       <ng-template pTemplate="caption">
-        <div
-          class="bg-surface-50 dark:bg-surface-800/50 p-6 border-b border-surface-200/60 dark:border-surface-700/60"
-        >
-          <div
-            class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
-          >
-            <div class="flex items-center gap-4">
-              <div
-                class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl"
-              >
-                <i class="pi pi-list text-surface-0 text-xl"></i>
-              </div>
-              <div>
-                <h3 class="text-2xl font-bold text-surface-800 mb-1">
-                  Catálogo de Productos
-                </h3>
-                <p class="text-surface-600" *ngIf="productosFiltrados.length">
-                  {{ productosFiltrados.length }} de
-                  {{ productos.length }} productos
-                </p>
-              </div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-8 py-6 bg-white dark:bg-surface-900 border-b border-surface-100 dark:border-surface-800">
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-surface-400">
+              <i class="pi pi-list text-xl"></i>
             </div>
-
-            <!-- Búsqueda global mejorada -->
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <p-iconfield class="w-80">
-                  <p-inputicon styleClass="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter(dt, $event)"
-                    placeholder="Buscar en todos los campos..."
-                    class="w-full h-12 pl-10 rounded-xl border-surface-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                  />
-                </p-iconfield>
-              </div>
-
-              <!-- Filtros avanzados toggle -->
-              <p-button
-                icon="pi pi-sliders-h"
-                [outlined]="true"
-                severity="secondary"
-                size="large"
-                pTooltip="Filtros avanzados"
-                (click)="toggleFiltrosAvanzados()"
-                [class.p-button-info]="!filtrosPanelCollapsed"
-              />
+            <div>
+              <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Inventario Detallado</h3>
+              <p class="text-sm text-surface-500 dark:text-surface-400 mt-0.5">
+                <span *ngIf="productosFiltrados.length">{{ productosFiltrados.length }} artículos</span>
+                <span *ngIf="!productosFiltrados.length">Catálogo vacío</span>
+              </p>
             </div>
+          </div>
+
+          <div class="relative group w-full md:w-auto">
+            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 group-focus-within:text-primary-500 transition-colors text-lg"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="Buscar por código, nombre..."
+              class="pl-12 pr-4 py-3 w-full md:w-80 bg-surface-50 dark:bg-surface-800 border-none rounded-2xl text-base focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900 transition-all shadow-inner text-surface-700 dark:text-surface-200"
+            />
           </div>
         </div>
       </ng-template>
 
-      <!-- Header mejorado -->
       <ng-template pTemplate="header">
-        <tr
-          class="bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300"
-        >
-          <th style="width: 3rem" class="text-center">
+        <tr class="bg-surface-50/50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800">
+          <th style="width: 3rem" class="text-center py-5">
             <p-tableHeaderCheckbox />
           </th>
-          <th style="width: 6rem" class="text-center">
-            <div
-              class="flex items-center justify-center gap-2 font-bold text-surface-700"
-            >
-              <i class="pi pi-image text-blue-600"></i>
-              <span>Imagen</span>
-            </div>
+          
+          <th style="width: 7rem" class="text-center py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Imagen
           </th>
-          <th pSortableColumn="codigo" style="min-width: 10rem">
-            <div class="flex items-center gap-2 font-bold text-surface-700">
-              <i class="pi pi-barcode text-indigo-600"></i>
-              <span>Código</span>
-              <p-sortIcon field="codigo" />
-            </div>
+          
+          <th pSortableColumn="codigo" class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600 transition-colors">
+            <div class="flex items-center gap-2">Código SKU <p-sortIcon field="codigo" /></div>
           </th>
-          <th pSortableColumn="nombre" style="min-width: 20rem">
-            <div class="flex items-center gap-2 font-bold text-surface-700">
-              <i class="pi pi-shopping-bag text-emerald-600"></i>
-              <span>Producto</span>
-              <p-sortIcon field="nombre" />
-            </div>
+          
+          <th pSortableColumn="nombre" class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600 transition-colors">
+            <div class="flex items-center gap-2">Producto <p-sortIcon field="nombre" /></div>
           </th>
-          <th pSortableColumn="marca" style="min-width: 12rem">
-            <div class="flex items-center gap-2 font-bold text-surface-700">
-              <i class="pi pi-building text-orange-600"></i>
-              <span>Marca</span>
-              <p-sortIcon field="marca" />
-            </div>
+          
+          <th pSortableColumn="marca" class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600 transition-colors">
+            <div class="flex items-center gap-2">Marca <p-sortIcon field="marca" /></div>
           </th>
-          <th
-            pSortableColumn="precioVenta"
-            style="min-width: 15rem"
-            class="text-right"
-          >
-            <div
-              class="flex items-center justify-end gap-2 font-bold text-surface-700"
-            >
-              <i class="pi pi-dollar text-emerald-600"></i>
-              <span>Precios</span>
-              <p-sortIcon field="precioVenta" />
-            </div>
+          
+          <th pSortableColumn="precioVenta" class="py-5 text-right text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600 transition-colors">
+            <div class="flex items-center justify-end gap-2">Precio <p-sortIcon field="precioVenta" /></div>
           </th>
-          <th style="min-width: 10rem" class="text-center">
-            <div
-              class="flex items-center justify-center gap-2 font-bold text-surface-700"
-            >
-              <i class="pi pi-chart-line text-purple-600"></i>
-              <span>Rentabilidad</span>
-            </div>
+          
+          <th class="py-5 text-center text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Margen
           </th>
-          <th style="min-width: 12rem" class="text-center">
-            <div
-              class="flex items-center justify-center gap-2 font-bold text-surface-700"
-            >
-              <i class="pi pi-cog text-surface-600"></i>
-              <span>Acciones</span>
-            </div>
+          
+          <th style="width: 10rem" class="py-5 text-center text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Acciones
           </th>
         </tr>
       </ng-template>
 
-      <!-- Body optimizado -->
-      <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
-        <tr
-          class="hover:bg-surface-50/20 transition-all duration-200 border-b border-surface-100"
-          [ngClass]="{ 'bg-surface-50/50': rowIndex % 2 === 0 }"
-        >
-          <td class="text-center">
+      <ng-template pTemplate="body" let-producto>
+        <tr class="group border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all duration-200">
+          
+          <td class="text-center py-6">
             <p-tableCheckbox [value]="producto" />
           </td>
-
-          <!-- Imagen profesional -->
-          <td class="text-center">
-            <div class="relative group">
-              <div
-                class="w-14 h-14 rounded-xl overflow-hidden shadow-md border-2 border-surface-200 group-hover:border-blue-400 transition-all duration-300"
-              >
-                <img
-                  [src]="getImageUrl(producto)"
-                  [alt]="producto.nombre"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  (error)="onImageError($event)"
+          
+          <td class="text-center py-6">
+            <div class="relative inline-block w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-surface-200 dark:border-surface-700 bg-white cursor-pointer" (click)="verDetallesProducto(producto)">
+                <img 
+                    [src]="getImageUrl(producto)" 
+                    [alt]="producto.nombre" 
+                    class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                    (error)="onImageError($event)"
                 />
-              </div>
-              <!-- Overlay con zoom -->
-              <div
-                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
-              >
-                <i class="pi pi-search-plus text-surface-0 text-lg"></i>
-              </div>
             </div>
           </td>
 
-          <!-- Código mejorado -->
-          <td>
-            <div class="flex items-center gap-3">
-              <div
-                class="w-2 h-8 bg-gradient-to-b from-indigo-500 to-blue-600 rounded-full"
-              ></div>
-              <div>
-                <p-tag
-                  [value]="producto.codigo"
-                  severity="contrast"
-                  class="font-mono text-sm font-bold"
-                />
-              </div>
-            </div>
+          <td class="py-6">
+             <span class="font-mono text-sm font-bold text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-md border border-surface-200 dark:border-surface-700">
+                {{ producto.codigo }}
+             </span>
           </td>
 
-          <!-- Producto con información rica -->
-          <td>
-            <div class="py-3 px-2">
-              <!-- Nombre del producto -->
-              <div
-                class="font-bold text-surface-900 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors"
-              >
-                {{ producto.nombre }}
-              </div>
-
-              <!-- Información principal -->
-              <div
-                class="flex items-center gap-3 text-sm text-surface-600 mb-3"
-              >
-                <!-- Modelo -->
-                <div
-                  class="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md"
-                >
-                  <i class="pi pi-tag text-blue-500 text-xs"></i>
-                  <span class="font-medium text-blue-700">{{
-                    producto.modelo
-                  }}</span>
-                </div>
-
-                <!-- Separador -->
-                <div class="w-1 h-1 bg-surface-300 rounded-full"></div>
-
-                <!-- Categoría (si existe) -->
-                <div
-                  class="flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-md"
-                  *ngIf="producto.categoria"
-                >
-                  <i class="pi pi-folder text-emerald-500 text-xs"></i>
-                  <span class="font-medium text-emerald-700">{{
-                    producto.categoria
-                  }}</span>
-                </div>
-              </div>
-
-              <!-- Género con badge styled -->
-              <div class="mb-3" *ngIf="producto.genero">
-                <span
-                  class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
-                  [ngClass]="{
-                    'bg-blue-100 text-blue-800': producto.genero === 'hombre',
-                    'bg-pink-100 text-pink-800': producto.genero === 'mujer',
-                    'bg-purple-100 text-purple-800':
-                      producto.genero === 'unisex',
-                    'bg-gray-100 text-gray-800': ![
-                      'hombre',
-                      'mujer',
-                      'unisex',
-                    ].includes(producto.genero?.toLowerCase()),
-                  }"
-                >
-                  <i
-                    class="pi"
-                    [ngClass]="{
-                      'pi-mars': producto.genero === 'hombre',
-                      'pi-venus': producto.genero === 'mujer',
-                      'pi-circle': producto.genero === 'unisex',
-                      'pi-question': !['hombre', 'mujer', 'unisex'].includes(
-                        producto.genero?.toLowerCase()
-                      ),
-                    }"
-                  ></i>
-                  {{ producto.genero | titlecase }}
+          <td class="py-6">
+             <div class="flex flex-col max-w-xs">
+                <span class="font-bold text-surface-900 dark:text-surface-0 text-base cursor-pointer hover:text-primary-600 transition-colors line-clamp-1" (click)="verDetallesProducto(producto)">
+                    {{ producto.nombre }}
                 </span>
-              </div>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs text-surface-500" *ngIf="producto.modelo">{{ producto.modelo }}</span>
+                    <span class="text-surface-300" *ngIf="producto.genero">•</span>
+                    <span class="text-xs text-surface-500 capitalize" *ngIf="producto.genero">{{ producto.genero }}</span>
+                </div>
+             </div>
+          </td>
 
-              <!-- Descripción -->
-              <div
-                class="text-xs text-surface-600 bg-surface-50 border-l-3 border-surface-200 pl-3 py-2 rounded-r-lg line-clamp-3 italic"
-                *ngIf="producto.descripcion && producto.descripcion.trim()"
+          <td class="py-6">
+             <div class="flex items-center gap-2">
+                <i class="pi pi-tag text-surface-400 text-xs"></i>
+                <span class="text-base font-medium text-surface-700 dark:text-surface-200">{{ producto.marca }}</span>
+             </div>
+          </td>
+
+          <td class="py-6 text-right">
+             <div class="flex flex-col items-end">
+                <span class="font-bold text-surface-900 dark:text-surface-0 text-lg">
+                    {{ producto.precioVenta | currency:'S/. ':'symbol':'1.0-0' }}
+                </span>
+                <span class="text-xs text-surface-400 mt-0.5">
+                    Costo: {{ producto.precioCompra | currency:'S/. ':'symbol':'1.0-0' }}
+                </span>
+             </div>
+          </td>
+
+          <td class="py-6 text-center">
+             <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border bg-white dark:bg-surface-800 border-surface-200 dark:border-surface-700 shadow-sm">
+                <div class="w-1.5 h-1.5 rounded-full" [ngClass]="getMargenColorClass(calcularMargenGanancia(producto))"></div>
+                <span class="text-xs font-bold">{{ calcularMargenGanancia(producto) | number:'1.0-0' }}%</span>
+             </div>
+          </td>
+
+          <td class="py-6 text-center">
+            <div class="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              
+              <button 
+                (click)="verDetallesProducto(producto)" 
+                class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all" 
+                pTooltip="Ver Detalle" tooltipPosition="top"
               >
-                <i class="pi pi-info-circle text-surface-400 mr-1"></i>
-                {{ producto.descripcion }}
-              </div>
-
-              <!-- Placeholder cuando no hay descripción -->
-              <div
-                class="text-xs text-surface-400 italic"
-                *ngIf="!producto.descripcion || !producto.descripcion.trim()"
+                <i class="pi pi-eye"></i>
+              </button>
+              
+              <button 
+                *appHasPermission="{module: 'productos', permission: permissionTypes.EDIT}" 
+                (click)="editProducto(producto)" 
+                class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-500 hover:text-surface-900 dark:hover:text-surface-0 hover:bg-white border border-transparent hover:border-surface-200 dark:hover:border-surface-600 transition-all shadow-sm" 
+                pTooltip="Editar" tooltipPosition="top"
               >
-                <i class="pi pi-minus-circle mr-1"></i>
-                Sin descripción
-              </div>
-            </div>
-          </td>
-
-          <!-- Marca con logo -->
-          <td>
-            <div class="flex items-center gap-3">
-              <div
-                class="w-10 h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center"
+                <i class="pi pi-pencil"></i>
+              </button>
+              
+              <button 
+                *appHasPermission="{module: 'productos', permission: permissionTypes.DELETE}" 
+                (click)="deleteProducto(producto)" 
+                class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all" 
+                pTooltip="Eliminar" tooltipPosition="top"
               >
-                <i class="pi pi-building text-orange-600"></i>
-              </div>
-              <div>
-                <div class="font-semibold text-surface-800">
-                  {{ producto.marca }}
-                </div>
-                <div class="text-xs text-surface-500">Marca registrada</div>
-              </div>
-            </div>
-          </td>
+                <i class="pi pi-trash"></i>
+              </button>
 
-          <!-- Precios con análisis financiero -->
-          <td class="text-right">
-            <div
-              class="bg-gradient-to-br from-surface-50 to-emerald-50 rounded-xl p-4 border border-surface-200/50"
-            >
-              <div class="space-y-2">
-                <div class="flex justify-between items-center text-sm">
-                  <span class="text-surface-600 font-medium">Compra:</span>
-                  <span class="text-emerald-700 font-bold">
-                    {{
-                      producto.precioCompra
-                        | currency: "S/. " : "symbol" : "1.2-2"
-                    }}
-                  </span>
-                </div>
-                <div class="border-t border-surface-200 pt-2">
-                  <div class="flex justify-between items-center">
-                    <span class="text-surface-600 font-medium text-sm"
-                      >Venta:</span
-                    >
-                    <span class="text-blue-700 font-bold text-lg">
-                      {{
-                        producto.precioVenta
-                          | currency: "S/. " : "symbol" : "1.2-2"
-                      }}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="bg-emerald-50 rounded-lg p-2 border-t border-surface-200"
-                >
-                  <div class="flex justify-between items-center text-xs">
-                    <span class="text-emerald-700 font-medium">Ganancia:</span>
-                    <span class="text-emerald-800 font-bold">
-                      {{
-                        producto.precioVenta - producto.precioCompra
-                          | currency: "S/. " : "symbol" : "1.2-2"
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-
-          <!-- Rentabilidad con indicadores -->
-          <td class="text-center">
-            <div class="space-y-2">
-              <div class="flex justify-center">
-                <p-tag
-                  [value]="
-                    (calcularMargenGanancia(producto) | number: '1.0-1') + '%'
-                  "
-                  [severity]="
-                    getMargenSeverity(calcularMargenGanancia(producto))
-                  "
-                  class="shadow-sm font-bold"
-                />
-              </div>
-              <div class="w-full bg-surface-200 rounded-full h-2">
-                <div
-                  class="h-2 rounded-full transition-all duration-500"
-                  [ngClass]="
-                    getMargenColorClass(calcularMargenGanancia(producto))
-                  "
-                  [style.width.%]="
-                    Math.min(calcularMargenGanancia(producto), 100)
-                  "
-                ></div>
-              </div>
-              <div class="text-xs text-surface-500">
-                {{ getRentabilidadTexto(calcularMargenGanancia(producto)) }}
-              </div>
-            </div>
-          </td>
-
-          <!-- Acciones mejoradas -->
-          <td>
-            <div class="flex gap-2 justify-center">
-              <p-button
-                icon="pi pi-eye"
-                [rounded]="true"
-                [outlined]="true"
-                severity="info"
-                size="small"
-                pTooltip="Ver detalles completos"
-                class="hover:shadow-lg transition-all duration-300"
-                (click)="verDetallesProducto(producto)"
-              />
-              <p-button
-                *appHasPermission="{
-                  module: 'productos',
-                  permission: permissionTypes.EDIT,
-                }"
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [outlined]="true"
-                severity="danger"
-                size="small"
-                pTooltip="Editar información"
-                class="hover:shadow-lg transition-all duration-300"
-                (click)="editProducto(producto)"
-              />
-              <p-button
-                icon="pi pi-copy"
-                [rounded]="true"
-                [outlined]="true"
-                severity="secondary"
-                size="small"
-                pTooltip="Duplicar producto"
-                class="hover:shadow-lg transition-all duration-300"
-                (click)="duplicarProducto(producto)"
-              />
-              <p-button
-                *appHasPermission="{
-                  module: 'productos',
-                  permission: permissionTypes.DELETE,
-                }"
-                icon="pi pi-trash"
-                severity="danger"
-                [rounded]="true"
-                [outlined]="true"
-                size="small"
-                pTooltip="Eliminar permanentemente"
-                class="hover:shadow-lg transition-all duration-300"
-                (click)="deleteProducto(producto)"
-              />
             </div>
           </td>
         </tr>
       </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-32">
+            <div class="flex flex-col items-center justify-center">
+                <div class="w-24 h-24 bg-surface-50 dark:bg-surface-800 rounded-full flex items-center justify-center mb-6">
+                    <i class="pi pi-box text-4xl text-surface-300 dark:text-surface-600"></i>
+                </div>
+                <h4 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Inventario vacío</h4>
+                <p class="text-surface-500 text-base max-w-sm mx-auto mb-8">No se encontraron productos con los filtros actuales.</p>
+                
+                <button 
+                    *appHasPermission="{module: 'productos', permission: permissionTypes.CREATE}"
+                    (click)="openNew()"
+                    class="px-6 py-3 bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    Añadir Producto
+                </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
     </p-table>
   </div>
 </div>
 
 <!-- Vista de Cards Premium Mejorada -->
-<div *ngIf="currentView === 'cards'" class="mb-6">
-  <!-- 🆕 Grid mejorado con CSS Grid nativo -->
-  <div class="cards-grid gap-4 lg:gap-6" *ngIf="!loading; else loadingCards">
-    <!-- Card de agregar producto -->
-    <div
-      class="card-item"
-      *appHasPermission="{
-        module: 'productos',
-        permission: permissionTypes.CREATE,
-      }"
-    >
-      <button
-        type="button"
-        class="w-full h-full border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-2xl flex flex-col items-center justify-center p-6 lg:p-8 hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300 cursor-pointer group min-h-[400px] bg-transparent"
-        (click)="openNew()"
-        aria-label="Agregar nuevo producto al catálogo"
-      >
-        <div
-          class="bg-indigo-100 p-4 lg:p-6 rounded-full mb-3 lg:mb-4 group-hover:bg-indigo-200 transition-colors duration-300"
-        >
-          <i class="pi pi-plus text-2xl lg:text-3xl text-indigo-600"></i>
+<div *ngIf="currentView === 'cards'" class="mb-8 animate-fade-in">
+  
+  <div class="bg-white dark:bg-surface-900 rounded-[2.5rem] p-8 shadow-sm border border-surface-200 dark:border-surface-800 relative overflow-hidden transition-colors duration-300">
+    
+    <div class="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-surface-50 dark:from-surface-800 to-transparent pointer-events-none"></div>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10">
+        <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm border border-surface-200 dark:border-surface-700">
+                <i class="pi pi-th-large text-2xl"></i>
+            </div>
+            <div class="flex flex-col">
+                <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">
+                    Catálogo Visual
+                </h3>
+                <div class="flex items-center gap-2 text-surface-500 dark:text-surface-400 text-sm mt-1">
+                    <span>Inventario activo</span>
+                    <span class="w-1 h-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
+                    <span class="font-semibold text-primary-600 dark:text-primary-400">
+                        {{ productosFiltrados.length || 0 }} productos
+                    </span>
+                </div>
+            </div>
         </div>
-        <span
-          class="text-lg lg:text-xl font-semibold text-surface-700 dark:text-surface-200 mb-2 text-center"
-          >Agregar Producto</span
-        >
-        <span
-          class="text-sm text-surface-500 dark:text-surface-400 text-center px-2"
-        >
-          Clic para crear un nuevo producto en tu catálogo
-        </span>
-      </button>
     </div>
 
-    <!-- Cards de productos -->
-    <div
-      class="card-item"
-      *ngFor="let producto of productosFiltrados; trackBy: trackByProducto"
-    >
-      <!-- Tu card de producto existente (sin cambios en el contenido) -->
-      <div
-        class="bg-surface-0 dark:bg-surface-900 rounded-2xl shadow-sm border border-surface-200/60 dark:border-surface-700/60 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
-      >
-        <!-- Header de imagen con overlay -->
-        <div class="relative overflow-hidden">
-          <img
-            [src]="getImageUrl(producto)"
-            [alt]="producto.nombre"
-            class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            (error)="onImageError($event)"
-            loading="lazy"
-          />
-
-          <!-- Overlay con acciones rápidas -->
-          <div
-            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
-          >
-            <div class="flex gap-2">
-              <p-button
-                icon="pi pi-eye"
-                [rounded]="true"
-                size="small"
-                severity="info"
-                class="bg-white bg-opacity-90 hover:bg-opacity-100"
-                pTooltip="Ver detalles"
-                (click)="verDetallesProducto(producto)"
-              />
-              <p-button
-                *appHasPermission="{
-                  module: 'productos',
-                  permission: permissionTypes.EDIT,
-                }"
-                icon="pi pi-pencil"
-                [rounded]="true"
-                size="small"
-                class="bg-white bg-opacity-90 hover:bg-opacity-100"
-                pTooltip="Editar"
-                (click)="editProducto(producto)"
-              />
+    <div class="relative z-10">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" *ngIf="!loading; else loadingCards">
+            
+            <div 
+                *appHasPermission="{ module: 'productos', permission: permissionTypes.CREATE }"
+                (click)="openNew()"
+                class="group relative h-[400px] rounded-3xl border-2 border-dashed border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-500/50 bg-surface-50/50 dark:bg-surface-800/20 hover:bg-surface-0 dark:hover:bg-surface-800 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-4 overflow-hidden"
+            >
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-surface-800 shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-surface-400 group-hover:text-primary-500 border border-surface-100 dark:border-surface-700">
+                    <i class="pi pi-plus text-3xl"></i>
+                </div>
+                <div class="text-center z-10 px-4">
+                    <h4 class="font-bold text-lg text-surface-600 dark:text-surface-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Nuevo Producto</h4>
+                    <span class="text-xs text-surface-400 dark:text-surface-500 mt-1 block">Añadir al inventario</span>
+                </div>
             </div>
-          </div>
 
-          <!-- Tags superiores -->
-          <div class="absolute top-3 left-3">
-            <p-tag
-              [value]="producto.codigo"
-              severity="contrast"
-              class="bg-white bg-opacity-90 text-gray-800 font-mono text-xs shadow-sm"
-            />
-          </div>
+            <div 
+              *ngFor="let producto of productosFiltrados; trackBy: trackByProducto; let i = index"
+              class="group relative bg-surface-0 dark:bg-surface-900 rounded-3xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden h-[400px]"
+              style="animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards"
+              [style.animation-delay]="(i * 50) + 'ms'"
+            >
+                <div class="absolute top-3 right-3 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
+                    <button 
+                        (click)="editProducto(producto); $event.stopPropagation()"
+                        class="w-8 h-8 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur shadow-md text-surface-500 hover:text-surface-900 dark:hover:text-surface-0 transition-colors flex items-center justify-center"
+                        pTooltip="Editar">
+                        <i class="pi pi-pencil text-xs"></i>
+                    </button>
+                    <button 
+                        (click)="deleteProducto(producto); $event.stopPropagation()"
+                        class="w-8 h-8 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur shadow-md text-surface-500 hover:text-red-500 transition-colors flex items-center justify-center"
+                        pTooltip="Eliminar">
+                        <i class="pi pi-trash text-xs"></i>
+                    </button>
+                </div>
 
-          <div class="absolute top-3 right-3">
-            <p-tag
-              [value]="
-                (calcularMargenGanancia(producto) | number: '1.0-1') + '%'
-              "
-              [severity]="getMargenSeverity(calcularMargenGanancia(producto))"
-              [icon]="getMargenIconClass(calcularMargenGanancia(producto))"
-              class="shadow-sm"
-            />
-          </div>
+                <div class="absolute top-3 left-3 z-20">
+                    <div class="px-2.5 py-1 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur shadow-sm border border-surface-100 dark:border-surface-700 flex items-center gap-1.5"
+                         [ngClass]="{'border-red-200 text-red-600': (producto.stock ?? 0) <= 5}">
+                        <div class="w-1.5 h-1.5 rounded-full" [ngClass]="(producto.stock ?? 0) > 5 ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'"></div>
+                        <span class="text-[10px] font-bold">{{ producto.stock ?? 0 }} u.</span>
+                    </div>
+                </div>
+
+                <div class="relative h-[55%] bg-surface-50 dark:bg-surface-800/50 flex items-center justify-center cursor-pointer overflow-hidden p-6 border-b border-surface-100 dark:border-surface-800" (click)="verDetallesProducto(producto)">
+                    
+                    <img 
+                        [src]="getImageUrl(producto)" 
+                        [alt]="producto.nombre" 
+                        class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 group-hover:scale-110 relative z-10"
+                        (error)="onImageError($event)"
+                        loading="lazy"
+                    />
+                    
+                    <div class="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                        <span class="px-4 py-2 bg-white dark:bg-surface-900 text-surface-900 dark:text-white text-xs font-bold rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
+                            <i class="pi pi-eye"></i> Detalles
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex-1 p-5 flex flex-col justify-between bg-white dark:bg-surface-900 relative">
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500">{{ producto.marca }}</span>
+                            <span class="font-mono text-[10px] text-surface-300 dark:text-surface-600">{{ producto.codigo }}</span>
+                        </div>
+
+                        <h4 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 line-clamp-2 leading-tight min-h-[2.5rem]" title="{{producto.nombre}}">
+                            {{ producto.nombre }}
+                        </h4>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-t border-surface-100 dark:border-surface-800">
+                        <div class="flex justify-between items-end">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-surface-400">Precio Venta</span>
+                                <span class="text-xl font-bold text-surface-900 dark:text-surface-0">
+                                    {{ producto.precioVenta | currency:'S/. ':'symbol':'1.0-0' }}
+                                </span>
+                            </div>
+                            
+                            <div class="flex flex-col items-end">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
+                                      [ngClass]="getMargenBadgeClass(calcularMargenGanancia(producto))">
+                                    {{ calcularMargenGanancia(producto) | number:'1.0-0' }}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Contenido de la card (resto igual que tienes) -->
-        <div class="p-5">
-          <!-- Título y marca -->
-          <div class="mb-4">
-            <h3
-              class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-2 line-clamp-2 min-h-[3.5rem]"
-            >
-              {{ producto.nombre }}
-            </h3>
-            <div
-              class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400"
-            >
-              <i class="pi pi-building text-blue-500"></i>
-              <span class="font-medium">{{ producto.marca }}</span>
-              <span class="text-surface-400" *ngIf="producto.modelo">•</span>
-              <span *ngIf="producto.modelo">{{ producto.modelo }}</span>
-            </div>
-          </div>
-
-          <!-- Precios con diseño moderno -->
-          <div
-            class="bg-gradient-to-r from-surface-50 to-blue-50 dark:from-surface-800 dark:to-blue-900/20 rounded-xl p-4 mb-4"
-          >
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span
-                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
-                    >Compra</span
-                  >
+        <ng-template #loadingCards>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="bg-surface-0 dark:bg-surface-900 rounded-3xl border border-surface-200 dark:border-surface-700 h-[400px] overflow-hidden">
+                    <div class="h-[55%] bg-surface-50 dark:bg-surface-800 animate-pulse"></div>
+                    <div class="p-5 space-y-4">
+                        <div class="h-4 bg-surface-100 dark:bg-surface-800 rounded w-1/3 animate-pulse"></div>
+                        <div class="h-6 bg-surface-100 dark:bg-surface-800 rounded w-3/4 animate-pulse"></div>
+                        <div class="mt-auto pt-4 border-t border-surface-100 dark:border-surface-800">
+                            <div class="h-8 bg-surface-100 dark:bg-surface-800 rounded animate-pulse"></div>
+                        </div>
+                    </div>
                 </div>
-                <span class="text-green-600 font-bold">
-                  {{
-                    producto.precioCompra
-                      | currency: "S/. " : "symbol" : "1.2-2"
-                  }}
-                </span>
-              </div>
-              <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span
-                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
-                    >Venta</span
-                  >
-                </div>
-                <span class="text-blue-700 font-bold text-lg">
-                  {{
-                    producto.precioVenta | currency: "S/. " : "symbol" : "1.2-2"
-                  }}
-                </span>
-              </div>
-              <!-- Ganancia por unidad -->
-              <div
-                class="pt-2 border-t border-surface-200 dark:border-surface-700"
-              >
-                <div class="flex justify-between items-center">
-                  <span
-                    class="text-xs font-medium text-surface-600 dark:text-surface-400"
-                    >Ganancia unitaria</span
-                  >
-                  <span class="text-emerald-600 font-bold text-sm">
-                    {{
-                      producto.precioVenta - producto.precioCompra
-                        | currency: "S/. " : "symbol" : "1.2-2"
-                    }}
-                  </span>
-                </div>
-              </div>
             </div>
-          </div>
+        </ng-template>
 
-          <!-- Descripción -->
-          <div *ngIf="producto.descripcion" class="mb-4">
-            <p
-              class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3"
-            >
-              {{ producto.descripcion }}
-            </p>
-          </div>
-
-          <!-- Footer con fecha y acciones -->
-          <div
-            class="flex justify-between items-center pt-4 border-t border-surface-100 dark:border-surface-700"
-          >
-            <div
-              class="text-xs text-surface-500 dark:text-surface-400"
-              *ngIf="producto.fechaCreacion"
-            >
-              <i class="pi pi-calendar mr-1"></i>
-              {{ producto.fechaCreacion | date: "dd/MM/yyyy" }}
-            </div>
-            <div class="flex gap-2">
-              <p-button
-                *appHasPermission="{
-                  module: 'productos',
-                  permission: permissionTypes.EDIT,
-                }"
-                icon="pi pi-pencil"
-                [outlined]="true"
-                size="small"
-                [rounded]="true"
-                pTooltip="Editar"
-                class="hover:shadow-md transition-shadow duration-300"
-                (click)="editProducto(producto)"
-              />
-              <p-button
-                *appHasPermission="{
-                  module: 'productos',
-                  permission: permissionTypes.DELETE,
-                }"
-                icon="pi pi-trash"
-                severity="danger"
-                [outlined]="true"
-                size="small"
-                [rounded]="true"
-                pTooltip="Eliminar"
-                class="hover:shadow-md transition-shadow duration-300"
-                (click)="deleteProducto(producto)"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
-
-  <!-- Loading cards -->
-  <ng-template #loadingCards>
-    <div class="cards-grid gap-4 lg:gap-6">
-      <div class="card-item" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]">
-        <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
-        >
-          <div class="w-full h-56 bg-gray-200 animate-pulse"></div>
-          <div class="p-5 space-y-3">
-            <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div class="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
-            <div class="h-12 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-template>
 </div>
 
 <!-- Diálogo premium para crear/editar producto -->
 <p-dialog
   [(visible)]="productoDialog"
-  [style]="{ width: '95vw', maxWidth: '1000px', height: '90vh' }"
+  [style]="{ width: '1200px', maxWidth: '95vw', height: '90vh' }"
   [modal]="true"
   (onHide)="hideDialog()"
-  [contentStyle]="{ padding: '0', overflow: 'hidden', height: '90vh' }"
-  [closable]="!loading"
-  styleClass="zapatos-dialog-clean"
   [draggable]="false"
   [resizable]="false"
   [showHeader]="false"
+  [dismissableMask]="true"
+  styleClass="app-dialog-zen"
+  [contentStyle]="{ padding: '0', borderRadius: '1.5rem', overflow: 'hidden' }"
 >
-  <ng-template pTemplate="content">
-    <!-- 🆕 Scrollable container -->
-    <div class="dialog-scrollable-container">
-      <!-- 🎨 Container principal limpio -->
-      <div class="dialog-container-clean">
-        <!-- 🆕 Header personalizado integrado (sin el header del dialog) -->
-        <div class="custom-dialog-header" *ngIf="!editMode">
-          <div class="header-content">
-            <div class="header-close-btn">
-              <p-button
-                icon="pi pi-times"
-                [rounded]="true"
-                [text]="true"
-                size="small"
-                severity="secondary"
-                (click)="hideDialog()"
-                [disabled]="loading"
-                pTooltip="Cerrar"
-                styleClass="close-button"
-              />
+  <div class="flex flex-col h-full bg-white dark:bg-surface-950">
+    
+    <div class="flex justify-between items-center px-8 py-6 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 sticky top-0 z-50">
+        <div class="flex items-center gap-5">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm border border-surface-200 dark:border-surface-700"
+                 [ngClass]="editMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'">
+                <i class="pi text-xl" [ngClass]="editMode ? 'pi-pencil' : 'pi-plus'"></i>
             </div>
-            <div class="header-main">
-              <div class="header-icon">
-                <i class="pi pi-plus text-surface-0 text-2xl"></i>
-              </div>
-              <div class="header-text">
-                <h3 class="header-title">Agregar Nuevo Calzado</h3>
-                <p class="header-subtitle">
-                  Completa la información del producto para tu catálogo de
-                  zapatos
-                </p>
-              </div>
+            
+            <div class="flex flex-col gap-1">
+                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-none flex items-center gap-3">
+                    {{ editMode ? 'Editar Producto' : 'Nuevo Producto' }}
+                    <span *ngIf="editMode" class="hidden sm:inline-flex px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 text-[10px] font-mono border border-surface-200 dark:border-surface-700 tracking-wider">
+                        ID: {{ producto.id }}
+                    </span>
+                </h2>
+                <div class="text-sm font-medium text-surface-500 dark:text-surface-400">
+                    {{ editMode ? 'Actualiza inventario y precios.' : 'Registra un nuevo artículo en el catálogo.' }}
+                </div>
             </div>
-          </div>
         </div>
 
-        <!-- Header para modo edición -->
-        <div class="custom-dialog-header-edit" *ngIf="editMode">
-          <div class="header-content">
-            <div class="header-close-btn">
-              <p-button
-                icon="pi pi-times"
-                [rounded]="true"
-                [text]="true"
-                size="small"
-                severity="secondary"
-                (click)="hideDialog()"
-                [disabled]="loading"
-                pTooltip="Cerrar"
-                styleClass="close-button"
-              />
-            </div>
-            <div class="header-main">
-              <div class="header-icon-edit">
-                <i class="pi pi-pencil text-surface-0 text-xl"></i>
-              </div>
-              <div class="header-text">
-                <h3 class="header-title">Editando Producto</h3>
-                <div class="header-meta">
-                  <span class="meta-item">
-                    <i class="pi pi-tag"></i>
-                    ID: {{ producto.id }}
-                  </span>
-                  <span class="meta-divider">•</span>
-                  <span class="meta-item">
-                    <i class="pi pi-barcode"></i>
-                    {{ producto.codigo }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 🎨 Contenido principal con mejor layout -->
-        <div class="dialog-body">
-          <div class="grid grid-cols-12 gap-6">
-            <!-- 📸 Sección de imagen premium -->
-            <div class="col-span-12 lg:col-span-4">
-              <div class="image-section">
-                <div class="section-header">
-                  <div class="section-icon">
-                    <i class="pi pi-image"></i>
-                  </div>
-                  <div class="section-title">
-                    <h4>Imagen del Calzado</h4>
-                    <p>Foto principal del producto</p>
-                  </div>
-                </div>
-
-                <div class="image-container">
-                  <div class="image-wrapper">
-                    <img
-                      [src]="getImageUrl(producto)"
-                      [alt]="producto.nombre || 'Calzado'"
-                      class="product-image"
-                      (error)="onImageError($event)"
-                    />
-                    <div class="image-overlay">
-                      <div class="overlay-content">
-                        <i
-                          class="pi pi-search-plus text-surface-0 text-2xl"
-                        ></i>
-                        <span class="text-surface-0 text-sm mt-2"
-                          >Vista previa</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="upload-section">
-                    <p-fileUpload
-                      mode="basic"
-                      accept="image/*"
-                      [maxFileSize]="2000000"
-                      chooseLabel="Cambiar Imagen"
-                      chooseIcon="pi pi-camera"
-                      [auto]="true"
-                      size="small"
-                      (onSelect)="onUpload($event)"
-                      styleClass="upload-button"
-                      pTooltip="Máximo 2MB, formatos: JPG, PNG, GIF"
-                    />
-
-                    <div class="upload-tips">
-                      <div class="tip-item">
-                        <i class="pi pi-info-circle text-emerald-500"></i>
-                        <span>Resolución: 400x400px</span>
-                      </div>
-                      <div class="tip-item">
-                        <i class="pi pi-camera text-purple-500"></i>
-                        <span>Fondo blanco recomendado</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 📝 Sección de detalles premium -->
-            <div class="col-span-12 lg:col-span-8">
-              <div class="details-section">
-                <!-- 🆕 Configuración de código premium -->
-                <div class="form-section">
-                  <div class="auto-code-card">
-                    <div class="auto-code-header">
-                      <div class="flex items-center gap-3">
-                        <p-checkbox
-                          [(ngModel)]="generarCodigoAuto"
-                          [binary]="true"
-                          inputId="generarCodigo"
-                          [disabled]="editMode"
-                          styleClass="custom-checkbox"
-                        />
-                        <label for="generarCodigo" class="auto-code-label">
-                          <i class="pi pi-magic-wand"></i>
-                          Generar código automáticamente
-                        </label>
-                      </div>
-                    </div>
-                    <div class="auto-code-body">
-                      <div
-                        class="code-preview"
-                        *ngIf="!editMode && generarCodigoAuto"
-                      >
-                        <i class="pi pi-check-circle text-emerald-500"></i>
-                        <span
-                          >Se generará formato: MARCA-MODELO-AÑO (ej:
-                          NIKE-AIRMAX-2024)</span
-                        >
-                      </div>
-                      <div class="code-warning" *ngIf="editMode">
-                        <i
-                          class="pi pi-exclamation-triangle text-amber-500"
-                        ></i>
-                        <span
-                          >El código no se puede cambiar en modo edición</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 🎨 Grid de campos principales -->
-                <div class="form-grid">
-                  <!-- Código -->
-                  <div class="form-field">
-                    <label for="codigo" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-barcode label-icon"></i>
-                        <span>Código del Producto</span>
-                        <span class="required-indicator">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        pInputText
-                        id="codigo"
-                        [(ngModel)]="producto.codigo"
-                        placeholder="Ej: NIKE-AM90-2024, ADIDAS-BOOST-001..."
-                        [disabled]="generarCodigoAuto || editMode"
-                        class="form-input"
-                        [ngClass]="{
-                          'input-error':
-                            submitted &&
-                            !generarCodigoAuto &&
-                            !producto.codigo?.trim(),
-                        }"
-                      />
-                      <div class="input-icon">
-                        <i class="pi pi-barcode"></i>
-                      </div>
-                    </div>
-
-                    <div class="field-feedback">
-                      <div
-                        class="error-message"
-                        *ngIf="
-                          submitted &&
-                          !generarCodigoAuto &&
-                          !producto.codigo?.trim()
-                        "
-                      >
-                        <i class="pi pi-times-circle"></i>
-                        El código es obligatorio
-                      </div>
-                      <div
-                        class="success-message"
-                        *ngIf="generarCodigoAuto && !editMode"
-                      >
-                        <i class="pi pi-check-circle"></i>
-                        Se generará automáticamente al guardar
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Nombre -->
-                  <div class="form-field">
-                    <label for="nombre" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-shopping-bag label-icon"></i>
-                        <span>Nombre del Producto</span>
-                        <span class="required-indicator">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        type="text"
-                        pInputText
-                        id="nombre"
-                        [(ngModel)]="producto.nombre"
-                        placeholder="Ej: Zapatillas Nike Air Max 90, Botines Adidas..."
-                        class="form-input"
-                        [ngClass]="{
-                          'input-error': submitted && !producto.nombre.trim(),
-                        }"
-                      />
-                      <div class="input-icon">
-                        <i class="pi pi-shopping-bag"></i>
-                      </div>
-                    </div>
-
-                    <div class="field-feedback">
-                      <div
-                        class="error-message"
-                        *ngIf="submitted && !producto.nombre.trim()"
-                      >
-                        <i class="pi pi-times-circle"></i>
-                        El nombre es obligatorio
-                      </div>
-                      <div
-                        class="info-message"
-                        *ngIf="!submitted || producto.nombre.trim()"
-                      >
-                        <i class="pi pi-info-circle"></i>
-                        Mínimo 3 caracteres
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Marca -->
-                  <div class="form-field">
-                    <label for="marca" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-building label-icon"></i>
-                        <span>Marca</span>
-                        <span class="required-indicator">*</span>
-                      </div>
-                    </label>
-                    <div class="dropdown-wrapper">
-                      <p-select
-                        [(ngModel)]="producto.marca"
-                        [options]="marcasCalzado"
-                        placeholder="Seleccionar marca"
-                        class="form-dropdown"
-                        [editable]="true"
-                        [ngClass]="{
-                          'dropdown-error': submitted && !producto.marca.trim(),
-                        }"
-                        optionLabel="label"
-                        optionValue="value"
-                      />
-                    </div>
-
-                    <div class="field-feedback">
-                      <div
-                        class="error-message"
-                        *ngIf="submitted && !producto.marca.trim()"
-                      >
-                        <i class="pi pi-times-circle"></i>
-                        La marca es obligatoria
-                      </div>
-                      <div
-                        class="info-message"
-                        *ngIf="!submitted || producto.marca.trim()"
-                      >
-                        <i class="pi pi-building"></i>
-                        Principales marcas de calzado
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Modelo -->
-                  <div class="form-field">
-                    <label for="modelo" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-box label-icon"></i>
-                        <span>Modelo</span>
-                        <span class="required-indicator">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        type="text"
-                        pInputText
-                        id="modelo"
-                        [(ngModel)]="producto.modelo"
-                        placeholder="Ej: Air Max 90, Stan Smith, Chuck Taylor..."
-                        class="form-input"
-                        [ngClass]="{
-                          'input-error': submitted && !producto.modelo.trim(),
-                        }"
-                      />
-                      <div class="input-icon">
-                        <i class="pi pi-box"></i>
-                      </div>
-                    </div>
-
-                    <div class="field-feedback">
-                      <div
-                        class="error-message"
-                        *ngIf="submitted && !producto.modelo.trim()"
-                      >
-                        <i class="pi pi-times-circle"></i>
-                        El modelo es obligatorio
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Género -->
-                  <div class="form-field">
-                    <label for="genero" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-users label-icon"></i>
-                        <span>Género</span>
-                      </div>
-                    </label>
-                    <div class="dropdown-wrapper">
-                      <p-select
-                        [(ngModel)]="producto.genero"
-                        [options]="generosCalzado"
-                        placeholder="Seleccionar género"
-                        class="form-dropdown"
-                        optionLabel="label"
-                        optionValue="value"
-                      />
-                    </div>
-
-                    <div class="field-feedback">
-                      <div class="info-message">
-                        <i class="pi pi-users"></i>
-                        Ayuda a categorizar mejor el producto
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Tipo de Calzado -->
-                  <div class="form-field">
-                    <label for="tipoCalzado" class="field-label">
-                      <div class="label-content">
-                        <i class="pi pi-tag label-icon"></i>
-                        <span>Tipo de Calzado</span>
-                      </div>
-                    </label>
-                    <div class="dropdown-wrapper">
-                      <p-select
-                        [(ngModel)]="producto.modelo"
-                        [options]="modeloCalzado"
-                        placeholder="Seleccionar tipo"
-                        class="form-dropdown"
-                        optionLabel="label"
-                        optionValue="value"
-                      />
-                    </div>
-
-                    <div class="field-feedback">
-                      <div class="info-message">
-                        <i class="pi pi-tag"></i>
-                        Especifica el tipo de calzado
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 💰 Sección de precios premium -->
-                <div class="pricing-section">
-                  <div class="section-header">
-                    <div class="section-icon pricing-icon">
-                      <i class="pi pi-dollar"></i>
-                    </div>
-                    <div class="section-title">
-                      <h4>Configuración de Precios</h4>
-                      <p>Define los precios de compra y venta</p>
-                    </div>
-                  </div>
-
-                  <div class="pricing-grid">
-                    <!-- Precio de Compra -->
-                    <div class="price-field">
-                      <label for="precioCompra" class="price-label">
-                        <i class="pi pi-arrow-down text-emerald-600"></i>
-                        <span>Precio de Compra</span>
-                        <span class="required-indicator">*</span>
-                      </label>
-                      <div class="price-input-wrapper">
-                        <p-inputNumber
-                          id="precioCompra"
-                          [(ngModel)]="producto.precioCompra"
-                          placeholder="0.00"
-                          [min]="0"
-                          [step]="0.01"
-                          prefix="S/. "
-                          class="price-input"
-                          [ngClass]="{
-                            'price-error':
-                              submitted &&
-                              (!producto.precioCompra ||
-                                producto.precioCompra <= 0),
-                          }"
-                        />
-                      </div>
-                      <div class="field-feedback">
-                        <div
-                          class="error-message"
-                          *ngIf="
-                            submitted &&
-                            (!producto.precioCompra ||
-                              producto.precioCompra <= 0)
-                          "
-                        >
-                          <i class="pi pi-times-circle"></i>
-                          Debe ser mayor a 0
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Precio de Venta -->
-                    <div class="price-field">
-                      <label for="precioVenta" class="price-label">
-                        <i class="pi pi-arrow-up text-emerald-600"></i>
-                        <span>Precio de Venta</span>
-                        <span class="required-indicator">*</span>
-                      </label>
-                      <div class="price-input-wrapper">
-                        <p-inputNumber
-                          id="precioVenta"
-                          [(ngModel)]="producto.precioVenta"
-                          placeholder="0.00"
-                          [min]="0"
-                          [step]="0.01"
-                          prefix="S/. "
-                          class="price-input"
-                          [ngClass]="{
-                            'price-error':
-                              submitted &&
-                              (!producto.precioVenta ||
-                                producto.precioVenta <= 0 ||
-                                (producto.precioCompra &&
-                                  producto.precioVenta <=
-                                    producto.precioCompra)),
-                          }"
-                        />
-                      </div>
-                      <div class="field-feedback">
-                        <div
-                          class="error-message"
-                          *ngIf="
-                            submitted &&
-                            (!producto.precioVenta || producto.precioVenta <= 0)
-                          "
-                        >
-                          <i class="pi pi-times-circle"></i>
-                          Debe ser mayor a 0
-                        </div>
-                        <div
-                          class="error-message"
-                          *ngIf="
-                            submitted &&
-                            producto.precioCompra &&
-                            producto.precioVenta <= producto.precioCompra
-                          "
-                        >
-                          <i class="pi pi-times-circle"></i>
-                          Debe ser mayor al precio de compra
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 📊 Análisis de rentabilidad premium -->
-                <div
-                  class="profitability-section"
-                  *ngIf="
-                    producto.precioCompra &&
-                    producto.precioVenta &&
-                    producto.precioCompra > 0
-                  "
-                >
-                  <div class="profitability-card">
-                    <div class="profitability-header">
-                      <div class="header-icon">
-                        <i class="pi pi-chart-line"></i>
-                      </div>
-                      <div class="header-text">
-                        <h4>Análisis de Rentabilidad</h4>
-                        <p>Ganancia y margen por par vendido</p>
-                      </div>
-                    </div>
-
-                    <div class="profitability-content">
-                      <div class="profit-metrics">
-                        <div class="metric-item profit-amount">
-                          <div class="metric-value">
-                            {{
-                              producto.precioVenta - producto.precioCompra
-                                | currency: "S/. " : "symbol" : "1.2-2"
-                            }}
-                          </div>
-                          <div class="metric-label">
-                            <i class="pi pi-money-bill"></i>
-                            Ganancia por par
-                          </div>
-                        </div>
-
-                        <div class="metric-item profit-percentage">
-                          <div
-                            class="metric-value"
-                            [ngClass]="
-                              getProfitColorClass(
-                                calcularMargenGanancia(producto)
-                              )
-                            "
-                          >
-                            {{
-                              calcularMargenGanancia(producto)
-                                | number: "1.1-1"
-                            }}%
-                          </div>
-                          <div class="metric-label">
-                            <i class="pi pi-percentage"></i>
-                            Margen de ganancia
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="profit-tips">
-                        <div
-                          class="tip-card"
-                          [ngClass]="
-                            getProfitTipClass(calcularMargenGanancia(producto))
-                          "
-                        >
-                          <div class="tip-icon">
-                            <i class="pi pi-lightbulb"></i>
-                          </div>
-                          <div class="tip-content">
-                            <span class="tip-title">{{
-                              getProfitTipTitle(
-                                calcularMargenGanancia(producto)
-                              )
-                            }}</span>
-                            <span class="tip-message">{{
-                              getProfitTipMessage(
-                                calcularMargenGanancia(producto)
-                              )
-                            }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 📝 Descripción premium -->
-                <div class="description-section">
-                  <div class="section-header">
-                    <div class="section-icon">
-                      <i class="pi pi-file-edit"></i>
-                    </div>
-                    <div class="section-title">
-                      <h4>Descripción del Producto</h4>
-                      <p>Información adicional y características</p>
-                    </div>
-                  </div>
-
-                  <div class="description-field">
-                    <div class="textarea-wrapper">
-                      <textarea
-                        pInputTextarea
-                        id="descripcion"
-                        [(ngModel)]="producto.descripcion"
-                        rows="4"
-                        placeholder="Ej: Material de la suela, tipo de cierre, características especiales, tecnologías, colores disponibles..."
-                        class="description-textarea"
-                        [maxlength]="500"
-                      ></textarea>
-                    </div>
-
-                    <div class="description-footer">
-                      <div class="description-tips">
-                        <div class="tip-item">
-                          <i class="pi pi-lightbulb text-emerald-500"></i>
-                          <span>Incluye material, suela, cierre, etc.</span>
-                        </div>
-                      </div>
-                      <div class="character-count" *ngIf="producto.descripcion">
-                        <span class="count-text"
-                          >{{ producto.descripcion.length || 0 }}/500</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 📅 Información adicional en modo edición -->
-                <div
-                  class="info-section"
-                  *ngIf="editMode && producto.fechaCreacion"
-                >
-                  <div class="info-card">
-                    <div class="info-header">
-                      <i class="pi pi-calendar"></i>
-                      <span>Información del Registro</span>
-                    </div>
-                    <div class="info-content">
-                      <div class="info-item" *ngIf="producto.fechaCreacion">
-                        <i class="pi pi-plus-circle text-emerald-500"></i>
-                        <span
-                          ><strong>Creado:</strong>
-                          {{
-                            producto.fechaCreacion | date: "dd/MM/yyyy HH:mm"
-                          }}</span
-                        >
-                      </div>
-                      <div
-                        class="info-item"
-                        *ngIf="producto.fechaActualizacion"
-                      >
-                        <i class="pi pi-refresh text-emerald-500"></i>
-                        <span
-                          ><strong>Actualizado:</strong>
-                          {{
-                            producto.fechaActualizacion
-                              | date: "dd/MM/yyyy HH:mm"
-                          }}</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 🆕 Espaciado final para el scroll -->
-        <div class="dialog-bottom-spacer"></div>
-      </div>
+        <button 
+            (click)="hideDialog()"
+            class="group w-10 h-10 flex items-center justify-center rounded-full bg-surface-50 dark:bg-surface-800 text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 border border-surface-200 dark:border-surface-700 transition-all hover:shadow-sm"
+        >
+            <i class="pi pi-times"></i>
+        </button>
     </div>
-  </ng-template>
 
-  <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <div class="footer-info">
-        <div class="info-badge">
-          <i class="pi pi-info-circle"></i>
-          <span>Campos obligatorios marcados con *</span>
+    <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-surface-50/30 dark:bg-surface-950">
+        
+        <div class="w-full lg:w-4/12 p-8 lg:border-r border-surface-200 dark:border-surface-700 flex flex-col items-center overflow-y-auto custom-scrollbar bg-white dark:bg-surface-900/50">
+            
+            <div class="w-full relative aspect-square bg-surface-50 dark:bg-surface-800 rounded-[2rem] border border-surface-200 dark:border-surface-700 flex items-center justify-center p-6 mb-6 group overflow-hidden shadow-inner">
+                <img
+                    [src]="getImageUrl(producto)"
+                    [alt]="producto.nombre || 'Producto'"
+                    class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105 relative z-10"
+                    (error)="onImageError($event)"
+                />
+                <div *ngIf="!producto.id && !producto.imagen" class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none text-surface-400">
+                    <i class="pi pi-image text-6xl"></i>
+                </div>
+            </div>
+
+            <div class="w-full mb-8">
+                <p-fileUpload
+                    mode="basic"
+                    accept="image/*"
+                    [maxFileSize]="2000000"
+                    chooseLabel="Subir Foto"
+                    chooseIcon="pi pi-camera"
+                    [auto]="true"
+                    (onSelect)="onUpload($event)"
+                    styleClass="w-full p-button-outlined border-surface-300 dark:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-700 dark:text-surface-200 font-bold"
+                    [style]="{'width':'100%'}"
+                ></p-fileUpload>
+                <div class="flex justify-center gap-3 text-[10px] text-surface-400 mt-3 font-medium uppercase tracking-wider">
+                    <span>JPG, PNG</span> • <span>Max 2MB</span> • <span>800x800px</span>
+                </div>
+            </div>
+
+            <div class="w-full bg-surface-50 dark:bg-surface-800 rounded-2xl p-5 border border-surface-200 dark:border-surface-700" *ngIf="producto.nombre">
+                <h4 class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <i class="pi pi-eye"></i> Vista Previa
+                </h4>
+                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 leading-tight mb-1 truncate">{{ producto.nombre }}</h3>
+                <p class="text-surface-500 text-xs truncate">{{ producto.marca || 'Marca' }} • {{ producto.modelo || 'Modelo' }}</p>
+            </div>
         </div>
-      </div>
 
-      <div class="footer-actions">
-        <p-button
-          label="Cancelar"
-          icon="pi pi-times"
-          severity="secondary"
-          [outlined]="true"
-          (click)="hideDialog()"
-          [disabled]="loading"
-          styleClass="cancel-button"
-        />
-        <p-button
-          [label]="editMode ? 'Actualizar Producto' : 'Crear Producto'"
-          [icon]="editMode ? 'pi pi-check' : 'pi pi-plus'"
-          (click)="saveProducto()"
-          [loading]="loading"
-          styleClass="save-button"
-        />
-      </div>
+        <div class="w-full lg:w-8/12 p-8 overflow-y-auto custom-scrollbar">
+            
+            <section class="mb-10">
+                <h4 class="text-xs font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <i class="pi pi-tag text-primary-500 text-sm"></i> Identidad del Producto
+                </h4>
+                
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-sm font-bold text-surface-700 dark:text-surface-200">Código SKU <span class="text-red-500">*</span></label>
+                        <div class="flex items-center gap-2" *ngIf="!editMode">
+                            <label for="autoCode" class="text-xs font-medium text-surface-500 cursor-pointer select-none">Generar Automático</label>
+                            <p-checkbox [(ngModel)]="generarCodigoAuto" [binary]="true" inputId="autoCode"></p-checkbox>
+                        </div>
+                    </div>
+                    
+                    <div class="relative group">
+                        <i class="pi pi-barcode absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 transition-colors group-hover:text-primary-500 text-lg"></i>
+                        <input 
+                            type="text" 
+                            pInputText 
+                            [(ngModel)]="producto.codigo" 
+                            placeholder="Ej: NIKE-AIR-001" 
+                            [disabled]="generarCodigoAuto || editMode"
+                            class="w-full h-12 pl-12 pr-4 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl text-surface-900 dark:text-surface-0 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-mono uppercase text-sm shadow-sm"
+                            [ngClass]="{'border-red-300 bg-red-50 dark:bg-red-900/10': submitted && !generarCodigoAuto && !producto.codigo}"
+                        />
+                    </div>
+                    <small *ngIf="generarCodigoAuto && !editMode" class="text-emerald-600 dark:text-emerald-400 text-xs mt-2 block font-medium flex items-center gap-1 animate-fade-in">
+                        <i class="pi pi-magic-wand"></i> Se generará formato MARCA-MODELO al guardar
+                    </small>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-sm font-bold text-surface-700 dark:text-surface-200 block mb-2">Nombre del Producto <span class="text-red-500">*</span></label>
+                    <input 
+                        type="text" 
+                        pInputText 
+                        [(ngModel)]="producto.nombre" 
+                        placeholder="Ej: Zapatillas Running Air Zoom" 
+                        class="w-full h-12 px-4 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl text-surface-900 dark:text-surface-0 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium shadow-sm"
+                        [ngClass]="{'border-red-300 bg-red-50 dark:bg-red-900/10': submitted && !producto.nombre}"
+                    />
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-surface-600 dark:text-surface-400">Marca <span class="text-red-500">*</span></label>
+                        <p-select 
+                            [(ngModel)]="producto.marca" 
+                            [options]="marcasCalzado" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            placeholder="Seleccionar" 
+                            [editable]="true"
+                            styleClass="w-full rounded-xl border-surface-200 dark:border-surface-700"
+                        ></p-select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-surface-600 dark:text-surface-400">Modelo <span class="text-red-500">*</span></label>
+                        <input 
+                            type="text" 
+                            pInputText 
+                            [(ngModel)]="producto.modelo" 
+                            placeholder="Ej: Air Max" 
+                            class="w-full p-2.5 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl focus:border-primary-500 shadow-sm"
+                        />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-surface-600 dark:text-surface-400">Género</label>
+                        <p-select 
+                            [(ngModel)]="producto.genero" 
+                            [options]="generosCalzado" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            placeholder="Seleccionar" 
+                            styleClass="w-full rounded-xl border-surface-200 dark:border-surface-700"
+                        ></p-select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-10">
+                <div class="bg-surface-50 dark:bg-surface-800/50 rounded-3xl p-6 border border-surface-200 dark:border-surface-700 relative overflow-hidden">
+                    
+                    <div class="flex items-center gap-2 mb-6 pb-4 border-b border-surface-200 dark:border-surface-700">
+                        <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded text-emerald-600 dark:text-emerald-400">
+                            <i class="pi pi-wallet text-sm"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-widest m-0">Configuración Financiera</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-surface-500 uppercase tracking-wide">Costo Unitario <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 font-bold z-10">S/.</span>
+                                <p-inputNumber 
+                                    [(ngModel)]="producto.precioCompra" 
+                                    mode="decimal" 
+                                    [minFractionDigits]="2" 
+                                    placeholder="0.00"
+                                    styleClass="w-full"
+                                    inputStyleClass="w-full h-12 pl-12 pr-4 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl font-bold text-surface-900 dark:text-surface-0 focus:border-primary-500 focus:ring-0 shadow-sm"
+                                ></p-inputNumber>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Precio Venta <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white dark:text-surface-900 font-bold z-10">S/.</span>
+                                <p-inputNumber 
+                                    [(ngModel)]="producto.precioVenta" 
+                                    mode="decimal" 
+                                    [minFractionDigits]="2" 
+                                    placeholder="0.00"
+                                    styleClass="w-full"
+                                    inputStyleClass="w-full h-12 pl-12 pr-4 bg-emerald-600 dark:bg-emerald-500 border-none rounded-xl font-bold text-white dark:text-surface-900 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-md placeholder-emerald-200"
+                                ></p-inputNumber>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-surface-200 dark:border-surface-700 grid grid-cols-2 gap-4" 
+                         *ngIf="producto.precioCompra && producto.precioVenta">
+                        
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-surface-500 uppercase tracking-wider">Ganancia Estimada</span>
+                            <span class="text-lg font-bold text-surface-900 dark:text-surface-0">
+                                {{ (producto.precioVenta - producto.precioCompra) | currency:'S/. ' }}
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col items-end">
+                            <span class="text-[10px] text-surface-500 uppercase tracking-wider">Margen</span>
+                            <span class="text-sm font-bold px-2 py-1 rounded-md mt-1" 
+                                  [ngClass]="getMargenBadgeClass(calcularMargenGanancia(producto))">
+                                {{ calcularMargenGanancia(producto) | number:'1.1-1' }}%
+                            </span>
+                        </div>
+                        
+                        <div class="col-span-2 mt-2">
+                             <div class="w-full h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-1000"
+                                     [ngClass]="getMargenProgressClass(calcularMargenGanancia(producto))"
+                                     [style.width.%]="Math.min(calcularMargenGanancia(producto), 100)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pb-4">
+                <h4 class="text-xs font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i class="pi pi-align-left text-primary-500 text-sm"></i> Descripción
+                </h4>
+                
+                <div class="relative">
+                    <textarea 
+                        pInputTextarea 
+                        [(ngModel)]="producto.descripcion" 
+                        rows="4" 
+                        class="w-full p-4 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl text-sm text-surface-700 dark:text-surface-200 focus:border-primary-500 transition-colors resize-none leading-relaxed shadow-sm"
+                        placeholder="Describe materiales, tecnología de la suela, recomendaciones de uso..."
+                        maxlength="500"
+                    ></textarea>
+                    <div class="absolute bottom-3 right-3 text-[10px] text-surface-400 bg-white/50 dark:bg-surface-900/50 px-2 py-0.5 rounded">
+                        {{ producto.descripcion?.length || 0 }}/500
+                    </div>
+                </div>
+            </section>
+
+        </div>
     </div>
-  </ng-template>
+
+    <div class="px-8 py-5 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700 flex justify-between items-center sticky bottom-0 z-50">
+        <div class="hidden sm:flex items-center gap-2 text-surface-400 dark:text-surface-500 text-xs">
+            <i class="pi pi-info-circle"></i>
+            <span>Campos marcados con <span class="text-red-500">*</span> son obligatorios</span>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button 
+                pButton 
+                label="Cancelar" 
+                class="p-button-text text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 font-bold px-6 py-3 rounded-xl flex-1 sm:flex-none transition-colors" 
+                (click)="hideDialog()">
+            </button>
+            <button 
+                pButton 
+                [label]="editMode ? 'Guardar Cambios' : 'Crear Producto'" 
+                [icon]="editMode ? 'pi pi-check' : 'pi pi-plus'" 
+                [loading]="loading"
+                class="bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 hover:bg-black dark:hover:bg-surface-200 border-none px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex-1 sm:flex-none flex items-center gap-2 justify-center"
+                (click)="saveProducto()">
+            </button>
+        </div>
+    </div>
+  </div>
 </p-dialog>
 
 <!-- Modal de Detalles del Producto -->
 <p-dialog
   [(visible)]="detalleProductoDialog"
-  [style]="{ width: '90vw', maxWidth: '800px', height: '90vh' }"
+  [style]="{ width: '900px', maxWidth: '95vw', height: '90vh' }"
   [modal]="true"
   (onHide)="hideDetalleDialog()"
-  [contentStyle]="{
-    padding: '0',
-    overflow: 'hidden',
-    height: 'calc(90vh - 80px)',
-  }"
-  styleClass="zapatos-detalle-dialog"
+  [contentStyle]="{ padding: '0', borderRadius: '1.5rem', overflow: 'hidden' }"
   [showHeader]="false"
   [draggable]="false"
   [resizable]="false"
+  [dismissableMask]="true"
+  styleClass="app-dialog-zen"
 >
-  <!-- 🆕 Container scrollable principal -->
-  <div class="detalle-scrollable-wrapper" *ngIf="productoDetalle">
-    <div class="detalle-container">
-      <!-- 🆕 Header personalizado con info del producto -->
-      <div class="detalle-header">
-        <div class="header-background"></div>
-        <div class="header-content">
-          <div class="header-close">
-            <p-button
-              icon="pi pi-times"
-              [rounded]="true"
-              [text]="true"
-              size="small"
-              severity="secondary"
-              (click)="hideDetalleDialog()"
-              pTooltip="Cerrar"
-              styleClass="close-button-detalle"
-            />
-          </div>
-
-          <div class="header-main">
-            <div class="header-icon">
-              <i class="pi pi-eye text-surface-0 text-2xl"></i>
-            </div>
-            <div class="header-text">
-              <h2 class="header-title">Detalles del Producto</h2>
-              <div class="header-subtitle">
-                <span class="product-code">{{ productoDetalle.codigo }}</span>
-                <span class="separator">•</span>
-                <span class="product-brand">{{ productoDetalle.marca }}</span>
-              </div>
-            </div>
+  <div class="flex flex-col h-full bg-white dark:bg-surface-950" *ngIf="productoDetalle">
+    
+    <!-- Header: Glass effect & cleaner layout -->
+    <div class="flex justify-between items-center px-8 py-5 bg-white/80 dark:bg-surface-900/80 backdrop-blur-md border-b border-surface-100 dark:border-surface-800 sticky top-0 z-50">
+      <div class="flex items-center gap-5">
+        <div class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-primary-100 dark:ring-primary-800">
+          <i class="pi pi-box text-xl"></i>
+        </div>
+        
+        <div class="flex flex-col gap-1">
+          <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-none">
+            Ficha de Producto
+          </h2>
+          <div class="flex items-center gap-2 text-sm font-medium">
+            <span class="font-mono bg-surface-100 dark:bg-surface-800 px-2 py-0.5 rounded text-surface-600 dark:text-surface-400 text-xs tracking-wider">
+                {{ productoDetalle.codigo }}
+            </span>
+            <span class="text-surface-300 dark:text-surface-700">|</span>
+            <span class="uppercase tracking-wide text-[10px] text-surface-500 dark:text-surface-400">{{ productoDetalle.marca }}</span>
           </div>
         </div>
       </div>
 
-      <!-- 🎨 Contenido principal -->
-      <div class="detalle-body">
-        <div class="grid grid-cols-12 gap-6">
-          <!-- 📸 Sección de imagen premium -->
-          <div class="col-span-12 lg:col-span-5">
-            <div class="image-showcase">
-              <div class="image-container">
-                <div class="image-wrapper">
+      <button 
+        (click)="hideDetalleDialog()"
+        class="group w-9 h-9 flex items-center justify-center rounded-full bg-surface-50 dark:bg-surface-800 text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-surface-200"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <!-- Body: Scrollable content -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 bg-surface-50/30 dark:bg-surface-950">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
+        
+        <!-- Left Column: Image & ID -->
+        <div class="md:col-span-5">
+           <div class="sticky top-24 space-y-5">
+              <!-- Image Container with soft gradient background -->
+              <div class="relative w-full aspect-square bg-gradient-to-br from-surface-0 to-surface-100 dark:from-surface-800 dark:to-surface-900 rounded-[2rem] border border-surface-100 dark:border-surface-700 flex items-center justify-center p-8 group overflow-hidden shadow-sm hover:shadow-md transition-all duration-500">
+                  
                   <img
                     [src]="getImageUrl(productoDetalle)"
                     [alt]="productoDetalle.nombre"
-                    class="product-image"
+                    class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105 relative z-10"
                     (error)="onImageError($event)"
                   />
-                  <div class="image-overlay">
-                    <div class="overlay-content">
-                      <i
-                        class="pi pi-search-plus text-surface-0 text-3xl mb-2"
-                      ></i>
-                      <span class="text-surface-0 font-medium"
-                        >Vista ampliada</span
-                      >
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 🏷️ Badge de código -->
-                <div class="code-badge">
-                  <div class="badge-content">
-                    <i class="pi pi-barcode text-surface-600"></i>
-                    <span class="code-text">{{ productoDetalle.codigo }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 📝 Información detallada premium -->
-          <div class="col-span-12 lg:col-span-7">
-            <div class="info-sections">
-              <!-- 🆕 Información básica -->
-              <div class="info-card basic-info">
-                <div class="card-header">
-                  <div class="header-icon">
-                    <i class="pi pi-shopping-bag"></i>
-                  </div>
-                  <h3 class="card-title">Información Básica</h3>
-                </div>
-
-                <div class="card-content">
-                  <div class="product-title">
-                    <h1 class="title-text">{{ productoDetalle.nombre }}</h1>
-                    <div class="title-meta">
-                      <span class="meta-item">
-                        <i class="pi pi-building text-emerald-600"></i>
-                        <strong>{{ productoDetalle.marca }}</strong>
+                  
+                  <!-- Overlay Interaction -->
+                  <div class="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  
+                  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 z-20">
+                      <span class="px-5 py-2 bg-white/95 dark:bg-surface-800/95 backdrop-blur-sm text-surface-900 dark:text-white text-xs font-bold rounded-full shadow-xl ring-1 ring-surface-200 dark:ring-surface-700 flex items-center gap-2 transform hover:scale-105 transition-transform cursor-default">
+                          <i class="pi pi-search-plus text-primary-500"></i> Zoom
                       </span>
-                      <span class="meta-separator">•</span>
-                      <span class="meta-item">
-                        <i class="pi pi-box text-purple-600"></i>
-                        {{ productoDetalle.modelo }}
-                      </span>
-                    </div>
-
-                    <!-- 🆕 Información adicional de zapatería -->
-                    <div
-                      class="additional-info"
-                      *ngIf="productoDetalle.genero || productoDetalle.modelo"
-                    >
-                      <div class="info-badges">
-                        <div
-                          class="info-badge gender"
-                          *ngIf="productoDetalle.genero"
-                        >
-                          <i class="pi pi-users"></i>
-                          <span>{{
-                            getGeneroLabel(productoDetalle.genero)
-                          }}</span>
-                        </div>
-                        <div
-                          class="info-badge type"
-                          *ngIf="productoDetalle.modelo"
-                        >
-                          <i class="pi pi-tag"></i>
-                          <span>{{
-                            getTipoCalzadoLabel(productoDetalle.modelo)
-                          }}</span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                </div>
               </div>
 
-              <!-- 💰 Análisis financiero premium -->
-              <div class="info-card pricing-info">
-                <div class="card-header">
-                  <div class="header-icon pricing-icon">
-                    <i class="pi pi-chart-line"></i>
+              <!-- Barcode aesthetic -->
+              <div class="flex justify-center">
+                  <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-white dark:bg-surface-800 border border-dashed border-surface-300 dark:border-surface-600 rounded-xl text-surface-400 hover:border-surface-400 transition-colors cursor-pointer group">
+                      <i class="pi pi-barcode text-2xl text-surface-400 group-hover:text-primary-500 transition-colors"></i>
+                      <span class="font-mono text-sm font-bold text-surface-600 dark:text-surface-300 tracking-[0.2em] group-hover:text-surface-900 dark:group-hover:text-white transition-colors">{{ productoDetalle.codigo }}</span>
                   </div>
-                  <h3 class="card-title">Análisis Financiero</h3>
-                </div>
-
-                <div class="card-content">
-                  <div class="pricing-grid">
-                    <!-- Precio de Compra -->
-                    <div class="price-item purchase">
-                      <div class="price-header">
-                        <i class="pi pi-arrow-down text-emerald-600"></i>
-                        <span class="price-label">Precio de Compra</span>
-                      </div>
-                      <div class="price-value purchase-price">
-                        {{
-                          productoDetalle.precioCompra
-                            | currency: "S/. " : "symbol" : "1.2-2"
-                        }}
-                      </div>
-                    </div>
-
-                    <!-- Precio de Venta -->
-                    <div class="price-item sale">
-                      <div class="price-header">
-                        <i class="pi pi-arrow-up text-blue-600"></i>
-                        <span class="price-label">Precio de Venta</span>
-                      </div>
-                      <div class="price-value sale-price">
-                        {{
-                          productoDetalle.precioVenta
-                            | currency: "S/. " : "symbol" : "1.2-2"
-                        }}
-                      </div>
-                    </div>
-
-                    <!-- Ganancia -->
-                    <div class="price-item profit">
-                      <div class="price-header">
-                        <i class="pi pi-money-bill text-purple-600"></i>
-                        <span class="price-label">Ganancia por Par</span>
-                      </div>
-                      <div class="price-value profit-value">
-                        {{
-                          productoDetalle.precioVenta -
-                            productoDetalle.precioCompra
-                            | currency: "S/. " : "symbol" : "1.2-2"
-                        }}
-                      </div>
-                    </div>
-
-                    <!-- Margen -->
-                    <div class="price-item margin">
-                      <div class="price-header">
-                        <i class="pi pi-percentage text-orange-600"></i>
-                        <span class="price-label">Margen de Ganancia</span>
-                      </div>
-                      <div class="margin-content">
-                        <div
-                          class="margin-value"
-                          [ngClass]="
-                            getMargenColorClass(
-                              calcularMargenGanancia(productoDetalle)
-                            )
-                          "
-                        >
-                          {{
-                            calcularMargenGanancia(productoDetalle)
-                              | number: "1.1-1"
-                          }}%
-                        </div>
-                        <div class="margin-badge">
-                          <span
-                            class="badge"
-                            [ngClass]="
-                              getMargenBadgeClass(
-                                calcularMargenGanancia(productoDetalle)
-                              )
-                            "
-                          >
-                            {{
-                              getMargenLabel(
-                                calcularMargenGanancia(productoDetalle)
-                              )
-                            }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 📊 Gráfico visual del margen -->
-                  <div class="margin-visual">
-                    <div class="visual-header">
-                      <span class="visual-title">Rentabilidad Visual</span>
-                      <span class="visual-percentage"
-                        >{{
-                          calcularMargenGanancia(productoDetalle)
-                            | number: "1.1-1"
-                        }}%</span
-                      >
-                    </div>
-                    <div class="progress-container">
-                      <div class="progress-bar">
-                        <div
-                          class="progress-fill"
-                          [ngClass]="
-                            getMargenProgressClass(
-                              calcularMargenGanancia(productoDetalle)
-                            )
-                          "
-                          [style.width.%]="
-                            Math.min(
-                              calcularMargenGanancia(productoDetalle),
-                              100
-                            )
-                          "
-                        ></div>
-                      </div>
-                      <div class="progress-labels">
-                        <span class="label-start">0%</span>
-                        <span class="label-mid">25%</span>
-                        <span class="label-end">50%+</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
+           </div>
+        </div>
 
-              <!-- 📝 Descripción -->
-              <div
-                class="info-card description-info"
-                *ngIf="productoDetalle.descripcion"
-              >
-                <div class="card-header">
-                  <div class="header-icon">
-                    <i class="pi pi-file-edit"></i>
-                  </div>
-                  <h3 class="card-title">Descripción del Producto</h3>
-                </div>
-
-                <div class="card-content">
-                  <div class="description-content">
-                    <p class="description-text">
-                      {{ productoDetalle.descripcion }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 📅 Información del registro -->
-              <div class="info-card registry-info">
-                <div class="card-header">
-                  <div class="header-icon">
-                    <i class="pi pi-calendar"></i>
-                  </div>
-                  <h3 class="card-title">Información del Registro</h3>
-                </div>
-
-                <div class="card-content">
-                  <div class="registry-grid">
-                    <div
-                      class="registry-item"
-                      *ngIf="productoDetalle.fechaCreacion"
-                    >
-                      <div class="registry-icon created">
-                        <i class="pi pi-plus-circle"></i>
-                      </div>
-                      <div class="registry-content">
-                        <div class="registry-label">Fecha de Creación</div>
-                        <div class="registry-value">
-                          {{
-                            productoDetalle.fechaCreacion
-                              | date: "dd/MM/yyyy HH:mm"
-                          }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      class="registry-item"
-                      *ngIf="productoDetalle.fechaActualizacion"
-                    >
-                      <div class="registry-icon updated">
-                        <i class="pi pi-refresh"></i>
-                      </div>
-                      <div class="registry-content">
-                        <div class="registry-label">Última Actualización</div>
-                        <div class="registry-value">
-                          {{
-                            productoDetalle.fechaActualizacion
-                              | date: "dd/MM/yyyy HH:mm"
-                          }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <!-- Right Column: Details -->
+        <div class="md:col-span-7 space-y-8">
+            
+            <!-- Title & Tags -->
+            <div>
+               <h1 class="text-3xl md:text-4xl font-extrabold text-surface-900 dark:text-surface-0 leading-tight mb-4 tracking-tight">
+                   {{ productoDetalle.nombre }}
+               </h1>
+               
+               <div class="flex flex-wrap gap-3">
+                   <span *ngIf="productoDetalle.genero" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-xs font-bold text-blue-700 dark:text-blue-300 ring-1 ring-blue-100 dark:ring-blue-800">
+                       <i class="pi pi-user"></i>
+                       {{ getGeneroLabel(productoDetalle.genero) }}
+                   </span>
+                   <span *ngIf="productoDetalle.modelo" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-xs font-bold text-purple-700 dark:text-purple-300 ring-1 ring-purple-100 dark:ring-purple-800">
+                       <i class="pi pi-tag"></i>
+                       {{ getTipoCalzadoLabel(productoDetalle.modelo) }}
+                   </span>
+               </div>
             </div>
-          </div>
+
+            <!-- Pricing Card -->
+            <div class="bg-white dark:bg-surface-800 rounded-3xl p-6 shadow-sm border border-surface-100 dark:border-surface-700 relative overflow-hidden">
+               <!-- Decorative header inside card -->
+               <div class="flex items-center gap-2 mb-6 pb-4 border-b border-surface-100 dark:border-surface-700">
+                   <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded text-emerald-600 dark:text-emerald-400">
+                       <i class="pi pi-wallet text-sm"></i>
+                   </div>
+                   <h3 class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-widest m-0">Análisis Financiero</h3>
+               </div>
+
+               <div class="grid grid-cols-2 gap-4">
+                   
+                   <!-- Costo Base -->
+                   <div class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-700/50 border border-surface-100 dark:border-surface-700">
+                       <div class="flex items-center gap-2 text-[11px] text-surface-500 mb-1 font-bold uppercase tracking-wider">
+                           Costo Base
+                       </div>
+                       <div class="text-lg font-bold text-surface-600 dark:text-surface-300">
+                           {{ productoDetalle.precioCompra | currency: "S/. " : "symbol" : "1.2-2" }}
+                       </div>
+                   </div>
+
+                   <!-- Precio Venta (Highlighted) -->
+                   <div class="p-4 rounded-2xl bg-surface-900 dark:bg-surface-0 border border-surface-900 dark:border-surface-0 shadow-lg relative overflow-hidden group col-span-1 md:row-span-2 flex flex-col justify-center">
+                       <div class="absolute right-0 top-0 w-24 h-24 bg-surface-800 dark:bg-surface-100 rounded-bl-full -mr-8 -mt-8 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+                       <div class="relative z-10">
+                           <div class="flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500 mb-2 font-bold uppercase tracking-wider">
+                               <i class="pi pi-tag"></i> Precio Venta
+                           </div>
+                           <div class="text-3xl font-bold text-white dark:text-surface-900 tracking-tight">
+                               {{ productoDetalle.precioVenta | currency: "S/. " : "symbol" : "1.2-2" }}
+                           </div>
+                           <div class="mt-2 text-[10px] text-surface-400 dark:text-surface-500 font-medium">
+                               Precio final al público
+                           </div>
+                       </div>
+                   </div>
+
+                   <!-- Ganancia -->
+                   <div class="p-4 rounded-2xl bg-white dark:bg-surface-700 border border-dashed border-surface-300 dark:border-surface-600">
+                       <div class="flex items-center gap-2 text-[11px] text-surface-500 mb-1 font-bold uppercase tracking-wider">
+                           Ganancia Neta
+                       </div>
+                       <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                           +{{ (productoDetalle.precioVenta - productoDetalle.precioCompra) | currency: "S/. " : "symbol" : "1.2-2" }}
+                       </div>
+                   </div>
+               </div>
+
+               <!-- Margin Progress -->
+               <div class="mt-6 pt-4 border-t border-surface-100 dark:border-surface-700">
+                   <div class="flex justify-between items-end mb-2">
+                       <div class="flex flex-col">
+                           <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider">Margen de utilidad</span>
+                           <span class="text-xl font-bold mt-0.5" [ngClass]="getMargenColorClass(calcularMargenGanancia(productoDetalle))">
+                               {{ calcularMargenGanancia(productoDetalle) | number: "1.1-1" }}%
+                           </span>
+                       </div>
+                       <span class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase" 
+                             [ngClass]="getMargenBadgeClass(calcularMargenGanancia(productoDetalle))">
+                           {{ getMargenLabel(calcularMargenGanancia(productoDetalle)) }}
+                       </span>
+                   </div>
+                   <div class="w-full h-3 bg-surface-100 dark:bg-surface-900 rounded-full overflow-hidden p-0.5">
+                       <div class="h-full rounded-full transition-all duration-1000 shadow-sm"
+                            [ngClass]="getMargenProgressClass(calcularMargenGanancia(productoDetalle))"
+                            [style.width.%]="Math.min(calcularMargenGanancia(productoDetalle), 100)">
+                       </div>
+                   </div>
+               </div>
+            </div>
+
+            <!-- Description -->
+            <div class="prose prose-sm dark:prose-invert max-w-none" *ngIf="productoDetalle.descripcion">
+               <h3 class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                   <i class="pi pi-align-left"></i> Descripción
+               </h3>
+               <p class="text-surface-600 dark:text-surface-300 leading-7 text-sm bg-white dark:bg-surface-800/50 p-5 rounded-2xl border border-surface-100 dark:border-surface-800">
+                   {{ productoDetalle.descripcion }}
+               </p>
+            </div>
+
+            <!-- Metadata Footer -->
+            <div class="grid grid-cols-2 gap-6 pt-6 border-t border-surface-200 dark:border-surface-700">
+                <div class="group">
+                    <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider mb-1 block group-hover:text-primary-500 transition-colors">Fecha de Registro</span>
+                    <div class="flex items-center gap-2 text-surface-600 dark:text-surface-300">
+                        <i class="pi pi-calendar text-surface-400 text-xs"></i>
+                        <span class="font-medium text-sm tabular-nums">{{ productoDetalle.fechaCreacion | date: "dd/MM/yyyy" }}</span>
+                        <span class="text-xs text-surface-400 tabular-nums">{{ productoDetalle.fechaCreacion | date: "HH:mm" }}</span>
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider mb-1 block group-hover:text-primary-500 transition-colors">Última Actualización</span>
+                    <div class="flex items-center gap-2 text-surface-600 dark:text-surface-300">
+                        <i class="pi pi-history text-surface-400 text-xs"></i>
+                        <span class="font-medium text-sm tabular-nums">{{ productoDetalle.fechaActualizacion | date: "dd/MM/yyyy" }}</span>
+                        <span class="text-xs text-surface-400 tabular-nums">{{ productoDetalle.fechaActualizacion | date: "HH:mm" }}</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
       </div>
-
-      <!-- 🆕 Espaciado final para scroll -->
-      <div class="detalle-spacer"></div>
     </div>
+
+    <!-- Actions Footer -->
+    <div class="flex justify-between items-center px-8 py-5 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800 z-50">
+        <div class="hidden sm:flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Sistema sincronizado</span>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button 
+                pButton 
+                label="Cerrar" 
+                class="p-button-text text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 hover:bg-surface-50 dark:hover:bg-surface-800 font-bold px-6 py-3 rounded-xl flex-1 sm:flex-none transition-colors" 
+                (click)="hideDetalleDialog()">
+            </button>
+            <button 
+                *appHasPermission="{ module: 'productos', permission: permissionTypes.EDIT }"
+                pButton 
+                label="Editar Producto" 
+                icon="pi pi-pencil" 
+                class="bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 hover:bg-black dark:hover:bg-surface-200 border-none px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex-1 sm:flex-none"
+                (click)="editProducto(productoDetalle!); hideDetalleDialog()">
+            </button>
+        </div>
+    </div>
+
   </div>
-
-  <ng-template pTemplate="footer">
-    <div class="detalle-footer">
-      <div class="footer-info">
-        <div class="info-item">
-          <i class="pi pi-clock text-surface-500"></i>
-          <span class="text-surface-600"
-            >Actualizado: {{ getCurrentTime() | date: "HH:mm" }}</span
-          >
-        </div>
-      </div>
-
-      <div class="footer-actions">
-        <p-button
-          label="Cerrar"
-          icon="pi pi-times"
-          severity="secondary"
-          [outlined]="true"
-          (click)="hideDetalleDialog()"
-          styleClass="close-action"
-        />
-        <p-button
-          *appHasPermission="{
-            module: 'productos',
-            permission: permissionTypes.EDIT,
-          }"
-          label="Editar Producto"
-          icon="pi pi-pencil"
-          (click)="editProducto(productoDetalle!); hideDetalleDialog()"
-          styleClass="edit-action"
-        />
-      </div>
-    </div>
-  </ng-template>
 </p-dialog>

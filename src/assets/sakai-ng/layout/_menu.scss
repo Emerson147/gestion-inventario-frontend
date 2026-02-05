@@ -1,105 +1,133 @@
 @use 'mixins' as *;
 
+// =========================================================
+// 1. SIDEBAR PRINCIPAL (ZEN PREMIUM)
+// =========================================================
 .layout-sidebar {
     position: fixed;
-    width: 20rem;
+    width: 18rem; // Ancho normal (Un poco más delgado para ser más moderno)
     height: calc(100vh - 8rem);
     z-index: 999;
     overflow-y: auto;
+    overflow-x: hidden; // Vital para la animación de colapso
     user-select: none;
     top: 6rem;
     left: 2rem;
+    
+    // Transiciones "Líquidas" para colapso suave
     transition:
+        width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), // Efecto "Eastic" suave
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration),
         box-shadow 0.3s ease;
-    background-color: var(--surface-overlay);
-    border-radius: var(--content-border-radius);
-    padding: 1.25rem 1rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    
-    // Scrollbar semi-minimalista
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    &::-webkit-scrollbar-track {
-        background: rgba(148, 163, 184, 0.08);
-        border-radius: 10px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-color-alpha-40);
-        border-radius: 10px;
         
-        &:hover {
-            background: var(--primary-color-alpha-60);
+    background: var(--surface-card);
+    border-radius: 2rem; // Bordes más redondeados (Zen)
+    padding: 1.25rem 1rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); // Sombra difusa
+    border: 1px solid var(--surface-border); // Borde sutil para definición
+    
+    // Scrollbar invisible pero funcional (Estilo iOS)
+    scrollbar-width: none; // Firefox
+    &::-webkit-scrollbar {
+        display: none; // Chrome/Safari
+    }
+
+    // -----------------------------------------------------
+    // ESTADO: COLAPSADO (ICONOS SOLOS)
+    // -----------------------------------------------------
+    &.layout-sidebar-collapsed {
+        width: 5.5rem; // Ancho del mini-sidebar
+        padding: 1.25rem 0.75rem; // Padding ajustado
+
+        // Ocultar textos de categorías (Root)
+        .layout-menuitem-root-text {
+            span {
+                display: none; // Ocultar texto
+            }
+            // Convertir el título en una línea divisora elegante
+            &:after {
+                margin-left: 0;
+                opacity: 1;
+                background: var(--primary-color); // Acento de color
+                height: 2px;
+                width: 1.5rem;
+                margin: 0 auto; // Centrado
+            }
+        }
+
+        // Ajustar enlaces del menú
+        .layout-menu ul a {
+            padding: 0.75rem 0; // Padding vertical solo
+            justify-content: center; // Centrar icono
+            
+            .layout-menuitem-icon {
+                margin-right: 0; // Quitar margen derecho
+                width: 2.5rem; // Icono más grande y clicable
+                height: 2.5rem;
+                font-size: 1.2rem;
+            }
+
+            .layout-menuitem-text,
+            .layout-submenu-toggler {
+                opacity: 0;
+                width: 0;
+                display: none; // Desaparecer totalmente
+            }
+
+            // Tooltip simulado en hover (Opcional)
+            &:hover::after {
+                opacity: 0; // Desactivar si usas pTooltip de PrimeNG
+            }
+        }
+
+        // Ocultar submenús abiertos al colapsar para limpieza
+        .layout-menu ul ul {
+            display: none !important;
         }
     }
 }
 
+// =========================================================
+// 2. MENÚ (ZEN LIST)
+// =========================================================
 .layout-menu {
     margin: 0;
     padding: 0;
     list-style-type: none;
 
+    // Títulos de Sección (Categorías)
     .layout-root-menuitem {
         margin-bottom: 0.5rem;
         
         > .layout-menuitem-root-text {
             font-size: 0.7rem;
             text-transform: uppercase;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-color-secondary);
-            margin: 1.75rem 0 0.875rem 0;
-            padding: 0 0.75rem;
-            letter-spacing: 0.8px;
+            margin: 1.2rem 0 0.5rem 0;
+            padding: 0 1rem;
+            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            opacity: 0.8;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            white-space: nowrap; // Evitar saltos de línea
             
-            // Línea decorativa simple
-            &:after {
-                content: '';
-                flex: 1;
-                height: 1px;
-                background: linear-gradient(90deg, 
-                    var(--primary-color-alpha-40) 0%,
-                    transparent 100%);
-                margin-left: 0.75rem;
-            }
-            
-            // Primera sección sin margen superior
             &:first-child {
                 margin-top: 0.5rem;
             }
         }
 
-        > a {
-            display: none;
-        }
+        > a { display: none; }
     }
 
     a {
         user-select: none;
         font-weight: 500;
-        font-size: 0.95rem;
-
-        &.active-menuitem {
-            > .layout-submenu-toggler {
-                transform: rotate(-180deg);
-            }
-        }
     }
 
-    li.active-menuitem {
-        > a {
-            .layout-submenu-toggler {
-                transform: rotate(-180deg);
-            }
-        }
-    }
-
+    // Items del menú
     ul {
         margin: 0;
         padding: 0;
@@ -112,23 +140,23 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 0.875rem;
-            border-radius: 10px;
-            margin-bottom: 0.125rem;
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
+            padding: 0.75rem 1rem;
+            border-radius: 1.5rem; // Píldora completa
+            margin-bottom: 0.25rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            white-space: nowrap; // Texto no rompe al animar
 
             .layout-menuitem-icon {
-                margin-right: 0.875rem;
+                margin-right: 0.75rem;
                 font-size: 1.1rem;
-                width: 1.75rem;
-                height: 1.75rem;
+                width: 2rem;
+                height: 2rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border-radius: 8px;
-                background: var(--primary-color-alpha-10);
-                color: var(--primary-color);
+                border-radius: 50%; // Iconos circulares
+                color: var(--text-color-secondary);
                 transition: all 0.2s ease;
                 flex-shrink: 0;
             }
@@ -136,327 +164,94 @@
             .layout-menuitem-text {
                 flex: 1;
                 font-weight: 500;
-                transition: all 0.2s ease;
+                font-size: 0.95rem;
+                transition: opacity 0.2s ease;
             }
 
             .layout-submenu-toggler {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 margin-left: auto;
                 transition: transform 0.2s ease;
                 opacity: 0.5;
             }
 
+            // ESTADO ACTIVO (Ruta actual)
             &.active-route {
-                font-weight: 600;
-                color: var(--primary-color);
-                background: var(--primary-color-alpha-10);
-                border-left: 3px solid var(--primary-color);
-                padding-left: calc(0.875rem - 3px);
-                box-shadow: 0 1px 2px var(--primary-color-alpha-10);
+                font-weight: 700;
+                background: var(--surface-0); // Contraste suave
+                color: var(--primary-600); // Color principal
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
                 
                 .layout-menuitem-icon {
-                    background: var(--primary-color);
-                    color: var(--primary-color-text);
-                    box-shadow: 0 2px 8px var(--primary-color-alpha-20);
+                    background: var(--primary-600);
+                    color: #ffffff;
+                    box-shadow: 0 4px 10px rgba(var(--primary-600), 0.3); // Glow del color primario
+                    transform: scale(1.1);
                 }
                 
                 .layout-menuitem-text {
-                    font-weight: 600;
-                    color: var(--primary-color);
+                    color: var(--surface-900); // Texto oscuro fuerte
                 }
                 
-                .layout-submenu-toggler {
-                    opacity: 1;
-                    color: var(--primary-color);
+                // En modo oscuro
+                @media (prefers-color-scheme: dark) {
+                    background: var(--surface-800);
+                    color: var(--primary-400);
+                    
+                    .layout-menuitem-icon {
+                        background: var(--primary-400);
+                        color: var(--surface-900);
+                    }
+                    
+                    .layout-menuitem-text {
+                        color: var(--surface-0);
+                    }
                 }
             }
 
-            &:hover {
-                background: var(--primary-color-alpha-5);
+            // HOVER
+            &:hover:not(.active-route) {
+                background: var(--surface-hover);
+                transform: translateX(4px); // Pequeño empuje a la derecha
                 
                 .layout-menuitem-icon {
-                    background: var(--primary-color-alpha-15);
-                    color: var(--primary-color);
+                    color: var(--primary-500);
+                    background: var(--surface-0);
                 }
-                
-                .layout-submenu-toggler {
-                    opacity: 0.8;
-                }
-            }
-
-            &:focus {
-                @include focused-inset();
-            }
-            
-            // Efecto al hacer clic
-            &:active {
-                transform: scale(0.98);
             }
         }
-
+        
+        // Submenús (Indentación limpia)
         ul {
             overflow: hidden;
-            border-radius: var(--content-border-radius);
-            margin-top: 0.25rem;
-            margin-bottom: 0.5rem;
-            padding-left: 0.5rem;
-            border-left: 2px solid var(--primary-color-alpha-20);
-            margin-left: 1rem;
-
+            margin: 0.25rem 0 0.5rem 0;
+            padding-left: 0;
+            
             li {
                 a {
-                    padding: 0.75rem 1rem;
+                    padding-left: 3.5rem; // Alineación precisa con el texto padre
                     font-size: 0.9rem;
+                    opacity: 0.9;
                     
                     .layout-menuitem-icon {
-                        width: 1.75rem;
-                        height: 1.75rem;
-                        font-size: 1rem;
-                        margin-right: 0.625rem;
+                        display: none; // Submenús sin iconos para limpieza (opcional)
                     }
-                }
-
-                li {
-                    a {
-                        margin-left: 1rem;
-                    }
-
-                    li {
-                        a {
-                            margin-left: 1.5rem;
-                        }
-
-                        li {
-                            a {
-                                margin-left: 2rem;
-                            }
-
-                            li {
-                                a {
-                                    margin-left: 2.5rem;
-                                }
-
-                                li {
-                                    a {
-                                        margin-left: 3rem;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    // Separadores de menú mejorados con gradiente pastel
-    .menu-separator {
-        height: 2px;
-        background: linear-gradient(90deg, 
-            transparent 0%,
-            rgb(252, 231, 243) 15%,   /* Rosa pastel */
-            rgb(196, 181, 253) 35%,   /* Púrpura pastel */
-            rgb(147, 197, 253) 50%,   /* Azul pastel */
-            rgb(134, 239, 172) 65%,   /* Verde pastel */
-            rgb(254, 240, 138) 85%,   /* Amarillo pastel */
-            transparent 100%);
-        margin: 1rem 0;
-        border-radius: 2px;
-        opacity: 0.6;
-    }
-}
-
-.layout-submenu-enter-from,
-.layout-submenu-leave-to {
-    max-height: 0;
-    opacity: 0;
-}
-
-.layout-submenu-enter-to,
-.layout-submenu-leave-from {
-    max-height: 1000px;
-    opacity: 1;
-}
-
-.layout-submenu-leave-active {
-    overflow: hidden;
-    transition: 
-        max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.layout-submenu-enter-active {
-    overflow: hidden;
-    transition: 
-        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Estilos adicionales para dark mode con colores pastel suaves
-@media (prefers-color-scheme: dark) {
-    .layout-sidebar {
-        &::-webkit-scrollbar-track {
-            background: rgba(147, 197, 253, 0.03);
-        }
-        
-        &::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, 
-                rgba(147, 197, 253, 0.4) 0%,
-                rgba(196, 181, 253, 0.4) 100%);
-            
-            &:hover {
-                background: linear-gradient(180deg, 
-                    rgba(134, 239, 172, 0.5) 0%,
-                    rgba(147, 197, 253, 0.5) 100%);
-            }
-        }
-    }
-    
-    .layout-menu {
-        .layout-root-menuitem {
-            > .layout-menuitem-root-text {
-                &:after {
-                    background: linear-gradient(90deg, 
-                        rgba(147, 197, 253, 0.3) 0%,
-                        rgba(196, 181, 253, 0.3) 50%,
-                        transparent 100%);
-                }
-            }
-        }
-        
-        ul {
-            a {
-                .layout-menuitem-icon {
-                    background: linear-gradient(135deg, 
-                        rgba(147, 197, 253, 0.15) 0%,
-                        rgba(196, 181, 253, 0.1) 100%);
-                    color: rgb(147, 197, 253);
-                }
-                
-                &:hover {
-                    background: linear-gradient(135deg, 
-                        rgba(167, 243, 208, 0.08) 0%,
-                        rgba(147, 197, 253, 0.08) 100%);
                     
-                    .layout-menuitem-icon {
-                        background: linear-gradient(135deg, 
-                            rgba(134, 239, 172, 0.8) 0%,
-                            rgba(147, 197, 253, 0.8) 100%);
-                    }
-                }
-                
-                &.active-route {
-                    background: linear-gradient(135deg, 
-                        rgba(147, 197, 253, 0.12) 0%,
-                        rgba(196, 181, 253, 0.08) 100%);
-                    border-left-color: rgba(96, 165, 250, 0.8);
-                    box-shadow: 0 2px 12px rgba(147, 197, 253, 0.2);
-                    
-                    .layout-menuitem-icon {
-                        background: linear-gradient(135deg, 
-                            rgba(147, 197, 253, 0.9) 0%,
-                            rgba(167, 139, 250, 0.9) 100%);
-                        box-shadow: 0 4px 16px rgba(147, 197, 253, 0.3);
+                    // Puntito indicador para submenú activo
+                    &.active-route::before {
+                        content: '';
+                        position: absolute;
+                        left: 2.2rem;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 6px;
+                        height: 6px;
+                        border-radius: 50%;
+                        background: var(--primary-500);
                     }
                 }
             }
         }
-        
-        .menu-separator {
-            background: linear-gradient(90deg, 
-                transparent 0%,
-                rgba(252, 231, 243, 0.2) 15%,
-                rgba(196, 181, 253, 0.2) 35%,
-                rgba(147, 197, 253, 0.2) 50%,
-                rgba(134, 239, 172, 0.2) 65%,
-                rgba(254, 240, 138, 0.2) 85%,
-                transparent 100%);
-            opacity: 0.4;
-        }
     }
 }
 
-// Animaciones adicionales con colores pastel
-@keyframes slideInFromLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 8px rgba(147, 197, 253, 0.2);
-    }
-    50% {
-        box-shadow: 0 0 16px rgba(147, 197, 253, 0.4);
-    }
-}
-
-@keyframes rainbowShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.layout-menu {
-    ul {
-        a {
-            animation: slideInFromLeft 0.3s ease-out;
-            
-            // Efecto de brillo sutil en hover
-            &:hover::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(135deg,
-                    rgba(147, 197, 253, 0.1) 0%,
-                    rgba(167, 243, 208, 0.1) 50%,
-                    rgba(252, 231, 243, 0.1) 100%);
-                border-radius: 12px;
-                pointer-events: none;
-                opacity: 0;
-                animation: fadeIn 0.3s ease-out forwards;
-            }
-            
-            &.active-route {
-                animation: pulseGlow 3s ease-in-out infinite;
-            }
-        }
-    }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-// Efecto especial para el sidebar completo
-.layout-sidebar {
-    // Sutil gradiente de fondo con colores pastel
-    background: linear-gradient(135deg, 
-        var(--surface-overlay) 0%,
-        var(--surface-overlay) 100%);
-    
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(180deg,
-            rgba(147, 197, 253, 0.02) 0%,
-            rgba(196, 181, 253, 0.02) 50%,
-            rgba(167, 243, 208, 0.02) 100%);
-        pointer-events: none;
-        border-radius: var(--content-border-radius);
-    }
-}
