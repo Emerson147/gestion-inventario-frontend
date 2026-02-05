@@ -40,6 +40,27 @@
   }
 }
 
+/* Ensure TabView and panels expand to fill container - full-height modifier */
+::ng-deep .modern-tabs-enhanced.full-height {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  
+  .p-tabview-panels {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+  }
+  
+  .p-tabview-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+  }
+}
+
 /* Estilos para headers de pestañas modernos */
 .tab-header-modern {
   position: relative;
@@ -129,6 +150,18 @@
   animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Full-height variant for tab content - Ocupar todo el espacio */
+.tab-content-container-fullheight {
+  padding: 1.5rem;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;  /* Critical: Allows flex child to shrink below content size */
+  overflow-y: auto;
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -143,6 +176,11 @@
 /* Mejoras para móvil */
 @media (max-width: 768px) {
   .tab-content-container {
+    padding: 1rem;
+    min-height: calc(100vh - 200px);
+  }
+
+  .tab-content-container-fullheight {
     padding: 1rem;
     min-height: calc(100vh - 200px);
   }
