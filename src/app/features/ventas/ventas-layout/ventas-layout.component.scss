@@ -15,7 +15,74 @@
   }
 }
 
-// Animaciones
+// ===== Banner Caja Cerrada =====
+.caja-cerrada-banner {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-bottom: 2px solid #f59e0b;
+  padding: 0.75rem 1.5rem;
+  z-index: 100;
+  position: relative;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 1rem;
+}
+
+.banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #92400e;
+
+  i {
+    font-size: 1.25rem;
+  }
+}
+
+.banner-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: block;
+  color: #78350f;
+}
+
+.banner-desc {
+  font-size: 0.82rem;
+  color: #a16207;
+}
+
+.banner-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(6, 182, 212, 0.35);
+  white-space: nowrap;
+
+  &:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.5);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ===== Animaciones =====
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -29,4 +96,17 @@
 
 .fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+// ===== Responsive =====
+@media (max-width: 640px) {
+  .banner-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .banner-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }

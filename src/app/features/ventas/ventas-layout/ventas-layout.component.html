@@ -12,7 +12,26 @@
   (toastDismissed)="onToastDismissed($event)"
 ></app-toast-notification>
 
-<!-- Contenedor simple - Solo renderiza el componente hijo -->
+<!-- Banner de caja cerrada -->
+@if (rutaRequiereCaja && !cajaStateService.cajaAbierta()) {
+  <div class="caja-cerrada-banner fade-in">
+    <div class="banner-content">
+      <div class="banner-info">
+        <i class="pi pi-lock text-xl"></i>
+        <div>
+          <span class="banner-title">Caja cerrada</span>
+          <span class="banner-desc">Debe abrir la caja para realizar ventas</span>
+        </div>
+      </div>
+      <button class="banner-btn" (click)="abrirCaja()">
+        <i class="pi pi-lock-open mr-2"></i>
+        Abrir Caja
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Contenedor principal -->
 <div class="w-full h-full">
   <router-outlet></router-outlet>
 </div>

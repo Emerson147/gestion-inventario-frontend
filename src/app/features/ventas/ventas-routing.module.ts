@@ -13,7 +13,6 @@ import { ConfiguracionVentasComponent } from './configuracion-ventas/configuraci
 import { ClientesComponent } from './clientes/clientes.component';
 
 const routes: Routes = [
-  // ==================== ESTRUCTURA CON LAYOUT - Todas las rutas como hijas ====================
   {
     path: '',
     component: VentasLayoutComponent,
@@ -30,7 +29,8 @@ const routes: Routes = [
         component: PuntoVentaComponent,
         data: { 
           title: 'Punto de Venta',
-          breadcrumb: 'POS'
+          breadcrumb: 'POS',
+          requiresCaja: false
         }
       },
       {
@@ -38,7 +38,8 @@ const routes: Routes = [
         component: HistorialComponent,
         data: { 
           title: 'Historial de Ventas',
-          breadcrumb: 'Historial'
+          breadcrumb: 'Historial',
+          requiresCaja: false
         }
       },
       {
@@ -46,7 +47,8 @@ const routes: Routes = [
         component: ReportesVentasComponent,
         data: { 
           title: 'Reportes y Analytics',
-          breadcrumb: 'Reportes'
+          breadcrumb: 'Reportes',
+          requiresCaja: false
         }
       },
       {
@@ -54,7 +56,8 @@ const routes: Routes = [
         component: ConfiguracionVentasComponent,
         data: { 
           title: 'Configuración',
-          breadcrumb: 'Configuración'
+          breadcrumb: 'Configuración',
+          requiresCaja: false
         }
       },
       {
@@ -62,7 +65,8 @@ const routes: Routes = [
         component: ClientesComponent,
         data: { 
           title: 'Gestión de Clientes',
-          breadcrumb: 'Clientes'
+          breadcrumb: 'Clientes',
+          requiresCaja: false
         }
       }
     ]

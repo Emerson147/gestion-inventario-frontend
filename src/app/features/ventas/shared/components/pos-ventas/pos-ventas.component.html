@@ -5,78 +5,84 @@
 ></app-toast-notification>
 
 <!-- ==================== PANTALLA DE APERTURA DE CAJA ==================== -->
-<div *ngIf="!cajaAbierta()" class="h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-950 to-slate-900">
-  <div class="max-w-2xl w-full mx-4">
-    <!-- Card principal de apertura -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
-      <!-- Header con gradiente -->
-      <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 p-12 text-center relative overflow-hidden">
-        <!-- Efectos de fondo -->
-        <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
+<div *ngIf="!cajaAbierta()" class="fixed inset-0 z-50 flex items-center justify-center bg-surface-100/80 dark:bg-surface-950/80 backdrop-blur-md p-4 transition-all duration-500">
+  
+  <div class="w-full max-w-4xl bg-white dark:bg-surface-900 rounded-[2.5rem] shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden relative animate-fade-in-up">
+    
+    <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-50 dark:bg-indigo-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-60 pointer-events-none"></div>
+
+    <div class="flex flex-col md:flex-row h-full min-h-[500px]">
         
-        <!-- Contenido -->
-        <div class="relative z-10">
-          <div class="w-28 h-28 mx-auto mb-6 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/40 shadow-2xl">
-            <i class="pi pi-lock text-white text-5xl"></i>
-          </div>
-          <h1 class="text-4xl font-bold text-white mb-3">Caja Cerrada</h1>
-          <p class="text-indigo-100 text-lg">Debe abrir la caja para comenzar a operar</p>
-        </div>
-      </div>
+        <div class="w-full md:w-5/12 bg-surface-50 dark:bg-surface-800/50 p-12 flex flex-col items-center justify-center text-center border-r border-surface-100 dark:border-surface-800 relative">
+            
+            <div class="w-32 h-32 rounded-[2rem] bg-white dark:bg-surface-800 flex items-center justify-center mb-8 shadow-sm border border-surface-200 dark:border-surface-700">
+                <i class="pi pi-lock text-5xl text-indigo-500 dark:text-indigo-400"></i>
+            </div>
 
-      <!-- Contenido -->
-      <div class="p-10">
-        <!-- Información -->
-        <div class="mb-8 space-y-4">
-          <div class="flex items-start gap-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
-            <i class="pi pi-info-circle text-indigo-600 text-2xl flex-shrink-0 mt-1"></i>
-            <div>
-              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Información Importante</h3>
-              <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                <li>• Verifique el efectivo inicial antes de abrir la caja</li>
-                <li>• Seleccione la tienda y turno correspondiente</li>
-                <li>• Configure la impresora térmica para tickets</li>
-                <li>• El cierre de caja generará un reporte financiero</li>
-              </ul>
-            </div>
-          </div>
+            <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2">Punto de Venta</h2>
+            <p class="text-surface-500 dark:text-surface-400 text-sm max-w-[200px] mx-auto leading-relaxed">
+                Sistema de gestión comercial para <strong class="text-indigo-600 dark:text-indigo-400">La Peruanita</strong>.
+            </p>
 
-          <!-- Estadísticas rápidas -->
-          <div class="grid grid-cols-3 gap-3">
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <i class="pi pi-calendar text-indigo-600 text-2xl mb-2"></i>
-              <div class="text-xs text-gray-500 dark:text-gray-400">Fecha</div>
-              <div class="font-bold text-gray-900 dark:text-white">{{ getCurrentDate() }}</div>
+            <div class="mt-8 px-4 py-1.5 rounded-full bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 shadow-sm flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-surface-500">Terminal Cerrado</span>
             </div>
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <i class="pi pi-clock text-purple-600 text-2xl mb-2"></i>
-              <div class="text-xs text-gray-500 dark:text-gray-400">Hora</div>
-              <div class="font-bold text-gray-900 dark:text-white">{{ getCurrentHour() }}</div>
-            </div>
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <i class="pi pi-user text-emerald-600 text-2xl mb-2"></i>
-              <div class="text-xs text-gray-500 dark:text-gray-400">Usuario</div>
-              <div class="font-bold text-gray-900 dark:text-white text-sm truncate px-2">{{ currentUser }}</div>
-            </div>
-          </div>
         </div>
 
-        <!-- Botón de acción principal -->
-        <button
-          pButton
-          label="Abrir Caja"
-          icon="pi pi-lock-open"
-          class="w-full p-4 text-lg font-bold"
-          (click)="abrirDialogoAperturaCaja()"
-        ></button>
+        <div class="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center relative z-10">
+            
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
+                    Hola, {{ currentUser || 'Vendedor' }} 👋
+                </h1>
+                <p class="text-surface-500 dark:text-surface-400">
+                    Confirma los datos para iniciar tu turno.
+                </p>
+            </div>
 
-        <!-- Nota al pie -->
-        <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
-          <i class="pi pi-shield text-indigo-600 mr-1"></i>
-          Sistema de gestión de caja integrado
-        </p>
-      </div>
+            <div class="space-y-4 mb-8">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center">
+                        <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Fecha</span>
+                        <div class="text-base font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2">
+                            <i class="pi pi-calendar text-indigo-500"></i>
+                            {{ getCurrentDate() | date:'dd/MM/yyyy' }}
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center">
+                        <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Hora</span>
+                        <div class="text-base font-mono font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2">
+                            <i class="pi pi-clock text-indigo-500"></i>
+                            {{ getCurrentHour() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1 block">Estación de Trabajo</span>
+                        <span class="text-base font-bold text-surface-900 dark:text-surface-0">Caja Principal #01</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-white dark:bg-surface-700 text-surface-400 flex items-center justify-center shadow-sm">
+                        <i class="pi pi-desktop text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button 
+                (click)="abrirDialogoAperturaCaja()"
+                class="group w-full py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2">
+                <span>Abrir Caja</span>
+                <i class="pi pi-lock-open group-hover:rotate-12 transition-transform"></i>
+            </button>
+
+        </div>
     </div>
   </div>
 </div>
