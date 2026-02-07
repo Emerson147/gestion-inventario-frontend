@@ -1,0 +1,18 @@
+<!-- Toast y confirmaciones globales -->
+<p-confirmDialog
+  [style]="{ width: '500px' }"
+  styleClass="custom-confirm-dialog"
+  role="dialog"
+  aria-modal="true"
+>
+</p-confirmDialog>
+
+<app-toast-notification
+  [toasts]="toastService.getCurrentToasts()"
+  (toastDismissed)="onToastDismissed($event)"
+></app-toast-notification>
+
+<!-- Contenedor simple - Solo renderiza el componente hijo -->
+<div class="w-full h-full">
+  <router-outlet></router-outlet>
+</div>

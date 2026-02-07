@@ -46,8 +46,11 @@ export class AppMenu implements OnInit{
             label: 'Ventas',
             visible: this.hasRole(['ROLE_VENTAS', 'ROLE_ADMIN']),
             items: [ 
-              { label: 'Clientes', icon: 'pi pi-fw pi-users', routerLink: ['/ventas/clientes'] },
-              { label: 'Ventas', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/ventas/realizar-venta'] }
+              { label: 'Punto de Venta', icon: 'pi pi-fw pi-shopping-cart', routerLink: ['/ventas/punto-venta'] },
+              { label: 'Historial', icon: 'pi pi-fw pi-history', routerLink: ['/ventas/historial'] },
+              { label: 'Reportes', icon: 'pi pi-fw pi-chart-line', routerLink: ['/ventas/reportes'] },
+              { label: 'Configuración', icon: 'pi pi-fw pi-cog', routerLink: ['/ventas/configuracion'] },
+              { label: 'Clientes', icon: 'pi pi-fw pi-users', routerLink: ['/ventas/clientes'] }
             ]
           }
         ];

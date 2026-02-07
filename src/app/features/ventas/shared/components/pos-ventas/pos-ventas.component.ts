@@ -14,6 +14,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { VentaRequest, VentaResponse } from '../../../../../core/models/venta.model';
 import { PagoRequest, PagoResponse } from '../../../../../core/models/pago.model';
 import { MetricaVenta } from '../metrics/metric-card.interface';
@@ -36,6 +37,9 @@ import { Producto } from '../../../../../core/models/product.model';
 import { Inventario } from '../../../../../core/models/inventario.model';
 import { ProductoService } from '../../../../../core/services/producto.service';
 import { PermissionService, PermissionType } from '../../../../../core/services/permission.service';
+import { CajaStateService } from '../../services/caja-state.service';
+import { AperturaCajaDialogComponent } from '../apertura-caja-dialog/apertura-caja-dialog.component';
+import { CierreCajaDialogComponent } from '../cierre-caja-dialog/cierre-caja-dialog.component';
 
 // Interface extendido para POS que incluye propiedades adicionales
 interface InventarioPOS extends Inventario {
@@ -95,7 +99,7 @@ interface OpcionSelect {
     ConfirmDialogModule,
     ToastNotificationComponent
     ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService, ConfirmationService, DialogService],
   templateUrl: './pos-ventas.component.html',
   // 🔧 TEMPORAL: Cambiar a Default para que los diálogos funcionen
   // changeDetection: ChangeDetectionStrategy.OnPush
@@ -109,9 +113,19 @@ export class PosVentasComponent implements OnInit, OnDestroy {
   private pagosService = inject(PagosService);
   private productoService = inject(ProductoService);
   private permissionService = inject(PermissionService);
+  private cajaStateService = inject(CajaStateService);
+  private dialogService = inject(DialogService);
+  
+  // Referencias a diálogos dinámicos
+  private aperturaCajaRef?: DynamicDialogRef;
+  private cierreCajaRef?: DynamicDialogRef;
   
   // Output para comunicarse con el componente padre
   @Output() cerrarCajaEvent = new EventEmitter<void>();
+
+  // Estado de caja
+  cajaAbierta = this.cajaStateService.cajaAbierta;
+  estadoCaja = this.cajaStateService.estadoCaja;
 
   private destroy$ = new Subject<void>();
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
@@ -289,7 +303,7 @@ seriesComprobante: { label: string, value: string }[] = [
 
 
   // Control de estado de caja
-  cajaAbierta = false;
+  // ELIMINADO: cajaAbierta = false; (ahora se usa signal del servicio)
   
   // Configuración de puertos
   puertosDisponibles: string[] = [];
@@ -805,19 +819,17 @@ seriesComprobante: { label: string, value: string }[] = [
 
   ngOnInit() {
     this.loadPermissions();
-    this.inicializarEstadoCaja(); // Nuevo método para gestionar estado de caja
-    this.cargarDatosIniciales();
-    // Generar número de venta una sola vez al iniciar
+    this.inicializarEstadoCaja();
     this.generarNumeroVenta();
-      // ✅ FORZAR CARGA DE PRODUCTOS DIRECTAMENTE
-    setTimeout(() => {
-      this.cargarProductos();
-    }, 1000);
-  
-    this.cargarProductosPopulares();
-    this.cargarClientesRecientes();
-    // this.initAudio(); // Lo agregaremos después
     this.inicializarComponente();
+    
+    // ✅ CARGA DIFERIDA ESCALONADA para no congelar el navegador
+    setTimeout(() => this.cargarClientes(), 100);
+    setTimeout(() => this.cargarProductos(), 300);
+    setTimeout(() => this.cargarInventarios(), 500);
+    setTimeout(() => this.cargarVentas(), 700);
+    setTimeout(() => this.cargarProductosPopulares(), 900);
+    setTimeout(() => this.cargarClientesRecientes(), 1100);
   }
 
     // ==================== INICIALIZACIÓN ====================
@@ -884,9 +896,120 @@ seriesComprobante: { label: string, value: string }[] = [
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
     }
+    // Cerrar diálogos dinámicos si están abiertos
+    if (this.aperturaCajaRef) {
+      this.aperturaCajaRef.close();
+    }
+    if (this.cierreCajaRef) {
+      this.cierreCajaRef.close();
+    }
+  }
+
+  // ==================== GESTIÓN DE CAJA ====================
+
+  /**
+   * Abre el diálogo de apertura de caja
+   */
+  abrirDialogoAperturaCaja(): void {
+    this.aperturaCajaRef = this.dialogService.open(AperturaCajaDialogComponent, {
+      header: 'Apertura de Caja',
+      width: '550px',
+      modal: true,
+      draggable: false,
+      closeOnEscape: false,
+      closable: false,
+      data: {
+        // Aquí se pueden pasar datos iniciales si es necesario
+      }
+    });
+
+    this.aperturaCajaRef.onClose.subscribe((result) => {
+      if (result) {
+        // Obtener usuario actual desde localStorage
+        const userStr = localStorage.getItem('user');
+        const usuario = userStr ? JSON.parse(userStr).username : 'Sistema';
+        
+        // Abrir caja en el servicio
+        this.cajaStateService.abrirCaja(result, usuario);
+        
+        // Notificar al usuario
+        this.toastService.success(
+          '✅ Caja Abierta',
+          `Caja abierta en ${result.tienda.nombre} - Turno ${result.turno}`,
+          {
+            duration: 5000,
+            icon: 'pi pi-lock-open'
+          }
+        );
+
+        // Forzar detección de cambios
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /**
+   * Abre el diálogo de cierre de caja
+   */
+  abrirDialogoCierreCaja(): void {
+    const estadoActual = this.cajaStateService.obtenerEstadoActual();
+
+    this.cierreCajaRef = this.dialogService.open(CierreCajaDialogComponent, {
+      header: 'Cierre de Caja',
+      width: '600px',
+      modal: true,
+      draggable: false,
+      data: {
+        estadoCaja: estadoActual
+      }
+    });
+
+    this.cierreCajaRef.onClose.subscribe((result) => {
+      if (result) {
+        // Cerrar caja en el servicio
+        this.cajaStateService.cerrarCaja(result);
+        
+        // Determinar el tipo de mensaje según la diferencia
+        const diferencia = Math.abs(result.diferencia);
+        let mensaje = `Cierre exitoso`;
+        let icon = 'pi pi-lock';
+        
+        if (result.diferencia === 0) {
+          mensaje += ' - Cuadre perfecto 🎯';
+          this.toastService.success('✅ Cierre de Caja', mensaje, { duration: 5000, icon });
+        } else if (diferencia <= 10) {
+          mensaje += ` - Diferencia: S/ ${result.diferencia.toFixed(2)}`;
+          this.toastService.warning('⚠️ Cierre de Caja', mensaje, { duration: 5000, icon });
+        } else {
+          mensaje += ` - Diferencia significativa: S/ ${result.diferencia.toFixed(2)}`;
+          this.toastService.error('❌ Cierre de Caja', mensaje, { duration: 7000, icon });
+        }
+
+        // Emitir evento al padre si existe
+        this.cerrarCajaEvent.emit();
+
+        // Forzar detección de cambios
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   // ==== UTILIDADES ====
+
+getCurrentDate(): string {
+  return new Date().toLocaleDateString('es-PE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
+getCurrentHour(): string {
+  return new Date().toLocaleTimeString('es-PE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 
 getTipoComprobanteLabel(tipo: string): string {
   const tipoFind = this.tiposComprobante.find(t => t.value === tipo);
@@ -4279,25 +4402,22 @@ nuevaVentaRapida(): void {
     });
   }
 
-   // ==================== GESTIÓN DE CAJA ====================
+   // ==================== GESTIÓN DE CAJA (ANTIGUA - CÓDIGO LEGACY) ====================
+  // NOTA: Estos métodos están obsoletos. Ahora se usa CajaStateService con signals.
+  // Se mantienen comentados por compatibilidad temporal.
+  
   inicializarEstadoCaja() {
-    // Verificar si hay un estado de caja guardado en localStorage
-    const cajaGuardada = localStorage.getItem('cajaAbierta');
-    if (cajaGuardada) {
-      this.cajaAbierta = JSON.parse(cajaGuardada);
-      if (this.cajaAbierta) {
-        console.log('💰 Restaurando estado de caja abierta');
-      }
-    }
+    // Ya no se usa - el estado se maneja en CajaStateService
+    console.log('⚠️ inicializarEstadoCaja() obsoleto - usando CajaStateService');
   }
 
   private guardarEstadoCaja() {
-    localStorage.setItem('cajaAbierta', JSON.stringify(this.cajaAbierta));
+    // Ya no se usa - el estado se guarda automáticamente en CajaStateService
+    console.log('⚠️ guardarEstadoCaja() obsoleto - usando CajaStateService');
   }
 
-
-
   cerrarCaja() {
+    // Método legacy - ahora se usa abrirDialogoCierreCaja()
     this.confirmationService.confirm({
       message: '¿Está seguro que desea cerrar la caja? Se volverá a la pantalla inicial.',
       header: 'Confirmar Cierre de Caja',
@@ -4305,16 +4425,9 @@ nuevaVentaRapida(): void {
       acceptLabel: 'Sí, cerrar',
       rejectLabel: 'Cancelar',
       accept: () => {
-        this.cajaAbierta = false;
-        this.activeTabIndex = 0;
-        this.guardarEstadoCaja(); // Guardar estado
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Caja Cerrada',
-          detail: 'La caja registradora ha sido cerrada',
-          life: 3000
-        });
-        console.log('💰 Cerrando caja registradora...');
+        // Usar el nuevo método de cierre de caja
+        this.abrirDialogoCierreCaja();
+        console.log('💰 Redirigiendo al cierre moderno de caja...');
         // Lógica adicional para cerrar caja (resumen del día, reportes, etc.)
       }
     });
@@ -4324,11 +4437,8 @@ nuevaVentaRapida(): void {
   
  private cargarDatosIniciales(): void {
   console.log('🚨 cargarDatosIniciales() ejecutándose...');
-  
-  this.cargarClientes();
-  this.cargarProductos(); // ← Esta línea debe estar aquí
-  this.cargarVentas();
-  this.cargarInventarios();
+  // Método legacy - la carga ahora es diferida desde ngOnInit
+  // No hacer nada aquí para evitar carga duplicada
 }
 
   private cargarClientes(): void {
@@ -4344,11 +4454,13 @@ nuevaVentaRapida(): void {
   }
 
  private cargarProductos(): void {
-  this.productoService.getProducts(0, 500)
+  // ✅ Cargar solo 100 productos inicialmente para mejor rendimiento
+  this.productoService.getProducts(0, 100)
     .pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (response: { contenido?: Producto[], content?: Producto[], data?: Producto[] }) => {
         this.productos = response?.contenido || response?.content || response?.data || [];
+        console.log('✅ Productos cargados:', this.productos.length);
       },
       error: (error: Error) => {
         this.mostrarError('Error al cargar productos', error.message);
@@ -4368,11 +4480,13 @@ nuevaVentaRapida(): void {
   }
 
   private cargarInventarios(): void {
-  this.inventarioService.obtenerInventarios(0, 5000) // Cargar hasta 5000 items
+  // ✅ Cargar solo 200 inventarios inicialmente para mejor rendimiento
+  this.inventarioService.obtenerInventarios(0, 200)
     .pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (response: { contenido?: Inventario[], content?: Inventario[], data?: Inventario[] }) => {
         this.inventarios = response?.contenido || response?.content || response?.data || [];
+        console.log('✅ Inventarios cargados:', this.inventarios.length);
       },
       error: (error: Error) => this.mostrarError('Error al cargar inventarios', error.message)
     });

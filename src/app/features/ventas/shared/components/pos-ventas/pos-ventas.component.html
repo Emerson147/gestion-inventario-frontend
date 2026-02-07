@@ -1,10 +1,88 @@
-<!-- Contenido de POS -->
-<div class="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
-  <!-- Sistema de Notificaciones Toast Modernas -->
-  <app-toast-notification 
-    [toasts]="toastService.getCurrentToasts()"
-    (toastDismissed)="onToastDismissed($event)"
-  ></app-toast-notification>
+<!-- Sistema de Notificaciones Toast Modernas -->
+<app-toast-notification 
+  [toasts]="toastService.getCurrentToasts()"
+  (toastDismissed)="onToastDismissed($event)"
+></app-toast-notification>
+
+<!-- ==================== PANTALLA DE APERTURA DE CAJA ==================== -->
+<div *ngIf="!cajaAbierta()" class="h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-950 to-slate-900">
+  <div class="max-w-2xl w-full mx-4">
+    <!-- Card principal de apertura -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Header con gradiente -->
+      <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 p-12 text-center relative overflow-hidden">
+        <!-- Efectos de fondo -->
+        <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
+        
+        <!-- Contenido -->
+        <div class="relative z-10">
+          <div class="w-28 h-28 mx-auto mb-6 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/40 shadow-2xl">
+            <i class="pi pi-lock text-white text-5xl"></i>
+          </div>
+          <h1 class="text-4xl font-bold text-white mb-3">Caja Cerrada</h1>
+          <p class="text-indigo-100 text-lg">Debe abrir la caja para comenzar a operar</p>
+        </div>
+      </div>
+
+      <!-- Contenido -->
+      <div class="p-10">
+        <!-- Información -->
+        <div class="mb-8 space-y-4">
+          <div class="flex items-start gap-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
+            <i class="pi pi-info-circle text-indigo-600 text-2xl flex-shrink-0 mt-1"></i>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Información Importante</h3>
+              <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                <li>• Verifique el efectivo inicial antes de abrir la caja</li>
+                <li>• Seleccione la tienda y turno correspondiente</li>
+                <li>• Configure la impresora térmica para tickets</li>
+                <li>• El cierre de caja generará un reporte financiero</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Estadísticas rápidas -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+              <i class="pi pi-calendar text-indigo-600 text-2xl mb-2"></i>
+              <div class="text-xs text-gray-500 dark:text-gray-400">Fecha</div>
+              <div class="font-bold text-gray-900 dark:text-white">{{ getCurrentDate() }}</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+              <i class="pi pi-clock text-purple-600 text-2xl mb-2"></i>
+              <div class="text-xs text-gray-500 dark:text-gray-400">Hora</div>
+              <div class="font-bold text-gray-900 dark:text-white">{{ getCurrentHour() }}</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+              <i class="pi pi-user text-emerald-600 text-2xl mb-2"></i>
+              <div class="text-xs text-gray-500 dark:text-gray-400">Usuario</div>
+              <div class="font-bold text-gray-900 dark:text-white text-sm truncate px-2">{{ currentUser }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón de acción principal -->
+        <button
+          pButton
+          label="Abrir Caja"
+          icon="pi pi-lock-open"
+          class="w-full p-4 text-lg font-bold"
+          (click)="abrirDialogoAperturaCaja()"
+        ></button>
+
+        <!-- Nota al pie -->
+        <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
+          <i class="pi pi-shield text-indigo-600 mr-1"></i>
+          Sistema de gestión de caja integrado
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CONTENIDO PRINCIPAL DEL POS (Solo si caja abierta) ==================== -->
+<div *ngIf="cajaAbierta()" class="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
 
   <!-- Header POS Empresarial Moderno - RESPONSIVE -->
   <header class="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-950 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-white shadow-2xl border-b border-indigo-500/20 dark:border-gray-700/30 relative overflow-hidden">
@@ -68,6 +146,16 @@
             </div>
             <span class="text-[10px] md:text-xs font-bold text-white truncate max-w-[60px] sm:max-w-none">Emerson147</span>
           </div>
+
+          <!-- Botón Cerrar Caja -->
+          <button
+            class="flex items-center gap-1.5 md:gap-2.5 bg-gradient-to-r from-rose-600/90 to-red-600/90 hover:from-rose-500/90 hover:to-red-500/90 backdrop-blur-md px-2 sm:px-3 md:px-4 py-1.5 md:py-2.5 rounded-lg md:rounded-xl shadow-lg shadow-rose-500/20 border border-rose-400/30 hover:shadow-rose-400/40 transition-all duration-300"
+            (click)="abrirDialogoCierreCaja()"
+          >
+            <i class="pi pi-lock text-[10px] md:text-xs text-white"></i>
+            <span class="text-[10px] md:text-xs font-bold text-white tracking-wide hidden lg:inline">Cerrar Caja</span>
+            <span class="text-[10px] md:text-xs font-bold text-white tracking-wide lg:hidden">Cerrar</span>
+          </button>
         </div>
       </div>
 
@@ -2271,3 +2359,4 @@
       </div>
     </ng-template>
   </p-dialog>
+</div> <!-- Cierre del contenedor principal del POS (cajaAbierta) -->

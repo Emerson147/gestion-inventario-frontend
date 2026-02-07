@@ -437,14 +437,13 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     console.log('📊 [CONFIG] Usuario actual:', 'Emerson147');
     console.log('📅 [FECHA] Fecha actual:', new Date().toISOString());
     
-    // Verificar servicio
-    console.log('🔧 [SERVICIO] VentasService:', this.ventasService);
-    
     this.inicializarComponente();
-    this.cargarDatosIniciales();
-    this.configurarRelojes();
     this.configurarBusquedaInteligente();
     this.suscribirseANuevasVentas();
+    
+    // ✅ CARGA DIFERIDA para evitar congelamiento
+    setTimeout(() => this.cargarDatosIniciales(), 200);
+    setTimeout(() => this.configurarRelojes(), 400);
   }
 
   ngOnDestroy(): void {

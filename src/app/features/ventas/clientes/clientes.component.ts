@@ -25,6 +25,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
+import { InputSwitchModule } from 'primeng/inputswitch';
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Subject } from 'rxjs';
@@ -100,6 +101,7 @@ interface AnalisisValorCliente {
     PanelModule,
     ChipModule,
     TooltipModule,
+    InputSwitchModule,
     HasPermissionDirective
   ],
   templateUrl: './clientes.component.html',
