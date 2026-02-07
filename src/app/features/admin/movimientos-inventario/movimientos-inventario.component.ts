@@ -132,16 +132,10 @@ export class MovimientosInventarioComponent implements OnInit {
       icon: 'pi pi-plus-circle'
     },
     { 
-      label: 'SALIDA', 
-      value: TipoMovimiento.SALIDA,
-      description: 'Salida de productos del inventario',
-      icon: 'pi pi-minus-circle'
-    },
-    { 
       label: 'AJUSTE', 
       value: TipoMovimiento.AJUSTE,
-      description: 'Ajuste de cantidades en inventario',
-      icon: 'pi pi-cog'
+      description: 'Ajuste manual de stock (aumentar o reducir)',
+      icon: 'pi pi-sliders-h'
     },
     { 
       label: 'TRASLADO', 
@@ -322,7 +316,8 @@ export class MovimientosInventarioComponent implements OnInit {
       cantidad: this.movimiento.cantidad,
       referencia: this.movimiento.referencia?.trim() || `MOV-${Date.now()}`,
       descripcion: this.movimiento.descripcion,
-      usuario: this.getCurrentUsername() // Obtener usuario del token JWT
+      usuario: this.getCurrentUsername(), // Obtener usuario del token JWT
+      ventaId: undefined // Movimientos manuales no tienen ventaId
     };
   
     if (this.editMode && this.movimiento.id) {
@@ -413,15 +408,6 @@ export class MovimientosInventarioComponent implements OnInit {
     if (!this.movimiento.referencia?.trim()) {
       this.showError('La referencia es obligatoria');
       return false;
-    }
-
-    // Validar stock suficiente para salidas
-    if (this.movimiento.tipo === 'SALIDA') {
-      const stockDisponible = this.inventarioSeleccionado.cantidad;
-      if (this.movimiento.cantidad > stockDisponible) {
-        this.showError(`Stock insuficiente. Disponible: ${stockDisponible}`);
-        return false;
-      }
     }
 
     // Validar inventario destino para traslados

@@ -32,6 +32,8 @@ import { UsuarioService, PagedUserResponse } from '../../../core/services/usuari
 import { PermissionService, PermissionType } from '../../../core/services/permission.service';
 import { AnimationService } from '../../../core/animations/animation.service';
 import { Subject, firstValueFrom, finalize } from 'rxjs';
+import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 interface ViewOption {
   label: string;
@@ -83,6 +85,7 @@ interface StatusOption {
     ChipModule, // 👈 Nuevo import
     BadgeModule, // 👈 Nuevo import
     InputSwitchModule, // 👈 Nuevo import
+    ToastNotificationComponent, // 👈 Toast notification
     HasPermissionDirective
   ],
   providers: [MessageService, ConfirmationService],
@@ -234,13 +237,6 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
       description: 'Gestión de ventas y productos',
       icon: 'pi pi-shopping-cart',
       color: 'success'
-    },
-    { 
-      label: 'Usuario', 
-      value: 'usuario', 
-      description: 'Acceso básico al sistema',
-      icon: 'pi pi-user',
-      color: 'info'
     }
   ];
 
@@ -258,9 +254,14 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
   private readonly animationService: AnimationService = inject(AnimationService);
   private readonly permissionService: PermissionService = inject(PermissionService);
+  readonly toastService = inject(ToastService);
 
   ngOnInit(): void {
     this.loadUsers();
+  }
+
+  onToastDismissed(id: string): void {
+    this.toastService.dismiss(id);
   }
 
   ngAfterViewInit(): void {
@@ -442,7 +443,12 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 👇 Genera avatar personalizado
    */
-  getAvatarUrl(usuario: User): string {
+  getAvatarUrl(usuario: User | null): string {
+    // Si no hay usuario, retornamos un avatar por defecto
+    if (!usuario) {
+      return 'https://ui-avatars.com/api/?name=?&background=667eea&color=fff&size=128&font-size=0.6';
+    }
+    
     // Si el usuario tiene avatar, lo usamos
     if (usuario.avatar) {
       return usuario.avatar;
@@ -819,10 +825,13 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     return 'pi pi-user';
   }
 
-  getInitials(user: User): string {
+  getInitials(user: User | null): string {
+    if (!user) {
+      return '?';
+    }
     const nombres = user.nombres || '';
     const apellidos = user.apellidos || '';
-    return (nombres.charAt(0) + apellidos.charAt(0)).toUpperCase();
+    return (nombres.charAt(0) + apellidos.charAt(0)).toUpperCase() || '?';
   }
 
   // ========== EXPORTACIÓN (Manteniendo y expandiendo funcionalidad original) ==========
@@ -921,30 +930,15 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
   // ========== MENSAJES (Manteniendo funcionalidad original) ==========
 
   private showSuccess(message: string): void {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Éxito',
-      detail: message,
-      life: 3000
-    });
+    this.toastService.success('Éxito', message);
   }
 
   private showWarning(message: string): void {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Advertencia',
-      detail: message,
-      life: 3000
-    });
+    this.toastService.warning('Advertencia', message);
   }
 
   private showError(message: string): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: message,
-      life: 5000
-    });
+    this.toastService.error('Error', message);
   }
 
   private handleError(error: unknown, defaultMessage: string): void {
@@ -963,12 +957,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: errorMessage,
-      life: 5000
-    });
+    this.toastService.error('Error', errorMessage);
   }
 
   async exportarEstadisticas(): Promise<void> {
@@ -1085,6 +1074,13 @@ export class UsuariosComponent implements OnInit, AfterViewInit, OnDestroy {
     // No permitir eliminar al usuario actual (puedes agregar lógica adicional)
     // return usuario.username !== 'admin'; // Ejemplo: no eliminar admin
     return true; // Por ahora permitir eliminar todos
+  }
+  
+  /**
+   * Valida si el usuario actual tiene permisos de edición
+   */
+  canEditUsuarios(): boolean {
+    return this.permissionService.canEdit('usuarios');
   }
   
   /**

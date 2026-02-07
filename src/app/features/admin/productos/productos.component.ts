@@ -131,8 +131,7 @@ interface TableFilter {
     ToastNotificationComponent,
   ],
   providers: [MessageService, ConfirmationService, CurrencyPipe],
-  templateUrl: './productos.component.html',
-  styleUrls: ['./productos.component.scss'],
+  templateUrl: './productos.component.html'
 })
 export class ProductosComponent implements OnInit {
   // ========== DATOS Y ESTADO ==========
@@ -1652,7 +1651,8 @@ export class ProductosComponent implements OnInit {
   /**
    * 🏷️ Obtiene la etiqueta del género
    */
-  getGeneroLabel(genero: string): string {
+  getGeneroLabel(genero?: string): string {
+    if (!genero) return 'Sin especificar';
     const generos: Record<string, string> = {
       hombre: 'Hombre',
       mujer: 'Mujer',
@@ -1666,7 +1666,8 @@ export class ProductosComponent implements OnInit {
   /**
    * 👟 Obtiene la etiqueta del tipo de calzado
    */
-  getTipoCalzadoLabel(tipo: string): string {
+  getTipoCalzadoLabel(tipo?: string): string {
+    if (!tipo) return 'Sin especificar';
     const tipos: Record<string, string> = {
       zapatillas_deportivas: 'Zapatillas Deportivas',
       zapatillas_casual: 'Zapatillas Casual',

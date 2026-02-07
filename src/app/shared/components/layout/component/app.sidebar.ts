@@ -6,7 +6,7 @@ import { AppMenu } from './app.menu';
   standalone: true,
   imports: [AppMenu],
   template: ` <div
-    class="layout-sidebar bg-surface-0/95 backdrop-blur-md border-r border-surface-border"
+    class="layout-sidebar bg-surface-0 dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700"
   >
     <app-menu></app-menu>
   </div>`,

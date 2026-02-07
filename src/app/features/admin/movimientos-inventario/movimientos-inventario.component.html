@@ -2,1478 +2,1162 @@
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
 <!-- Header premium con dashboard metrics -->
-<div class="mb-6">
-  <!-- Header principal con gradiente y métricas -->
-  <div class="bg-gradient-to-r from-white via-green-50 to-white rounded-xl p-6 shadow-sm border border-gray-100">
-    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-      <!-- Título principal -->
-      <div>
-        <div class="flex items-center gap-3 mb-2">
-          <div class="bg-green-600 p-3 rounded-lg shadow-lg">
-            <i class="pi pi-arrows-alt text-white text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0">Gestión de Movimientos</h1>
-            <p class="text-gray-600 mt-1 mb-0">Control inteligente de movimientos de inventario</p>
-          </div>
-        </div>
+<div class="bg-white dark:bg-surface-900 rounded-[2.5rem] p-8 mb-8 shadow-sm border border-surface-200 dark:border-surface-800 relative overflow-hidden group transition-all duration-300 hover:shadow-md">
+  
+  <div class="absolute top-0 right-0 w-96 h-96 bg-teal-50 dark:bg-teal-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-60 pointer-events-none transition-transform duration-1000 group-hover:scale-110"></div>
+
+  <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
+    
+    <div class="flex items-center gap-5">
+      <div class="w-20 h-20 rounded-3xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-teal-600 dark:text-teal-400 border border-surface-100 dark:border-surface-700 shadow-inner">
+        <i class="pi pi-arrows-alt text-3xl"></i>
       </div>
       
-      <!-- Dashboard metrics avanzado -->
-      <div class="flex flex-wrap gap-4">
-        <!-- Total movimientos -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[140px] inventory-entrance">
-          <div class="flex items-center gap-3">
-            <div class="bg-blue-100 p-2 rounded-lg">
-              <i class="pi pi-list text-blue-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-600">
-                {{inventarioSeleccionadoFiltro ? movimientosFiltrados.length : movimientos.length || 0}}
-              </div>
-              <div class="text-sm text-gray-600 font-medium">
-                {{inventarioSeleccionadoFiltro ? 'Movimientos del Producto' : 'Total Movimientos'}}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Entradas del día -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
-          <div class="flex items-center gap-3">
-            <div class="bg-green-100 p-2 rounded-lg">
-              <i class="pi pi-arrow-down text-green-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-green-600">{{getEntradasHoy()}}</div>
-              <div class="text-sm text-gray-600 font-medium">
-                {{inventarioSeleccionadoFiltro ? 'Entradas (Producto)' : 'Entradas Hoy'}}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Salidas del día -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
-          <div class="flex items-center gap-3">
-            <div class="bg-orange-100 p-2 rounded-lg">
-              <i class="pi pi-arrow-up text-orange-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-orange-600">{{getSalidasHoy()}}</div>
-              <div class="text-sm text-gray-600 font-medium">
-                {{inventarioSeleccionadoFiltro ? 'Salidas (Producto)' : 'Salidas Hoy'}}
-              </div>
-            </div>
-          </div>
-        </div>
-                
-        <!-- Stock crítico afectado -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance"
-             [class.pulse-value]="getProductosStockCritico() > 0">
-          <div class="flex items-center gap-3">
-            <div class="bg-red-100 p-2 rounded-lg">
-              <i class="pi pi-exclamation-triangle text-red-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-red-600">{{getProductosStockCritico()}}</div>
-              <div class="text-sm text-gray-600 font-medium">
-                {{inventarioSeleccionadoFiltro ? 'Stock Actual' : 'Stock Crítico'}}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Eficiencia del día -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-w-[120px] inventory-entrance">
-          <div class="flex items-center gap-3">
-            <div class="bg-teal-100 p-2 rounded-lg">
-              <i class="pi pi-chart-line text-teal-600"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-teal-600">{{getEficienciaMovimientos() | number:'1.0-0'}}%</div>
-              <div class="text-sm text-gray-600 font-medium">
-                {{inventarioSeleccionadoFiltro ? 'Eficiencia (Producto)' : 'Eficiencia Hoy'}}
-              </div>
-            </div>
-          </div>
-        </div>
+      <div>
+        <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-tight">
+          Gestión de Movimientos
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1 mb-0 text-base flex items-center gap-2">
+          <span>Logística</span>
+          <span class="w-1 h-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
+          <span class="font-medium text-teal-600 dark:text-teal-400">
+            {{ inventarioSeleccionadoFiltro ? 'Historial de Producto' : 'Control de Flujo' }}
+          </span>
+        </p>
       </div>
     </div>
+
+    <div class="w-full xl:w-auto bg-surface-50 dark:bg-surface-800/50 rounded-3xl p-1 border border-surface-100 dark:border-surface-700/50 overflow-x-auto no-scrollbar">
+      <div class="flex flex-row items-center divide-x divide-surface-200 dark:divide-surface-700 min-w-max">
+        
+        <div class="px-6 py-3 flex flex-col items-center sm:items-start min-w-[140px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <i class="pi pi-list text-blue-500"></i> Total Ops
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none">
+              {{ inventarioSeleccionadoFiltro ? movimientosFiltrados.length : (movimientos.length || 0) }}
+           </span>
+        </div>
+
+        <div class="px-6 py-3 flex flex-col items-center sm:items-start min-w-[120px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <i class="pi pi-arrow-down text-emerald-500"></i> Entradas
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none text-emerald-600 dark:text-emerald-400">
+              +{{ getEntradasHoy() }}
+           </span>
+        </div>
+
+        <div class="px-6 py-3 flex flex-col items-center sm:items-start min-w-[120px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <i class="pi pi-arrow-up text-orange-500"></i> Salidas
+           </span>
+           <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none text-orange-600 dark:text-orange-400">
+              -{{ getSalidasHoy() }}
+           </span>
+        </div>
+
+        <div class="px-6 py-3 flex flex-col items-center sm:items-start min-w-[120px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <i class="pi pi-exclamation-triangle" [ngClass]="getProductosStockCritico() > 0 ? 'text-red-500 animate-pulse' : 'text-surface-400'"></i> 
+              {{ inventarioSeleccionadoFiltro ? 'Stock' : 'Críticos' }}
+           </span>
+           <span class="text-2xl font-bold leading-none transition-colors"
+                 [ngClass]="getProductosStockCritico() > 0 ? 'text-red-600 dark:text-red-400' : 'text-surface-900 dark:text-surface-0'">
+              {{ getProductosStockCritico() }}
+           </span>
+        </div>
+
+        <div class="px-6 py-3 flex flex-col items-center sm:items-start min-w-[140px]">
+           <span class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <i class="pi pi-chart-line text-teal-500"></i> Eficiencia
+           </span>
+           <div class="flex items-center gap-2">
+               <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none">
+                  {{ getEficienciaMovimientos() | number:'1.0-0' }}%
+               </span>
+               <div class="w-8 h-8 relative flex items-center justify-center">
+                   <svg class="w-full h-full transform -rotate-90">
+                       <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="3" fill="transparent" class="text-surface-200 dark:text-surface-700" />
+                       <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="3" fill="transparent" class="text-teal-500 transition-all duration-1000" [attr.stroke-dasharray]="75" [attr.stroke-dashoffset]="75 - (75 * (getEficienciaMovimientos() / 100))" stroke-linecap="round" />
+                   </svg>
+               </div>
+           </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
 <!-- Toolbar premium con acciones inteligentes -->
-<div class="mb-6">
-  <div class="bg-gradient-to-r from-white via-blue-50 to-white rounded-xl p-5 shadow-sm border border-gray-100">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div class="sticky top-4 z-40 mb-8 px-2">
+  <div class="bg-white dark:bg-surface-900 rounded-2xl p-3 shadow-lg border border-surface-200 dark:border-surface-700 flex flex-col xl:flex-row items-center justify-between gap-4 transition-all duration-300">
+    
+    <div class="flex items-center gap-2 w-full xl:w-auto overflow-x-auto no-scrollbar pb-1 xl:pb-0">
       
-      <!-- Sección izquierda - Acciones principales -->
-      <div class="flex flex-wrap items-center gap-3">
-        <!-- Nuevo movimiento (principal) -->
-        <button 
-          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
-          class="action-btn primary-btn"
-          (click)="openNew()">
-          <div class="btn-icon bg-blue-600">
-            <i class="pi pi-plus text-white"></i>
-          </div>
-          <div class="btn-content">
-            <div class="btn-title">Nuevo</div>
-            <div class="btn-subtitle">Movimiento</div>
-          </div>
-        </button>
-        
-        <!-- Acciones rápidas -->
-        <div class="flex items-center gap-2 ml-2">
-          <!-- Entrada rápida -->
-          <button 
-            class="quick-action-btn success-btn"
-            (click)="entradaRapida()"
-            title="Nueva Entrada">
-            <div class="quick-icon bg-green-100">
-              <i class="pi pi-arrow-down text-green-600"></i>
-            </div>
-            <span class="quick-label">Entrada</span>
-          </button>
-          
-          <!-- Salida rápida -->
-          <button 
-            class="quick-action-btn warning-btn"
-            (click)="salidaRapida()"
-            title="Nueva Salida">
-            <div class="quick-icon bg-orange-100">
-              <i class="pi pi-arrow-up text-orange-600"></i>
-            </div>
-            <span class="quick-label">Salida</span>
-          </button>
-          
-          <!-- Ajuste -->
-          <button 
-            class="quick-action-btn secondary-btn"
-            (click)="ajusteInventario()"
-            title="Ajuste de Inventario">
-            <div class="quick-icon bg-purple-100">
-              <i class="pi pi-sliders-h text-purple-600"></i>
-            </div>
-            <span class="quick-label">Ajuste</span>
-          </button>
-        </div>
-        
-        <!-- Separador visual -->
-        <div class="separator"></div>
-        
-        <!-- Eliminar seleccionados -->
-        <button 
-          *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
-          class="action-btn danger-btn"
-          (click)="deleteSelectedMovimientos()"
-          [disabled]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro"
-          [class.disabled]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro">
-          <div class="btn-icon bg-red-600" [class.bg-gray-400]="!selectedMovimientos.length || !inventarioSeleccionadoFiltro">
-            <i class="pi pi-trash text-white"></i>
-          </div>
-          <span class="btn-text">
-            Eliminar ({{selectedMovimientos.length || 0}})
-          </span>
-        </button>
-      </div>
-      
-      <!-- Sección derecha - Filtros y exportación -->
-      <div class="flex flex-wrap items-center gap-3">
-        <!-- Info de filtros activos -->
-        <div class="filter-info" *ngIf="inventarioSeleccionadoFiltro">
-          <div class="info-badge active">
-            <i class="pi pi-filter"></i>
-            <span>Filtros aplicados</span>
-            <div class="badge-count">{{getActiveFiltrosCount()}}</div>
-          </div>
-        </div>
-        
-        <!-- Contador de resultados -->
-        <div class="results-counter">
-          <div class="counter-badge">
-            <i class="pi pi-list"></i>
-            <span>{{movimientosFiltrados.length}} resultados</span>
-          </div>
-        </div>
-        
-        <!-- Acciones secundarias -->
-        <div class="flex items-center gap-2">
-          <!-- Limpiar filtros -->
-          <button 
-            class="secondary-action-btn"
-            (click)="limpiarFiltros()"
+      <button
+        *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
+        (click)="openNew()"
+        class="group relative px-5 py-2.5 bg-surface-900 hover:bg-black dark:bg-surface-0 dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-xl font-bold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 shadow-md min-w-max"
+      >
+        <i class="pi pi-plus text-xs"></i>
+        <span>Nuevo</span>
+      </button>
+
+      <div class="w-px h-8 bg-surface-200 dark:bg-surface-700 mx-1"></div>
+
+      <button
+        (click)="entradaRapida()"
+        class="px-4 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold border border-emerald-100 dark:border-emerald-900/50 transition-all flex items-center gap-2 min-w-max"
+        pTooltip="Registrar Entrada"
+      >
+        <i class="pi pi-arrow-down"></i>
+        <span class="hidden sm:inline">Entrada</span>
+      </button>
+
+      <button
+        (click)="salidaRapida()"
+        class="px-4 py-2.5 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-xl font-bold border border-amber-100 dark:border-amber-900/50 transition-all flex items-center gap-2 min-w-max"
+        pTooltip="Registrar Salida"
+      >
+        <i class="pi pi-arrow-up"></i>
+        <span class="hidden sm:inline">Salida</span>
+      </button>
+
+      <button
+        (click)="ajusteInventario()"
+        class="px-4 py-2.5 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl font-bold border border-purple-100 dark:border-purple-900/50 transition-all flex items-center gap-2 min-w-max"
+        pTooltip="Ajuste Manual"
+      >
+        <i class="pi pi-sliders-h"></i>
+        <span class="hidden sm:inline">Ajuste</span>
+      </button>
+
+      <div *ngIf="selectedMovimientos?.length" class="animate-fade-in border-l border-surface-200 dark:border-surface-700 pl-2 ml-1">
+          <button
+            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
+            (click)="deleteSelectedMovimientos()"
             [disabled]="!inventarioSeleccionadoFiltro"
-            [class.disabled]="!inventarioSeleccionadoFiltro"
-            title="Limpiar todos los filtros">
-            <div class="secondary-icon">
-              <i class="pi pi-filter-slash"></i>
-            </div>
+            class="px-4 py-2.5 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl font-bold transition-all flex items-center gap-2 border border-red-100 dark:border-red-900/50 min-w-max disabled:opacity-50 disabled:cursor-not-allowed"
+            pTooltip="Requiere filtro de producto activo"
+          >
+            <i class="pi pi-trash"></i>
+            <span>({{ selectedMovimientos.length }})</span>
           </button>
-          
-          <!-- Actualizar -->
-          <button 
-            class="secondary-action-btn"
-            (click)="refresh()"
-            title="Actualizar datos">
-            <div class="secondary-icon">
-              <i class="pi pi-refresh"></i>
-            </div>
-          </button>
-          
-          <!-- Exportar con opciones (Excel y PDF) -->
-          <p-splitButton 
-            label="Exportar" 
-            icon="pi pi-download" 
-            (onClick)="exportarExcelMejorado()"
-            [model]="opcionesExportacion"
-            [disabled]="movimientosFiltrados.length === 0"
-            severity="success"
-            [outlined]="false"
-            styleClass="export-split-btn"
-            appendTo="body">
-            <ng-template pTemplate="content">
-              <span class="font-semibold">Exportar</span>
-            </ng-template>
-          </p-splitButton>
-        </div>
       </div>
     </div>
-    
-    <!-- Barra de progreso/estado (opcional) -->
-    <div class="status-bar" *ngIf="loading || hasActiveFilters()">
-      <div class="status-content">
-        <!-- Loading -->
-        <div class="flex items-center gap-2" *ngIf="loading">
-          <i class="pi pi-spin pi-spinner text-blue-600"></i>
-          <span class="text-sm text-gray-600">Cargando movimientos...</span>
-        </div>
-        
-        <!-- Filtros activos -->
-        <div class="flex items-center gap-2" *ngIf="loading && hasActiveFilters()">
-          <i class="pi pi-info-circle text-blue-600"></i>
-          <span class="text-sm text-gray-700">
-            Mostrando {{movimientosFiltrados.length}} de {{movimientos.length}} movimientos
-          </span>
-        </div>
+
+    <div class="flex items-center gap-3 bg-surface-50 dark:bg-surface-800 p-1.5 rounded-xl border border-surface-100 dark:border-surface-700 w-full xl:w-auto justify-between xl:justify-end">
+      
+      <div *ngIf="inventarioSeleccionadoFiltro" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm animate-fade-in">
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          <span class="text-xs font-bold text-surface-600 dark:text-surface-300">Filtro Activo</span>
+          <button (click)="limpiarFiltros()" class="ml-1 text-surface-400 hover:text-red-500 transition-colors">
+              <i class="pi pi-times-circle text-xs"></i>
+          </button>
       </div>
+
+      <div *ngIf="inventarioSeleccionadoFiltro" class="hidden md:block w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1"></div>
+
+      <div class="flex gap-1 items-center">
+          
+          <button
+            (click)="refresh()"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-surface-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all active:scale-90"
+            pTooltip="Actualizar Datos">
+            <i class="pi pi-refresh" [class.pi-spin]="loading"></i>
+          </button>
+
+          <button
+            *ngIf="inventarioSeleccionadoFiltro"
+            (click)="limpiarFiltros()"
+            class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-surface-500 hover:text-red-600 hover:bg-red-50 transition-all active:scale-90"
+            pTooltip="Limpiar Filtros">
+            <i class="pi pi-filter-slash"></i>
+          </button>
+
+          <div class="zen-split-button">
+              <p-splitButton 
+                  icon="pi pi-download" 
+                  [model]="opcionesExportacion"
+                  (onClick)="exportarExcelMejorado()"
+                  [disabled]="movimientosFiltrados.length === 0"
+                  styleClass="p-button-text p-button-secondary"
+                  pTooltip="Exportar Reporte"
+                  appendTo="body"
+              ></p-splitButton>
+          </div>
+      </div>
+
     </div>
   </div>
 </div>
 
 
 <!-- Filtro por inventario origen -->
-<div class="mb-4">
-  <h5 class="mb-2">Filtrar por Inventario de Origen</h5>
-  <p-select 
-    [options]="inventarios" 
-    [(ngModel)]="inventarioSeleccionadoFiltro" 
-    optionLabel="serie"
-    placeholder="Seleccione un inventario para filtrar movimientos"
-    [filter]="true"
-    filterBy="serie"
-    [style]="{'width':'100%', 'max-width': '400px'}"
-    (onChange)="filtrarMovimientosPorInventario()"
-    [showClear]="true">
-    <ng-template pTemplate="selectedItem">
-      <div *ngIf="inventarioSeleccionadoFiltro">
-        <div>{{inventarioSeleccionadoFiltro.serie}} - {{inventarioSeleccionadoFiltro.producto?.nombre}}</div>
-      </div>
-    </ng-template>
-    <ng-template let-item pTemplate="item">
-      <div>
-        <div>{{item.serie}} - {{item.producto?.nombre}}</div>
-        <small class="text-gray-500">{{item.color?.nombre}} - Talla {{item.talla?.numero}} - {{item.almacen?.nombre}}</small>
-      </div>
-    </ng-template>
-  </p-select>
-  <small *ngIf="inventarioSeleccionadoFiltro" class="block mt-2">
-    Mostrando movimientos para: <strong>{{inventarioSeleccionadoFiltro.serie}} - {{inventarioSeleccionadoFiltro.producto?.nombre}}</strong>
-  </small>
-  <small *ngIf="!inventarioSeleccionadoFiltro" class="block mt-2">
-    Seleccione un inventario para filtrar movimientos
-  </small>
-</div>
-
-<!-- NUEVO: Panel de filtros avanzados -->
-<div class="mb-6" *ngIf="inventarioSeleccionadoFiltro">
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="bg-blue-100 p-2 rounded-lg">
-        <i class="pi pi-filter text-blue-600"></i>
-      </div>
-      <h5 class="m-0 font-bold text-gray-800">Filtros Avanzados</h5>
-    </div>
+<div class="mb-8 animate-fade-in">
+  <div class="bg-white dark:bg-surface-900 rounded-[2rem] p-6 shadow-sm border border-surface-200 dark:border-surface-800 relative overflow-hidden">
     
-    <div class="grid gap-4">
-      <!-- Filtro por rango de fechas -->
-      <div class="col-12 md:col-6 lg:col-4">
-        <label class="block font-semibold text-gray-700 mb-2">
-          <i class="pi pi-calendar mr-2 text-purple-600"></i>
-          Fecha Desde
-        </label>
-        <p-calendar 
-          [(ngModel)]="fechaDesde" 
-          [showIcon]="true" 
-          dateFormat="dd/mm/yy"
-          placeholder="Fecha inicial"
-          [showButtonBar]="true"
-          (onSelect)="aplicarFiltrosPorFecha()"
-          class="w-full"
-        ></p-calendar>
-      </div>
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
       
-      <div class="col-12 md:col-6 lg:col-4">
-        <label class="block font-semibold text-gray-700 mb-2">
-          <i class="pi pi-calendar mr-2 text-purple-600"></i>
-          Fecha Hasta
-        </label>
-        <p-calendar 
-          [(ngModel)]="fechaHasta" 
-          [showIcon]="true" 
-          dateFormat="dd/mm/yy"
-          placeholder="Fecha final"
-          [showButtonBar]="true"
-          (onSelect)="aplicarFiltrosPorFecha()"
-          class="w-full"
-        ></p-calendar>
+      <div class="flex items-center gap-4 min-w-[200px]">
+        <div class="w-12 h-12 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-primary-600 dark:text-primary-400 border border-surface-200 dark:border-surface-700">
+          <i class="pi pi-filter text-xl"></i>
+        </div>
+        <div>
+          <h5 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Filtro de Origen</h5>
+          <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Selecciona una serie</p>
+        </div>
       </div>
-      
-      <!-- Filtro por estado -->
-      <div class="col-12 md:col-6 lg:col-4">
-        <label class="block font-semibold text-gray-700 mb-2">
-          <i class="pi pi-tag mr-2 text-green-600"></i>
-          Estado
-        </label>
+
+      <div class="flex-1 w-full relative group">
+        <div class="absolute -inset-0.5 bg-primary-100 dark:bg-primary-900/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+        
         <p-select 
-          [(ngModel)]="estadoFiltro" 
-          [options]="estadosMovimiento"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Todos los estados"
+          [options]="inventarios" 
+          [(ngModel)]="inventarioSeleccionadoFiltro" 
+          optionLabel="serie"
+          placeholder="Buscar por Serie, Producto o Código..."
+          [filter]="true"
+          filterBy="serie,producto.nombre,producto.codigo"
+          [style]="{'width':'100%'}"
+          (onChange)="filtrarMovimientosPorInventario()"
           [showClear]="true"
-          (onChange)="aplicarFiltrosPorFecha()"
-          class="w-full"
+          appendTo="body"
+          styleClass="w-full h-14 border-0 bg-surface-50 dark:bg-surface-800 text-lg rounded-xl shadow-inner text-surface-600 pl-4 relative z-10 focus:ring-0"
+          panelStyleClass="zen-dropdown-panel mt-2 rounded-2xl shadow-2xl border border-surface-100"
+          [panelStyle]="{ 'min-width': '100%', 'max-height': '400px' }"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="80"
         >
-          <ng-template let-option pTemplate="item">
-            <div class="flex items-center gap-2">
-              <i [class]="option.icon"></i>
-              <span>{{option.label}}</span>
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="inventarioSeleccionadoFiltro" class="flex items-center gap-3 h-full">
+              <span class="bg-surface-900 text-white text-xs font-bold px-2 py-1 rounded-md font-mono">
+                {{ inventarioSeleccionadoFiltro.serie }}
+              </span>
+              <span class="text-sm font-bold text-surface-900 dark:text-surface-0">
+                {{ inventarioSeleccionadoFiltro.producto?.nombre }}
+              </span>
+              <span class="text-xs text-surface-500 border-l border-surface-300 pl-3 ml-1">
+                {{ inventarioSeleccionadoFiltro.almacen?.nombre }}
+              </span>
+            </div>
+          </ng-template>
+
+          <ng-template let-item pTemplate="item">
+            <div class="flex items-center gap-4 p-2 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors rounded-xl mx-2 my-1">
+              <div class="w-10 h-10 rounded-lg border flex items-center justify-center shadow-sm relative"
+                   [style.background-color]="item.color?.codigoHex || '#fff'">
+                   <span class="absolute -bottom-1 -right-1 bg-white text-[9px] font-bold px-1 rounded shadow-sm border">
+                     {{ item.talla?.numero }}
+                   </span>
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-0.5">
+                  <span class="font-mono text-xs font-bold bg-surface-100 dark:bg-surface-700 px-1.5 py-0.5 rounded text-surface-700 dark:text-surface-200">
+                    {{ item.serie }}
+                  </span>
+                  <span class="font-bold text-surface-800 dark:text-surface-100 truncate text-sm">
+                    {{ item.producto?.nombre }}
+                  </span>
+                </div>
+                <div class="text-xs text-surface-500 flex items-center gap-2">
+                  <i class="pi pi-building text-[10px]"></i>
+                  {{ item.almacen?.nombre }}
+                  <span class="text-surface-300">•</span>
+                  Stock: <span class="font-bold text-surface-700">{{ item.cantidad }}</span>
+                </div>
+              </div>
             </div>
           </ng-template>
         </p-select>
       </div>
-      
-      <!-- Presets de rango de fechas -->
-      <div class="col-12">
-        <label class="block font-semibold text-gray-700 mb-2">
-          <i class="pi pi-clock mr-2 text-orange-600"></i>
-          Rangos Rápidos
-        </label>
-        <div class="flex flex-wrap gap-2">
-          <button 
-            pButton 
-            label="Hoy" 
-            icon="pi pi-calendar-plus"
-            size="small"
-            [outlined]="rangoFechaPreset !== 'hoy'"
-            (click)="aplicarRangoFechaPreset('hoy')"
-            class="flex-shrink-0"
-          ></button>
-          <button 
-            pButton 
-            label="Esta Semana" 
-            icon="pi pi-calendar"
-            size="small"
-            [outlined]="rangoFechaPreset !== 'semana'"
-            (click)="aplicarRangoFechaPreset('semana')"
-            class="flex-shrink-0"
-          ></button>
-          <button 
-            pButton 
-            label="Este Mes" 
-            icon="pi pi-calendar"
-            size="small"
-            [outlined]="rangoFechaPreset !== 'mes'"
-            (click)="aplicarRangoFechaPreset('mes')"
-            class="flex-shrink-0"
-          ></button>
-          <button 
-            pButton 
-            label="Último Mes" 
-            icon="pi pi-calendar-minus"
-            size="small"
-            [outlined]="rangoFechaPreset !== 'ultimoMes'"
-            (click)="aplicarRangoFechaPreset('ultimoMes')"
-            class="flex-shrink-0"
-          ></button>
-          <button 
-            pButton 
-            label="Limpiar" 
-            icon="pi pi-times"
-            severity="secondary"
-            size="small"
-            [outlined]="true"
-            (click)="aplicarRangoFechaPreset('limpiar')"
-            class="flex-shrink-0"
-          ></button>
-          <button 
-            pButton 
-            label="Ver Gráficos" 
-            icon="pi pi-chart-line"
-            severity="info"
-            size="small"
-            (click)="mostrarGraficos()"
-            class="flex-shrink-0"
-          ></button>
+
+    </div>
+
+    <div *ngIf="inventarioSeleccionadoFiltro" class="mt-4 pt-4 border-t border-surface-100 dark:border-surface-800 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-300">
+            <i class="pi pi-check-circle text-emerald-500"></i>
+            <span>Historial activo para:</span>
+            <strong class="text-surface-900 dark:text-surface-0">{{ inventarioSeleccionadoFiltro.producto?.nombre }}</strong>
         </div>
-      </div>
+        <button (click)="inventarioSeleccionadoFiltro = null; filtrarMovimientosPorInventario()" 
+                class="text-xs font-bold text-surface-400 hover:text-red-500 transition-colors flex items-center gap-1">
+            <i class="pi pi-times"></i> Limpiar Filtro
+        </button>
+    </div>
+
+    <div *ngIf="!inventarioSeleccionadoFiltro" class="mt-4 pt-4 border-t border-surface-100 dark:border-surface-800 text-center">
+        <span class="text-xs font-medium text-surface-400 italic flex items-center justify-center gap-2">
+            <i class="pi pi-info-circle"></i>
+            Selecciona una serie para auditar sus movimientos específicos.
+        </span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Panel de filtros avanzados -->
+<div class="mb-8 animate-fade-in" *ngIf="inventarioSeleccionadoFiltro">
+  <div class="bg-white dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm">
+    
+    <div class="flex justify-between items-center mb-6">
+        <h5 class="text-sm font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest m-0 flex items-center gap-2">
+            <i class="pi pi-sliders-h text-primary-500"></i> Parámetros de Búsqueda
+        </h5>
+        
+        <button 
+            (click)="mostrarGraficos()" 
+            class="flex items-center gap-2 px-4 py-2 bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-900 dark:text-surface-0 text-xs font-bold rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 transition-all">
+            <i class="pi pi-chart-line text-purple-500"></i>
+            <span>Analytics</span>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        <div class="xl:col-span-5 flex flex-col justify-between gap-4">
+            <div class="flex gap-4">
+                <div class="w-1/2">
+                    <label class="text-xs font-bold text-surface-500 dark:text-surface-400 ml-1 mb-1.5 block">Desde</label>
+                    <p-calendar 
+                        [(ngModel)]="fechaDesde" 
+                        [showIcon]="true" 
+                        dateFormat="dd/mm/yy" 
+                        placeholder="Inicio"
+                        appendTo="body"
+                        (onSelect)="aplicarFiltrosPorFecha()"
+                        styleClass="w-full"
+                        inputStyleClass="w-full border-none shadow-none font-bold text-surface-700 dark:text-surface-200 bg-surface-50 dark:bg-surface-800 rounded-xl h-11 focus:ring-0"
+                        [panelStyleClass]="'zen-calendar-panel'"
+                    ></p-calendar>
+                </div>
+                <div class="w-1/2">
+                    <label class="text-xs font-bold text-surface-500 dark:text-surface-400 ml-1 mb-1.5 block">Hasta</label>
+                    <p-calendar 
+                        [(ngModel)]="fechaHasta" 
+                        [showIcon]="true" 
+                        dateFormat="dd/mm/yy" 
+                        placeholder="Fin" 
+                        appendTo="body"
+                        (onSelect)="aplicarFiltrosPorFecha()"
+                        styleClass="w-full"
+                        inputStyleClass="w-full border-none shadow-none font-bold text-surface-700 dark:text-surface-200 bg-surface-50 dark:bg-surface-800 rounded-xl h-11 focus:ring-0"
+                        [panelStyleClass]="'zen-calendar-panel'"
+                    ></p-calendar>
+                </div>
+            </div>
+
+            <div class="bg-surface-50 dark:bg-surface-800 p-1.5 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-wrap gap-1">
+                <button 
+                    *ngFor="let preset of ['hoy', 'semana', 'mes', 'ultimoMes']"
+                    (click)="aplicarRangoFechaPreset(preset)"
+                    class="flex-1 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide transition-all"
+                    [ngClass]="rangoFechaPreset === preset 
+                        ? 'bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 shadow-md transform scale-105' 
+                        : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'">
+                    {{ preset === 'ultimoMes' ? '30 Días' : preset }}
+                </button>
+                <button 
+                    (click)="aplicarRangoFechaPreset('limpiar')"
+                    class="px-3 py-1.5 rounded-lg text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                    pTooltip="Resetear Fechas">
+                    <i class="pi pi-times text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="xl:col-span-4">
+            <label class="text-xs font-bold text-surface-500 dark:text-surface-400 ml-1 mb-1.5 block">Filtrar Estado</label>
+            <p-select 
+                [(ngModel)]="estadoFiltro" 
+                [options]="estadosMovimiento"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Todos los movimientos"
+                [showClear]="true"
+                appendTo="body"
+                (onChange)="aplicarFiltrosPorFecha()"
+                styleClass="w-full border-none shadow-none bg-surface-50 dark:bg-surface-800 rounded-xl h-[108px] flex items-center pl-2"
+                panelStyleClass="zen-dropdown-panel"
+            >
+                <ng-template pTemplate="selectedItem">
+                    <div class="flex items-center gap-3" *ngIf="estadoFiltro">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300">
+                            <i class="pi pi-tag"></i>
+                        </div>
+                        <span class="font-bold text-surface-900 dark:text-surface-0">{{ estadoFiltro }}</span>
+                    </div>
+                    <div *ngIf="!estadoFiltro" class="text-surface-400 dark:text-surface-500 font-medium pl-2">Seleccionar Estado...</div>
+                </ng-template>
+
+                <ng-template let-option pTemplate="item">
+                    <div class="flex items-center gap-3 p-1">
+                        <i [class]="option.icon" class="text-surface-400"></i>
+                        <span class="font-medium">{{option.label}}</span>
+                    </div>
+                </ng-template>
+            </p-select>
+        </div>
+
+        <div class="xl:col-span-3 flex flex-col gap-3">
+            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3 border border-surface-200 dark:border-surface-700 flex items-center justify-between">
+                <span class="text-xs font-bold text-surface-500 dark:text-surface-400">Filtrados</span>
+                <span class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ movimientosFiltrados.length }}</span>
+            </div>
+            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3 border border-surface-200 dark:border-surface-700 flex items-center justify-between">
+                <span class="text-xs font-bold text-surface-500 dark:text-surface-400">Total</span>
+                <span class="text-lg font-bold text-surface-900 dark:text-surface-0">{{ movimientos.length }}</span>
+            </div>
+        </div>
+
     </div>
   </div>
 </div>
 
-<p-table
-  #dt
-  [value]="movimientosFiltrados"
-  [rows]="10"
-  [paginator]="true"
-  [totalRecords]="movimientosFiltrados.length"
-  [globalFilterFields]="['id', 'tipo', 'descripcion', 'referencia', 'cantidad', 'usuario']"
-  [tableStyle]="{'min-width': '75rem'}"
-  [(selection)]="selectedMovimientos"
-  [rowHover]="true"
-  dataKey="id"
-  [showCurrentPageReport]="true"
-  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} movimientos"
-  [rowsPerPageOptions]="[5, 10, 20, 30, 50]"
-  [loading]="loading"
-  [alwaysShowPaginator]="true"
->
-  <ng-template pTemplate="caption">
-    <div class="flex items-center justify-between">
-      <h5 class="m-0">Movimientos de Inventario</h5>
-      <p-iconfield>
-        <p-inputicon styleClass="pi pi-search" />
-        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
-      </p-iconfield>
-    </div>
-  </ng-template>
-
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 3rem">
-        <p-tableHeaderCheckbox />
-      </th>
-      <th pSortableColumn="tipo" style="min-width:10rem">
-        Tipo
-        <p-sortIcon field="tipo" />
-      </th>
-      <th pSortableColumn="producto" style="min-width:18rem">
-        Producto / Detalles
-        <p-sortIcon field="producto" />
-      </th>
-      <th pSortableColumn="cantidad" style="min-width:8rem">
-        Cantidad
-        <p-sortIcon field="cantidad" />
-      </th>
-      <th pSortableColumn="descripcion" style="min-width:15rem">
-        Descripción
-        <p-sortIcon field="descripcion" />
-      </th>
-      <th pSortableColumn="referencia" style="min-width:10rem">
-        Referencia
-        <p-sortIcon field="referencia" />
-      </th>
-      <th pSortableColumn="fechaMovimiento" style="min-width:10rem">
-        Fecha
-        <p-sortIcon field="fechaMovimiento" />
-      </th>
-      <th pSortableColumn="usuario" style="min-width:8rem">
-        Usuario
-        <p-sortIcon field="usuario" />
-      </th>
-      <th style="min-width:8rem">Acciones</th>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-movimiento>
-    <tr>
-      <td>
-        <p-tableCheckbox [value]="movimiento" />
-      </td>
+<!-- Tabla de movimientos de inventario -->
+<div class="mb-8 animate-fade-in">
+  
+  <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-[2rem] overflow-hidden shadow-sm transition-colors duration-300">
+    
+    <p-table
+      #dt
+      [value]="movimientosFiltrados"
+      [rows]="10"
+      [paginator]="true"
+      [totalRecords]="movimientosFiltrados.length"
+      [globalFilterFields]="['tipo', 'descripcion', 'referencia', 'usuario', 'producto.nombre', 'producto.codigo']"
+      [(selection)]="selectedMovimientos"
+      [rowHover]="true"
+      dataKey="id"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [loading]="loading"
+      [tableStyle]="{'min-width': '85rem'}"
+      styleClass="p-datatable-lg"
+    >
       
-      <!-- Tipo de movimiento con badge mejorado -->
-      <td>
-        <p-tag 
-          [value]="movimiento.tipo" 
-          [severity]="getTipoSeverity(movimiento.tipo)"
-          [icon]="getTipoIcon(movimiento.tipo)"
-          [style]="{'font-size': '0.875rem', 'padding': '0.5rem 0.75rem'}">
-        </p-tag>
-      </td>
-      
-      <!-- Producto con detalles visuales -->
-      <td>
-        <div class="space-y-2">
-          <!-- Nombre del producto -->
-          <div class="flex items-center gap-2" *ngIf="movimiento.producto">
-            <div class="bg-blue-100 p-1.5 rounded-lg">
-              <i class="pi pi-box text-blue-600 text-sm"></i>
+      <ng-template pTemplate="caption">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-8 py-6 bg-white dark:bg-surface-900 border-b border-surface-100 dark:border-surface-800">
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-surface-400 border border-surface-100 dark:border-surface-700">
+              <i class="pi pi-history text-xl"></i>
             </div>
-            <span class="font-semibold text-gray-900">{{movimiento.producto?.nombre}}</span>
-          </div>
-          
-          <!-- Color y Talla en badges -->
-          <div class="flex items-center gap-2 flex-wrap">
-            <!-- Badge de Color con círculo de color real -->
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200"
-                 *ngIf="movimiento.color">
-              <div class="w-3 h-3 rounded-full border border-white shadow-sm"
-                   [style.background-color]="movimiento.color?.codigoHex || '#cccccc'">
-              </div>
-              {{movimiento.color?.nombre}}
+            <div>
+              <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Bitácora de Operaciones</h3>
+              <p class="text-sm text-surface-500 dark:text-surface-400 mt-0.5 flex items-center gap-2">
+                <span *ngIf="inventarioSeleccionadoFiltro" class="text-primary-600 font-medium bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded">
+                    Filtrado por: {{ inventarioSeleccionadoFiltro.producto?.nombre }}
+                </span>
+                <span *ngIf="!inventarioSeleccionadoFiltro">Vista General</span>
+              </p>
             </div>
-            
-            <!-- Badge de Talla -->
-            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
-                  *ngIf="movimiento.talla">
-              <i class="pi pi-tag text-xs"></i>
-              Talla {{movimiento.talla?.numero}}
-            </span>
           </div>
-          
-          <!-- Serie e Inventario destino si aplica -->
-          <div class="flex items-center gap-2 text-xs text-gray-500">
-            <span>Serie: {{movimiento.inventarioId}}</span>
-            <span *ngIf="movimiento.inventarioDestinoId" class="flex items-center gap-1">
-              <i class="pi pi-arrow-right"></i>
-              Destino: {{movimiento.inventarioDestinoId}}
-            </span>
-          </div>
-        </div>
-      </td>
-      
-      <!-- Cantidad con formato destacado -->
-      <td>
-        <div class="flex items-center gap-2">
-          <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-lg border border-green-200">
-            <span class="font-bold text-green-700 text-lg">{{movimiento.cantidad}}</span>
-          </div>
-        </div>
-      </td>
-      
-      <!-- Descripción con tooltip -->
-      <td>
-        <span class="text-gray-700" [title]="movimiento.descripcion">
-          {{movimiento.descripcion.length > 45 ? (movimiento.descripcion | slice:0:45) + '...' : movimiento.descripcion}}
-        </span>
-      </td>
-      
-      <!-- Referencia -->
-      <td>
-        <div class="flex items-center gap-2">
-          <i class="pi pi-tag text-gray-400 text-xs"></i>
-          <span class="font-mono text-sm text-gray-600">{{movimiento.referencia}}</span>
-        </div>
-      </td>
-      
-      <!-- Fecha -->
-      <td>
-        <div class="space-y-1">
-          <div class="font-medium text-gray-900">{{movimiento.fechaMovimiento | date:'dd/MM/yyyy'}}</div>
-          <div class="text-xs text-gray-500">{{movimiento.fechaMovimiento | date:'HH:mm'}}</div>
-        </div>
-      </td>
-      
-      <!-- Usuario -->
-      <td>
-        <div class="flex items-center gap-2">
-          <div class="bg-gray-100 p-1.5 rounded-full">
-            <i class="pi pi-user text-gray-600 text-xs"></i>
-          </div>
-          <span class="text-sm text-gray-700">{{movimiento.usuario}}</span>
-        </div>
-      </td>
-      
-      <!-- Acciones -->
-      <td>
-        <div class="flex gap-1 flex-wrap">
-          <!-- Ver detalles -->
-          <button 
-            pButton 
-            icon="pi pi-eye" 
-            class="p-button-rounded p-button-text p-button-sm hover:bg-blue-50"
-            (click)="verDetallesMovimiento(movimiento)"
-            pTooltip="Ver detalles completos"
-            tooltipPosition="top"
-            severity="info">
-          </button>
-          
-          <!-- Editar -->
-          <button 
-            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.EDIT}"
-            pButton 
-            icon="pi pi-pencil" 
-            class="p-button-rounded p-button-text p-button-sm hover:bg-blue-50"
-            (click)="editMovimiento(movimiento)"
-            pTooltip="Editar movimiento"
-            tooltipPosition="top">
-          </button>
-          
-          <!-- Duplicar -->
-          <button 
-            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
-            pButton 
-            icon="pi pi-copy" 
-            severity="success"
-            class="p-button-rounded p-button-text p-button-sm hover:bg-green-50"
-            (click)="duplicarMovimiento(movimiento)"
-            pTooltip="Duplicar movimiento"
-            tooltipPosition="top">
-          </button>
-          
-          <!-- Revertir -->
-          <button 
-            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}"
-            pButton 
-            icon="pi pi-replay" 
-            severity="danger"
-            class="p-button-rounded p-button-text p-button-sm hover:bg-orange-50"
-            (click)="revertirMovimiento(movimiento)"
-            pTooltip="Revertir movimiento"
-            tooltipPosition="top">
-          </button>
-          
-          <!-- Imprimir ticket -->
-          <button 
-            pButton 
-            icon="pi pi-print" 
-            severity="secondary"
-            class="p-button-rounded p-button-text p-button-sm hover:bg-gray-50"
-            (click)="imprimirTicket(movimiento)"
-            pTooltip="Imprimir ticket"
-            tooltipPosition="top">
-          </button>
-          
-          <!-- Eliminar -->
-          <button 
-            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
-            pButton 
-            icon="pi pi-trash" 
-            severity="danger" 
-            class="p-button-rounded p-button-text p-button-sm hover:bg-red-50"
-            (click)="deleteMovimiento(movimiento)"
-            pTooltip="Eliminar movimiento"
-            tooltipPosition="top">
-          </button>
-        </div>
-      </td>
-    </tr>
-  </ng-template>
 
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="10" class="text-center py-8">
-        <div *ngIf="inventarioSeleccionadoFiltro; else sinInventarioSeleccionado">
-          <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
-          <div class="text-lg font-medium text-gray-600 mb-2">No hay movimientos disponibles</div>
-          <div class="text-gray-500 mb-4">No se encontraron movimientos para este inventario.</div>
-          <button 
-            *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.CREATE}" 
-            pButton 
-            class="p-button-sm p-button-outlined" 
-            (click)="openNew()">
-            <i class="pi pi-plus mr-2"></i>
-            <span>Añadir Primer Movimiento</span>
-          </button>
+          <div class="relative group w-full md:w-auto">
+            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 group-focus-within:text-primary-500 transition-colors text-lg"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="Buscar referencia, usuario..."
+              class="pl-12 pr-4 py-3 w-full md:w-80 bg-surface-50 dark:bg-surface-800 border-none rounded-2xl text-base focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900 transition-all shadow-inner text-surface-700 dark:text-surface-200 placeholder:text-surface-400"
+            />
+          </div>
         </div>
-        <ng-template #sinInventarioSeleccionado>
-          <i class="pi pi-filter text-4xl text-gray-400 mb-3"></i>
-          <div class="text-lg font-medium text-gray-600 mb-2">Seleccione un inventario</div>
-          <div class="text-gray-500">Elija un inventario de origen para ver sus movimientos</div>
-        </ng-template>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr class="bg-surface-50/50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800">
+          <th style="width: 3rem" class="text-center py-5">
+            <p-tableHeaderCheckbox />
+          </th>
+          
+          <th pSortableColumn="tipo" class="py-5 pl-6 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600">
+            <div class="flex items-center gap-2">Operación <p-sortIcon field="tipo" /></div>
+          </th>
+          
+          <th class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Producto & Variante
+          </th>
+          
+          <th pSortableColumn="cantidad" class="py-5 text-center text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600">
+            <div class="flex justify-center items-center gap-2">Impacto <p-sortIcon field="cantidad" /></div>
+          </th>
+          
+          <th class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Contexto
+          </th>
+          
+          <th pSortableColumn="fechaMovimiento" class="py-5 text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer hover:text-primary-600">
+            <div class="flex items-center gap-2">Fecha <p-sortIcon field="fechaMovimiento" /></div>
+          </th>
+          
+          <th style="width: 10rem" class="py-5 text-center text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            Acciones
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-movimiento>
+        <tr class="group border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all duration-200">
+          
+          <td class="text-center py-6">
+            <p-tableCheckbox [value]="movimiento" />
+          </td>
+          
+          <td class="py-6 pl-6">
+             <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border"
+                   [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 border-emerald-100': movimiento.tipo === 'ENTRADA',
+                      'bg-amber-50 text-amber-700 border-amber-100': movimiento.tipo === 'SALIDA',
+                      'bg-purple-50 text-purple-700 border-purple-100': movimiento.tipo === 'AJUSTE' || movimiento.tipo === 'TRASLADO'
+                   }">
+                <i class="pi text-[10px]" 
+                   [ngClass]="{
+                      'pi-arrow-down': movimiento.tipo === 'ENTRADA',
+                      'pi-arrow-up': movimiento.tipo === 'SALIDA',
+                      'pi-sliders-h': movimiento.tipo === 'AJUSTE'
+                   }"></i>
+                {{ movimiento.tipo | titlecase }}
+             </span>
+          </td>
+
+          <td class="py-6">
+             <div class="flex flex-col gap-2">
+                <span class="font-bold text-surface-900 dark:text-surface-0 text-sm truncate max-w-[220px]" title="{{movimiento.producto?.nombre}}">
+                    {{ movimiento.producto?.nombre }}
+                </span>
+                
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 px-2 py-1 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm w-fit">
+                        <div class="w-3 h-3 rounded-full border border-surface-300" [style.background-color]="movimiento.color?.codigoHex || '#ccc'"></div>
+                        <span class="text-xs font-medium text-surface-600 dark:text-surface-300">{{ movimiento.color?.nombre }}</span>
+                    </div>
+                    <span class="text-xs font-mono font-bold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 px-2 py-1 rounded-lg">
+                        T: {{ movimiento.talla?.numero }}
+                    </span>
+                </div>
+             </div>
+          </td>
+
+          <td class="py-6 text-center">
+             <div class="flex flex-col items-center">
+                 <span class="text-xl font-bold font-mono tracking-tight"
+                       [ngClass]="{
+                          'text-emerald-600': movimiento.tipo === 'ENTRADA',
+                          'text-amber-600': movimiento.tipo === 'SALIDA',
+                          'text-purple-600': movimiento.tipo === 'AJUSTE'
+                       }">
+                    {{ movimiento.tipo === 'SALIDA' ? '-' : '+' }}{{ movimiento.cantidad }}
+                 </span>
+                 <span class="text-[10px] text-surface-400 uppercase tracking-wide font-bold">Unds</span>
+             </div>
+          </td>
+
+          <td class="py-6">
+             <div class="flex flex-col gap-1.5 max-w-[220px]">
+                <span class="text-sm text-surface-700 dark:text-surface-200 truncate font-medium" title="{{movimiento.descripcion}}">
+                    {{ movimiento.descripcion || 'Movimiento estándar' }}
+                </span>
+                <div class="flex items-center gap-2 text-xs text-surface-500">
+                    <span class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded border border-surface-200 dark:border-surface-700" *ngIf="movimiento.referencia">
+                        <i class="pi pi-hashtag text-[10px]"></i> {{ movimiento.referencia }}
+                    </span>
+                    <span class="flex items-center gap-1 pl-1">
+                        <i class="pi pi-user text-surface-400"></i> {{ movimiento.usuario }}
+                    </span>
+                </div>
+             </div>
+          </td>
+
+          <td class="py-6">
+             <div class="flex flex-col">
+                <span class="font-bold text-surface-900 dark:text-surface-0 text-sm">
+                    {{ movimiento.fechaMovimiento | date:'dd MMM yyyy' }}
+                </span>
+                <span class="text-xs text-surface-500 font-mono mt-0.5">
+                    {{ movimiento.fechaMovimiento | date:'HH:mm' }}
+                </span>
+             </div>
+          </td>
+
+          <td class="py-6 text-center">
+             <div class="flex gap-1 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                
+                <button 
+                  (click)="verDetallesMovimiento(movimiento)" 
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-primary-600 transition-colors" 
+                  pTooltip="Ver Detalle" tooltipPosition="top">
+                  <i class="pi pi-eye"></i>
+                </button>
+                
+                <button 
+                  *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.EDIT}"
+                  (click)="editMovimiento(movimiento)" 
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-900 transition-colors"
+                  pTooltip="Editar" tooltipPosition="top">
+                  <i class="pi pi-pencil"></i>
+                </button>
+
+                <button 
+                  (click)="imprimirTicket(movimiento)" 
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-purple-600 transition-colors"
+                  pTooltip="Imprimir Ticket" tooltipPosition="top">
+                  <i class="pi pi-print"></i>
+                </button>
+                
+                <button 
+                  *appHasPermission="{module: 'movimientosInventario', permission: permissionTypes.DELETE}"
+                  (click)="deleteMovimiento(movimiento)" 
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-surface-400 hover:text-red-600 transition-colors"
+                  pTooltip="Revertir/Eliminar" tooltipPosition="top">
+                  <i class="pi pi-trash"></i>
+                </button>
+             </div>
+          </td>
+
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center py-24">
+            <div class="flex flex-col items-center justify-center">
+                <div class="w-24 h-24 bg-surface-50 dark:bg-surface-800 rounded-full flex items-center justify-center mb-6 border border-surface-100 dark:border-surface-700">
+                    <i class="pi pi-filter-slash text-4xl text-surface-300 dark:text-surface-600"></i>
+                </div>
+                <h4 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Sin Operaciones</h4>
+                <p class="text-surface-500 text-base max-w-sm mx-auto mb-8">
+                    {{ inventarioSeleccionadoFiltro ? 'Este producto no tiene historial de movimientos.' : 'No se encontraron registros con los filtros actuales.' }}
+                </p>
+                
+                <button 
+                    *ngIf="inventarioSeleccionadoFiltro"
+                    (click)="openNew()"
+                    class="px-6 py-3 bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="pi pi-plus"></i> Registrar Movimiento
+                </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
+</div>
 
 <!-- Diálogo para crear/editar movimiento - Versión Mejorada -->
 <p-dialog 
   [(visible)]="movimientoDialog" 
-  [style]="{'width': '900px', 'max-width': '95vw', 'max-height': '90vh'}" 
+  [style]="{'width': '900px', 'max-width': '95vw', 'height': 'auto', 'max-height': '90vh'}" 
   [modal]="true" 
   (onHide)="hideDialog()"
-  [contentStyle]="{'padding':'0', 'overflow-y': 'auto', 'max-height': 'calc(90vh - 200px)'}"
-  [closable]="!loading"
-  [dismissableMask]="!loading"
+  [maximizable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [showHeader]="false"
+  [contentStyle]="{'padding':'0', 'border-radius': '1.5rem', 'overflow': 'hidden'}"
+  styleClass="app-dialog-zen"
 >
-  <!-- Header personalizado -->
+  <div class="flex flex-col h-full bg-surface-50 dark:bg-surface-950">
+    
+    <div class="flex justify-between items-center px-8 py-6 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-50">
+        <div class="flex items-center gap-5">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg"
+                 [ngClass]="editMode ? 'bg-primary-600' : 'bg-surface-900 dark:bg-surface-0 dark:text-surface-900'">
+                <i class="pi" [ngClass]="editMode ? 'pi-pencil' : 'pi-plus'"></i>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-none">
+                    {{ editMode ? 'Editar Operación' : 'Registrar Movimiento' }}
+                </h2>
+                <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                    {{ editMode ? 'Modificar datos existentes' : 'Entradas, salidas o ajustes de stock' }}
+                </p>
+            </div>
+        </div>
+
+        <button (click)="hideDialog()" class="group w-10 h-10 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 border border-surface-200 dark:border-surface-700 transition-colors">
+            <i class="pi pi-times"></i>
+        </button>
+    </div>
+  
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
+      
+      <div>
+          <label class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 block px-1">Tipo de Operación</label>
+          <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+            <div class="flex items-start gap-2 text-xs text-blue-700 dark:text-blue-300">
+              <i class="pi pi-info-circle mt-0.5"></i>
+              <span><strong>Nota:</strong> Las salidas por venta se registran automáticamente desde el módulo POS. Use <strong>AJUSTE</strong> para reducir stock manualmente (mermas, pérdidas, etc.)</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div *ngFor="let item of tiposMovimiento"
+                   (click)="!editMode && (movimiento.tipo = item.value)"
+                   class="cursor-pointer relative p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center justify-center gap-2 text-center group"
+                   [ngClass]="{
+                      'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600': movimiento.tipo !== item.value,
+                      'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-500 text-emerald-700 dark:text-emerald-400': movimiento.tipo === item.value && item.value === 'ENTRADA',
+                      'bg-amber-50 dark:bg-amber-900/30 border-amber-500 text-amber-700 dark:text-amber-400': movimiento.tipo === item.value && item.value === 'SALIDA',
+                      'bg-purple-50 dark:bg-purple-900/30 border-purple-500 text-purple-700 dark:text-purple-400': movimiento.tipo === item.value && item.value === 'AJUSTE',
+                      'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-400': movimiento.tipo === item.value && item.value === 'TRASLADO',
+                      'opacity-50 cursor-not-allowed': editMode && movimiento.tipo !== item.value
+                   }">
+                  <i [class]="item.icon + ' text-2xl mb-1'"></i>
+                  <span class="font-bold text-sm">{{ item.label }}</span>
+                  
+                  <div *ngIf="movimiento.tipo === item.value" class="absolute top-2 right-2 text-current">
+                      <i class="pi pi-check-circle"></i>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      <div class="bg-white dark:bg-surface-900 p-6 rounded-3xl border border-surface-200 dark:border-surface-700 shadow-sm">
+          <h4 class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i class="pi pi-box text-primary-500"></i> Inventario de Origen
+          </h4>
+        
+          <p-select 
+            id="inventario" 
+            [options]="inventarios" 
+            [(ngModel)]="inventarioSeleccionado"
+            optionLabel="serie"
+            placeholder="Buscar por Serie, Producto o Código..."
+            [filter]="true"
+            filterBy="serie,producto.nombre,producto.codigo"
+            [disabled]="editMode"
+            appendTo="body"
+            styleClass="w-full h-14 border-0 bg-surface-50 dark:bg-surface-800 text-lg rounded-xl shadow-inner text-surface-600 dark:text-surface-200 pl-4 focus:ring-0"
+            [ngClass]="{'border-2 border-red-100 bg-red-50': submitted && !inventarioSeleccionado}"
+            panelStyleClass="zen-dropdown-panel mt-2 rounded-2xl shadow-xl"
+            [virtualScroll]="true" 
+            [virtualScrollItemSize]="80"
+          >
+            <ng-template pTemplate="selectedItem">
+                <div *ngIf="inventarioSeleccionado" class="flex items-center gap-3 h-full">
+                    <span class="font-mono font-bold bg-surface-900 text-white px-2 py-1 rounded text-xs">{{ inventarioSeleccionado.serie }}</span>
+                    <span class="font-bold text-surface-900 dark:text-surface-0">{{ inventarioSeleccionado.producto?.nombre }}</span>
+                </div>
+                <div *ngIf="!inventarioSeleccionado" class="text-surface-400">Seleccione el lote o serie...</div>
+            </ng-template>
+
+            <ng-template let-item pTemplate="item">
+                <div class="flex items-center gap-4 p-2">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center border bg-white dark:bg-surface-800 relative" [style.border-color]="item.color?.codigoHex">
+                        <span class="text-[10px] font-bold text-surface-900 dark:text-surface-0">{{ item.talla?.numero }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 truncate">{{ item.producto?.nombre }}</div>
+                        <div class="text-xs text-surface-500 dark:text-surface-400 flex gap-2">
+                            <span class="font-mono bg-surface-100 dark:bg-surface-700 px-1 rounded">{{ item.serie }}</span>
+                            <span>Stock: <b>{{ item.cantidad }}</b></span>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+          </p-select>
+          
+          <div *ngIf="inventarioSeleccionado" class="mt-6 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 flex flex-col md:flex-row gap-6 animate-fade-in">
+              
+              <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 rounded-2xl border-2 border-white shadow-md flex items-center justify-center relative overflow-hidden" 
+                       [style.background-color]="inventarioSeleccionado.color?.codigoHex || '#ccc'">
+                       <span class="absolute bottom-0 right-0 bg-white/90 backdrop-blur px-1.5 py-0.5 text-[10px] font-bold rounded-tl-lg">
+                           {{ inventarioSeleccionado.talla?.numero }}
+                       </span>
+                  </div>
+                  <div>
+                      <span class="text-xs text-surface-500 uppercase font-bold">Variante</span>
+                      <div class="font-bold text-surface-900 dark:text-surface-0">{{ inventarioSeleccionado.color?.nombre }}</div>
+                      <div class="text-xs text-surface-500">{{ inventarioSeleccionado.almacen?.nombre }}</div>
+                  </div>
+              </div>
+
+              <div class="hidden md:block w-px bg-surface-200 dark:bg-surface-700"></div>
+
+              <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                      <span class="text-xs text-surface-500 uppercase font-bold">Stock Disponible</span>
+                      <span class="text-xl font-bold text-surface-900 dark:text-surface-0">{{ inventarioSeleccionado.cantidad }}</span>
+                  </div>
+                  <div class="w-full bg-surface-200 dark:bg-surface-700 rounded-full h-2">
+                      <div class="h-2 rounded-full bg-primary-600" style="width: 60%"></div> </div>
+              </div>
+          </div>
+      </div>
+
+      <div *ngIf="movimiento.tipo === 'TRASLADO'" class="bg-blue-50/50 dark:bg-blue-900/20 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 animate-fade-in">
+          <h4 class="text-xs font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i class="pi pi-arrow-right"></i> Destino del Traslado
+          </h4>
+          <p-select 
+            [options]="inventarios" 
+            [(ngModel)]="inventarioDestinoSeleccionado"
+            optionLabel="serie"
+            placeholder="Seleccionar inventario receptor..."
+            [filter]="true"
+            appendTo="body"
+            styleClass="w-full h-12 border-0 bg-white dark:bg-surface-800 text-sm rounded-xl shadow-sm text-surface-600 dark:text-surface-200 pl-4"
+          ></p-select>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <div class="bg-white dark:bg-surface-900 p-6 rounded-3xl border border-surface-200 dark:border-surface-700 shadow-sm">
+              <label class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-4 block">Cantidad</label>
+              <div class="flex items-center gap-4">
+                  <p-inputNumber 
+                    [(ngModel)]="movimiento.cantidad"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    [min]="1"
+                    [max]="inventarioSeleccionado?.cantidad || 9999"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    inputStyleClass="w-full text-center font-bold text-xl border-none bg-surface-50 h-12 rounded-lg"
+                    styleClass="w-full"
+                    [ngClass]="{'ng-invalid ng-dirty': submitted && !movimiento.cantidad}"
+                  ></p-inputNumber>
+              </div>
+              
+              <div *ngIf="movimiento.tipo === 'AJUSTE' && inventarioSeleccionado && movimiento.cantidad > inventarioSeleccionado.cantidad" 
+                   class="mt-3 flex items-center gap-2 text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg border border-orange-100 dark:border-orange-800 animate-fade-in">
+                  <i class="pi pi-info-circle"></i>
+                  <span>Este ajuste resultará en un inventario negativo. Disponible: {{inventarioSeleccionado.cantidad}}</span>
+              </div>
+          </div>
+
+          <div class="bg-white dark:bg-surface-900 p-6 rounded-3xl border border-surface-200 dark:border-surface-700 shadow-sm">
+              <label class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-4 block">Documento / Ref</label>
+              <div class="relative">
+                  <i class="pi pi-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 dark:text-surface-500"></i>
+                  <input 
+                    type="text" 
+                    pInputText 
+                    [(ngModel)]="movimiento.referencia"
+                    placeholder="Ej. FAC-001, AJUSTE-12"
+                    class="w-full pl-10 h-12 bg-surface-50 dark:bg-surface-800 border-none rounded-xl font-mono text-sm text-surface-900 dark:text-surface-0 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
+                    [ngClass]="{'bg-red-50': submitted && !movimiento.referencia}"
+                  />
+              </div>
+          </div>
+
+          <div class="md:col-span-2 bg-white dark:bg-surface-900 p-6 rounded-3xl border border-surface-200 dark:border-surface-700 shadow-sm">
+              <label class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-4 block">Notas / Motivo</label>
+              <textarea 
+                pInputTextarea 
+                [(ngModel)]="movimiento.descripcion"
+                rows="3" 
+                placeholder="Describe el motivo de la operación..."
+                class="w-full bg-surface-50 dark:bg-surface-800 border-none rounded-xl p-4 text-sm text-surface-900 dark:text-surface-0 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900 resize-none"
+                [ngClass]="{'bg-red-50': submitted && !movimiento.descripcion}"
+              ></textarea>
+          </div>
+
+      </div>
+
+    </div>
+  
+    <div class="bg-white dark:bg-surface-900 p-6 border-t border-surface-200 dark:border-surface-700 flex flex-col md:flex-row justify-between items-center gap-4 sticky bottom-0 z-50">
+        <div class="flex items-center gap-2 text-xs text-surface-500 dark:text-surface-400">
+            <i class="pi pi-info-circle"></i>
+            <span>Todos los campos son obligatorios</span>
+        </div>
+        
+        <div class="flex gap-3 w-full md:w-auto">
+            <button pButton label="Cancelar" class="p-button-text text-surface-500 hover:text-surface-900 dark:hover:text-surface-0 font-bold px-6 rounded-xl flex-1 md:flex-none" (click)="hideDialog()"></button>
+            <button 
+                pButton 
+                [label]="editMode ? 'Guardar Cambios' : 'Confirmar Movimiento'" 
+                icon="pi pi-check" 
+                class="bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 border-none px-8 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex-1 md:flex-none" 
+                (click)="guardarMovimiento()" 
+                [loading]="loading">
+            </button>
+        </div>
+    </div>
+
+  </div>
+</p-dialog>
+
+<!-- Sidebar de detalles del movimiento -->
+<p-sidebar 
+  [(visible)]="detallesSidebarVisible" 
+  position="right" 
+  [style]="{width: '450px'}"
+  [modal]="true"
+  [showCloseIcon]="false"
+  styleClass="app-sidebar-zen"
+  (onHide)="cerrarDetalles()"
+>
   <ng-template pTemplate="header">
-    <div class="w-full">
-      <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 -m-6 mb-0 p-6">
-        <div class="flex items-center gap-4">
-          <div class="bg-white/20 backdrop-blur p-3 rounded-xl">
-            <i [class]="editMode ? 'pi pi-pencil text-white text-2xl' : 'pi pi-plus-circle text-white text-2xl'"></i>
-          </div>
-          <div class="text-white">
-            <h2 class="text-2xl font-bold m-0">
-              {{ editMode ? 'Editar Movimiento' : 'Nuevo Movimiento de Inventario' }}
-            </h2>
-            <p class="text-sm text-white/80 m-0 mt-1">
-              {{ editMode ? 'Modifica los datos del movimiento seleccionado' : 'Registra una entrada, salida, ajuste o traslado de inventario' }}
-            </p>
-          </div>
+    <div class="flex items-center justify-between w-full pr-4 pt-2">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-primary-600 border border-surface-100 dark:border-surface-700 shadow-sm">
+          <i class="pi pi-file text-xl"></i>
+        </div>
+        <div>
+          <h3 class="m-0 font-bold text-lg text-surface-900 dark:text-surface-0">Detalle Operación</h3>
+          <p class="m-0 text-xs font-mono text-surface-500 mt-0.5" *ngIf="movimientoDetalle">Ref: #{{movimientoDetalle.id}}</p>
         </div>
       </div>
+      
+      <button (click)="cerrarDetalles()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 hover:bg-surface-100 hover:text-surface-900 transition-colors">
+        <i class="pi pi-times"></i>
+      </button>
     </div>
   </ng-template>
   
   <ng-template pTemplate="content">
-    <div class="bg-gradient-to-br from-gray-50 to-blue-50 p-6 space-y-6 pb-8">
+    <div *ngIf="movimientoDetalle" class="flex flex-col gap-8 py-4">
       
-      <!-- Sección 1: Tipo de Movimiento -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="bg-purple-100 p-2 rounded-lg">
-            <i class="pi pi-tags text-purple-600"></i>
-          </div>
-          <div>
-            <label class="block text-lg font-bold text-gray-900 m-0">Tipo de Movimiento*</label>
-            <p class="text-sm text-gray-600 m-0">Selecciona la naturaleza del movimiento</p>
-          </div>
-        </div>
-        
-        <p-selectButton 
-          [options]="tiposMovimiento" 
-          [(ngModel)]="movimiento.tipo" 
-          optionLabel="label"
-          optionValue="value"
-          [disabled]="editMode"
-          [ngClass]="{'ng-invalid': submitted && !movimiento.tipo}"
-          class="w-full"
-        >
-          <ng-template let-item>
-            <div class="flex flex-col items-center gap-2 py-2 px-3">
-              <i [class]="item.icon + ' text-xl'"></i>
-              <span class="font-semibold text-sm">{{item.label}}</span>
-            </div>
-          </ng-template>
-        </p-selectButton>
-        
-        <small class="text-red-600 flex items-center gap-1 mt-2" *ngIf="submitted && !movimiento.tipo">
-          <i class="pi pi-exclamation-circle"></i>
-          El tipo de movimiento es obligatorio.
-        </small>
-      </div>
-      
-      <!-- Sección 2: Selección de Inventario Origen -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="bg-blue-100 p-2 rounded-lg">
-            <i class="pi pi-box text-blue-600"></i>
-          </div>
-          <div>
-            <label for="inventario" class="block text-lg font-bold text-gray-900 m-0">Inventario Origen*</label>
-            <p class="text-sm text-gray-600 m-0">Producto desde donde se realiza el movimiento</p>
-          </div>
-        </div>
-        
-        <p-select 
-          id="inventario" 
-          [options]="inventarios" 
-          [(ngModel)]="inventarioSeleccionado"
-          optionLabel="serie"
-          placeholder="🔍 Buscar y seleccionar inventario..."
-          [filter]="true"
-          filterBy="serie,producto.nombre"
-          [showClear]="true"
-          [disabled]="editMode"
-          [ngClass]="{'ng-invalid': submitted && !inventarioSeleccionado}"
-          [style]="{'width':'100%'}"
-          class="w-full"
-        >
-          <ng-template pTemplate="selectedItem">
-            <div *ngIf="inventarioSeleccionado" class="flex items-center gap-3 py-1">
-              <div class="bg-blue-100 p-2 rounded-lg">
-                <i class="pi pi-shopping-bag text-blue-600"></i>
-              </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">{{inventarioSeleccionado.serie}} - {{inventarioSeleccionado.producto?.nombre}}</div>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                    {{inventarioSeleccionado.color?.nombre}}
-                  </span>
-                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                    Talla {{inventarioSeleccionado.talla?.numero}}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-          <ng-template let-item pTemplate="item">
-            <div class="py-2 hover:bg-gray-50 rounded-lg transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="bg-gradient-to-br from-blue-100 to-indigo-100 p-2 rounded-lg">
-                  <i class="pi pi-box text-blue-600"></i>
-                </div>
-                <div class="flex-1">
-                  <div class="font-semibold text-gray-900">{{item.serie}}</div>
-                  <div class="text-sm text-gray-700 mt-0.5">{{item.producto?.nombre}}</div>
-                  <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
-                      <i class="pi pi-palette text-xs mr-1"></i>{{item.color?.nombre}}
-                    </span>
-                    <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
-                      <i class="pi pi-tag text-xs mr-1"></i>Talla {{item.talla?.numero}}
-                    </span>
-                    <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-200 font-semibold">
-                      <i class="pi pi-database text-xs mr-1"></i>Stock: {{item.cantidad}}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-        </p-select>
-        
-        <small class="text-red-600 flex items-center gap-1 mt-2" *ngIf="submitted && !inventarioSeleccionado">
-          <i class="pi pi-exclamation-circle"></i>
-          El inventario de origen es obligatorio.
-        </small>
-      </div>
-      
-      <!-- Sección 3: Información del Producto Seleccionado (Mejorada) -->
-      <div *ngIf="inventarioSeleccionado" class="animate-fadein">
-        <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-1 shadow-xl">
-          <div class="bg-white rounded-xl p-6">
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-br from-indigo-100 to-purple-100 p-2.5 rounded-xl">
-                  <i class="pi pi-info-circle text-indigo-600 text-lg"></i>
-                </div>
-                <h6 class="text-base font-bold text-gray-900 m-0">Producto Seleccionado</h6>
-              </div>
-              <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
-                <i class="pi pi-check-circle mr-1"></i>Seleccionado
-              </span>
-            </div>
-            
-            <!-- Nombre del producto destacado -->
-            <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4 border border-gray-200">
-              <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg">
-                  <i class="pi pi-shopping-bag text-white text-xl"></i>
-                </div>
-                <div>
-                  <div class="text-xs text-gray-600 font-medium mb-1">Producto</div>
-                  <div class="text-xl font-bold text-gray-900">{{inventarioSeleccionado.producto?.nombre}}</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Grid de características -->
-            <div class="grid grid-cols-2 gap-3">
-              <!-- Color con círculo real -->
-              <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center gap-3">
-                  <div class="relative">
-                    <div class="w-10 h-10 rounded-full border-3 border-white shadow-lg"
-                         [style.background-color]="inventarioSeleccionado.color?.codigoHex || '#ccc'">
-                    </div>
-                    <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
-                      <i class="pi pi-palette text-purple-600 text-xs"></i>
-                    </div>
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-xs text-gray-600 font-medium mb-0.5">Color</div>
-                    <div class="font-bold text-sm text-gray-900">{{inventarioSeleccionado.color?.nombre}}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Talla -->
-              <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center gap-3">
-                  <div class="bg-blue-600 p-2.5 rounded-xl shadow-md">
-                    <i class="pi pi-tag text-white text-lg"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-xs text-gray-600 font-medium mb-0.5">Talla</div>
-                    <div class="font-bold text-lg text-gray-900">{{inventarioSeleccionado.talla?.numero}}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Almacén -->
-              <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center gap-3">
-                  <div class="bg-indigo-600 p-2.5 rounded-xl shadow-md">
-                    <i class="pi pi-warehouse text-white text-lg"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-xs text-gray-600 font-medium mb-0.5">Almacén</div>
-                    <div class="font-bold text-sm text-gray-900">{{inventarioSeleccionado.almacen?.nombre || 'N/A'}}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Stock disponible destacado -->
-              <div class="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden">
-                <!-- Efecto de brillo -->
-                <div class="absolute inset-0 bg-white/10"></div>
-                <div class="relative flex items-center gap-3">
-                  <div class="bg-white/25 backdrop-blur p-2.5 rounded-xl shadow-md">
-                    <i class="pi pi-database text-white text-lg"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-xs text-white/90 font-semibold mb-0.5">Stock Disponible</div>
-                    <div class="font-bold text-2xl text-white flex items-baseline gap-1">
-                      {{inventarioSeleccionado.cantidad}}
-                      <span class="text-sm font-medium text-white/90">unidades</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Serie -->
-            <div class="mt-3 bg-gray-50 rounded-lg p-3 border border-gray-200">
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-600 font-medium">Serie del Inventario:</span>
-                <span class="font-mono text-sm font-bold text-gray-900 bg-white px-3 py-1 rounded-lg border border-gray-200">
-                  {{inventarioSeleccionado.serie}}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Sección 4: Inventario Destino (solo para traslados) -->
-      <div *ngIf="movimiento.tipo === 'TRASLADO'" class="bg-white rounded-xl shadow-sm border-2 border-orange-200 p-5 animate-fadein">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="bg-orange-100 p-2 rounded-lg">
-            <i class="pi pi-arrow-right-arrow-left text-orange-600"></i>
-          </div>
-          <div>
-            <label for="inventarioDestino" class="block text-lg font-bold text-gray-900 m-0">Inventario Destino*</label>
-            <p class="text-sm text-gray-600 m-0">Producto hacia donde se trasladará el inventario</p>
-          </div>
-        </div>
-        
-        <div class="bg-orange-50 rounded-lg p-3 mb-4 border border-orange-200">
-          <div class="flex items-center gap-2 text-sm text-orange-800">
-            <i class="pi pi-info-circle"></i>
-            <span class="font-medium">Traslado: Las unidades se moverán del inventario origen al destino</span>
-          </div>
-        </div>
-        
-        <p-select 
-          id="inventarioDestino" 
-          [options]="inventarios" 
-          [(ngModel)]="inventarioDestinoSeleccionado"
-          optionLabel="serie"
-          placeholder="🎯 Seleccionar inventario de destino..."
-          [filter]="true"
-          filterBy="serie,producto.nombre"
-          [showClear]="true"
-          [ngClass]="{'ng-invalid': submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado}"
-          [style]="{'width':'100%'}"
-          class="w-full"
-        >
-          <ng-template pTemplate="selectedItem">
-            <div *ngIf="inventarioDestinoSeleccionado" class="flex items-center gap-3 py-1">
-              <div class="bg-orange-100 p-2 rounded-lg">
-                <i class="pi pi-send text-orange-600"></i>
-              </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">{{inventarioDestinoSeleccionado.serie}} - {{inventarioDestinoSeleccionado.producto?.nombre}}</div>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                    {{inventarioDestinoSeleccionado.color?.nombre}}
-                  </span>
-                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                    Talla {{inventarioDestinoSeleccionado.talla?.numero}}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-          <ng-template let-item pTemplate="item">
-            <div class="py-2 hover:bg-gray-50 rounded-lg transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="bg-gradient-to-br from-orange-100 to-amber-100 p-2 rounded-lg">
-                  <i class="pi pi-box text-orange-600"></i>
-                </div>
-                <div class="flex-1">
-                  <div class="font-semibold text-gray-900">{{item.serie}}</div>
-                  <div class="text-sm text-gray-700 mt-0.5">{{item.producto?.nombre}}</div>
-                  <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
-                      {{item.color?.nombre}}
-                    </span>
-                    <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
-                      Talla {{item.talla?.numero}}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-        </p-select>
-        
-        <small class="text-red-600 flex items-center gap-1 mt-2" *ngIf="submitted && movimiento.tipo === 'TRASLADO' && !inventarioDestinoSeleccionado">
-          <i class="pi pi-exclamation-circle"></i>
-          El inventario de destino es obligatorio para traslados.
-        </small>
-      </div>
-      
-      <!-- Sección 5: Cantidad y Detalles del Movimiento -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="bg-green-100 p-2 rounded-lg">
-            <i class="pi pi-calculator text-green-600"></i>
-          </div>
-          <div>
-            <label class="block text-lg font-bold text-gray-900 m-0">Detalles del Movimiento</label>
-            <p class="text-sm text-gray-600 m-0">Cantidad y descripción del movimiento</p>
-          </div>
-        </div>
-        
-        <!-- Campo de Cantidad Mejorado -->
-        <div class="mb-5">
-          <label for="cantidad" class="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-            <i class="pi pi-hashtag text-green-600"></i>
-            Cantidad de Unidades*
-          </label>
+      <div class="flex flex-col items-center justify-center py-6 relative">
+          <div class="absolute inset-0 bg-gradient-to-b from-surface-50 to-white dark:from-surface-900 dark:to-surface-950 opacity-50 rounded-3xl -z-10"></div>
           
-          <div class="flex items-center gap-4">
-            <p-inputNumber 
-              id="cantidad" 
-              [(ngModel)]="movimiento.cantidad"
-              [showButtons]="true"
-              buttonLayout="horizontal"
-              [min]="1"
-              [max]="inventarioSeleccionado?.cantidad || 9999"
-              [step]="1"
-              decrementButtonClass="p-button-danger"
-              incrementButtonClass="p-button-success"
-              incrementButtonIcon="pi pi-plus"
-              decrementButtonIcon="pi pi-minus"
-              [ngClass]="{'ng-invalid': submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)}"
-              [style]="{'width':'250px'}"
-              class="flex-shrink-0"
-            />
-            
-            <div *ngIf="inventarioSeleccionado" class="flex-1">
-              <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                <div class="flex items-center gap-2 text-sm">
-                  <i class="pi pi-info-circle text-blue-600"></i>
-                  <span class="text-blue-900">
-                    <span class="font-semibold">Stock disponible:</span> {{inventarioSeleccionado.cantidad}} unidades
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <span class="text-xs font-bold uppercase tracking-widest mb-2 px-3 py-1 rounded-full border"
+                [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 border-emerald-100': movimientoDetalle.tipo === 'ENTRADA',
+                    'bg-amber-50 text-amber-700 border-amber-100': movimientoDetalle.tipo === 'SALIDA',
+                    'bg-purple-50 text-purple-700 border-purple-100': movimientoDetalle.tipo === 'AJUSTE'
+                }">
+              {{ movimientoDetalle.tipo }}
+          </span>
           
-          <small class="text-red-600 flex items-center gap-1 mt-2" *ngIf="submitted && (!movimiento.cantidad || movimiento.cantidad <= 0)">
-            <i class="pi pi-exclamation-circle"></i>
-            La cantidad debe ser mayor a 0.
-          </small>
-          
-          <div class="bg-orange-50 rounded-lg p-3 mt-2 border-l-4 border-orange-500" 
-               *ngIf="movimiento.tipo === 'SALIDA' && inventarioSeleccionado && movimiento.cantidad > inventarioSeleccionado.cantidad">
-            <div class="flex items-start gap-2">
-              <i class="pi pi-exclamation-triangle text-orange-600 mt-0.5"></i>
-              <div class="flex-1">
-                <div class="font-semibold text-orange-900">⚠️ Advertencia de Stock</div>
-                <div class="text-sm text-orange-800 mt-1">
-                  La cantidad ingresada ({{movimiento.cantidad}}) excede el stock disponible ({{inventarioSeleccionado.cantidad}}). 
-                  El sistema permitirá el registro, pero se recomienda verificar la disponibilidad real.
-                </div>
-              </div>
-            </div>
+          <div class="text-6xl font-black font-mono tracking-tighter flex items-center gap-1"
+               [ngClass]="{
+                  'text-emerald-600': movimientoDetalle.tipo === 'ENTRADA',
+                  'text-amber-600': movimientoDetalle.tipo === 'SALIDA',
+                  'text-purple-600': movimientoDetalle.tipo === 'AJUSTE'
+               }">
+              <span>{{ movimientoDetalle.tipo === 'SALIDA' ? '-' : '+' }}</span>
+              <span>{{ movimientoDetalle.cantidad }}</span>
           </div>
-        </div>
-        
-        <!-- Campo de Descripción Mejorado -->
-        <div class="mb-5">
-          <label for="descripcion" class="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-            <i class="pi pi-align-left text-indigo-600"></i>
-            Descripción del Movimiento*
-          </label>
-          <textarea 
-            id="descripcion" 
-            pInputTextarea 
-            class="w-full" 
-            [(ngModel)]="movimiento.descripcion"
-            rows="3" 
-            placeholder="📝 Describe el motivo y contexto del movimiento (ej: Venta a cliente, devolución de proveedor, ajuste por inventario físico...)"
-            [ngClass]="{'ng-invalid': submitted && !movimiento.descripcion.trim()}"
-          ></textarea>
-          <div class="flex justify-between items-center mt-1">
-            <small class="text-red-600 flex items-center gap-1" *ngIf="submitted && !movimiento.descripcion?.trim()">
-              <i class="pi pi-exclamation-circle"></i>
-              La descripción es obligatoria.
-            </small>
-            <small class="text-gray-500" *ngIf="!submitted || movimiento.descripcion?.trim()">
-              {{movimiento.descripcion.length || 0}} caracteres
-            </small>
-          </div>
-        </div>
+          <span class="text-xs font-bold text-surface-400 uppercase tracking-widest mt-1">Unidades</span>
+      </div>
 
-        <!-- Campo de Referencia Mejorado -->
-        <div>
-          <label for="referencia" class="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-            <i class="pi pi-tag text-purple-600"></i>
-            Referencia / Documento*
-          </label>
-          <div class="relative">
-            <i class="pi pi-hashtag absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input 
-              type="text" 
-              pInputText 
-              id="referencia" 
-              [(ngModel)]="movimiento.referencia"
-              class="w-full pl-10"
-              placeholder="Ej: FAC-2024-001, OC-123456, AJUSTE-INV-001..."
-              [ngClass]="{'ng-invalid': submitted && !movimiento.referencia.trim()}" 
-            />
+      <div class="bg-surface-50 dark:bg-surface-800/50 rounded-2xl p-5 border border-surface-200 dark:border-surface-700">
+          <h4 class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <i class="pi pi-box"></i> Producto Afectado
+          </h4>
+          
+          <div class="flex flex-col gap-3">
+              <div class="font-bold text-lg text-surface-900 dark:text-surface-0 leading-tight">
+                  {{ movimientoDetalle.producto?.nombre || 'Producto Desconocido' }}
+              </div>
+              
+              <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm w-fit">
+                      <div class="w-3 h-3 rounded-full border border-surface-300" 
+                           [style.background-color]="movimientoDetalle.color?.codigoHex || '#ccc'"></div>
+                      <span class="text-sm font-medium text-surface-700 dark:text-surface-200">{{ movimientoDetalle.color?.nombre }}</span>
+                  </div>
+                  <span class="text-xs font-mono font-bold bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200 px-2 py-1 rounded-md">
+                      Talla {{ movimientoDetalle.talla?.numero }}
+                  </span>
+              </div>
+
+              <div class="h-px w-full bg-surface-200 dark:bg-surface-700 my-1"></div>
+
+              <div class="flex justify-between items-center text-sm">
+                  <span class="text-surface-500">Serie</span>
+                  <span class="font-mono font-bold text-surface-900 dark:text-surface-0">{{ movimientoDetalle.inventarioId }}</span>
+              </div>
           </div>
-          <small class="text-red-600 flex items-center gap-1 mt-2" *ngIf="submitted && !movimiento.referencia?.trim()">
-            <i class="pi pi-exclamation-circle"></i>
-            La referencia es obligatoria.
-          </small>
-          <small class="text-gray-500 flex items-center gap-1 mt-1" *ngIf="!submitted || movimiento.referencia?.trim()">
-            <i class="pi pi-info-circle text-xs"></i>
-            Ingresa el número de factura, orden de compra o documento relacionado
-          </small>
-        </div>
       </div>
+
+      <div class="space-y-4">
+          
+          <div *ngIf="movimientoDetalle.descripcion" class="p-4 rounded-2xl bg-white dark:bg-surface-900 border border-surface-100 dark:border-surface-700 shadow-sm">
+              <div class="text-xs font-bold text-surface-400 uppercase mb-1">Notas</div>
+              <p class="text-sm text-surface-700 dark:text-surface-200 m-0 leading-relaxed">
+                  {{ movimientoDetalle.descripcion }}
+              </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+              <div class="p-3 rounded-xl border border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-900">
+                  <div class="text-xs text-surface-400 mb-1">Referencia</div>
+                  <div class="text-sm font-mono font-bold text-surface-900 dark:text-surface-0 truncate" title="{{movimientoDetalle.referencia}}">
+                      {{ movimientoDetalle.referencia || '---' }}
+                  </div>
+              </div>
+              <div class="p-3 rounded-xl border border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-900">
+                  <div class="text-xs text-surface-400 mb-1">Responsable</div>
+                  <div class="text-sm font-bold text-surface-900 dark:text-surface-0 flex items-center gap-1">
+                      <i class="pi pi-user text-[10px]"></i> {{ movimientoDetalle.usuario }}
+                  </div>
+              </div>
+              <div class="p-3 rounded-xl border border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-900">
+                  <div class="text-xs text-surface-400 mb-1">Fecha</div>
+                  <div class="text-sm font-bold text-surface-900 dark:text-surface-0">
+                      {{ movimientoDetalle.fechaMovimiento | date:'dd/MM/yyyy' }}
+                  </div>
+              </div>
+              <div class="p-3 rounded-xl border border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-900">
+                  <div class="text-xs text-surface-400 mb-1">Hora</div>
+                  <div class="text-sm font-mono text-surface-600 dark:text-surface-300">
+                      {{ movimientoDetalle.fechaMovimiento | date:'HH:mm:ss' }}
+                  </div>
+              </div>
+          </div>
+
+      </div>
+
     </div>
   </ng-template>
   
-  <!-- Footer personalizado mejorado -->
   <ng-template pTemplate="footer">
-    <div class="bg-gradient-to-r from-gray-50 to-blue-50 -m-6 mt-0 p-5 border-t-2 border-gray-200">
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-        
-        <!-- Información de ayuda -->
-        <div class="flex items-center gap-2 text-sm text-gray-600">
-          <i class="pi pi-info-circle text-blue-600"></i>
-          <span class="hidden sm:inline">Completa todos los campos obligatorios (*)</span>
-          <span class="sm:hidden">Campos obligatorios (*)</span>
+    <div class="flex flex-col gap-3 pt-2">
+        <div class="flex gap-3">
+            <button 
+                (click)="revertirMovimiento(movimientoDetalle!); cerrarDetalles()"
+                class="flex-1 py-3 rounded-xl border border-red-200 dark:border-red-900/30 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                <i class="pi pi-replay"></i> Revertir
+            </button>
+            <button 
+                (click)="duplicarMovimiento(movimientoDetalle!); cerrarDetalles()"
+                class="flex-1 py-3 rounded-xl border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-800 text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                <i class="pi pi-copy"></i> Duplicar
+            </button>
         </div>
-        
-        <!-- Botones de acción -->
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-          <button 
-            pButton 
-            pRipple 
-            label="Cancelar" 
-            icon="pi pi-times" 
-            severity="secondary"
-            [outlined]="true"
-            size="large"
-            class="flex-1 sm:flex-none"
-            (click)="hideDialog()"
-            [disabled]="loading">
-          </button>
-          
-          <button 
-            pButton 
-            pRipple 
-            [label]="editMode ? 'Actualizar Movimiento' : 'Crear Movimiento'" 
-            [icon]="editMode ? 'pi pi-save' : 'pi pi-check-circle'" 
-            severity="success"
-            size="large"
-            class="flex-1 sm:flex-none font-bold shadow-lg"
-            (click)="guardarMovimiento()"
-            [loading]="loading">
-          </button>
-        </div>
-      </div>
-      
-      <!-- Barra de progreso cuando está guardando -->
-      <div *ngIf="loading" class="mt-3">
-        <div class="bg-blue-100 rounded-full h-1.5 overflow-hidden">
-          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full animate-pulse"></div>
-        </div>
-        <p class="text-center text-sm text-gray-600 mt-2 flex items-center justify-center gap-2">
-          <i class="pi pi-spin pi-spinner"></i>
-          {{ editMode ? 'Actualizando movimiento...' : 'Creando movimiento...' }}
-        </p>
-      </div>
+        <button 
+            (click)="imprimirTicket(movimientoDetalle!)"
+            class="w-full py-3 rounded-xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+            <i class="pi pi-print"></i> Imprimir Comprobante
+        </button>
     </div>
   </ng-template>
-</p-dialog>
 
-<!-- NUEVO: Sidebar de detalles del movimiento -->
-<p-sidebar 
-  [(visible)]="detallesSidebarVisible" 
-  position="right" 
-  [style]="{width: '500px'}"
-  (onHide)="cerrarDetalles()"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-        <i class="pi pi-info-circle text-white text-xl"></i>
-      </div>
-      <div>
-        <h3 class="m-0 font-bold text-gray-900">Detalles del Movimiento</h3>
-        <p class="m-0 text-sm text-gray-600" *ngIf="movimientoDetalle">ID: {{movimientoDetalle.id}}</p>
-      </div>
-    </div>
-  </ng-template>
-  
-  <div *ngIf="movimientoDetalle" class="space-y-4">
-    <!-- Estado del movimiento -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-      <div class="flex items-center justify-between mb-3">
-        <span class="font-semibold text-gray-700">Estado</span>
-        <p-tag 
-          [value]="getEstadoMovimiento(movimientoDetalle)" 
-          [severity]="getEstadoSeverity(getEstadoMovimiento(movimientoDetalle))"
-          [style]="{'font-size': '0.875rem', 'padding': '0.5rem 0.75rem'}"
-        ></p-tag>
-      </div>
-    </div>
-    
-    <!-- Tipo de movimiento -->
-    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="bg-purple-100 p-2 rounded-lg">
-          <i [class]="getTipoIcon(movimientoDetalle.tipo) + ' text-purple-600'"></i>
-        </div>
-        <div>
-          <div class="text-sm text-gray-600">Tipo de Movimiento</div>
-          <div class="font-bold text-lg text-gray-900">{{movimientoDetalle.tipo}}</div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Información del producto -->
-    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
-      <h4 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-        <i class="pi pi-box text-purple-600"></i>
-        Información del Producto
-      </h4>
-      
-      <div class="space-y-3">
-        <div class="flex justify-between items-center">
-          <span class="text-gray-600">Producto:</span>
-          <span class="font-semibold text-gray-900">{{movimientoDetalle.producto?.nombre || 'N/A'}}</span>
-        </div>
-        
-        <div class="flex justify-between items-center">
-          <span class="text-gray-600">Color:</span>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                 [style.background-color]="movimientoDetalle.color?.codigoHex || '#ccc'">
-            </div>
-            <span class="font-semibold text-gray-900">{{movimientoDetalle.color?.nombre || 'N/A'}}</span>
-          </div>
-        </div>
-        
-        <div class="flex justify-between items-center">
-          <span class="text-gray-600">Talla:</span>
-          <span class="font-semibold text-gray-900">{{movimientoDetalle.talla?.numero || 'N/A'}}</span>
-        </div>
-        
-        <div class="flex justify-between items-center">
-          <span class="text-gray-600">Serie:</span>
-          <span class="font-mono text-sm font-semibold text-gray-900">{{movimientoDetalle.inventarioId}}</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Cantidad destacada -->
-    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-5 text-white shadow-lg">
-      <div class="text-center">
-        <div class="text-sm font-medium opacity-90 mb-2">Cantidad Movida</div>
-        <div class="text-5xl font-bold">{{movimientoDetalle.cantidad}}</div>
-        <div class="text-sm font-medium opacity-90 mt-2">unidades</div>
-      </div>
-    </div>
-    
-    <!-- Información adicional -->
-    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-3">
-      <div>
-        <div class="text-sm font-semibold text-gray-600 mb-1">Descripción</div>
-        <div class="text-gray-900">{{movimientoDetalle.descripcion}}</div>
-      </div>
-      
-      <div>
-        <div class="text-sm font-semibold text-gray-600 mb-1">Referencia</div>
-        <div class="font-mono text-sm text-gray-900">{{movimientoDetalle.referencia}}</div>
-      </div>
-      
-      <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-        <span class="text-gray-600">Usuario:</span>
-        <div class="flex items-center gap-2">
-          <div class="bg-gray-100 p-1.5 rounded-full">
-            <i class="pi pi-user text-gray-600 text-xs"></i>
-          </div>
-          <span class="font-semibold text-gray-900">{{movimientoDetalle.usuario}}</span>
-        </div>
-      </div>
-      
-      <div class="flex justify-between items-center">
-        <span class="text-gray-600">Fecha:</span>
-        <div class="text-right">
-          <div class="font-semibold text-gray-900">{{movimientoDetalle.fechaMovimiento | date:'dd/MM/yyyy'}}</div>
-          <div class="text-sm text-gray-600">{{movimientoDetalle.fechaMovimiento | date:'HH:mm:ss'}}</div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Acciones rápidas -->
-    <div class="flex gap-2 pt-4">
-      <button 
-        pButton 
-        label="Duplicar" 
-        icon="pi pi-copy" 
-        severity="success"
-        [outlined]="true"
-        size="small"
-        class="flex-1"
-        (click)="duplicarMovimiento(movimientoDetalle); cerrarDetalles()"
-      ></button>
-      <button 
-        pButton 
-        label="Revertir" 
-        icon="pi pi-replay" 
-        severity="danger"
-        [outlined]="true"
-        size="small"
-        class="flex-1"
-        (click)="revertirMovimiento(movimientoDetalle); cerrarDetalles()"
-      ></button>
-    </div>
-    
-    <button 
-      pButton 
-      label="Imprimir Ticket" 
-      icon="pi pi-print" 
-      severity="secondary"
-      [outlined]="true"
-      size="small"
-      class="w-full"
-      (click)="imprimirTicket(movimientoDetalle)"
-    ></button>
-  </div>
 </p-sidebar>
 
-<!-- NUEVO: Diálogo de gráficos -->
+<!-- Diálogo de gráficos -->
 <p-dialog 
   [(visible)]="graficosDialogVisible" 
-  [style]="{width: '90vw', maxWidth: '1200px'}" 
-  header="Evolución de Movimientos de Inventario" 
-  [modal]="true"
-  [contentStyle]="{'padding': '1.5rem'}"
+  [style]="{width: '1200px', maxWidth: '95vw', height: '90vh'}" 
+  [modal]="true" 
+  (onHide)="graficosDialogVisible = false"
+  [maximizable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [showHeader]="false"
+  [contentStyle]="{ padding: '0', borderRadius: '1.5rem', overflow: 'hidden' }"
+  styleClass="app-dialog-zen"
 >
-  <div *ngIf="chartData" class="bg-white rounded-xl p-4">
-    <div class="mb-4">
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div class="flex items-center gap-3">
-          <div class="bg-blue-600 p-2 rounded-lg">
-            <i class="pi pi-chart-line text-white"></i>
-          </div>
-          <div>
-            <h4 class="m-0 font-bold text-gray-900">Análisis Temporal</h4>
-            <p class="m-0 text-sm text-gray-600 mt-1">
-              Visualización de movimientos en el período seleccionado
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="flex flex-col h-full bg-surface-50 dark:bg-surface-950" *ngIf="chartData">
     
-    <div style="height: 400px;">
-      <p-chart type="line" [data]="chartData" [options]="chartOptions" [style]="{'height': '100%'}"></p-chart>
+    <div class="flex justify-between items-center px-8 py-6 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-50">
+        <div class="flex items-center gap-5">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 shadow-inner">
+                <i class="pi pi-chart-line text-xl"></i>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight leading-none">
+                    Análisis de Tendencias
+                </h2>
+                <div class="flex items-center gap-2 mt-1.5 text-sm text-surface-500 dark:text-surface-400">
+                    <span>Evolución Temporal</span>
+                    <span class="w-1 h-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
+                    <span class="font-medium text-indigo-600 dark:text-indigo-400">
+                        {{ movimientosFiltrados.length }} operaciones
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <button (click)="graficosDialogVisible = false" class="group w-10 h-10 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 border border-surface-200 dark:border-surface-700 transition-colors">
+            <i class="pi pi-times"></i>
+        </button>
     </div>
-    
-    <!-- Estadísticas resumidas -->
-    <div class="grid mt-6 gap-4">
-      <div class="col-12 md:col-3">
-        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-          <div class="flex items-center gap-3">
-            <div class="bg-green-500 p-2 rounded-lg">
-              <i class="pi pi-arrow-down text-white"></i>
+
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-6">
+        
+        <div class="bg-white dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm relative">
+            <div class="flex justify-between items-center mb-6 px-2">
+                <h4 class="text-xs font-bold text-surface-400 uppercase tracking-widest">Flujo de Movimientos</h4>
+                </div>
+            
+            <div class="w-full h-[400px] relative z-10">
+                <p-chart type="line" [data]="chartData" [options]="chartOptions" height="400px"></p-chart>
             </div>
-            <div>
-              <div class="text-2xl font-bold text-green-700">{{getEntradasHoy()}}</div>
-              <div class="text-sm text-gray-600">Entradas</div>
-            </div>
-          </div>
         </div>
-      </div>
-      
-      <div class="col-12 md:col-3">
-        <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
-          <div class="flex items-center gap-3">
-            <div class="bg-orange-500 p-2 rounded-lg">
-              <i class="pi pi-arrow-up text-white"></i>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            
+            <div class="bg-white dark:bg-surface-900 rounded-2xl p-5 border border-surface-200 dark:border-surface-800 shadow-sm flex items-center gap-4 group hover:border-emerald-200 transition-colors">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                    <i class="pi pi-arrow-down text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-surface-900 dark:text-surface-0">{{ getEntradasHoy() }}</span>
+                    <span class="text-xs font-bold text-surface-500 uppercase tracking-wider">Entradas Hoy</span>
+                </div>
             </div>
-            <div>
-              <div class="text-2xl font-bold text-orange-700">{{getSalidasHoy()}}</div>
-              <div class="text-sm text-gray-600">Salidas</div>
+
+            <div class="bg-white dark:bg-surface-900 rounded-2xl p-5 border border-surface-200 dark:border-surface-800 shadow-sm flex items-center gap-4 group hover:border-orange-200 transition-colors">
+                <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">
+                    <i class="pi pi-arrow-up text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-surface-900 dark:text-surface-0">{{ getSalidasHoy() }}</span>
+                    <span class="text-xs font-bold text-surface-500 uppercase tracking-wider">Salidas Hoy</span>
+                </div>
             </div>
-          </div>
+
+            <div class="bg-white dark:bg-surface-900 rounded-2xl p-5 border border-surface-200 dark:border-surface-800 shadow-sm flex items-center gap-4 group hover:border-blue-200 transition-colors">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                    <i class="pi pi-list text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-surface-900 dark:text-surface-0">{{ movimientosFiltrados.length }}</span>
+                    <span class="text-xs font-bold text-surface-500 uppercase tracking-wider">Total Ops</span>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-surface-900 rounded-2xl p-5 border border-surface-200 dark:border-surface-800 shadow-sm flex items-center gap-4 group hover:border-purple-200 transition-colors">
+                <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <i class="pi pi-dollar text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-surface-900 dark:text-surface-0">S/. {{ getValorTotalMovimientos() | number:'1.0-0' }}</span>
+                    <span class="text-xs font-bold text-surface-500 uppercase tracking-wider">Valor Movido</span>
+                </div>
+            </div>
+
         </div>
-      </div>
-      
-      <div class="col-12 md:col-3">
-        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <div class="flex items-center gap-3">
-            <div class="bg-blue-500 p-2 rounded-lg">
-              <i class="pi pi-list text-white"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-700">{{movimientosFiltrados.length}}</div>
-              <div class="text-sm text-gray-600">Total Movimientos</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-12 md:col-3">
-        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-          <div class="flex items-center gap-3">
-            <div class="bg-purple-500 p-2 rounded-lg">
-              <i class="pi pi-dollar text-white"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-purple-700">S/{{getValorTotalMovimientos() | number:'1.0-0'}}</div>
-              <div class="text-sm text-gray-600">Valor Total</div>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
+
+    <div class="flex justify-between items-center px-8 py-5 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-800 sticky bottom-0 z-50">
+        <div class="text-xs text-surface-500 font-medium flex items-center gap-2">
+            <i class="pi pi-info-circle"></i>
+            Datos basados en los filtros actuales
+        </div>
+        <div class="flex gap-3">
+            <button 
+                pButton 
+                label="Cerrar" 
+                class="p-button-text text-surface-500 hover:text-surface-900 font-bold" 
+                (click)="graficosDialogVisible = false">
+            </button>
+            <button 
+                pButton 
+                label="Exportar Data" 
+                icon="pi pi-download" 
+                class="bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 border-none px-6 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all" 
+                (click)="exportarExcelMejorado()">
+            </button>
+        </div>
+    </div>
+
   </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center">
-      <button 
-        pButton 
-        label="Exportar Gráfico" 
-        icon="pi pi-download" 
-        severity="secondary"
-        [outlined]="true"
-        size="small"
-        (click)="exportarExcelMejorado()"
-      ></button>
-      <button 
-        pButton 
-        label="Cerrar" 
-        icon="pi pi-times" 
-        class="p-button-text"
-        (click)="graficosDialogVisible = false"
-      ></button>
-    </div>
-  </ng-template>
 </p-dialog>

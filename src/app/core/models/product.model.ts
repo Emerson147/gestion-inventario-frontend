@@ -23,6 +23,10 @@ export interface Producto {
   genero?: string;
   fechaCreacion?: string;
   fechaActualizacion?: string;
+  // Propiedades adicionales para detalle de producto
+  categoria?: { nombre: string; id?: number };
+  color?: { nombre: string; codigoHex?: string; id?: number };
+  stock?: number;
 }
 
 // Respuestas paginadas
