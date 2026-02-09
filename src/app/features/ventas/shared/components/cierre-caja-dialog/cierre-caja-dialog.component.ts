@@ -1,11 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { DividerModule } from 'primeng/divider';
-import { TagModule } from 'primeng/tag';
+import { InputTextModule } from 'primeng/inputtext'; // Importante para la observación
 import { EstadoCaja, CierreCajaResponse } from '../../models/caja.model';
 
 @Component({
@@ -16,185 +15,190 @@ import { EstadoCaja, CierreCajaResponse } from '../../models/caja.model';
     ReactiveFormsModule,
     ButtonModule,
     InputNumberModule,
-    DividerModule,
-    TagModule
+    InputTextModule
   ],
+  encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="p-6">
-      <!-- Header -->
-      <div class="mb-6 text-center">
-        <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg">
-          <i class="pi pi-lock text-white text-3xl"></i>
+    <div class="flex flex-col h-full bg-white dark:bg-surface-900 text-surface-700 dark:text-surface-200 font-sans">
+      
+      <div class="text-center mb-6 pt-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-[10px] font-bold uppercase tracking-widest text-surface-500 mb-2">
+          <i class="pi pi-building"></i> {{ estadoCaja.tienda?.nombre || 'Tienda Principal' }}
         </div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Cierre de Caja</h2>
-        <p class="text-gray-600">Resumen financiero de la sesión</p>
+        <h2 class="text-2xl font-black text-surface-900 dark:text-surface-0 tracking-tight leading-none">
+          Cierre de Turno
+        </h2>
+        <p class="text-xs text-surface-400 font-medium mt-1">
+          Abierto: {{ formatDate(estadoCaja.fechaApertura) }} &bull; por {{ estadoCaja.usuarioApertura }}
+        </p>
       </div>
 
-      <!-- Información de Sesión -->
-      <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-6 border border-gray-200">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Tienda</p>
-            <p class="font-semibold text-gray-900">{{ estadoCaja.tienda?.nombre || 'N/A' }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Turno</p>
-            <p-tag [value]="estadoCaja.turno || 'N/A'" [severity]="getTurnoSeverity(estadoCaja.turno || undefined)" />
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Apertura</p>
-            <p class="text-sm text-gray-700">{{ formatDate(estadoCaja.fechaApertura || undefined) }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Usuario</p>
-            <p class="text-sm text-gray-700">{{ estadoCaja.usuarioApertura }}</p>
+      <div class="grid grid-cols-3 gap-2 mb-8 text-center select-none px-4">
+        
+        <div class="p-3 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700">
+          <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Base Inicial</div>
+          <div class="font-mono font-bold text-surface-600 dark:text-surface-300">
+            {{ formatMoney(estadoCaja.montoInicial) }}
           </div>
         </div>
+
+        <div class="p-3 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 relative">
+          <div class="absolute -left-3 top-1/2 -translate-y-1/2 text-surface-300 z-10 font-bold">+</div>
+          <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Ventas Efec.</div>
+          <div class="font-mono font-bold text-emerald-600">
+            {{ formatMoney(estadoCaja.totalVentasDelDia) }}
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 shadow-lg relative overflow-hidden">
+          <div class="absolute -left-3 top-1/2 -translate-y-1/2 text-surface-300 z-10 font-bold">=</div>
+          <div class="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Debes Tener</div>
+          <div class="font-mono font-black text-lg">
+            {{ formatMoney(getEfectivoEsperado()) }}
+          </div>
+        </div>
+
       </div>
 
-      <!-- Resumen Financiero -->
-      <div class="space-y-4 mb-6">
-        <!-- Monto Inicial -->
-        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-              <i class="pi pi-wallet text-white"></i>
-            </div>
-            <div>
-              <p class="text-xs text-blue-600 font-medium">Monto Inicial</p>
-              <p class="text-lg font-bold text-blue-900">S/ {{ formatMoney(estadoCaja.montoInicial) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Ventas del Día -->
-        <div class="grid grid-cols-2 gap-3">
-          <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-            <div class="flex items-center gap-2 mb-2">
-              <i class="pi pi-shopping-cart text-emerald-600"></i>
-              <p class="text-xs text-emerald-600 font-medium">Total Ventas</p>
-            </div>
-            <p class="text-xl font-bold text-emerald-900">S/ {{ formatMoney(estadoCaja.totalVentasDelDia) }}</p>
-            <p class="text-xs text-emerald-600 mt-1">{{ estadoCaja.cantidadVentas }} transacciones</p>
-          </div>
-
-          <div class="p-3 bg-purple-50 rounded-lg border border-purple-200">
-            <div class="flex items-center gap-2 mb-2">
-              <i class="pi pi-calculator text-purple-600"></i>
-              <p class="text-xs text-purple-600 font-medium">Efectivo Esperado</p>
-            </div>
-            <p class="text-xl font-bold text-purple-900">S/ {{ formatMoney(getEfectivoEsperado()) }}</p>
-          </div>
-        </div>
-
-        <p-divider />
-
-        <!-- Conteo de Efectivo -->
-        <form [formGroup]="form">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-              <i class="pi pi-money-bill text-emerald-600 mr-2"></i>
-              Conteo de Efectivo Real *
+      <form [formGroup]="form" class="flex flex-col gap-6 px-4 pb-4">
+        
+        <div class="relative group">
+          <div 
+            class="absolute inset-0 bg-surface-50 dark:bg-surface-800 rounded-[2.5rem] border-2 transition-all duration-300"
+            [ngClass]="getBorderClass()"
+          ></div>
+          
+          <div class="relative p-8 text-center z-10">
+            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-surface-400 mb-4">
+              Conteo Físico Real
             </label>
-            <p-inputNumber
-              formControlName="montoContado"
-              mode="currency"
-              currency="PEN"
-              locale="es-PE"
-              [min]="0"
-              styleClass="w-full"
-              placeholder="0.00"
-              (onInput)="calcularDiferencia()"
-            />
-            <small class="text-gray-500 mt-1 block">
-              Ingrese el efectivo físico contado en caja
-            </small>
-          </div>
-        </form>
-
-        <!-- Diferencia -->
-        <div 
-          class="p-4 rounded-lg border-2"
-          [ngClass]="{
-            'bg-emerald-50 border-emerald-400': diferencia === 0,
-            'bg-amber-50 border-amber-400': diferencia !== 0 && Math.abs(diferencia) <= 10,
-            'bg-rose-50 border-rose-400': Math.abs(diferencia) > 10
-          }"
-        >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold" [ngClass]="{
-                'text-emerald-700': diferencia === 0,
-                'text-amber-700': diferencia !== 0 && Math.abs(diferencia) <= 10,
-                'text-rose-700': Math.abs(diferencia) > 10
-              }">
-                <i class="pi mr-2" [ngClass]="{
-                  'pi-check-circle': diferencia === 0,
-                  'pi-exclamation-triangle': diferencia !== 0 && Math.abs(diferencia) <= 10,
-                  'pi-times-circle': Math.abs(diferencia) > 10
-                }"></i>
-                {{ getDiferenciaLabel() }}
-              </p>
-              <p class="text-xs mt-1" [ngClass]="{
-                'text-emerald-600': diferencia === 0,
-                'text-amber-600': diferencia !== 0 && Math.abs(diferencia) <= 10,
-                'text-rose-600': Math.abs(diferencia) > 10
-              }">
-                {{ getDiferenciaMessage() }}
-              </p>
+            
+            <div class="relative flex items-baseline justify-center gap-2">
+                <span class="text-4xl font-bold text-surface-400 dark:text-surface-500 transform -translate-y-2">S/.</span>
+                
+                <p-inputNumber 
+                  formControlName="montoContado"
+                  mode="decimal" 
+                  [minFractionDigits]="2" 
+                  [maxFractionDigits]="2"
+                  locale="es-PE"
+                  placeholder="0.00"
+                  styleClass="zen-money-input"
+                  inputStyleClass="zen-input-field"
+                  (onInput)="calcularDiferencia()"
+                ></p-inputNumber>
             </div>
-            <div class="text-right">
-              <p class="text-2xl font-bold" [ngClass]="{
-                'text-emerald-700': diferencia === 0,
-                'text-amber-700': diferencia !== 0 && Math.abs(diferencia) <= 10,
-                'text-rose-700': Math.abs(diferencia) > 10
-              }">
-                {{ diferencia > 0 ? '+' : '' }}S/ {{ formatMoney(Math.abs(diferencia)) }}
-              </p>
+
+            <div class="h-6 mt-4 flex items-center justify-center transition-all duration-300">
+              @if (form.get('montoContado')?.value !== null) {
+                @if (diferencia === 0) {
+                  <span class="text-xs font-black text-emerald-600 flex items-center gap-1 animate-fade-in bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-wider">
+                    <i class="pi pi-check-circle"></i> Cuadre Perfecto
+                  </span>
+                } @else if (diferencia < 0) {
+                  <span class="text-xs font-black text-red-500 flex items-center gap-1 animate-shake bg-red-50 px-3 py-1 rounded-full uppercase tracking-wider">
+                    <i class="pi pi-exclamation-triangle"></i> Faltante: {{ formatMoney(Math.abs(diferencia)) }}
+                  </span>
+                } @else {
+                  <span class="text-xs font-black text-blue-500 flex items-center gap-1 animate-fade-in bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">
+                    <i class="pi pi-info-circle"></i> Sobrante: {{ formatMoney(diferencia) }}
+                  </span>
+                }
+              } @else {
+                <span class="text-xs text-surface-400 italic font-medium">Ingresa el dinero contado</span>
+              }
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Botones -->
-      <div class="flex gap-3 pt-6 border-t border-gray-200">
-        <button
-          type="button"
-          pButton
-          label="Cancelar"
-          icon="pi pi-times"
-          class="flex-1"
-          [outlined]="true"
-          severity="secondary"
-          (click)="onCancel()"
-        ></button>
-        <button
-          type="button"
-          pButton
-          label="Cerrar Caja"
-          icon="pi pi-lock"
-          class="flex-1"
-          severity="danger"
-          [disabled]="form.invalid || loading"
-          [loading]="loading"
-          (click)="onSubmit()"
-        ></button>
-      </div>
+        @if (showObservacion) {
+          <div class="animate-slide-down">
+             <label class="text-[10px] font-bold text-surface-500 uppercase tracking-widest mb-1.5 block pl-1">
+               Justificación de Diferencia <span class="text-red-500">*</span>
+             </label>
+             <textarea 
+               pInputTextarea 
+               formControlName="observaciones"
+               rows="2" 
+               class="w-full bg-surface-50 dark:bg-surface-800 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-surface-900 dark:focus:ring-surface-0 transition-all resize-none placeholder:text-surface-400"
+               placeholder="Explique por qué no cuadra la caja..."
+             ></textarea>
+             @if (form.get('observaciones')?.dirty && form.get('observaciones')?.invalid) {
+               <small class="text-red-500 text-xs mt-1 block pl-1 font-bold">La justificación es obligatoria.</small>
+             }
+          </div>
+        }
+
+        <div class="grid grid-cols-3 gap-3 pt-2">
+          <button 
+            type="button"
+            class="col-span-1 py-4 rounded-xl font-bold text-surface-500 hover:text-surface-900 hover:bg-surface-100 dark:hover:text-surface-0 dark:hover:bg-surface-800 transition-colors text-xs uppercase tracking-wide"
+            (click)="onCancel()"
+          >
+            Cancelar
+          </button>
+          
+          <button 
+            type="button"
+            (click)="onSubmit()"
+            [disabled]="form.invalid || loading"
+            class="col-span-2 py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-xl font-black text-sm shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-2"
+          >
+            <i class="pi" [ngClass]="loading ? 'pi-spin pi-spinner' : 'pi-lock'"></i>
+            <span>{{ loading ? 'CERRANDO...' : 'CONFIRMAR CIERRE' }}</span>
+          </button>
+        </div>
+
+      </form>
     </div>
   `,
   styles: [`
-    :host ::ng-deep {
-      .p-inputnumber {
-        width: 100%;
-      }
-      
-      .p-inputnumber-input {
-        width: 100%;
-        font-size: 1.25rem;
-        font-weight: 600;
+    /* ========================================= */
+    /* ESTILOS HEROICOS (Iguales a Apertura)     */
+    /* ========================================= */
+
+    :host ::ng-deep .zen-money-input .p-inputnumber-input {
+        /* Tamaño Masivo */
+        font-size: 5.5rem !important; 
+        font-weight: 900 !important;
+        letter-spacing: -3px !important;
+        line-height: 1 !important;
+        
+        /* Layout */
         text-align: center;
-      }
+        background: transparent;
+        border: none;
+        box-shadow: none !important;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        color: var(--surface-900);
     }
+    
+    :host ::ng-deep .dark .zen-money-input .p-inputnumber-input {
+        color: #ffffff;
+    }
+
+    :host ::ng-deep .zen-money-input .p-inputnumber-input::placeholder {
+        color: var(--surface-300);
+        font-weight: 700;
+        opacity: 0.3;
+    }
+
+    /* Contenedor fluido */
+    :host ::ng-deep .zen-money-input {
+        width: 100%;
+        display: block;
+    }
+
+    /* Animaciones */
+    .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+    .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); height: 0; } to { opacity: 1; transform: translateY(0); height: auto; } }
+    @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
   `]
 })
 export class CierreCajaDialogComponent implements OnInit {
@@ -207,78 +211,95 @@ export class CierreCajaDialogComponent implements OnInit {
   estadoCaja!: EstadoCaja;
   diferencia = 0;
   Math = Math;
+  showObservacion = false;
 
   ngOnInit(): void {
-    this.estadoCaja = this.config.data.estadoCaja;
+    // Mock Data para visualizar si no llega config
+    this.estadoCaja = this.config.data?.estadoCaja || {
+      montoInicial: 100.00,
+      totalVentasDelDia: 450.50,
+      cantidadVentas: 12,
+      fechaApertura: new Date(),
+      usuarioApertura: 'Admin'
+    };
+    
     this.initForm();
   }
 
   private initForm(): void {
     this.form = this.fb.group({
-      montoContado: [this.getEfectivoEsperado(), [Validators.required, Validators.min(0)]]
+      montoContado: [null, [Validators.required, Validators.min(0)]],
+      observaciones: ['']
     });
   }
 
   getEfectivoEsperado(): number {
-    return this.estadoCaja.montoInicial + this.estadoCaja.totalVentasDelDia;
+    return (this.estadoCaja.montoInicial || 0) + (this.estadoCaja.totalVentasDelDia || 0);
   }
 
   calcularDiferencia(): void {
-    const montoContado = this.form.get('montoContado')?.value || 0;
-    const esperado = this.getEfectivoEsperado();
-    this.diferencia = montoContado - esperado;
-  }
+    const contado = this.form.get('montoContado')?.value;
+    
+    if (contado !== null) {
+      const esperado = this.getEfectivoEsperado();
+      this.diferencia = contado - esperado;
+      
+      const hayDiferenciaReal = Math.abs(this.diferencia) >= 0.1;
+      this.showObservacion = hayDiferenciaReal;
 
-  getDiferenciaLabel(): string {
-    if (this.diferencia === 0) return 'Cuadre Perfecto';
-    if (this.diferencia > 0) return 'Sobrante';
-    return 'Faltante';
-  }
-
-  getDiferenciaMessage(): string {
-    if (this.diferencia === 0) return 'El efectivo coincide exactamente';
-    if (Math.abs(this.diferencia) <= 10) return 'Diferencia tolerable';
-    return 'Diferencia significativa - requiere revisión';
-  }
-
-  getTurnoSeverity(turno: string | undefined): 'success' | 'info' | 'warning' | 'danger' {
-    switch(turno) {
-      case 'MAÑANA': return 'info';
-      case 'TARDE': return 'warning';
-      case 'NOCHE': return 'danger';
-      default: return 'success';
+      const obsControl = this.form.get('observaciones');
+      if (hayDiferenciaReal) {
+        obsControl?.setValidators([Validators.required, Validators.minLength(5)]);
+      } else {
+        obsControl?.clearValidators();
+        obsControl?.setValue('');
+      }
+      obsControl?.updateValueAndValidity();
+      
+    } else {
+      this.diferencia = 0;
+      this.showObservacion = false;
     }
   }
 
-  formatDate(date: Date | undefined): string {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleString('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  // Estilo dinámico del borde
+  getBorderClass(): string {
+    const val = this.form.get('montoContado')?.value;
+    if (val === null) return 'border-surface-200 dark:border-surface-700'; // Neutro
+    if (this.diferencia === 0) return 'border-emerald-500 bg-emerald-50/10 dark:bg-emerald-900/10'; // Perfecto
+    if (this.diferencia < 0) return 'border-red-500 bg-red-50/10 dark:bg-red-900/10'; // Faltante
+    return 'border-blue-500 bg-blue-50/10 dark:bg-blue-900/10'; // Sobrante
   }
 
-  formatMoney(value: number): string {
-    return value.toFixed(2);
+  formatMoney(val: number | undefined): string {
+    return (val || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  formatDate(date: any): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
   onSubmit(): void {
     if (this.form.valid) {
-      const montoContado = this.form.get('montoContado')?.value;
+      this.loading = true;
       
       const response: CierreCajaResponse = {
-        montoFinal: montoContado,
+        montoFinal: this.form.get('montoContado')?.value,
         diferencia: this.diferencia,
-        ventasEfectivo: this.estadoCaja.totalVentasDelDia, // En producción dividir por método de pago
+        observaciones: this.form.get('observaciones')?.value, 
+        ventasEfectivo: this.estadoCaja.totalVentasDelDia,
         ventasTarjeta: 0,
         totalVentas: this.estadoCaja.totalVentasDelDia,
         cantidadVentas: this.estadoCaja.cantidadVentas
       };
 
-      this.dialogRef.close(response);
+      setTimeout(() => {
+        this.loading = false;
+        this.dialogRef.close(response);
+      }, 500);
+    } else {
+        this.form.markAllAsTouched();
     }
   }
 

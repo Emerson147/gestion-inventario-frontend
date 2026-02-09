@@ -1,92 +1,189 @@
-// 📱 Estilos Responsive para POS
+// 🎨 Enterprise POS Styles
 
-// Carrito deslizable en móvil
+// ==================== LAYOUT & MOBILE ====================
+
 aside.show-mobile-cart {
   @media (max-width: 1023px) {
     transform: translateY(0) !important;
   }
 }
 
-// Animaciones suaves para el carrito
 aside {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-// Patrón de fondo para el header
+// ==================== ANIMATIONS ====================
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes scan-line {
+  0%, 100% { transform: translateY(-50%); opacity: 0.5; }
+  50% { transform: translateY(50%); opacity: 1; }
+}
+
+.animate-scan-line {
+  animation: scan-line 2s ease-in-out infinite;
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-progress-indeterminate {
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out forwards;
+}
+
+// ==================== SCROLLBAR ====================
+
+.custom-scrollbar,
+aside {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 10px;
+
+    &:hover {
+      background: rgba(99, 102, 241, 0.3);
+    }
+  }
+}
+
+// Hide scrollbar utility
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ==================== UTILITIES ====================
+
 .bg-grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
-// Animación bounce suave para iconos
-@keyframes bounce-gentle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.animate-bounce-gentle {
-  animation: bounce-gentle 2s ease-in-out infinite;
-}
-
-// Animación pulse lenta
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
-}
-
-// Mejora de scrollbar para el carrito
-aside::-webkit-scrollbar {
-  width: 8px;
-}
-
-aside::-webkit-scrollbar-track {
-  background: rgba(241, 245, 249, 0.5);
-  border-radius: 10px;
-}
-
-aside::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #818cf8, #6366f1);
-  border-radius: 10px;
-  
-  &:hover {
-    background: linear-gradient(to bottom, #6366f1, #4f46e5);
-  }
-}
-
-// Estilo para modo oscuro
-@media (prefers-color-scheme: dark) {
-  aside::-webkit-scrollbar-track {
-    background: rgba(30, 41, 59, 0.5);
-  }
-}
-
-// Overlay semi-transparente
-.bg-opacity-50 {
-  backdrop-filter: blur(4px);
-}
-
-// Transición suave para elementos interactivos
 button, a {
   transition: all 0.2s ease-in-out;
 }
 
-// Mejora visual para inputs en móvil
 @media (max-width: 640px) {
   input, select, textarea {
-    font-size: 16px !important; // Previene zoom en iOS
+    font-size: 16px !important;
   }
+}
+
+// ==================== PRIMENG OVERRIDES ====================
+
+:host ::ng-deep {
+  .zen-dialog {
+    .p-dialog {
+      border-radius: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    .p-dialog-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      background: transparent;
+    }
+
+    .p-dialog-content {
+      padding: 0;
+    }
+
+    .p-dialog-footer {
+      padding: 0;
+      border-top: none;
+      background: transparent;
+    }
+  }
+
+  .zen-autocomplete-panel {
+    border-radius: 1rem !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12) !important;
+    margin-top: 0.5rem !important;
+    overflow: hidden !important;
+
+    .p-autocomplete-items {
+      padding: 0.5rem !important;
+    }
+
+    .p-autocomplete-item {
+      border-radius: 0.75rem !important;
+      margin-bottom: 2px;
+    }
+  }
+
+  // Dark footer checkbox override
+  .p-checkbox {
+    .p-checkbox-box {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // InputSwitch in dark footer
+  .p-inputswitch {
+    &.p-inputswitch-checked .p-inputswitch-slider {
+      background: #6366f1;
+    }
+  }
+}
+
+// ==================== TEXT SHADOW ====================
+
+.text-shadow-lg {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+// ==================== KBD ====================
+
+kbd {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
 }

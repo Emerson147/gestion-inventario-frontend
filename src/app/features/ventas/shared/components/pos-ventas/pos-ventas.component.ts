@@ -13,6 +13,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { VentaRequest, VentaResponse } from '../../../../../core/models/venta.model';
@@ -97,6 +99,8 @@ interface OpcionSelect {
     DialogModule,
     ToastModule,
     ConfirmDialogModule,
+    TooltipModule,
+    CheckboxModule,
     ToastNotificationComponent
     ],
   providers: [MessageService, ConfirmationService, DialogService],

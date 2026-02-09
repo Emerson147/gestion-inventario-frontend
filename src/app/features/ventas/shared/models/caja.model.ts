@@ -47,4 +47,5 @@ export interface CierreCajaResponse {
   ventasTarjeta: number;
   totalVentas: number;
   cantidadVentas: number;
+  observaciones?: string;
 }
