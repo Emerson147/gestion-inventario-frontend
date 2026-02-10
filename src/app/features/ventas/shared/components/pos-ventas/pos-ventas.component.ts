@@ -20,6 +20,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { VentaRequest, VentaResponse } from '../../../../../core/models/venta.model';
 import { PagoRequest, PagoResponse } from '../../../../../core/models/pago.model';
 import { MetricaVenta } from '../metrics/metric-card.interface';
+import { trigger, style, animate, transition, query, animateChild, group } from '@angular/animations';
 
 // Servicios modernos
 import { ToastService } from '../../../../../shared/services/toast.service';
@@ -105,7 +106,30 @@ interface OpcionSelect {
     ],
   providers: [MessageService, ConfirmationService, DialogService],
   templateUrl: './pos-ventas.component.html',
-  // 🔧 TEMPORAL: Cambiar a Default para que los diálogos funcionen
+  animations:  [
+    // Animación para el panel que "sale del piso"
+    trigger('slideUpInOut', [
+      transition(':enter', [
+        style({ transform: 'translateY(100%)' }), // Estado inicial: fuera de la pantalla por abajo
+        animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ transform: 'translateY(0)' })) // Estado final: posición normal. Usamos un cubic-bezier para un efecto "físico" suave.
+      ]),
+      transition(':leave', [
+        animate('300ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ transform: 'translateY(100%)' })) // Al salir, vuelve abajo
+      ])
+    ]),
+    // Animación suave para el fondo oscuro (backdrop)
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0 }))
+      ])
+    ])
+  ]
+  
+   // 🔧 TEMPORAL: Cambiar a Default para que los diálogos funcionen
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PosVentasComponent implements OnInit, OnDestroy {
@@ -4115,6 +4139,8 @@ nuevaVentaRapida(): void {
       this.nuevaVenta.clienteId = this.clienteSeleccionado.id;
     }
 
+    // 🎯 CERRAR DIÁLOGO DE PAGO INMEDIATAMENTE PARA MOSTRAR LOADING
+    this.pagoDialog = false;
     this.procesandoPago = true;
 
     // Verificar stock en tiempo real antes de procesar
@@ -4307,17 +4333,19 @@ nuevaVentaRapida(): void {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (pago) => {
-          this.mostrarExito('Venta procesada', `Venta ${venta.numeroVenta} creada exitosamente`);
-          
-          // Cerrar el diálogo de pago
-          this.pagoDialog = false;
-          this.procesandoPago = false;
-          
-          // 🎯 MOSTRAR COMPROBANTE DE LA VENTA COMPLETADA
-          this.mostrarComprobanteVentaCompletada(venta);
-          
-          // Recargar datos
-          this.cargarVentas();
+          // ⏳ Asegurar que el loading se vea al menos por 2 segundos
+          setTimeout(() => {
+            this.mostrarExito('Venta procesada', `Venta ${venta.numeroVenta} creada exitosamente`);
+            
+            // El diálogo de pago ya está cerrado, solo desactivar loading
+            this.procesandoPago = false;
+            
+            // 🎯 MOSTRAR COMPROBANTE DE LA VENTA COMPLETADA
+            this.mostrarComprobanteVentaCompletada(venta);
+            
+            // Recargar datos
+            this.cargarVentas();
+          }, 2000); // 2 segundos de delay mínimo para ver el loading
         },
         error: (error) => {
           console.error('❌ Error al procesar pago:', error);

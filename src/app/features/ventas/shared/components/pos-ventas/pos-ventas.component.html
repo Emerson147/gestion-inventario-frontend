@@ -1,964 +1,1809 @@
 <!-- Sistema de Notificaciones Toast Modernas -->
-<app-toast-notification 
+<app-toast-notification
   [toasts]="toastService.getCurrentToasts()"
   (toastDismissed)="onToastDismissed($event)"
 ></app-toast-notification>
 
 <!-- ==================== PANTALLA DE APERTURA DE CAJA ==================== -->
-<div *ngIf="!cajaAbierta()" class="fixed inset-0 z-50 flex items-center justify-center bg-surface-200/50 dark:bg-surface-950/90 transition-all duration-500">
-  
-  <div class="w-full max-w-5xl bg-white dark:bg-surface-900 rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-surface-200 dark:border-surface-800 overflow-hidden relative animate-fade-in-up flex flex-col md:flex-row min-h-[550px]">
-    
-    <div class="w-full md:w-5/12 bg-surface-50 dark:bg-surface-800/30 p-12 flex flex-col items-center justify-center text-center border-r border-surface-200 dark:border-surface-800 relative">
-        
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-surface-200 dark:border-surface-700 rounded-full opacity-50 pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 border border-surface-100 dark:border-surface-800 rounded-full opacity-50 pointer-events-none"></div>
+<div
+  *ngIf="!cajaAbierta()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-200/50 dark:bg-surface-950/90 transition-all duration-500"
+>
+  <div
+    class="w-full max-w-5xl bg-white dark:bg-surface-900 rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-surface-200 dark:border-surface-800 overflow-hidden relative animate-fade-in-up flex flex-col md:flex-row min-h-[550px]"
+  >
+    <div
+      class="w-full md:w-5/12 bg-surface-50 dark:bg-surface-800/30 p-12 flex flex-col items-center justify-center text-center border-r border-surface-200 dark:border-surface-800 relative"
+    >
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-surface-200 dark:border-surface-700 rounded-full opacity-50 pointer-events-none"
+      ></div>
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 border border-surface-100 dark:border-surface-800 rounded-full opacity-50 pointer-events-none"
+      ></div>
 
-        <div class="relative w-32 h-32 rounded-3xl bg-white dark:bg-surface-800 flex items-center justify-center mb-8 shadow-sm border border-surface-200 dark:border-surface-700 z-10">
-            <i class="pi pi-lock text-5xl text-indigo-600 dark:text-indigo-400"></i>
-            
-            <div class="absolute -bottom-3 px-3 py-1 bg-surface-900 dark:bg-white rounded-full border-2 border-white dark:border-surface-900 shadow-sm">
-                <span class="text-[10px] font-bold text-white dark:text-surface-900 uppercase tracking-widest">Cerrado</span>
-            </div>
-        </div>
+      <div
+        class="relative w-32 h-32 rounded-3xl bg-white dark:bg-surface-800 flex items-center justify-center mb-8 shadow-sm border border-surface-200 dark:border-surface-700 z-10"
+      >
+        <i class="pi pi-lock text-5xl text-indigo-600 dark:text-indigo-400"></i>
 
-        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2 tracking-tight z-10">Punto de Venta</h2>
-        <div class="text-sm font-medium text-surface-500 dark:text-surface-400 z-10">
-            Terminal de <strong class="text-indigo-600 dark:text-indigo-400">La Peruanita</strong>
+        <div
+          class="absolute -bottom-3 px-3 py-1 bg-surface-900 dark:bg-white rounded-full border-2 border-white dark:border-surface-900 shadow-sm"
+        >
+          <span
+            class="text-[10px] font-bold text-white dark:text-surface-900 uppercase tracking-widest"
+            >Cerrado</span
+          >
         </div>
+      </div>
 
-        <div class="mt-auto pt-8 z-10">
-            <span class="text-[10px] font-mono text-surface-400 dark:text-surface-500 uppercase tracking-widest">
-                ID: POS-LIMA-01
-            </span>
-        </div>
+      <h2
+        class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2 tracking-tight z-10"
+      >
+        Punto de Venta
+      </h2>
+      <div
+        class="text-sm font-medium text-surface-500 dark:text-surface-400 z-10"
+      >
+        Terminal de
+        <strong class="text-indigo-600 dark:text-indigo-400"
+          >La Peruanita</strong
+        >
+      </div>
+
+      <div class="mt-auto pt-8 z-10">
+        <span
+          class="text-[10px] font-mono text-surface-400 dark:text-surface-500 uppercase tracking-widest"
+        >
+          ID: POS-LIMA-01
+        </span>
+      </div>
     </div>
 
-    <div class="w-full md:w-7/12 p-10 md:p-14 flex flex-col justify-center bg-white dark:bg-surface-900 relative">
-        
-        <div class="mb-10">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="w-8 h-[2px] bg-indigo-500 rounded-full"></span>
-                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Sesión Requerida</span>
+    <div
+      class="w-full md:w-7/12 p-10 md:p-14 flex flex-col justify-center bg-white dark:bg-surface-900 relative"
+    >
+      <div class="mb-10">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-8 h-[2px] bg-indigo-500 rounded-full"></span>
+          <span
+            class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest"
+            >Sesión Requerida</span
+          >
+        </div>
+        <h1
+          class="text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3 tracking-tight"
+        >
+          Hola, {{ currentUser || "Vendedor" }}
+        </h1>
+        <p class="text-base text-surface-500 dark:text-surface-400 font-medium">
+          El sistema está listo. Inicia tu turno para facturar.
+        </p>
+      </div>
+
+      <div class="space-y-4 mb-10">
+        <div class="grid grid-cols-2 gap-4">
+          <div
+            class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center group hover:border-surface-300 dark:hover:border-surface-600 transition-colors"
+          >
+            <span
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-2 group-hover:text-indigo-500 transition-colors"
+              >Fecha</span
+            >
+            <div
+              class="text-lg font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2"
+            >
+              {{ getCurrentDate() | date: "dd.MM.yyyy" }}
             </div>
-            <h1 class="text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3 tracking-tight">
-                Hola, {{ currentUser || 'Vendedor' }}
-            </h1>
-            <p class="text-base text-surface-500 dark:text-surface-400 font-medium">
-                El sistema está listo. Inicia tu turno para facturar.
-            </p>
+          </div>
+
+          <div
+            class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center group hover:border-surface-300 dark:hover:border-surface-600 transition-colors"
+          >
+            <span
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-2 group-hover:text-indigo-500 transition-colors"
+              >Hora</span
+            >
+            <div
+              class="text-lg font-mono font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2"
+            >
+              {{ getCurrentHour() }}
+            </div>
+          </div>
         </div>
 
-        <div class="space-y-4 mb-10">
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center group hover:border-surface-300 dark:hover:border-surface-600 transition-colors">
-                    <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-2 group-hover:text-indigo-500 transition-colors">Fecha</span>
-                    <div class="text-lg font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2">
-                        {{ getCurrentDate() | date:'dd.MM.yyyy' }}
-                    </div>
-                </div>
-                
-                <div class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex flex-col justify-center group hover:border-surface-300 dark:hover:border-surface-600 transition-colors">
-                    <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-2 group-hover:text-indigo-500 transition-colors">Hora</span>
-                    <div class="text-lg font-mono font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2">
-                        {{ getCurrentHour() }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex justify-between items-center hover:border-surface-300 dark:hover:border-surface-600 transition-colors">
-                <div>
-                    <span class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1 block">Caja Asignada</span>
-                    <span class="text-lg font-bold text-surface-900 dark:text-surface-0">Principal #01</span>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-surface-400 flex items-center justify-center">
-                    <i class="pi pi-desktop"></i>
-                </div>
-            </div>
+        <div
+          class="p-5 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-100 dark:border-surface-700 flex justify-between items-center hover:border-surface-300 dark:hover:border-surface-600 transition-colors"
+        >
+          <div>
+            <span
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1 block"
+              >Caja Asignada</span
+            >
+            <span class="text-lg font-bold text-surface-900 dark:text-surface-0"
+              >Principal #01</span
+            >
+          </div>
+          <div
+            class="w-10 h-10 rounded-xl bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-surface-400 flex items-center justify-center"
+          >
+            <i class="pi pi-desktop"></i>
+          </div>
         </div>
+      </div>
 
-        <button 
-            (click)="abrirDialogoAperturaCaja()"
-            class="group w-full py-5 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-3">
-            <span>Abrir Caja</span>
-            <i class="pi pi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+      <button
+        (click)="abrirDialogoAperturaCaja()"
+        class="group w-full py-5 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-3"
+      >
+        <span>Abrir Caja</span>
+        <i
+          class="pi pi-arrow-right group-hover:translate-x-1 transition-transform"
+        ></i>
+      </button>
+
+      <div class="mt-6 text-center flex justify-center gap-6">
+        <button
+          class="text-[10px] font-bold text-surface-400 hover:text-surface-900 transition-colors uppercase tracking-widest"
+        >
+          Soporte
         </button>
-
-        <div class="mt-6 text-center flex justify-center gap-6">
-            <button class="text-[10px] font-bold text-surface-400 hover:text-surface-900 transition-colors uppercase tracking-widest">
-                Soporte
-            </button>
-            <button class="text-[10px] font-bold text-surface-400 hover:text-surface-900 transition-colors uppercase tracking-widest">
-                Admin
-            </button>
-        </div>
-
+        <button
+          class="text-[10px] font-bold text-surface-400 hover:text-surface-900 transition-colors uppercase tracking-widest"
+        >
+          Admin
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ==================== CONTENIDO PRINCIPAL DEL POS (Solo si caja abierta) ==================== -->
-<div *ngIf="cajaAbierta()" class="h-screen bg-surface-50 dark:bg-surface-950 flex flex-col transition-colors duration-300">
+<div
+  *ngIf="cajaAbierta()"
+  class="h-screen bg-surface-50 dark:bg-surface-950 flex flex-col transition-colors duration-300"
+>
+  <div
+    class="h-screen flex flex-col bg-surface-100 dark:bg-surface-950 font-sans overflow-hidden transition-colors duration-300"
+  >
+    <header
+      class="h-[88px] flex-none bg-white/90 dark:bg-surface-900/90 backdrop-blur-md border-b border-surface-100 dark:border-surface-800 z-40 px-6 lg:px-8 flex items-center justify-between sticky top-0 transition-all duration-300"
+    >
+      <div class="flex items-center gap-5 w-72">
+        <div
+          class="w-12 h-12 rounded-[1.2rem] bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 flex items-center justify-center shadow-lg shadow-surface-900/10 dark:shadow-none shrink-0 group cursor-pointer hover:scale-105 transition-transform duration-300"
+        >
+          <i
+            class="pi pi-box text-xl group-hover:rotate-12 transition-transform duration-300"
+          ></i>
+        </div>
 
-<div class="h-screen flex flex-col bg-surface-100 dark:bg-surface-950 font-sans overflow-hidden transition-colors duration-300">
+        <div class="flex flex-col justify-center">
+          <h1
+            class="text-lg font-black text-surface-900 dark:text-surface-0 tracking-tight leading-none mb-1"
+          >
+            La Peruanita
+          </h1>
+          <div class="flex items-center gap-2">
+            <span
+              class="px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-[10px] font-bold text-surface-500 uppercase tracking-wider"
+            >
+              POS-01
+            </span>
+            <span
+              class="text-[10px] font-medium text-surface-400 dark:text-surface-500 flex items-center gap-1"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Activo
+            </span>
+          </div>
+        </div>
+      </div>
 
-  <header class="flex-none bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800 z-30 px-6 py-3 flex items-center justify-between shadow-sm relative">
-      
-      <div class="flex items-center gap-5">
-          <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 flex items-center justify-center shadow-md">
-                  <i class="pi pi-shopping-bag text-lg"></i>
-              </div>
-              <div class="leading-tight">
-                  <h1 class="text-lg font-bold text-surface-900 dark:text-surface-0 tracking-tight">La Peruanita</h1>
-                  <div class="flex items-center gap-2 text-xs font-medium text-surface-500">
-                      <span class="bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded border border-surface-200 dark:border-surface-700">POS-01</span>
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>{{ currentUser || 'Admin' }}</span>
-                  </div>
-              </div>
+      <div class="flex-1 max-w-2xl px-4 hidden md:block">
+        <div class="relative group">
+          <i
+            class="pi pi-search absolute left-5 top-1/2 -translate-y-1/2 text-surface-400 group-focus-within:text-indigo-600 text-lg transition-colors z-10"
+          ></i>
+
+          <input
+            type="text"
+            placeholder="Buscar productos, clientes o facturas..."
+            class="w-full h-14 pl-12 pr-14 bg-surface-50 dark:bg-surface-800 border-none rounded-2xl text-sm font-medium text-surface-900 dark:text-surface-0 shadow-inner focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/50 focus:bg-white dark:focus:bg-surface-900 transition-all placeholder:text-surface-400 dark:placeholder:text-surface-500"
+          />
+
+          <div
+            class="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-1 pointer-events-none opacity-50 group-focus-within:opacity-100 transition-opacity"
+          >
+            <kbd
+              class="hidden sm:inline-block px-2 py-1 bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg text-[10px] font-bold text-surface-500 shadow-sm font-sans"
+              >Ctrl</kbd
+            >
+            <span class="text-xs text-surface-400">+</span>
+            <kbd
+              class="hidden sm:inline-block px-2 py-1 bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg text-[10px] font-bold text-surface-500 shadow-sm font-sans"
+              >K</kbd
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-4 w-72">
+        <div
+          class="hidden lg:flex items-center gap-4 px-4 py-2 bg-surface-50 dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700/50"
+        >
+          <div class="flex flex-col items-end leading-none">
+            <span
+              class="text-xs font-black text-surface-800 dark:text-surface-100 font-mono tracking-tight"
+            >
+              {{ getCurrentTime() || "12:45 PM" }}
+            </span>
+            <span
+              class="text-[9px] font-bold text-surface-400 uppercase tracking-widest mt-0.5"
+            >
+              {{ currentUser || "Admin" }}
+            </span>
           </div>
 
-          <div class="h-8 w-px bg-surface-200 dark:bg-surface-800 hidden md:block"></div>
+          <div class="w-px h-6 bg-surface-200 dark:bg-surface-700"></div>
 
-          <div class="hidden md:flex relative w-64 lg:w-80 group">
-              <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 group-focus-within:text-indigo-600 transition-colors"></i>
-              <input 
-                  type="text" 
-                  placeholder="Buscar productos (Ctrl+K)" 
-                  class="w-full h-10 pl-9 pr-4 bg-surface-50 dark:bg-surface-800 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-surface-400"
+          <div
+            class="relative flex items-center justify-center w-6 h-6"
+            pTooltip="Conexión Estable"
+            tooltipPosition="bottom"
+          >
+            <i class="pi pi-wifi text-emerald-500 text-sm font-bold"></i>
+            <span class="absolute top-0 right-0 -mt-0.5 -mr-0.5 flex h-2 w-2">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+              ></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pl-2">
+          <button
+            class="w-12 h-12 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 transition-colors flex items-center justify-center group"
+            pTooltip="Pantalla Completa"
+            tooltipPosition="bottom"
+          >
+            <i
+              class="pi pi-window-maximize text-lg group-hover:scale-110 transition-transform"
+            ></i>
+          </button>
+
+          <button
+            (click)="abrirDialogoCierreCaja()"
+            class="w-12 h-12 rounded-2xl bg-white dark:bg-surface-800 border-2 border-surface-100 dark:border-surface-700 text-surface-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 dark:hover:bg-red-900/20 dark:hover:border-red-900/50 transition-all flex items-center justify-center group shadow-sm"
+            pTooltip="Cerrar Caja (Turno)"
+            tooltipPosition="bottomL"
+          >
+            <i
+              class="pi pi-power-off text-lg font-bold group-hover:scale-110 transition-transform"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden relative h-[calc(100vh-88px)]">
+      <section
+        class="flex-1 flex flex-col bg-surface-50/50 dark:bg-surface-950 min-w-0 relative"
+      >
+        <div
+          class="px-6 py-4 flex-none z-20 bg-surface-50/95 dark:bg-surface-950/95 backdrop-blur-sm sticky top-0 border-b border-transparent"
+        >
+          <div
+            class="flex gap-2 overflow-x-auto custom-scrollbar pb-1 mask-linear-fade"
+          >
+            <button
+              class="px-5 py-2.5 rounded-2xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 text-xs font-bold uppercase tracking-wide shadow-lg shadow-surface-900/20 whitespace-nowrap transition-transform active:scale-95"
+            >
+              Todos
+            </button>
+            <button
+              *ngFor="
+                let cat of [
+                  'Ropa Hombre',
+                  'Ropa Mujer',
+                  'Accesorios',
+                  'Liquidación',
+                  'Niños',
+                  'Deportes',
+                ]
+              "
+              class="px-5 py-2.5 rounded-2xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300 text-xs font-bold uppercase tracking-wide hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all whitespace-nowrap shadow-sm hover:shadow-md active:scale-95"
+            >
+              {{ cat }}
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="flex-1 overflow-y-auto px-6 pb-24 lg:pb-8 custom-scrollbar scroll-smooth"
+        >
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
+          >
+            <div
+              *ngFor="let producto of productosPopulares"
+              (click)="agregarAlCarrito(producto, 1)"
+              class="group bg-white dark:bg-surface-900 rounded-[1.5rem] border border-surface-200 dark:border-surface-800 p-3 cursor-pointer hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/30 dark:hover:border-indigo-500/50 transition-all duration-300 flex flex-col relative overflow-hidden active:scale-[0.98]"
+            >
+              <div class="absolute top-4 right-4 z-10">
+                <span
+                  class="px-2 py-1 rounded-lg bg-white/80 dark:bg-surface-900/80 backdrop-blur-md text-[10px] font-black text-surface-900 dark:text-white border border-surface-100 dark:border-surface-700 shadow-sm flex items-center gap-1"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="
+                      producto.stock > 5 ? 'bg-emerald-500' : 'bg-orange-500'
+                    "
+                  ></span>
+                  {{ producto.stock }}
+                </span>
+              </div>
+
+              <div
+                class="aspect-[4/5] rounded-2xl bg-surface-50 dark:bg-surface-800 mb-3 overflow-hidden relative"
               >
-          </div>
-      </div>
+                <img
+                  *ngIf="producto.producto?.imagen"
+                  [src]="producto.producto?.imagen"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
 
-      <div class="flex items-center gap-4">
-          
-          <div class="hidden lg:flex items-center gap-3 px-3 py-1.5 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
-              <div class="flex items-center gap-1.5">
-                  <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span class="text-[10px] font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">Online</span>
-              </div>
-              <span class="w-px h-3 bg-surface-300 dark:bg-surface-600"></span>
-              <span class="text-[10px] font-mono font-bold text-surface-500">{{ getCurrentTime() }}</span>
-          </div>
+                <div
+                  *ngIf="!producto.producto?.imagen"
+                  class="w-full h-full flex flex-col items-center justify-center text-surface-300 dark:text-surface-600 gap-2"
+                >
+                  <i class="pi pi-image text-3xl"></i>
+                  <span
+                    class="text-[10px] font-bold uppercase tracking-widest opacity-50"
+                    >Sin Imagen</span
+                  >
+                </div>
 
-          <button class="w-10 h-10 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 transition-colors flex items-center justify-center">
-              <i class="pi pi-window-maximize"></i>
-          </button>
-
-          <button (click)="abrirDialogoCierreCaja()" class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-surface-0 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center border border-transparent hover:border-red-200" pTooltip="Cerrar Caja">
-              <i class="pi pi-power-off font-bold"></i>
-          </button>
-      </div>
-  </header>
-
-  <main class="flex-1 flex overflow-hidden relative">
-
-      <section class="flex-1 flex flex-col bg-surface-50/50 dark:bg-surface-950">
-          
-          <div class="px-6 py-4 flex flex-col gap-4">
-              <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
-                  <button class="px-4 py-2 rounded-xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 text-xs font-bold uppercase tracking-wide shadow-md whitespace-nowrap">
-                      Todos
-                  </button>
-                  <button *ngFor="let cat of ['Ropa Hombre', 'Ropa Mujer', 'Accesorios', 'Liquidación']" class="px-4 py-2 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300 text-xs font-bold uppercase tracking-wide hover:border-indigo-500 hover:text-indigo-600 transition-all whitespace-nowrap shadow-sm">
-                      {{ cat }}
-                  </button>
-              </div>
-          </div>
-
-          <div class="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
-              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  
-                  <div *ngFor="let producto of productosPopulares" 
-                       (click)="agregarAlCarrito(producto, 1)"
-                       class="group bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-3 cursor-pointer hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden">
-                      
-                      <div class="absolute top-3 right-3 z-10">
-                          <span class="px-2 py-1 rounded-md bg-white/90 dark:bg-surface-800/90 backdrop-blur-sm text-[10px] font-bold text-surface-900 dark:text-white border border-surface-100 dark:border-surface-700 shadow-sm">
-                              {{ producto.stock }} und.
-                          </span>
-                      </div>
-
-                      <div class="aspect-square rounded-xl bg-surface-100 dark:bg-surface-800 mb-3 overflow-hidden relative">
-                          <img *ngIf="producto.producto?.imagen" [src]="producto.producto?.imagen" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                          <div *ngIf="!producto.producto?.imagen" class="w-full h-full flex items-center justify-center text-surface-300 dark:text-surface-600">
-                              <i class="pi pi-image text-3xl"></i>
-                          </div>
-                          
-                          <div class="absolute inset-0 bg-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <div class="w-10 h-10 rounded-full bg-white text-indigo-600 shadow-lg flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-200">
-                                  <i class="pi pi-plus font-bold"></i>
-                              </div>
-                          </div>
-                      </div>
-
-                      <div class="flex-1 flex flex-col justify-between">
-                          <div>
-                              <div class="text-[10px] text-surface-400 font-bold uppercase tracking-wider mb-0.5">{{ producto.producto?.marca || 'Sin marca' }}</div>
-                              <h3 class="text-sm font-bold text-surface-900 dark:text-surface-0 leading-tight line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors">
-                                  {{ producto.producto?.nombre || 'Producto' }}
-                              </h3>
-                          </div>
-                          
-                          <div class="flex items-center justify-between pt-2 border-t border-dashed border-surface-100 dark:border-surface-800">
-                              <div class="flex gap-1">
-                                  <span class="px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-[10px] font-mono text-surface-600 font-bold">{{ producto.talla?.numero || 'U' }}</span>
-                              </div>
-                              <div class="font-black text-lg text-surface-900 dark:text-surface-0 font-mono">
-                                  S/.{{ producto.precioUnitario || producto.producto?.precioVenta || 0 | number:'1.2-2' }}
-                              </div>
-                          </div>
-                      </div>
+                <div
+                  class="absolute inset-0 bg-indigo-900/5 dark:bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]"
+                >
+                  <div
+                    class="w-12 h-12 rounded-full bg-white dark:bg-surface-900 text-indigo-600 dark:text-indigo-400 shadow-xl flex items-center justify-center transform scale-50 group-hover:scale-100 transition-transform duration-300 border border-surface-100 dark:border-surface-700"
+                  >
+                    <i class="pi pi-plus font-black text-lg"></i>
                   </div>
+                </div>
+              </div>
+
+              <div class="flex-1 flex flex-col justify-between px-1">
+                <div>
+                  <div
+                    class="text-[9px] text-surface-400 font-bold uppercase tracking-widest mb-1 truncate"
+                  >
+                    {{ producto.producto?.marca || "Genérico" }}
                   </div>
+                  <h3
+                    class="text-sm font-bold text-surface-900 dark:text-surface-0 leading-tight line-clamp-2 mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+                  >
+                    {{ producto.producto?.nombre || "Producto Desconocido" }}
+                  </h3>
+                </div>
+
+                <div
+                  class="flex items-end justify-between mt-2 pt-3 border-t border-dashed border-surface-100 dark:border-surface-800"
+                >
+                  <div class="flex flex-col">
+                    <span
+                      class="text-[9px] text-surface-400 font-bold uppercase mb-0.5"
+                      >Talla</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-[10px] font-mono text-surface-700 dark:text-surface-200 font-bold border border-surface-200 dark:border-surface-700"
+                      >{{ producto.talla?.numero || "U" }}</span
+                    >
+                  </div>
+                  <div class="text-right">
+                    <span
+                      class="text-[9px] text-surface-400 font-bold uppercase block mb-0.5"
+                      >Precio</span
+                    >
+                    <div
+                      class="font-black text-lg text-surface-900 dark:text-surface-0 font-mono leading-none tracking-tight"
+                    >
+                      S/.{{
+                        producto.precioUnitario ||
+                          producto.producto?.precioVenta ||
+                          0 | number: "1.2-2"
+                      }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
       </section>
 
-      <aside class="w-[420px] flex-none bg-white dark:bg-surface-900 border-l border-surface-200 dark:border-surface-800 flex flex-col shadow-2xl z-20 relative">
-          
-          <div class="p-4 border-b border-surface-100 dark:border-surface-800">
-              <div 
-                  (click)="openClientModal()"
-                  class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3 flex items-center justify-between cursor-pointer group hover:bg-surface-100 transition-colors border border-transparent hover:border-surface-200">
-                  <div class="flex items-center gap-3 overflow-hidden">
-                      <div class="w-10 h-10 rounded-lg bg-white dark:bg-surface-700 flex items-center justify-center text-surface-500 shadow-sm border border-surface-100 group-hover:text-indigo-600 transition-colors">
-                          <i class="pi" [ngClass]="clienteSeleccionado ? 'pi-user' : 'pi-user-plus'"></i>
-                      </div>
-                      <div class="min-w-0">
-                          <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest">Cliente</div>
-                          <div class="font-bold text-sm text-surface-900 dark:text-surface-0 truncate">
-                              {{ clienteSeleccionado ? clienteSeleccionado.nombres : 'Consumidor Final' }}
-                          </div>
-                      </div>
-                  </div>
-                  <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
-              </div>
-          </div>
-
-          <div class="flex-1 overflow-y-auto p-4 custom-scrollbar bg-surface-50/30 dark:bg-black/20">
-              <div *ngIf="carrito.length === 0" class="h-full flex flex-col items-center justify-center text-surface-300 dark:text-surface-600 select-none opacity-60">
-                  <i class="pi pi-shopping-cart text-5xl mb-4"></i>
-                  <p class="text-xs font-bold uppercase tracking-widest">Carrito Vacío</p>
-              </div>
-
-              <div *ngFor="let item of carrito" class="group flex gap-3 mb-4 relative hover:bg-surface-50 dark:hover:bg-surface-800 p-2 rounded-xl transition-colors">
-                  <div class="w-12 h-12 bg-white dark:bg-surface-700 rounded-lg border border-surface-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                      <img *ngIf="item.producto.imagen" [src]="item.producto.imagen" class="w-full h-full object-cover">
-                      <span *ngIf="!item.producto.imagen" class="text-[10px] font-bold text-surface-400">#</span>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                      <div class="flex justify-between items-start">
-                          <h4 class="text-sm font-bold text-surface-900 dark:text-surface-0 leading-tight truncate pr-4">{{ item.producto.nombre }}</h4>
-                          <span class="text-sm font-black font-mono">{{ formatearMoneda(item.subtotal) }}</span>
-                      </div>
-                      <div class="text-[10px] text-surface-500 mt-0.5">{{ item.color.nombre }} / {{ item.talla.numero }}</div>
-                      
-                      <div class="flex items-center justify-between mt-1">
-                          <div class="flex items-center bg-white dark:bg-surface-900 rounded-md border border-surface-200 dark:border-surface-700 h-6">
-                              <button (click)="decrementarCantidadItem(item)" class="px-2 hover:text-red-500 transition-colors h-full flex items-center">-</button>
-                              <span class="text-xs font-bold px-1 min-w-[20px] text-center">{{ item.cantidad }}</span>
-                              <button (click)="incrementarCantidadItem(item)" class="px-2 hover:text-emerald-500 transition-colors h-full flex items-center">+</button>
-                          </div>
-                          <button (click)="eliminarItemCarrito(item)" class="text-[10px] text-red-400 hover:text-red-600 hover:underline">Eliminar</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <div class="p-5 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-800 z-20">
-              
-              <div class="flex flex-col gap-1 mb-4">
-                  <div class="flex justify-between text-xs text-surface-500">
-                      <span>Subtotal</span>
-                      <span class="font-mono text-surface-900 dark:text-surface-0">{{ formatearMoneda(operacionGravada) }}</span>
-                  </div>
-                  <div class="flex justify-between text-xs text-surface-500">
-                      <span>IGV (18%)</span>
-                      <span class="font-mono text-surface-900 dark:text-surface-0">{{ formatearMoneda(igvVenta) }}</span>
-                  </div>
-                  <div class="flex justify-between items-end mt-2 pt-2 border-t border-dashed border-surface-200 dark:border-surface-700">
-                      <span class="text-xs font-bold uppercase tracking-widest text-surface-400">Total a Pagar</span>
-                      <div class="text-3xl font-black text-surface-900 dark:text-surface-0 font-mono tracking-tighter leading-none">
-                          {{ formatearMoneda(totalVenta) }}
-                      </div>
-                  </div>
-              </div>
-
-              <button 
-                  (click)="iniciarPago()"
-                  [disabled]="carrito.length === 0"
-                  class="w-full py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-xl font-black text-lg shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
+      <aside
+        class="hidden lg:flex w-[400px] xl:w-[450px] flex-none bg-white dark:bg-surface-900 border-l border-surface-100 dark:border-surface-800 flex-col shadow-2xl shadow-surface-900/10 z-30 h-full relative"
+        [class.lg:hidden]="mostrarCarritoExpandido"
+      >
+        <div
+          class="flex-none p-5 border-b border-surface-100 dark:border-surface-800 bg-white/50 dark:bg-surface-900/50 backdrop-blur-sm"
+        >
+          <div
+            (click)="openClientModal()"
+            class="bg-surface-50 dark:bg-surface-800 rounded-2xl p-4 flex items-center justify-between cursor-pointer group hover:bg-white dark:hover:bg-surface-700 hover:shadow-lg hover:shadow-indigo-500/5 transition-all border border-surface-100 dark:border-surface-700 hover:border-indigo-100 dark:hover:border-indigo-800"
+          >
+            <div class="flex items-center gap-4 overflow-hidden">
+              <div
+                class="w-10 h-10 rounded-xl bg-white dark:bg-surface-600 flex items-center justify-center text-surface-400 dark:text-surface-300 shadow-sm border border-surface-100 dark:border-surface-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
               >
-                  <span>COBRAR</span>
-                  <i class="pi pi-arrow-right"></i>
-              </button>
+                <i
+                  class="pi text-lg"
+                  [ngClass]="clienteSeleccionado ? 'pi-user' : 'pi-user-plus'"
+                ></i>
+              </div>
+              <div class="min-w-0">
+                <div
+                  class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-0.5"
+                >
+                  Cliente Asignado
+                </div>
+                <div
+                  class="font-bold text-sm text-surface-900 dark:text-surface-0 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+                >
+                  {{
+                    clienteSeleccionado
+                      ? clienteSeleccionado.nombres
+                      : "Público General"
+                  }}
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-surface-300 group-hover:bg-surface-50 dark:group-hover:bg-surface-600 group-hover:text-surface-600 transition-all"
+            >
+              <i class="pi pi-chevron-right text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-surface-50/50 dark:bg-surface-950/30"
+        >
+          <div
+            *ngIf="carrito.length === 0"
+            class="h-full flex flex-col items-center justify-center text-surface-300 dark:text-surface-600 select-none opacity-60 gap-4 animate-fade-in"
+          >
+            <div
+              class="w-24 h-24 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-2"
+            >
+              <i class="pi pi-shopping-cart text-4xl opacity-50"></i>
+            </div>
+            <div class="text-center">
+              <p
+                class="text-sm font-bold text-surface-900 dark:text-surface-200 uppercase tracking-widest mb-1"
+              >
+                Tu carrito está vacío
+              </p>
+              <p class="text-xs text-surface-500 max-w-[200px] mx-auto">
+                Selecciona productos del catálogo para comenzar una venta.
+              </p>
+            </div>
           </div>
 
+          <div
+            *ngFor="let item of carrito; let i = index"
+            class="group flex gap-3 mb-3 relative bg-white dark:bg-surface-800 p-3 rounded-2xl border border-surface-100 dark:border-surface-700 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-md transition-all animate-slide-in-right"
+            [style.animation-delay]="i * 50 + 'ms'"
+          >
+            <div
+              class="w-16 h-16 bg-surface-50 dark:bg-surface-700 rounded-xl border border-surface-100 dark:border-surface-600 flex-shrink-0 flex items-center justify-center overflow-hidden"
+            >
+              <img
+                *ngIf="item.producto.imagen"
+                [src]="item.producto.imagen"
+                class="w-full h-full object-cover"
+              />
+              <i
+                *ngIf="!item.producto.imagen"
+                class="pi pi-image text-surface-300 text-xl"
+              ></i>
+            </div>
+
+            <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+              <div class="flex justify-between items-start gap-2">
+                <h4
+                  class="text-xs font-bold text-surface-900 dark:text-surface-0 leading-tight line-clamp-2"
+                >
+                  {{ item.producto.nombre }}
+                </h4>
+                <button
+                  (click)="eliminarItemCarrito(item)"
+                  class="text-surface-300 hover:text-red-500 transition-colors w-5 h-5 flex items-center justify-center -mt-1 -mr-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <i class="pi pi-times text-[10px]"></i>
+                </button>
+              </div>
+
+              <div class="flex items-end justify-between mt-2">
+                <div
+                  class="flex items-center bg-surface-50 dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700 h-7 p-0.5"
+                >
+                  <button
+                    (click)="decrementarCantidadItem(item)"
+                    class="w-6 h-full flex items-center justify-center rounded-md hover:bg-white dark:hover:bg-surface-700 hover:shadow-sm text-surface-500 hover:text-red-500 transition-all"
+                  >
+                    <i class="pi pi-minus text-[8px] font-bold"></i>
+                  </button>
+                  <span
+                    class="text-xs font-bold w-6 text-center text-surface-900 dark:text-surface-0 font-mono"
+                    >{{ item.cantidad }}</span
+                  >
+                  <button
+                    (click)="incrementarCantidadItem(item)"
+                    class="w-6 h-full flex items-center justify-center rounded-md hover:bg-white dark:hover:bg-surface-700 hover:shadow-sm text-surface-500 hover:text-emerald-500 transition-all"
+                  >
+                    <i class="pi pi-plus text-[8px] font-bold"></i>
+                  </button>
+                </div>
+
+                <div class="text-right">
+                  <div
+                    class="text-[10px] text-surface-400 font-mono line-through opacity-0 group-hover:opacity-100 transition-opacity"
+                    *ngIf="item.cantidad > 1"
+                  >
+                    {{ item.precioUnitario | number: "1.2-2" }} un.
+                  </div>
+                  <span
+                    class="text-sm font-black text-surface-900 dark:text-surface-0 font-mono tracking-tight"
+                    >{{ formatearMoneda(item.subtotal) }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="flex-none p-6 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800 z-20 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]"
+        >
+          <div class="space-y-2 mb-6">
+            <div
+              class="flex justify-between text-xs font-medium text-surface-500"
+            >
+              <span>Subtotal</span>
+              <span class="font-mono text-surface-900 dark:text-surface-0">{{
+                formatearMoneda(operacionGravada)
+              }}</span>
+            </div>
+            <div
+              class="flex justify-between text-xs font-medium text-surface-500"
+            >
+              <span>IGV (18%)</span>
+              <span class="font-mono text-surface-900 dark:text-surface-0">{{
+                formatearMoneda(igvVenta)
+              }}</span>
+            </div>
+
+            <div class="relative py-2">
+              <div class="absolute inset-0 flex items-center">
+                <div
+                  class="w-full border-t border-dashed border-surface-300 dark:border-surface-600"
+                ></div>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-end">
+              <span
+                class="text-xs font-black uppercase tracking-widest text-surface-400 mb-1"
+                >Total a Pagar</span
+              >
+              <div
+                class="text-4xl font-black text-surface-900 dark:text-surface-0 font-mono tracking-tighter leading-none"
+              >
+                <span class="text-lg text-surface-400 align-top mr-0.5"
+                  >S/.</span
+                >{{ formatearMoneda(totalVenta).replace("S/.", "").trim() }}
+              </div>
+            </div>
+          </div>
+
+          <button
+            (click)="iniciarPago()"
+            [disabled]="carrito.length === 0"
+            class="w-full py-5 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-lg uppercase tracking-widest shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-3 group relative overflow-hidden"
+          >
+            <div
+              class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+            ></div>
+
+            <span class="relative z-10">Procesar Cobro</span>
+            <i
+              class="pi pi-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"
+            ></i>
+          </button>
+        </div>
       </aside>
+    </main>
+  </div>
 
-  </main>
-
-</div>
-
-<!-- Botón flotante del carrito (Solo Móvil) -->
-<button 
-    (click)="showMobileCart = !showMobileCart"
-    class="lg:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-surface-900 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-95"
->
+  <!-- Botón flotante del carrito (Solo Móvil) -->
+  <button
+    (click)="mostrarCarritoExpandido = true"
+    class="lg:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-surface-900 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-95 hover:-translate-y-1"
+  >
     <div class="relative">
-        <i class="pi pi-shopping-bag text-2xl"></i>
-        <span *ngIf="carrito.length > 0" class="absolute -top-2 -right-2 h-5 w-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-surface-900">
-            {{ carrito.length }}
-        </span>
+      <i class="pi pi-shopping-bag text-2xl"></i>
+      <span
+        *ngIf="carrito.length > 0"
+        class="absolute -top-2 -right-2 h-5 w-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-surface-900 animate-pulse"
+      >
+        {{ carrito.length }}
+      </span>
     </div>
-</button>
+  </button>
 
-<!-- Overlay para cerrar el carrito en móvil -->
-<div 
-    *ngIf="showMobileCart"
-    (click)="showMobileCart = false"
-    class="lg:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-30 transition-opacity">
+  <!-- Panel del carrito desde abajo como WhatsApp -->
+<div *ngIf="mostrarCarritoExpandido" class="lg:hidden fixed inset-0 z-[100] flex items-end justify-center">
+    
+    <div 
+      @fadeInOut
+      class="fixed inset-0 bg-surface-900/60 backdrop-blur-sm"
+      (click)="mostrarCarritoExpandido = false">
+    </div>
+
+    <div 
+      @slideUpInOut
+      class="relative flex flex-col w-full max-w-md mx-auto h-[90vh] bg-surface-50 dark:bg-surface-900 shadow-2xl rounded-t-[2.5rem] overflow-hidden border-t border-white/10"
+    >
+      
+      <div class="flex justify-center pt-4 pb-2 bg-white dark:bg-surface-900 cursor-grab active:cursor-grabbing" (click)="mostrarCarritoExpandido = false">
+        <div class="w-16 h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full"></div>
+      </div>
+
+      <div class="px-6 pb-4 bg-white dark:bg-surface-900 border-b border-surface-100 dark:border-surface-800 z-10 flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 flex items-center justify-center shadow-lg shadow-surface-900/10">
+              <i class="pi pi-shopping-bag"></i>
+            </div>
+            <div class="leading-tight">
+              <h3 class="text-lg font-black text-surface-900 dark:text-surface-0 tracking-tight">Mi Pedido</h3>
+              <p class="text-xs font-bold text-surface-400 uppercase tracking-wider">
+                {{ carrito.length }} {{ carrito.length === 1 ? "Item" : "Items" }}
+              </p>
+            </div>
+          </div>
+          
+          <button 
+            (click)="mostrarCarritoExpandido = false"
+            class="w-10 h-10 rounded-full bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 hover:text-surface-900 transition-all flex items-center justify-center">
+            <i class="pi pi-times text-sm"></i>
+          </button>
+        </div>
+
+        <div 
+          (click)="openClientModal()"
+          class="bg-surface-50 dark:bg-surface-800 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform border border-surface-100 dark:border-surface-700">
+          <div class="flex items-center gap-3 overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-white dark:bg-surface-700 flex items-center justify-center text-surface-500 shadow-sm border border-surface-100 dark:border-surface-600">
+              <i class="pi" [ngClass]="clienteSeleccionado ? 'pi-user' : 'pi-user-plus'"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-0.5">Cliente Asignado</div>
+              <div class="font-bold text-sm text-surface-900 dark:text-surface-0 truncate">
+                {{ clienteSeleccionado ? clienteSeleccionado.nombres : "Público General" }}
+              </div>
+            </div>
+          </div>
+          <div class="w-8 h-8 flex items-center justify-center bg-white dark:bg-surface-700 rounded-full text-surface-400 shadow-sm">
+             <i class="pi pi-chevron-right text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar bg-surface-50/50 dark:bg-surface-950/50">
+        
+        <div *ngIf="carrito.length === 0" class="h-full flex flex-col items-center justify-center text-center px-8 opacity-60">
+          <div class="w-20 h-20 bg-surface-200 dark:bg-surface-800 rounded-full flex items-center justify-center mb-4">
+             <i class="pi pi-shopping-cart text-3xl text-surface-400"></i>
+          </div>
+          <p class="text-sm font-bold text-surface-900 dark:text-surface-200 uppercase tracking-widest mb-1">
+            Tu carrito está vacío
+          </p>
+        </div>
+
+        <div class="space-y-3 pb-4" *ngIf="carrito.length > 0">
+          <div *ngFor="let item of carrito; trackBy: trackByItemCarritoId" class="flex gap-3 p-3 bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-sm relative overflow-hidden group">
+            
+            <div class="w-20 h-20 bg-surface-50 dark:bg-surface-700 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden border border-surface-100 dark:border-surface-600">
+              <img *ngIf="item.producto.imagen" [src]="item.producto.imagen" class="w-full h-full object-cover">
+              <i *ngIf="!item.producto.imagen" class="pi pi-image text-surface-300 text-xl"></i>
+            </div>
+
+            <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+              <div class="flex justify-between items-start">
+                <h4 class="text-sm font-bold text-surface-900 dark:text-surface-0 leading-tight line-clamp-2 pr-6">
+                  {{ item.producto.nombre }}
+                </h4>
+                <button (click)="eliminarItemCarrito(item)" class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-surface-300 active:text-red-500 rounded-full active:bg-red-50 dark:active:bg-red-900/20 transition-colors">
+                  <i class="pi pi-times text-xs"></i>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2 mt-1 mb-2">
+                 <span class="text-[10px] font-bold px-1.5 py-0.5 bg-surface-100 dark:bg-surface-700 rounded text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-600">
+                    {{ item.talla.numero }}
+                 </span>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center bg-surface-50 dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700 h-8 p-1">
+                  <button (click)="decrementarCantidadItem(item)" class="w-8 h-full flex items-center justify-center rounded bg-white dark:bg-surface-800 shadow-sm text-surface-600 active:text-red-500 active:scale-90 transition-all">
+                    <i class="pi pi-minus text-[9px] font-bold"></i>
+                  </button>
+                  <span class="text-xs font-bold w-8 text-center text-surface-900 dark:text-surface-0 font-mono">{{ item.cantidad }}</span>
+                  <button (click)="incrementarCantidadItem(item)" class="w-8 h-full flex items-center justify-center rounded bg-white dark:bg-surface-800 shadow-sm text-surface-600 active:text-emerald-500 active:scale-90 transition-all">
+                    <i class="pi pi-plus text-[9px] font-bold"></i>
+                  </button>
+                </div>
+                <span class="text-base font-black font-mono text-surface-900 dark:text-surface-0 tracking-tight">
+                    {{ formatearMoneda(item.subtotal) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-5 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800 z-20 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)]">
+        <div class="flex items-end justify-between mb-4">
+            <div class="text-xs font-medium text-surface-500">
+                <div class="flex justify-between w-32">
+                    <span>IGV (18%):</span>
+                    <span class="font-mono text-surface-900 dark:text-surface-0">{{ formatearMoneda(igvVenta) }}</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="block text-[10px] font-bold uppercase tracking-widest text-surface-400 mb-0.5">Total a Pagar</span>
+                <div class="text-3xl font-black text-surface-900 dark:text-surface-0 font-mono tracking-tighter leading-none">
+                  {{ formatearMoneda(totalVenta) }}
+                </div>
+            </div>
+        </div>
+
+        <button
+          (click)="iniciarPago(); mostrarCarritoExpandido = false"
+          [disabled]="carrito.length === 0"
+          class="w-full py-4 bg-surface-900 dark:bg-surface-0 active:bg-black dark:active:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-lg shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-3 relative overflow-hidden group"
+        >
+          <span class="relative z-10">Procesar Cobro</span>
+          <i class="pi pi-arrow-right relative z-10"></i>
+        </button>
+      </div>
+
+    </div>
 </div>
 
   <!-- 💳 Loading de Procesamiento de Pago -->
-<div *ngIf="procesandoPago" class="fixed inset-0 z-[60] flex items-center justify-center bg-white/80 dark:bg-surface-950/90 backdrop-blur-sm transition-all duration-300">
-  
-  <div class="bg-white dark:bg-surface-900 p-8 rounded-[2rem] shadow-2xl border border-surface-100 dark:border-surface-800 text-center max-w-sm w-full relative overflow-hidden">
+ <div
+  *ngIf="procesandoPago"
+  class="fixed inset-0 z-[10600] flex items-center justify-center bg-white/60 dark:bg-surface-950/80 backdrop-blur-md transition-all duration-500 animate-fade-in"
+>
+  <div
+    class="relative bg-white dark:bg-surface-900 p-10 rounded-[3rem] shadow-2xl border border-white/50 dark:border-surface-700 text-center max-w-sm w-full mx-4 overflow-hidden group"
+  >
+    
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
+
+    <div class="relative w-24 h-24 mx-auto mb-8 flex items-center justify-center">
       
-      <div class="absolute top-0 left-0 h-1 bg-indigo-600 animate-progress-indeterminate w-full"></div>
-
-      <div class="w-20 h-20 mx-auto mb-6 relative flex items-center justify-center">
-          <div class="absolute inset-0 border-4 border-surface-100 dark:border-surface-800 rounded-full"></div>
-          <div class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
-          <i class="pi pi-credit-card text-2xl text-indigo-600"></i>
+      <div class="absolute inset-0 rounded-full bg-indigo-50 dark:bg-indigo-900/20 animate-ping opacity-75"></div>
+      
+      <div class="absolute inset-2 border-2 border-indigo-100 dark:border-indigo-800 rounded-full border-t-indigo-500 dark:border-t-indigo-400 animate-spin"></div>
+      
+      <div class="relative z-10 w-12 h-12 bg-white dark:bg-surface-800 rounded-full shadow-sm flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+        <i class="pi pi-bolt text-xl animate-pulse"></i>
       </div>
+    </div>
 
-      <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Procesando</h3>
-      <div class="text-3xl font-black font-mono text-surface-900 dark:text-surface-0 tracking-tight mb-4">
+    <div class="relative z-10 space-y-4">
+      
+      <div>
+        <h3 class="text-xs font-bold text-surface-400 uppercase tracking-[0.2em] mb-2 animate-pulse">
+          Procesando Pago
+        </h3>
+        
+        <div class="text-4xl font-black font-mono text-surface-900 dark:text-surface-0 tracking-tighter leading-none">
           {{ formatearMoneda(totalVenta) }}
+        </div>
       </div>
 
-      <p class="text-sm text-surface-500 dark:text-surface-400 font-medium bg-surface-50 dark:bg-surface-800 py-2 px-4 rounded-xl inline-block">
-          Conectando con SUNAT...
-      </p>
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-surface-50 dark:bg-surface-800 rounded-full border border-surface-100 dark:border-surface-700 shadow-inner">
+        <div class="flex gap-1">
+          <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></div>
+        </div>
+        <span class="text-xs font-bold text-surface-500 dark:text-surface-300">Conectando con SUNAT</span>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
-<!-- Modal de Cliente con Configuración Responsive Optimizada -->
-<p-dialog
-  [(visible)]="showClientModal"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [style]="{ width: '95vw', maxWidth: '800px' }"
-  [breakpoints]="{ '960px': '95vw' }"
-  styleClass="zen-dialog client-dialog"
-  [maskStyleClass]="'backdrop-blur-sm bg-surface-900/40'"
-  [blockScroll]="true"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-4 w-full">
-      <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-900 dark:text-surface-0">
-        <i class="pi pi-users text-xl"></i>
+  <!-- Modal de Cliente con Configuración Responsive Optimizada -->
+  <p-dialog
+    [(visible)]="showClientModal"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '95vw', maxWidth: '650px' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    styleClass="zen-dialog"
+    [maskStyleClass]="
+      'backdrop-blur-xl bg-surface-50/80 dark:bg-surface-900/80'
+    "
+    [blockScroll]="true"
+    [showHeader]="false"
+  >
+    <div
+      class="bg-white dark:bg-surface-900 p-6 md:p-8 relative h-full flex flex-col rounded-[2.5rem] overflow-hidden"
+    >
+      <div class="flex justify-between items-start mb-8 animate-fade-in">
+        <div class="flex items-center gap-4">
+          <div
+            class="w-12 h-12 rounded-2xl bg-surface-50 dark:bg-surface-800 flex items-center justify-center text-surface-900 dark:text-surface-0 border border-surface-100 dark:border-surface-700 shadow-sm"
+          >
+            <i class="pi pi-users text-xl"></i>
+          </div>
+          <div>
+            <h3
+              class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0 leading-none"
+            >
+              Directorio
+            </h3>
+            <div class="flex items-center gap-2 mt-1.5">
+              <span
+                class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+              ></span>
+              <p
+                class="text-xs font-medium text-surface-500 dark:text-surface-400"
+              >
+                {{
+                  !clienteSeleccionado
+                    ? "Buscando cliente..."
+                    : "Cliente localizado"
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          (click)="showClientModal = false"
+          class="w-10 h-10 rounded-full bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-400 hover:text-surface-900 transition-all flex items-center justify-center group"
+        >
+          <i
+            class="pi pi-times text-sm group-hover:rotate-90 transition-transform duration-300"
+          ></i>
+        </button>
       </div>
-      <div>
-        <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0 leading-tight">Gestión de Clientes</h2>
-        <p class="text-xs font-medium text-surface-500 m-0">
-          Total registrados: <span class="font-bold text-indigo-600">{{ clientesFiltrados.length || 0 }}</span>
-        </p>
+
+      <div
+        *ngIf="!clienteSeleccionado"
+        class="flex flex-col gap-6 animate-fade-in"
+      >
+        <div class="flex flex-col gap-2 group relative z-20">
+          <label
+            class="text-[10px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest ml-1 group-focus-within:text-indigo-500 transition-colors"
+          >
+            Búsqueda Inteligente
+          </label>
+          <div
+            class="relative transition-transform duration-200 focus-within:scale-[1.01]"
+          >
+            <i
+              class="pi pi-search absolute left-5 top-1/2 -translate-y-1/2 text-surface-400 group-focus-within:text-indigo-500 text-xl transition-colors z-10"
+            ></i>
+
+            <p-autoComplete
+              [(ngModel)]="clienteBusqueda"
+              [suggestions]="clientesFiltrados"
+              (completeMethod)="buscarClientes($event)"
+              (onSelect)="onClienteSelect($event)"
+              field="nombres"
+              placeholder="Escribe nombre, DNI o RUC..."
+              styleClass="w-full"
+              inputStyleClass="w-full pl-14 h-[60px] bg-surface-50 dark:bg-surface-800 border-none rounded-2xl text-surface-900 dark:text-surface-0 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 focus:bg-white dark:focus:bg-surface-900 transition-all shadow-inner text-lg font-medium placeholder:font-normal placeholder:text-surface-400"
+              [dropdown]="false"
+              [showClear]="true"
+              [minLength]="0"
+              [completeOnFocus]="true"
+              appendTo="body"
+              panelStyleClass="zen-autocomplete-panel border-none shadow-2xl rounded-2xl mt-3 overflow-hidden"
+            >
+              <ng-template let-cliente pTemplate="item">
+                <div
+                  class="flex items-center gap-3 py-3 px-3 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors border-b border-transparent hover:border-surface-100 dark:hover:border-surface-700 last:border-0 group"
+                >
+                  <div
+                    class="w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-colors"
+                    [ngClass]="
+                      cliente.ruc
+                        ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20'
+                        : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20'
+                    "
+                  >
+                    <i
+                      class="pi"
+                      [ngClass]="cliente.ruc ? 'pi-building' : 'pi-user'"
+                    ></i>
+                  </div>
+
+                  <div class="flex flex-col flex-1">
+                    <span
+                      class="font-bold text-sm text-surface-700 dark:text-surface-200 group-hover:text-surface-900"
+                      >{{ cliente.nombres }} {{ cliente.apellidos }}</span
+                    >
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <span
+                        class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded text-surface-500 bg-surface-100 dark:bg-surface-700"
+                      >
+                        {{ cliente.ruc ? "RUC" : "DNI" }}
+                      </span>
+                      <span class="text-xs text-surface-400 font-mono">{{
+                        cliente.dni || cliente.ruc
+                      }}</span>
+                    </div>
+                  </div>
+
+                  <i
+                    class="pi pi-angle-right text-surface-300 group-hover:text-surface-500"
+                  ></i>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+          </div>
+        </div>
+
+        <div *ngIf="clientesRecientes.length > 0">
+          <div class="flex justify-between items-center mb-4 px-1">
+            <span
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-widest"
+              >Últimos Visitantes</span
+            >
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              *ngFor="let cliente of clientesRecientes.slice(0, 4)"
+              (click)="seleccionarCliente(cliente)"
+              class="group flex items-center gap-3 p-3 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-lg transition-all text-left relative overflow-hidden active:scale-[0.98]"
+            >
+              <div
+                class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-colors"
+                [ngClass]="
+                  cliente.ruc
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'bg-indigo-50 text-indigo-600'
+                "
+              >
+                {{ cliente.nombres.charAt(0) }}
+              </div>
+
+              <div class="flex flex-col min-w-0">
+                <span
+                  class="text-sm font-bold text-surface-700 dark:text-surface-200 truncate group-hover:text-surface-900"
+                >
+                  {{ cliente.nombres }}
+                </span>
+                <span class="text-[10px] text-surface-400 font-mono">
+                  {{ cliente.dni || cliente.ruc }}
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <button
+          class="mt-4 w-full py-4 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-2xl text-surface-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all flex items-center justify-center gap-2 group active:scale-[0.99]"
+        >
+          <div
+            class="w-6 h-6 rounded-full bg-surface-200 dark:bg-surface-700 group-hover:bg-indigo-100 text-surface-500 group-hover:text-indigo-600 flex items-center justify-center transition-colors"
+          >
+            <i class="pi pi-plus text-xs font-bold"></i>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider"
+            >Registrar Nuevo Cliente</span
+          >
+        </button>
+      </div>
+
+      <div
+        *ngIf="clienteSeleccionado"
+        class="flex flex-col h-full animate-fade-in-up"
+      >
+        <div
+          class="relative overflow-hidden bg-gradient-to-br from-surface-50 to-white dark:from-surface-800 dark:to-surface-900 rounded-[2.5rem] p-6 border border-surface-200 dark:border-surface-700 shadow-sm group mb-6 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="absolute -right-10 -top-10 w-40 h-40 rounded-full blur-3xl opacity-50 pointer-events-none transition-colors duration-500"
+            [ngClass]="
+              clienteSeleccionado.ruc
+                ? 'bg-purple-100 dark:bg-purple-900/30'
+                : 'bg-indigo-100 dark:bg-indigo-900/30'
+            "
+          ></div>
+
+          <div
+            class="flex flex-col items-center sm:flex-row sm:items-start gap-5 relative z-10"
+          >
+            <div
+              class="w-20 h-20 sm:w-18 sm:h-18 rounded-[1.5rem] flex items-center justify-center shadow-sm border border-white dark:border-surface-600 shrink-0 text-3xl font-black bg-white dark:bg-surface-800"
+              [ngClass]="
+                clienteSeleccionado.ruc ? 'text-purple-600' : 'text-indigo-600'
+              "
+            >
+              {{ clienteSeleccionado.nombres.charAt(0) }}
+            </div>
+
+            <div class="text-center sm:text-left flex-1">
+              <div
+                class="flex items-center justify-center sm:justify-start gap-2 mb-2"
+              >
+                <span
+                  class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1"
+                  [ngClass]="
+                    clienteSeleccionado.ruc
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                      : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                  "
+                >
+                  <i
+                    class="pi text-[10px]"
+                    [ngClass]="
+                      clienteSeleccionado.ruc ? 'pi-building' : 'pi-user'
+                    "
+                  ></i>
+                  {{ clienteSeleccionado.ruc ? "Empresa" : "Persona Natural" }}
+                </span>
+              </div>
+
+              <h2
+                class="text-2xl font-bold text-surface-900 dark:text-surface-0 leading-none mb-1"
+              >
+                {{ clienteSeleccionado.nombres }}
+              </h2>
+              <p
+                class="text-lg text-surface-500 dark:text-surface-400 font-medium leading-tight mb-2"
+              >
+                {{ clienteSeleccionado.apellidos }}
+              </p>
+
+              <div
+                class="flex items-center justify-center sm:justify-start gap-4 mt-3"
+              >
+                <div class="flex flex-col">
+                  <span
+                    class="text-[9px] uppercase font-bold text-surface-400 tracking-wider"
+                    >Documento</span
+                  >
+                  <span
+                    class="font-mono font-bold text-surface-700 dark:text-surface-200 text-sm"
+                    >{{
+                      clienteSeleccionado.dni || clienteSeleccionado.ruc
+                    }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-auto">
+          <div
+            class="bg-surface-50 dark:bg-surface-800/50 p-4 rounded-2xl border border-surface-100 dark:border-surface-800 flex items-start gap-3"
+          >
+            <i class="pi pi-envelope mt-1 text-surface-400"></i>
+            <div class="overflow-hidden">
+              <label
+                class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-0.5"
+                >Email</label
+              >
+              <div
+                class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate select-all"
+              >
+                {{ clienteSeleccionado.email || "No registrado" }}
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-surface-50 dark:bg-surface-800/50 p-4 rounded-2xl border border-surface-100 dark:border-surface-800 flex items-start gap-3"
+          >
+            <i class="pi pi-map-marker mt-1 text-surface-400"></i>
+            <div class="overflow-hidden">
+              <label
+                class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-0.5"
+                >Dirección</label
+              >
+              <div
+                class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate select-all"
+              >
+                {{ clienteSeleccionado.direccion || "No registrada" }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex gap-3">
+          <button
+            (click)="limpiarClienteSeleccionado()"
+            class="px-6 py-4 bg-transparent border border-surface-200 dark:border-surface-700 text-surface-500 hover:text-surface-900 dark:hover:text-surface-0 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all"
+          >
+            Volver
+          </button>
+
+          <button
+            (click)="confirmarCliente()"
+            class="flex-1 py-4 bg-surface-900 dark:bg-surface-0 text-white dark:text-surface-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+            ></div>
+
+            <span class="relative z-10">Confirmar Cliente</span>
+            <i class="pi pi-check relative z-10"></i>
+          </button>
+        </div>
       </div>
     </div>
-  </ng-template>
+  </p-dialog>
 
-  <div class="p-1 md:p-2">
-    
-    <div *ngIf="!clienteSeleccionado" class="flex flex-col gap-6 animate-fade-in">
-      
-      <div class="bg-surface-50 dark:bg-surface-800/50 p-6 rounded-[2rem] border border-surface-100 dark:border-surface-700">
-        <label class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-3 block">Buscar en Directorio</label>
-        
-        <div class="relative group">
-          <i class="pi pi-search absolute left-5 top-1/2 -translate-y-1/2 text-surface-400 text-lg group-focus-within:text-indigo-600 transition-colors z-10"></i>
-          
-          <p-autoComplete
-            [(ngModel)]="clienteBusqueda"
-            [suggestions]="clientesFiltrados"
-            (completeMethod)="buscarClientes($event)"
-            (onSelect)="onClienteSelect($event)"
-            field="nombres"
-            placeholder="Nombre, DNI, RUC o Teléfono..."
-            styleClass="w-full"
-            [dropdown]="false"
-            [showClear]="true"
-            [minLength]="0"
-            [completeOnFocus]="true"
-            appendTo="body"
-            inputStyleClass="w-full pl-14 pr-4 h-16 bg-white dark:bg-surface-900 border-none rounded-2xl text-lg font-medium shadow-sm hover:shadow-md focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-surface-400"
-            [panelStyleClass]="'zen-autocomplete-panel'"
-          >
-            <ng-template let-cliente pTemplate="item">
-              <div class="flex items-center gap-4 p-3 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer group">
-                <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">
-                  {{ cliente.nombres?.charAt(0) }}{{ cliente.apellidos?.charAt(0) }}
-                </div>
-                <div class="flex-1">
-                  <div class="font-bold text-surface-900 dark:text-surface-0 text-sm group-hover:text-indigo-600 transition-colors">
-                    {{ cliente.nombres }} {{ cliente.apellidos }}
-                  </div>
-                  <div class="text-xs text-surface-500 mt-0.5 flex gap-2">
-                    <span class="bg-surface-100 dark:bg-surface-700 px-1.5 rounded">{{ cliente.dni || cliente.ruc }}</span>
-                    <span *ngIf="cliente.telefono">{{ cliente.telefono }}</span>
-                  </div>
-                </div>
-              </div>
-            </ng-template>
-          </p-autoComplete>
-        </div>
+  <!-- DIÁLOGO: COMPROBANTE FINAL -->
+  <p-dialog
+    [(visible)]="comprobanteDialog"
+    [modal]="true"
+    [style]="{ width: '95vw', maxWidth: '450px' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    styleClass="zen-dialog receipt-dialog"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="true"
+    [dismissableMask]="true"
+    [blockScroll]="true"
+    [appendTo]="'body'"
+    [showHeader]="false"
+  >
+    <button
+      (click)="comprobanteDialog = false"
+      class="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-400 hover:text-surface-900 transition-all flex items-center justify-center"
+    >
+      <i class="pi pi-times text-sm"></i>
+    </button>
 
-        <div class="mt-4 flex justify-end">
-            <button class="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
-                <i class="pi pi-user-plus"></i> Crear Nuevo Cliente
-            </button>
+    <div
+      class="bg-white dark:bg-surface-900 rounded-[2rem] overflow-hidden flex flex-col h-full relative"
+    >
+      <div
+        class="pt-10 pb-2 flex flex-col items-center justify-center animate-scale-in"
+      >
+        <div
+          class="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4 relative"
+        >
+          <div
+            class="absolute inset-0 bg-emerald-100 dark:bg-emerald-900/40 rounded-full animate-ping opacity-20"
+          ></div>
+          <i class="pi pi-check text-4xl text-emerald-500 font-bold"></i>
         </div>
+        <h2
+          class="text-xl font-black text-surface-900 dark:text-surface-0 tracking-tight m-0"
+        >
+          ¡Venta Exitosa!
+        </h2>
+        <p
+          class="text-xs text-surface-500 dark:text-surface-400 mt-1 font-medium"
+        >
+          {{
+            ventaParaComprobante?.fechaCreacion | date: "EEEE, d MMMM, h:mm a"
+          }}
+        </p>
       </div>
 
-      <div *ngIf="clientesRecientes.length > 0">
-        <div class="flex items-center justify-between mb-3 px-2">
-            <h4 class="text-xs font-bold text-surface-400 uppercase tracking-widest">Recientes</h4>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            *ngFor="let cliente of clientesRecientes.slice(0, 4)"
-            class="group flex items-center gap-4 p-4 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-2xl hover:border-indigo-200 hover:shadow-md transition-all text-left"
-            (click)="seleccionarCliente(cliente)"
+      <div class="p-6 flex flex-col items-center w-full">
+        <div
+          class="w-full bg-surface-50 dark:bg-surface-800/50 rounded-3xl p-6 relative border border-surface-100 dark:border-surface-700/50 shadow-sm animate-fade-in-up group hover:shadow-md transition-shadow duration-500"
+        >
+          <div
+            class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-surface-900 z-10"
+          ></div>
+          <div
+            class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-surface-900 z-10"
+          ></div>
+
+          <div
+            class="text-center pb-6 border-b border-dashed border-surface-300 dark:border-surface-600 relative"
           >
-            <div class="w-12 h-12 rounded-xl bg-surface-50 dark:bg-surface-700 group-hover:bg-indigo-50 group-hover:text-indigo-600 flex items-center justify-center text-surface-500 font-bold transition-colors">
-              {{ cliente.nombres.charAt(0) }}
+            <span
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-widest"
+              >Total Pagado</span
+            >
+            <div
+              class="text-4xl md:text-5xl font-black font-mono text-surface-900 dark:text-surface-0 tracking-tighter mt-1"
+            >
+              {{ formatearMoneda(ventaParaComprobante?.total || 0) }}
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-bold text-surface-900 dark:text-surface-0 truncate text-sm">
-                {{ cliente.nombres }} {{ cliente.apellidos }}
+            <div
+              class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm"
+            >
+              <span
+                class="text-[10px] font-bold text-surface-600 dark:text-surface-300 uppercase"
+              >
+                {{
+                  getTipoComprobanteLabel(
+                    ventaParaComprobante?.tipoComprobante || ""
+                  )
+                }}
+              </span>
+              <span class="text-surface-300">|</span>
+              <span class="text-[10px] font-mono text-surface-500">
+                {{ ventaParaComprobante?.serieComprobante }}-{{
+                  ventaParaComprobante?.numeroComprobante
+                }}
+              </span>
+            </div>
+          </div>
+
+          <div class="pt-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div
+                class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center text-xs font-bold border border-indigo-100 dark:border-indigo-800"
+              >
+                {{ ventaParaComprobante?.cliente?.nombres?.charAt(0) || "C" }}
               </div>
-              <div class="text-xs text-surface-500 mt-1 flex items-center gap-1">
-                <i class="pi pi-id-card text-[10px]"></i>
-                {{ cliente.dni || cliente.ruc }}
+              <div class="flex-1 min-w-0">
+                <div
+                  class="text-sm font-bold text-surface-900 dark:text-surface-0 truncate"
+                >
+                  {{ ventaParaComprobante?.cliente?.nombres }}
+                  {{ ventaParaComprobante?.cliente?.apellidos }}
+                </div>
+                <div class="text-[10px] text-surface-400">
+                  Cliente Registrado
+                </div>
               </div>
             </div>
-            <i class="pi pi-arrow-right text-surface-300 group-hover:text-indigo-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"></i>
+
+            <div
+              class="space-y-2 mb-4 bg-white dark:bg-surface-800 p-3 rounded-xl border border-surface-100 dark:border-surface-700"
+            >
+              <div
+                *ngFor="
+                  let item of ventaParaComprobante?.detalles | slice: 0 : 3
+                "
+                class="flex justify-between items-center text-xs"
+              >
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span
+                    class="font-bold text-surface-900 dark:text-surface-0 bg-surface-100 dark:bg-surface-700 px-1.5 rounded"
+                    >{{ item.cantidad }}</span
+                  >
+                  <span
+                    class="text-surface-600 dark:text-surface-300 truncate"
+                    >{{ item.producto.nombre }}</span
+                  >
+                </div>
+                <span
+                  class="font-mono font-medium text-surface-900 dark:text-surface-0"
+                  >{{ formatearMoneda(item.subtotal) }}</span
+                >
+              </div>
+              <div
+                *ngIf="(ventaParaComprobante?.detalles?.length || 0) > 3"
+                class="text-center pt-1 text-[10px] text-surface-400 font-bold uppercase tracking-wider"
+              >
+                +
+                {{
+                  (ventaParaComprobante?.detalles?.length || 0) - 3
+                }}
+                productos más
+              </div>
+            </div>
+
+            <div class="flex justify-between items-end text-xs">
+              <div>
+                <span
+                  class="block text-surface-400 text-[10px] uppercase tracking-wider mb-0.5"
+                  >Pagado con</span
+                >
+                <span
+                  class="font-bold text-surface-700 dark:text-surface-200 flex items-center gap-1"
+                >
+                  <i class="pi pi-credit-card text-[10px]"></i>
+                  {{ getMetodoPagoLabel(pagoActual.metodoPago) }}
+                </span>
+              </div>
+              <div *ngIf="vuelto > 0" class="text-right">
+                <span
+                  class="block text-surface-400 text-[10px] uppercase tracking-wider mb-0.5"
+                  >Vuelto Entregado</span
+                >
+                <span
+                  class="font-mono font-bold text-emerald-600 dark:text-emerald-400"
+                  >{{ formatearMoneda(vuelto) }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="grid grid-cols-3 gap-3 w-full mt-6 animate-fade-in delay-100"
+        >
+          <button
+            (click)="imprimirComprobante(ventaParaComprobante!)"
+            class="group flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-transparent hover:border-surface-200 dark:hover:border-surface-700 hover:bg-white dark:hover:bg-surface-700 hover:shadow-lg transition-all active:scale-95"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700 group-hover:bg-surface-900 dark:group-hover:bg-white text-surface-500 group-hover:text-surface-0 dark:group-hover:text-surface-900 flex items-center justify-center transition-colors"
+            >
+              <i class="pi pi-print text-lg"></i>
+            </div>
+            <span
+              class="text-[10px] font-bold uppercase tracking-wider text-surface-500 group-hover:text-surface-900 dark:group-hover:text-surface-100 transition-colors"
+              >Imprimir</span
+            >
+          </button>
+
+          <button
+            (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
+            class="group flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-transparent hover:border-surface-200 dark:hover:border-surface-700 hover:bg-white dark:hover:bg-surface-700 hover:shadow-lg transition-all active:scale-95"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700 group-hover:bg-indigo-600 text-surface-500 group-hover:text-white flex items-center justify-center transition-colors"
+            >
+              <i class="pi pi-envelope text-lg"></i>
+            </div>
+            <span
+              class="text-[10px] font-bold uppercase tracking-wider text-surface-500 group-hover:text-indigo-600 transition-colors"
+              >Email</span
+            >
+          </button>
+
+          <button
+            (click)="descargarComprobantePDF(ventaParaComprobante!)"
+            class="group flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-transparent hover:border-surface-200 dark:hover:border-surface-700 hover:bg-white dark:hover:bg-surface-700 hover:shadow-lg transition-all active:scale-95"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700 group-hover:bg-red-500 text-surface-500 group-hover:text-white flex items-center justify-center transition-colors"
+            >
+              <i class="pi pi-file-pdf text-lg"></i>
+            </div>
+            <span
+              class="text-[10px] font-bold uppercase tracking-wider text-surface-500 group-hover:text-red-600 transition-colors"
+              >PDF</span
+            >
           </button>
         </div>
       </div>
 
-    </div>
-
-    <div *ngIf="clienteSeleccionado" class="flex flex-col gap-6 animate-fade-in">
-        
-        <div class="bg-surface-50 dark:bg-surface-800/50 p-6 md:p-8 rounded-[2.5rem] border border-surface-100 dark:border-surface-700 text-center relative overflow-hidden">
-            
-            <button (click)="limpiarClienteSeleccionado()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-surface-500 hover:text-red-500 hover:border-red-200 transition-all flex items-center justify-center shadow-sm" pTooltip="Cambiar Cliente">
-                <i class="pi pi-sync"></i>
-            </button>
-
-            <div class="w-24 h-24 mx-auto bg-white dark:bg-surface-700 rounded-3xl flex items-center justify-center text-4xl font-black text-indigo-600 shadow-lg mb-4">
-                {{ clienteSeleccionado.nombres.charAt(0) }}{{ clienteSeleccionado.apellidos.charAt(0) }}
-            </div>
-
-            <h2 class="text-2xl md:text-3xl font-black text-surface-900 dark:text-surface-0 tracking-tight mb-2">
-                {{ clienteSeleccionado.nombres }} {{ clienteSeleccionado.apellidos }}
-            </h2>
-            
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wide">
-                <i class="pi pi-verified text-[10px]"></i>
-                {{ clienteSeleccionado.dni ? 'Persona Natural' : 'Empresa' }}
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
-            <div class="p-4 rounded-2xl border border-surface-200 dark:border-surface-700 flex items-start gap-4 hover:bg-surface-50 transition-colors">
-                <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-500">
-                    <i class="pi pi-id-card"></i>
-                </div>
-                <div>
-                    <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">{{ clienteSeleccionado.dni ? 'DNI' : 'RUC' }}</div>
-                    <div class="font-mono font-bold text-surface-900 dark:text-surface-0 text-lg">
-                        {{ clienteSeleccionado.dni || clienteSeleccionado.ruc }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl border border-surface-200 dark:border-surface-700 flex items-start gap-4 hover:bg-surface-50 transition-colors">
-                <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-500">
-                    <i class="pi pi-envelope"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Email</div>
-                    <div class="font-medium text-surface-900 dark:text-surface-0 truncate">
-                        {{ clienteSeleccionado.email || 'No registrado' }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl border border-surface-200 dark:border-surface-700 flex items-start gap-4 hover:bg-surface-50 transition-colors">
-                <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-500">
-                    <i class="pi pi-phone"></i>
-                </div>
-                <div>
-                    <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Teléfono</div>
-                    <div class="font-medium text-surface-900 dark:text-surface-0">
-                        {{ clienteSeleccionado.telefono || 'No registrado' }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="sm:col-span-2 p-4 rounded-2xl border border-surface-200 dark:border-surface-700 flex items-start gap-4 hover:bg-surface-50 transition-colors">
-                <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-500">
-                    <i class="pi pi-map-marker"></i>
-                </div>
-                <div>
-                    <div class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Dirección Fiscal</div>
-                    <div class="font-medium text-surface-900 dark:text-surface-0 leading-snug">
-                        {{ clienteSeleccionado.direccion || 'Sin dirección registrada' }}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-surface-100 dark:border-surface-800">
-      
-      <button 
-        (click)="showClientModal = false"
-        class="flex-1 py-3.5 rounded-xl text-surface-500 hover:text-surface-900 hover:bg-surface-100 font-bold transition-colors text-sm">
-        Cancelar
-      </button>
-
-      <button 
-        [disabled]="!clienteSeleccionado"
-        (click)="confirmarCliente()"
-        class="flex-[2] py-3.5 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-2">
-        <span>{{ clienteSeleccionado ? 'Confirmar Selección' : 'Seleccionar Cliente' }}</span>
-        <i class="pi pi-check"></i>
-      </button>
-
-    </div>
-  </ng-template>
-
-</p-dialog>
-
-<!-- DIÁLOGO: COMPROBANTE FINAL -->
-<p-dialog 
-  [(visible)]="comprobanteDialog" 
-  [modal]="true" 
-  [style]="{width: '420px', maxHeight: '95vh'}" 
-  styleClass="zen-dialog receipt-dialog" 
-  [draggable]="false" 
-  [resizable]="false"
-  [closable]="true"
-  [dismissableMask]="true"
-  [blockScroll]="true"
->
-  <ng-template pTemplate="header">
-    <div class="w-full flex justify-center pt-2">
-        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-            <i class="pi pi-check-circle"></i> Venta Exitosa
-        </span>
-    </div>
-  </ng-template>
-  
-  <div class="p-6 pt-2 flex flex-col items-center">
-    
-    <div class="text-center mb-6">
-        <div class="text-xs font-medium text-surface-400 uppercase tracking-widest mb-1">Total Pagado</div>
-        <div class="text-5xl font-black font-mono text-surface-900 dark:text-surface-0 tracking-tighter">
-            {{ formatearMoneda(ventaParaComprobante?.total || 0) }}
-        </div>
-        <div class="mt-2 text-sm text-surface-500 font-medium">
-            {{ getTipoComprobanteLabel(ventaParaComprobante?.tipoComprobante || '') }} &bull; {{ ventaParaComprobante?.serieComprobante }}-{{ ventaParaComprobante?.numeroComprobante }}
-        </div>
-    </div>
-
-    <div class="w-full bg-surface-50 dark:bg-surface-800/50 rounded-2xl p-5 border border-surface-200 dark:border-surface-700 relative overflow-hidden">
-        
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-surface-200 to-transparent opacity-50"></div>
-
-        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-dashed border-surface-200 dark:border-surface-600">
-            <div class="w-10 h-10 rounded-full bg-white dark:bg-surface-700 flex items-center justify-center text-surface-900 dark:text-surface-0 font-bold border border-surface-100 dark:border-surface-600 shadow-sm">
-                {{ ventaParaComprobante?.cliente?.nombres?.charAt(0) || 'C' }}
-            </div>
-            <div class="overflow-hidden">
-                <div class="text-[10px] text-surface-400 font-bold uppercase tracking-wider">Cliente</div>
-                <div class="text-sm font-bold text-surface-900 dark:text-surface-0 truncate">
-                    {{ ventaParaComprobante?.cliente?.nombres }} {{ ventaParaComprobante?.cliente?.apellidos }}
-                </div>
-            </div>
-        </div>
-
-        <div class="space-y-3 mb-4 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
-            <div *ngFor="let item of ventaParaComprobante?.detalles" class="flex justify-between items-start text-sm">
-                <div class="flex gap-2">
-                    <span class="font-bold text-surface-900 dark:text-surface-0">{{ item.cantidad }}x</span>
-                    <span class="text-surface-600 dark:text-surface-300 line-clamp-1 max-w-[140px]">{{ item.producto.nombre }}</span>
-                </div>
-                <span class="font-mono font-medium text-surface-900 dark:text-surface-0">{{ formatearMoneda(item.subtotal) }}</span>
-            </div>
-        </div>
-
-        <div class="pt-3 border-t border-dashed border-surface-200 dark:border-surface-600 space-y-1">
-            <div class="flex justify-between text-xs text-surface-500">
-                <span>Método de Pago</span>
-                <span class="font-bold uppercase">{{ getMetodoPagoLabel(pagoActual.metodoPago) }}</span>
-            </div>
-            <div class="flex justify-between text-xs text-surface-500" *ngIf="vuelto > 0">
-                <span>Vuelto</span>
-                <span class="font-mono font-bold text-emerald-600">{{ formatearMoneda(vuelto) }}</span>
-            </div>
-            <div class="flex justify-between text-xs text-surface-400 mt-2">
-                <span>Fecha</span>
-                <span>{{ ventaParaComprobante?.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-2 w-full mt-6">
-        <button 
-            (click)="imprimirComprobante(ventaParaComprobante!)"
-            class="flex flex-col items-center justify-center gap-1 p-3 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-surface-400 hover:bg-surface-50 transition-all text-surface-600"
-        >
-            <i class="pi pi-print text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">Imprimir</span>
-        </button>
-        <button 
-            (click)="enviarComprobantePorEmail(ventaParaComprobante!)"
-            class="flex flex-col items-center justify-center gap-1 p-3 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-surface-400 hover:bg-surface-50 transition-all text-surface-600"
-        >
-            <i class="pi pi-envelope text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">Email</span>
-        </button>
-        <button 
-            (click)="descargarComprobantePDF(ventaParaComprobante!)"
-            class="flex flex-col items-center justify-center gap-1 p-3 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-surface-400 hover:bg-surface-50 transition-all text-surface-600"
-        >
-            <i class="pi pi-download text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">PDF</span>
-        </button>
-    </div>
-
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="p-6 pt-0 border-t-0">
-        <button 
-            (click)="nuevaVentaRapida()"
-            class="w-full py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
-        >
-            <span>Nueva Venta</span>
-            <i class="pi pi-arrow-right"></i>
-        </button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- Modal de Carrito Expandido -->
-<div
-  *ngIf="mostrarCarritoExpandido"
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  (click)="mostrarCarritoExpandido = false"
->
-  <div
-    class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-    (click)="$event.stopPropagation()"
-  >
-    <!-- Header del Modal -->
-    <div class="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-xl">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-            <i class="pi pi-shopping-cart text-white text-lg"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-gray-900">Carrito de Compras</h3>
-            <p class="text-sm text-gray-500">{{ carrito.length }} productos agregados</p>
-          </div>
-        </div>
+      <div class="p-6 pt-0 mt-auto">
         <button
-          class="text-gray-400 hover:text-gray-600 p-2"
-          (click)="mostrarCarritoExpandido = false"
+          (click)="nuevaVentaRapida()"
+          class="w-full py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
         >
-          <i class="pi pi-times text-xl"></i>
+          <div
+            class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+          ></div>
+          <span class="relative z-10">Iniciar Nueva Venta</span>
+          <i
+            class="pi pi-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"
+          ></i>
         </button>
       </div>
     </div>
+  </p-dialog>
 
-    <!-- Contenido del Modal -->
-    <div class="p-6">
-      <!-- Lista de productos expandida -->
-      <div *ngIf="carrito.length > 0" class="space-y-4">
+  <!-- DIÁLOGO: PROCESAMIENTO DE PAGO -->
+  <p-dialog
+    [(visible)]="pagoDialog"
+    [modal]="true"
+    [style]="{ width: '95vw', maxWidth: '550px' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="zen-dialog payment-dialog"
+    [closable]="!procesandoPago"
+    [closeOnEscape]="!procesandoPago"
+    [blockScroll]="true"
+    [appendTo]="'body'"
+    [showHeader]="false"
+  >
+    <button
+      *ngIf="!procesandoPago"
+      (click)="onPagoDialogHide()"
+      class="absolute top-6 right-6 z-50 w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-400 hover:text-surface-900 transition-all flex items-center justify-center"
+    >
+      <i class="pi pi-times text-sm"></i>
+    </button>
+
+    <div
+      class="bg-white dark:bg-surface-900 p-0 relative overflow-hidden flex flex-col h-full rounded-[2rem]"
+    >
+      <div
+        class="pt-10 pb-6 px-8 text-center bg-surface-50 dark:bg-surface-800/50 border-b border-dashed border-surface-200 dark:border-surface-700 relative"
+      >
         <div
-          *ngFor="let item of carrito; trackBy: trackByItemCarritoId; let i = index"
-          class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow"
+          class="absolute -bottom-3 -left-3 w-6 h-6 rounded-full bg-white dark:bg-surface-900 z-10"
+        ></div>
+        <div
+          class="absolute -bottom-3 -right-3 w-6 h-6 rounded-full bg-white dark:bg-surface-900 z-10"
+        ></div>
+
+        <p
+          class="text-[10px] font-bold text-surface-400 uppercase tracking-[0.2em] mb-2"
         >
-          <div class="flex items-start gap-6">
-            <!-- Imagen más grande -->
-            <div class="relative flex-shrink-0">
-              <img
-                *ngIf="item.producto?.imagen"
-                [src]="item.producto.imagen"
-                [alt]="item.producto.nombre"
-                class="w-24 h-24 object-cover rounded-lg border border-gray-200"
-                onerror="this.src='/assets/images/product-placeholder.jpg'"
-              />
-              <div
-                *ngIf="!item.producto?.imagen"
-                class="w-24 h-24 bg-gray-200 flex items-center justify-center rounded-lg"
-              >
-                <i class="pi pi-image text-gray-400 text-2xl"></i>
-              </div>
+          Total a Pagar
+        </p>
+
+        <div
+          class="flex justify-center items-start gap-1 font-mono text-surface-900 dark:text-surface-0 relative z-20"
+        >
+          <span class="text-2xl mt-2 text-surface-400">S/.</span>
+          <span
+            class="text-6xl sm:text-7xl font-black tracking-tighter leading-none"
+          >
+            {{ formatearMoneda(totalVenta).replace("S/.", "").trim() }}
+          </span>
+        </div>
+
+        <div class="mt-4 flex justify-center">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-surface-800 border border-surface-100 dark:border-surface-700 rounded-full shadow-sm"
+          >
+            <i class="pi pi-shopping-bag text-indigo-500 text-xs"></i>
+            <span
+              class="text-xs font-bold text-surface-600 dark:text-surface-300"
+            >
+              {{ carrito.length }} Artículos
+            </span>
+            <span class="text-surface-300">|</span>
+            <i class="pi pi-user text-indigo-500 text-xs"></i>
+            <span
+              class="text-xs font-bold text-surface-600 dark:text-surface-300 truncate max-w-[120px]"
+            >
+              {{ clienteSeleccionado?.nombres || "Público General" }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 md:p-8 space-y-8">
+        <div>
+          <label
+            class="text-[10px] font-bold text-surface-400 uppercase tracking-wider mb-3 block ml-1"
+            >Método de Pago</label
+          >
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div
+              *ngFor="let metodo of metodosPago"
+              (click)="seleccionarMetodoPago(metodo.value)"
+              class="cursor-pointer relative p-3 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-2 group h-24 overflow-hidden"
+              [ngClass]="
+                pagoActual.metodoPago === metodo.value
+                  ? 'bg-surface-900 border-surface-900 text-white shadow-lg ring-2 ring-offset-2 ring-surface-900 dark:ring-offset-surface-900 dark:ring-surface-0'
+                  : 'bg-white dark:bg-surface-800 border-surface-100 dark:border-surface-700 text-surface-500 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700'
+              "
+            >
+              <i
+                [class]="
+                  getMetodoPagoIcon(metodo.value) +
+                  ' text-2xl mb-1 transition-transform group-hover:scale-110 duration-300'
+                "
+                [ngClass]="{
+                  'text-indigo-400': pagoActual.metodoPago === metodo.value,
+                }"
+              ></i>
+
               <span
-                class="absolute -top-2 -left-2 bg-blue-600 text-white text-sm w-8 h-8 rounded-full flex items-center justify-center font-bold"
+                class="text-[10px] font-bold uppercase tracking-wide text-center leading-tight"
+                >{{ metodo.label }}</span
               >
-                {{ i + 1 }}
-              </span>
-            </div>
 
-            <!-- Info del producto expandida -->
-            <div class="flex-1 min-w-0">
-              <div class="font-bold text-gray-900 text-xl mb-3">
-                {{ item.producto.nombre }}
-              </div>
-              <div class="flex gap-2 flex-wrap mb-3">
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                  {{ item.color.nombre }}
-                </span>
-                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                  Talla {{ item.talla.numero }}
-                </span>
-              </div>
-              <div class="text-gray-500 mb-4">
-                Código: {{ item.codigoCompleto }}
-              </div>
-
-              <!-- Controles de cantidad expandidos -->
-              <div class="flex items-center gap-4">
-                <button
-                  class="w-10 h-10 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center justify-center transition-colors"
-                  [disabled]="item.cantidad <= 1"
-                  (click)="actualizarCantidadItem(item, item.cantidad - 1)"
-                >
-                  <i class="pi pi-minus"></i>
-                </button>
-
-                <input
-                  type="number"
-                  [(ngModel)]="item.cantidad"
-                  (blur)="actualizarCantidadItem(item, item.cantidad)"
-                  min="1"
-                  [max]="item.stock"
-                  class="w-20 text-center border border-gray-300 rounded-lg px-3 py-2 font-mono text-lg"
-                />
-
-                <button
-                  class="w-10 h-10 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center justify-center transition-colors"
-                  [disabled]="item.cantidad >= item.stock"
-                  (click)="actualizarCantidadItem(item, item.cantidad + 1)"
-                >
-                  <i class="pi pi-plus"></i>
-                </button>
-
-                <div class="text-gray-500 bg-gray-200 px-3 py-2 rounded-lg">
-                  Stock disponible: {{ item.stock }}
-                </div>
-              </div>
-            </div>
-
-            <!-- Precio y eliminar expandido -->
-            <div class="text-right flex-shrink-0">
-              <div class="font-bold text-green-600 text-2xl mb-2">
-                {{ formatearMoneda(item.subtotal) }}
-              </div>
-              <div class="text-gray-500 mb-4">
-                {{ formatearMoneda(item.precioUnitario) }} c/u
-              </div>
-              <button
-                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-                (click)="eliminarItemCarrito(item)"
-              >
-                <i class="pi pi-trash mr-2"></i>
-                Eliminar
-              </button>
+              <div
+                *ngIf="pagoActual.metodoPago === metodo.value"
+                class="absolute top-2 right-2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"
+              ></div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Footer del Modal con totales -->
-    <div class="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-6 rounded-b-xl">
-      <div class="flex justify-between items-center">
-        <div class="text-lg">
-          <span class="text-gray-600">Total de productos: </span>
-          <span class="font-bold">{{ carrito.length }}</span>
-        </div>
-        <div class="text-right">
-          <div class="text-2xl font-bold text-green-600">
-            {{ formatearMoneda(totalVenta) }}
-          </div>
-          <div class="text-sm text-gray-500">Total de la venta</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- DIÁLOGO: PROCESAMIENTO DE PAGO -->
-<p-dialog 
-  [(visible)]="pagoDialog" 
-  [modal]="true" 
-  [style]="{width: '600px', maxHeight: '95vh'}" 
-  [draggable]="false" 
-  [resizable]="false"
-  styleClass="zen-dialog payment-dialog"
-  [closable]="!procesandoPago"
-  [closeOnEscape]="!procesandoPago"
-  [blockScroll]="true"
-  (onHide)="onPagoDialogHide()"
->
-  <ng-template pTemplate="header">
-    <div class="w-full text-center pt-2">
-      <p class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-1">Total a Cobrar</p>
-      <div class="text-5xl md:text-6xl font-black text-surface-900 dark:text-surface-0 font-mono tracking-tighter leading-none">
-        <span class="text-3xl text-surface-400 align-top mr-1">S/.</span>{{ formatearMoneda(totalVenta).replace('S/.', '').trim() }}
-      </div>
-      
-      <div class="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-surface-100 dark:bg-surface-800 rounded-full">
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-300">
-            {{carrito.length}} Items &bull; {{ clienteSeleccionado?.nombres || 'Cliente General' }}
-        </span>
-      </div>
-    </div>
-  </ng-template>
-  
-  <div class="p-6 pt-4 space-y-6">
-    
-    <div>
-        <label class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-3 block pl-1">Seleccionar Método</label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div *ngFor="let metodo of metodosPago" 
-                 (click)="seleccionarMetodoPago(metodo.value)"
-                 class="cursor-pointer relative p-3 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center justify-center gap-2 group h-24"
-                 [ngClass]="pagoActual.metodoPago === metodo.value ? 
-                            'bg-surface-900 border-surface-900 text-white shadow-lg transform scale-[1.02]' : 
-                            'bg-surface-50 border-transparent text-surface-500 hover:border-surface-300 hover:bg-surface-100'">
-                
-                <i [class]="getMetodoPagoIcon(metodo.value) + ' text-2xl mb-1'"></i>
-                <span class="text-[10px] font-bold uppercase tracking-wide">{{metodo.label}}</span>
-                
-                <div *ngIf="pagoActual.metodoPago === metodo.value" class="absolute top-2 right-2 w-2 h-2 bg-white rounded-full"></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="bg-surface-50 dark:bg-surface-800/50 p-6 rounded-[2rem] border border-surface-100 dark:border-surface-700 relative overflow-hidden transition-colors focus-within:border-indigo-200">
-        
-        <label class="text-[10px] font-bold text-surface-400 uppercase tracking-widest block text-center mb-2">Monto Recibido</label>
-        
-        <div class="relative">
-            <p-inputNumber 
-              [(ngModel)]="montoPagado" 
-              mode="decimal" 
-              [minFractionDigits]="2" 
-              [maxFractionDigits]="2"
-              [min]="0"
-              placeholder="0.00"
-              (onInput)="calcularVuelto()"
-              styleClass="w-full text-center zen-money-input"
-              [inputStyle]="{'background': 'transparent', 'border': 'none', 'font-size': '3rem', 'font-weight': '900', 'text-align': 'center', 'width': '100%', 'padding': '0', 'color': 'var(--surface-900)'}"
-            ></p-inputNumber>
-        </div>
-
-        <div class="text-center mt-2 h-6">
-            <span *ngIf="montoPagado > 0 && montoPagado < totalVenta" class="text-xs font-bold text-red-500 flex items-center justify-center gap-1 animate-fade-in">
-                <i class="pi pi-exclamation-circle"></i> Insuficiente (Faltan {{ formatearMoneda(totalVenta - montoPagado) }})
-            </span>
-            <span *ngIf="montoPagado >= totalVenta" class="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1 animate-fade-in">
-                <i class="pi pi-check-circle"></i> Monto Cubierto
-            </span>
-        </div>
-
-        <div *ngIf="vuelto > 0" class="mt-4 pt-4 border-t-2 border-dashed border-surface-200 dark:border-surface-600 flex justify-between items-center animate-slide-down">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                    <i class="pi pi-replay"></i>
-                </div>
-                <span class="text-xs font-bold text-surface-500 uppercase tracking-wide">Vuelto a Entregar</span>
-            </div>
-            <div class="text-2xl font-black text-emerald-600 font-mono">
-                {{ formatearMoneda(vuelto) }}
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="pagoActual.metodoPago !== 'EFECTIVO'" class="animate-fade-in space-y-4">
-        
-        <div *ngIf="pagoActual.metodoPago === 'TARJETA_CREDITO' || pagoActual.metodoPago === 'TARJETA_DEBITO'" class="p-4 bg-surface-50 rounded-2xl border border-surface-200 grid gap-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-2">
-                    <input pInputText [(ngModel)]="pagoActual.nombreTarjeta" placeholder="NOMBRE TITULAR" class="w-full bg-white border-none h-12 px-4 rounded-xl text-sm font-bold placeholder:font-normal shadow-sm">
-                </div>
-                <div>
-                    <p-inputMask [(ngModel)]="pagoActual.ultimos4Digitos" mask="9999" placeholder="Últimos 4" styleClass="w-full bg-white border-none h-12 px-4 rounded-xl text-sm font-bold shadow-sm"></p-inputMask>
-                </div>
-                <div>
-                    <input pInputText [(ngModel)]="pagoActual.numeroReferencia" placeholder="Ref. Operación" class="w-full bg-white border-none h-12 px-4 rounded-xl text-sm font-bold shadow-sm">
-                </div>
-            </div>
-        </div>
-
-        <div *ngIf="['TRANSFERENCIA', 'YAPE', 'PLIN'].includes(pagoActual.metodoPago)" class="p-4 bg-surface-50 rounded-2xl border border-surface-200">
-            <div class="flex items-center gap-3 mb-2">
-                <i class="pi pi-mobile text-indigo-600"></i>
-                <label class="text-xs font-bold text-surface-500 uppercase">Código de Operación</label>
-            </div>
-            <input pInputText [(ngModel)]="pagoActual.numeroReferencia" placeholder="Ej: 1234567" class="w-full bg-white border-none h-12 px-4 rounded-xl text-lg font-mono font-bold shadow-sm focus:ring-2 focus:ring-indigo-500/20">
-        </div>
-
-        <textarea pInputTextarea [(ngModel)]="pagoActual.observaciones" rows="2" placeholder="Nota opcional..." class="w-full bg-surface-50 border-none p-4 rounded-2xl text-sm resize-none focus:bg-white transition-colors"></textarea>
-    </div>
-
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="p-6 pt-0 border-t-0 bg-transparent flex gap-3">
-        <button 
-            (click)="cancelarPago()" 
-            [disabled]="procesandoPago"
-            class="w-1/3 py-4 rounded-2xl text-surface-500 font-bold hover:bg-surface-100 hover:text-surface-900 transition-colors">
-            Cancelar
-        </button>
-        
-        <button 
-            (click)="procesarVenta()" 
-            [disabled]="!isPagoValid() || procesandoPago"
-            class="w-2/3 py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3"
+        <div
+          class="bg-surface-50 dark:bg-surface-800/30 p-1 rounded-3xl border border-surface-100 dark:border-surface-700 group focus-within:ring-2 focus-within:ring-indigo-100 transition-all"
         >
-            <span *ngIf="!procesandoPago">CONFIRMAR COBRO</span>
-            <span *ngIf="procesandoPago">PROCESANDO...</span>
-            <i class="pi" [ngClass]="procesandoPago ? 'pi-spin pi-spinner' : 'pi-check-circle'"></i>
-        </button>
-    </div>
-  </ng-template>
-</p-dialog>
+          <div
+            class="bg-white dark:bg-surface-800 rounded-[1.3rem] p-5 shadow-sm relative overflow-hidden"
+          >
+            <label
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block text-center mb-1"
+              >Recibido</label
+            >
 
-</div> <!-- Cierre del contenedor principal del POS (cajaAbierta) -->
+            <div class="relative flex items-center justify-center">
+              <span
+                class="text-2xl text-surface-300 font-mono mr-1 absolute left-4 top-1/2 -translate-y-1/2"
+                >S/.</span
+              >
+              <p-inputNumber
+                [(ngModel)]="montoPagado"
+                mode="decimal"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                [min]="0"
+                placeholder="0.00"
+                (onInput)="calcularVuelto()"
+                styleClass="w-full text-center zen-money-input"
+                [inputStyle]="{
+                  background: 'transparent',
+                  border: 'none',
+                  'font-size': '2.5rem',
+                  'font-weight': '800',
+                  'text-align': 'center',
+                  width: '100%',
+                  padding: '0',
+                  color: 'var(--surface-900)',
+                  'font-family': 'monospace',
+                }"
+              ></p-inputNumber>
+            </div>
+          </div>
+
+          <div class="px-4 py-3 flex justify-between items-center min-h-[50px]">
+            <div
+              *ngIf="montoPagado > 0 && montoPagado < totalVenta"
+              class="flex items-center gap-2 text-red-500 animate-fade-in w-full justify-center"
+            >
+              <i class="pi pi-exclamation-circle"></i>
+              <span class="text-xs font-bold"
+                >Faltan S/.
+                {{ totalVenta - montoPagado | number: "1.2-2" }}</span
+              >
+            </div>
+
+            <div
+              *ngIf="montoPagado >= totalVenta"
+              class="flex items-center justify-between w-full animate-slide-down"
+            >
+              <span
+                class="text-xs font-bold text-emerald-600 flex items-center gap-1"
+              >
+                <i class="pi pi-check-circle"></i> Cubierto
+              </span>
+
+              <div
+                *ngIf="vuelto > 0"
+                class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-lg border border-emerald-100 dark:border-emerald-800/30"
+              >
+                <span
+                  class="text-[10px] font-bold text-emerald-600/70 uppercase"
+                  >Vuelto</span
+                >
+                <span class="text-lg font-black text-emerald-600 font-mono"
+                  >S/. {{ vuelto | number: "1.2-2" }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="pagoActual.metodoPago !== 'EFECTIVO'"
+          class="animate-fade-in space-y-4 pt-2 border-t border-dashed border-surface-200 dark:border-surface-700"
+        >
+          <div
+            *ngIf="
+              ['TARJETA_CREDITO', 'TARJETA_DEBITO'].includes(
+                pagoActual.metodoPago
+              )
+            "
+            class="grid gap-3"
+          >
+            <input
+              pInputText
+              [(ngModel)]="pagoActual.nombreTarjeta"
+              placeholder="NOMBRE DEL TITULAR"
+              class="w-full bg-surface-50 dark:bg-surface-800 border-none h-12 px-4 rounded-xl text-xs font-bold shadow-inner focus:ring-2 focus:ring-indigo-100 transition-all uppercase tracking-wide"
+            />
+            <div class="grid grid-cols-2 gap-3">
+              <p-inputMask
+                [(ngModel)]="pagoActual.ultimos4Digitos"
+                mask="9999"
+                placeholder="ÚLTIMOS 4 DIGITOS"
+                styleClass="w-full bg-surface-50 dark:bg-surface-800 border-none h-12 px-4 rounded-xl text-xs font-bold shadow-inner focus:ring-2 focus:ring-indigo-100 transition-all font-mono"
+              ></p-inputMask>
+              <input
+                pInputText
+                [(ngModel)]="pagoActual.numeroReferencia"
+                placeholder="REF. OPERACIÓN"
+                class="w-full bg-surface-50 dark:bg-surface-800 border-none h-12 px-4 rounded-xl text-xs font-bold shadow-inner focus:ring-2 focus:ring-indigo-100 transition-all uppercase"
+              />
+            </div>
+          </div>
+
+          <div
+            *ngIf="
+              ['YAPE', 'PLIN', 'TRANSFERENCIA'].includes(pagoActual.metodoPago)
+            "
+            class="flex flex-col gap-2"
+          >
+            <label
+              class="text-[10px] font-bold text-surface-400 uppercase tracking-wider ml-1"
+              >Número de Operación</label
+            >
+            <div class="relative">
+              <i
+                class="pi pi-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"
+              ></i>
+              <input
+                pInputText
+                [(ngModel)]="pagoActual.numeroReferencia"
+                placeholder="Ej: 123456"
+                class="w-full bg-surface-50 dark:bg-surface-800 border-none h-12 pl-10 pr-4 rounded-xl text-base font-mono font-bold shadow-inner focus:ring-2 focus:ring-indigo-100 transition-all"
+              />
+            </div>
+          </div>
+
+          <textarea
+            pInputTextarea
+            [(ngModel)]="pagoActual.observaciones"
+            rows="1"
+            placeholder="Nota adicional (opcional)..."
+            class="w-full bg-transparent border-b border-surface-200 dark:border-surface-700 p-2 text-sm resize-none focus:border-surface-900 transition-colors placeholder:text-surface-300"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="p-6 pt-0 mt-auto bg-transparent flex gap-3 z-10">
+        <button
+          (click)="cancelarPago()"
+          [disabled]="procesandoPago"
+          class="px-6 py-4 rounded-2xl text-surface-400 font-bold hover:bg-surface-50 hover:text-surface-900 transition-colors text-xs uppercase tracking-widest"
+        >
+          Volver
+        </button>
+
+        <button
+          (click)="procesarVenta()"
+          [disabled]="!isPagoValid() || procesandoPago"
+          class="flex-1 py-4 bg-surface-900 dark:bg-surface-0 hover:bg-black dark:hover:bg-surface-200 text-white dark:text-surface-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-3 relative overflow-hidden group"
+        >
+          <div
+            class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+          ></div>
+
+          <span *ngIf="!procesandoPago" class="relative z-10"
+            >Confirmar Cobro</span
+          >
+          <span *ngIf="procesandoPago" class="relative z-10"
+            >Procesando...</span
+          >
+          <i
+            class="pi relative z-10"
+            [ngClass]="procesandoPago ? 'pi-spin pi-spinner' : 'pi-check'"
+          ></i>
+        </button>
+      </div>
+    </div>
+  </p-dialog>
+</div>
+<!-- Cierre del contenedor principal del POS (cajaAbierta) -->
+
+<!-- Estilos CSS adicionales para el carrito móvil -->
+<style>
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  /* Mejoras para scroll en móvil */
+  @media (max-width: 1023px) {
+    .custom-scrollbar {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+    }
+
+    /* Asegurar que los productos se vean bien en 2 columnas */
+    .grid-cols-2 > div {
+      min-height: 200px;
+    }
+
+    /* Mejorar el botón flotante */
+    .fixed.bottom-6.right-6 {
+      bottom: calc(1.5rem + env(safe-area-inset-bottom));
+      right: 1.5rem;
+      box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Asegurar que los diálogos aparezcan por encima del carrito móvil */
+    .p-dialog {
+      z-index: 10001 !important;
+    }
+
+    .p-dialog-mask {
+      z-index: 10000 !important;
+    }
+  }
+
+  /* Desktop: Grid de 6 columnas */
+  @media (min-width: 1024px) {
+    .lg\\:grid-cols-6 > div {
+      min-height: 240px;
+    }
+  }
+
+  /* Animación del badge del carrito */
+  .animate-pulse {
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Asegurar que el carrito lateral se oculte completamente cuando está activo el móvil */
+  .lg\\:hidden {
+    display: none !important;
+  }
+
+  /* Mejorar z-index de elementos críticos */
+  .zen-dialog {
+    z-index: 10502 !important;
+  }
+
+  .zen-dialog .p-dialog {
+    z-index: 10502 !important;
+  }
+
+  .zen-dialog .p-dialog-mask {
+    z-index: 10501 !important;
+  }
+
+  /* Asegurar que el diálogo de pago esté por encima de todo */
+  .payment-dialog {
+    z-index: 10503 !important;
+  }
+
+  .payment-dialog .p-dialog {
+    z-index: 10503 !important;
+  }
+
+  .payment-dialog .p-dialog-mask {
+    z-index: 10502 !important;
+  }
+</style>
