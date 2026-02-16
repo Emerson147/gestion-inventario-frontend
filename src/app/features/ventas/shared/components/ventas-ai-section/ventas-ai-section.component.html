@@ -1,0 +1,106 @@
+<!-- IA SECTION -->
+<div
+  class="relative overflow-hidden bg-gradient-to-br from-surface-900 to-surface-800 dark:from-surface-800 dark:to-surface-950 rounded-[2.5rem] p-6 lg:p-10 shadow-2xl text-white group"
+>
+  <div
+    class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700"
+  >
+    <i class="pi pi-sparkles text-9xl"></i>
+  </div>
+
+  <div
+    class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 h-full"
+  >
+    <div class="max-w-2xl">
+      <div
+        class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md"
+      >
+        <div class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+          ></span>
+        </div>
+        <span
+          class="text-[10px] font-bold uppercase tracking-widest text-emerald-300"
+          >Motor Predictivo Zen</span
+        >
+      </div>
+      <h2
+        class="text-3xl lg:text-4xl font-black mb-4 tracking-tight leading-tight"
+      >
+        Predicción de Demanda
+      </h2>
+      <p class="text-surface-300 text-lg leading-relaxed mb-8">
+        Analizamos tus últimas
+        <strong class="text-white"
+          >{{ ventasHistoricas.length }} semanas</strong
+        >
+        de transacciones para proyectar el comportamiento financiero futuro con
+        un <strong class="text-emerald-400">87% de confianza</strong>.
+      </p>
+      <button
+        (click)="onGenerarPrediccion()"
+        [disabled]="calculandoIA"
+        class="h-14 px-8 bg-white text-surface-900 rounded-xl font-bold uppercase tracking-widest hover:scale-105 hover:shadow-lg hover:shadow-white/20 transition-all duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-3"
+      >
+        <i
+          class="pi"
+          [ngClass]="calculandoIA ? 'pi-spin pi-spinner' : 'pi-bolt'"
+        ></i>
+        <span *ngIf="!calculandoIA">Ejecutar Análisis</span>
+        <span *ngIf="calculandoIA">Procesando...</span>
+      </button>
+    </div>
+
+    <div
+      *ngIf="prediccionesIA.mostrar"
+      class="w-full lg:w-1/3 bg-white/5 backdrop-blur-md rounded-[2rem] p-8 border border-white/10 animate-fade-in-up shadow-xl"
+    >
+      <div class="flex justify-between items-end mb-6">
+        <div>
+          <p
+            class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-2"
+          >
+            Tendencia
+          </p>
+          <p class="text-4xl font-black flex items-center gap-2">
+            {{ prediccionesIA.crecimiento > 0 ? "+" : ""
+            }}{{ prediccionesIA.crecimiento }}%
+            <i
+              class="pi text-2xl"
+              [ngClass]="
+                prediccionesIA.crecimiento > 0
+                  ? 'pi-arrow-up-right text-emerald-400'
+                  : 'pi-arrow-down-right text-red-400'
+              "
+            ></i>
+          </p>
+        </div>
+        <div class="text-right">
+          <p
+            class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-2"
+          >
+            Proyección
+          </p>
+          <p class="text-3xl font-mono font-bold tracking-tight">
+            {{ formatearMoneda(prediccionesIA.ventaProyectada) }}
+          </p>
+        </div>
+      </div>
+      <div
+        class="h-[120px] w-full mt-4 bg-white/5 rounded-xl p-2 border border-white/5"
+      >
+        <!-- Mini chart placeholder or actual chart if data available -->
+        <p-chart
+          type="line"
+          [data]="dataGraficoPrediccion"
+          [options]="opcionesGraficoDark"
+          height="100%"
+        ></p-chart>
+      </div>
+    </div>
+  </div>
+</div>

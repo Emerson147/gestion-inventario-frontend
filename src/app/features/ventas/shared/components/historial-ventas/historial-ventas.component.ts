@@ -1,10 +1,22 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  inject,
+  HostListener,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // PrimeNG Imports
-import { MessageService, ConfirmationService, MenuItem, LazyLoadEvent } from 'primeng/api';
+import {
+  MessageService,
+  ConfirmationService,
+  MenuItem,
+  LazyLoadEvent,
+} from 'primeng/api';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,7 +25,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { CalendarModule } from 'primeng/calendar';
 import { SliderModule } from 'primeng/slider';
 import { ChipsModule } from 'primeng/chips';
-import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
+import {
+  AutoCompleteModule,
+  AutoCompleteSelectEvent,
+} from 'primeng/autocomplete';
 import { AccordionModule } from 'primeng/accordion';
 import { DataViewModule } from 'primeng/dataview';
 import { CardModule } from 'primeng/card';
@@ -42,17 +57,17 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ListboxModule } from 'primeng/listbox';
 import { ButtonGroupModule } from 'primeng/buttongroup';
 import { TooltipModule } from 'primeng/tooltip';
+import { PaginatorModule } from 'primeng/paginator';
 
 import { VentasService } from '../../../../../core/services/ventas.service';
 import { EstadisticasVentasService } from '../../../../../core/services/estadisticas-ventas.service';
 import { ComprobantesService } from '../../../../../core/services/comprobantes.service';
 import { VentaResponse } from '../../../../../core/models/venta.model';
-import { PaginatorModule } from 'primeng/paginator';
 
 // jsPDF para exportación a PDF
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
+import { ZenMetricCardComponent } from '../zen-metric-card/zen-metric-card.component';
 // Interfaces
 interface Venta {
   id: number;
@@ -62,6 +77,7 @@ interface Venta {
   usuario?: Usuario;
   total: number;
   subtotal: number;
+  igv?: number;
   estado: EstadoVenta;
   tipoComprobante: string;
   serieComprobante: string;
@@ -115,7 +131,13 @@ interface DetalleVenta {
 }
 
 type EstadoVenta = 'PENDIENTE' | 'COMPLETADA' | 'ANULADA' | 'PROCESANDO';
-type MetodoPago = 'EFECTIVO' | 'TARJETA_DEBITO' | 'TARJETA_CREDITO' | 'YAPE' | 'PLIN' | 'TRANSFERENCIA';
+type MetodoPago =
+  | 'EFECTIVO'
+  | 'TARJETA_DEBITO'
+  | 'TARJETA_CREDITO'
+  | 'YAPE'
+  | 'PLIN'
+  | 'TRANSFERENCIA';
 type TipoVista = 'list' | 'grid';
 
 interface FiltrosVenta {
@@ -201,8 +223,6 @@ interface TopProducto {
   cantidad: number;
 }
 
-
-
 interface EventoAutoComplete {
   query: string;
 }
@@ -211,11 +231,12 @@ interface EventoAutoComplete {
 
 @Component({
   selector: 'app-historial-ventas',
-   standalone: true,
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     RouterLink,
+    ZenMetricCardComponent,
     // PrimeNG Modules
     TableModule,
     ButtonModule,
@@ -254,13 +275,12 @@ interface EventoAutoComplete {
     ListboxModule,
     ButtonGroupModule,
     PaginatorModule,
-    TooltipModule
+    TooltipModule,
   ],
   templateUrl: './historial-ventas.component.html',
-  styleUrls: ['./historial-ventas.component.scss']
+  styleUrls: ['./historial-ventas.component.scss'],
 })
 export class HistorialVentasComponent implements OnInit, OnDestroy {
-
   // ✅ REFERENCIAS A COMPONENTES
   @ViewChild('cm') contextMenu!: ContextMenu;
   @ViewChild('opFiltros') overlayFiltros!: OverlayPanel;
@@ -293,6 +313,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   estadosSeleccionados: EstadoVenta[] = [];
   metodosSeleccionados: MetodoPago[] = [];
   usuariosSeleccionados: number[] = [];
+  periodoSeleccionado: string = 'todos';
   metodoPagoSeleccionado: MetodoPago | null = null;
   calificacionMinima = 0;
 
@@ -301,7 +322,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   campoOrden = 'fechaVenta';
   direccionOrden: 'asc' | 'desc' = 'desc';
 
-    // Agregar estas propiedades si faltan:
+  // Agregar estas propiedades si faltan:
   ventasHoy = 0;
   totalVentasHoy = 0;
   clientesUnicos = 0;
@@ -323,9 +344,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private autoRefreshInterval?: number;
 
   getProgresoFromDetail(detail: string): number {
-  const match = detail.match(/(\d+)%/);
-  return match ? parseInt(match[1]) : 0;
-}
+    const match = detail.match(/(\d+)%/);
+    return match ? parseInt(match[1]) : 0;
+  }
   // ✅ ESTADÍSTICAS
   estadisticas: EstadisticasVenta = {
     ventasHoy: 0,
@@ -336,31 +357,31 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     tiposProductos: 0,
     porcentajeCrecimiento: 0,
     promedioVenta: 0,
-    metaDiaria: 10000
+    metaDiaria: 10000,
   };
 
   // ✅ DATOS PARA GRÁFICOS Y PROGRESO
   progresoMeta = 0;
   datosGraficoTendencia: DatosGrafico = {
     labels: [],
-    datasets: []
+    datasets: [],
   };
   opcionesGrafico: OpcionesGrafico = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
-      }
+        display: false,
+      },
     },
     scales: {
       x: {
-        display: false
+        display: false,
       },
       y: {
-        display: false
-      }
-    }
+        display: false,
+      },
+    },
   };
   distribucionPagos: DistribucionPago[] = [];
   actividadReciente: ActividadReciente[] = [];
@@ -376,7 +397,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     { label: 'Pendiente', value: 'PENDIENTE' },
     { label: 'Completada', value: 'COMPLETADA' },
     { label: 'Anulada', value: 'ANULADA' },
-    { label: 'Procesando', value: 'PROCESANDO' }
+    { label: 'Procesando', value: 'PROCESANDO' },
   ];
 
   metodosPago: OpcionSelect[] = [
@@ -385,27 +406,35 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     { label: '💳 Tarjeta Crédito', value: 'TARJETA_CREDITO' },
     { label: '📱 Yape', value: 'YAPE' },
     { label: '📱 Plin', value: 'PLIN' },
-    { label: '🏦 Transferencia', value: 'TRANSFERENCIA' }
+    { label: '🏦 Transferencia', value: 'TRANSFERENCIA' },
   ];
 
   usuarios: OpcionSelect[] = [
     { label: 'Juan Pérez', value: 1 },
     { label: 'María García', value: 2 },
-    { label: 'Carlos López', value: 3 }
+    { label: 'Carlos López', value: 3 },
   ];
 
   opcionesVista: OpcionSelect[] = [
     { label: 'Lista', value: 'list', icon: 'pi pi-list' },
-    { label: 'Tarjetas', value: 'grid', icon: 'pi pi-th-large' }
+    { label: 'Tarjetas', value: 'grid', icon: 'pi pi-th-large' },
   ];
 
   opcionesOrdenamiento: OpcionSelect[] = [
-    { label: 'Fecha (Más reciente)', value: 'fecha_desc', icon: 'pi pi-calendar' },
-    { label: 'Fecha (Más antigua)', value: 'fecha_asc', icon: 'pi pi-calendar' },
+    {
+      label: 'Fecha (Más reciente)',
+      value: 'fecha_desc',
+      icon: 'pi pi-calendar',
+    },
+    {
+      label: 'Fecha (Más antigua)',
+      value: 'fecha_asc',
+      icon: 'pi pi-calendar',
+    },
     { label: 'Monto (Mayor)', value: 'monto_desc', icon: 'pi pi-dollar' },
     { label: 'Monto (Menor)', value: 'monto_asc', icon: 'pi pi-dollar' },
     { label: 'Cliente (A-Z)', value: 'cliente', icon: 'pi pi-user' },
-    { label: 'Número de venta', value: 'numero', icon: 'pi pi-hashtag' }
+    { label: 'Número de venta', value: 'numero', icon: 'pi pi-hashtag' },
   ];
 
   // ✅ MENÚS Y ACCIONES
@@ -418,9 +447,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private messageService: MessageService = inject(MessageService);
-  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private confirmationService: ConfirmationService =
+    inject(ConfirmationService);
   private ventasService: VentasService = inject(VentasService); // Reemplazar con tu servicio real
-    // private exportService: any   // Reemplazar con tu servicio de exportación
+  // private exportService: any   // Reemplazar con tu servicio de exportación
   private estadisticasVentasService = inject(EstadisticasVentasService);
   private comprobantesService = inject(ComprobantesService);
 
@@ -436,11 +466,11 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     console.log('🚀 [INICIO] Inicializando Historial de Ventas...');
     console.log('📊 [CONFIG] Usuario actual:', 'Emerson147');
     console.log('📅 [FECHA] Fecha actual:', new Date().toISOString());
-    
+
     this.inicializarComponente();
     this.configurarBusquedaInteligente();
     this.suscribirseANuevasVentas();
-    
+
     // ✅ CARGA DIFERIDA para evitar congelamiento
     setTimeout(() => this.cargarDatosIniciales(), 200);
     setTimeout(() => this.configurarRelojes(), 400);
@@ -449,11 +479,11 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     if (this.autoRefreshInterval) {
       clearInterval(this.autoRefreshInterval);
     }
-    
+
     document.removeEventListener('keydown', this.handleKeyboardShortcuts);
   }
 
@@ -466,22 +496,28 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (nuevaVenta) => {
-          console.log('✅ [EVENTO] Nueva venta registrada detectada:', nuevaVenta);
-          
+          console.log(
+            '✅ [EVENTO] Nueva venta registrada detectada:',
+            nuevaVenta,
+          );
+
           // Recargar datos automáticamente
           this.actualizarDatosDespuesDeVenta();
-          
+
           // Mostrar notificación opcional
           this.messageService.add({
             severity: 'success',
             summary: 'Venta Registrada',
             detail: `Venta ${nuevaVenta.numeroVenta} procesada correctamente`,
-            life: 3000
+            life: 3000,
           });
         },
         error: (error) => {
-          console.error('❌ [ERROR] Error en suscripción a nuevas ventas:', error);
-        }
+          console.error(
+            '❌ [ERROR] Error en suscripción a nuevas ventas:',
+            error,
+          );
+        },
       });
   }
 
@@ -489,8 +525,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
    * Actualizar datos después de registrar una venta
    */
   private actualizarDatosDespuesDeVenta(): void {
-    console.log('🔄 [ACTUALIZACIÓN] Actualizando datos después de nueva venta...');
-    
+    console.log(
+      '🔄 [ACTUALIZACIÓN] Actualizando datos después de nueva venta...',
+    );
+
     // Recargar ventas y estadísticas
     this.cargarVentasReales();
     this.cargarEstadisticas();
@@ -512,26 +550,28 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
 
   private cargarDatosIniciales(): void {
-    console.log('📚 [CARGA] Iniciando carga de datos desde la base de datos...');
+    console.log(
+      '📚 [CARGA] Iniciando carga de datos desde la base de datos...',
+    );
     this.cargandoVentas = true;
-    
+
     // Cargar solo datos reales de la base de datos
     this.cargarVentasReales();
     this.cargarEstadisticas();
   }
-  
 
   private cargarVentasReales(): void {
     console.log('🔄 [API] Cargando ventas desde la base de datos...');
-    
+
     // No enviar filtros en la carga inicial - cargar TODAS las ventas
     // Los filtros se aplicarán localmente en el frontend
-    this.ventasService.obtenerVentas()
+    this.ventasService
+      .obtenerVentas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
           console.log('📦 [API] Respuesta recibida:', data);
-          
+
           if (data && data.length > 0) {
             this.procesarVentasAPI(data);
           } else {
@@ -540,36 +580,38 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
             this.ventasFiltradas = [];
             this.ventasPaginadas = [];
             this.cargandoVentas = false;
-            
-            console.log('ℹ️ [API] No se encontraron ventas en la base de datos');
-            
+
+            console.log(
+              'ℹ️ [API] No se encontraron ventas en la base de datos',
+            );
+
             this.messageService.add({
               severity: 'info',
               summary: 'ℹ️ Sin Datos',
               detail: 'No hay ventas registradas',
-              life: 4000
+              life: 4000,
             });
           }
         },
         error: (error) => {
           console.error('❌ [API ERROR] Error al cargar ventas:', error);
           this.cargandoVentas = false;
-          
+
           // Inicializar con arrays vacíos en caso de error
           this.ventas = [];
           this.ventasFiltradas = [];
           this.ventasPaginadas = [];
-          
+
           this.messageService.add({
             severity: 'error',
             summary: '❌ Error de Conexión',
-            detail: 'No se pudo conectar con el servidor. Verifique su conexión.',
-            life: 5000
+            detail:
+              'No se pudo conectar con el servidor. Verifique su conexión.',
+            life: 5000,
           });
-        }
+        },
       });
   }
-
 
   private configurarRelojes(): void {
     setInterval(() => {
@@ -582,36 +624,46 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     // TODO: Implementar observable para búsqueda con debounce
   }
 
+  /**
+   * Remover un estado de los filtros seleccionados
+   */
+  removerEstado(estado: EstadoVenta): void {
+    this.estadosSeleccionados = this.estadosSeleccionados.filter(
+      (e) => e !== estado,
+    );
+    this.aplicarFiltros();
+  }
+
   // ✅ CONFIGURACIÓN DE MENÚS
   private configurarMenus(): void {
     this.accionesRapidas = [
       {
         icon: 'pi pi-refresh',
         command: () => this.actualizarDatos(),
-        tooltipOptions: { tooltipLabel: 'Actualizar datos' }
+        tooltipOptions: { tooltipLabel: 'Actualizar datos' },
       },
       {
         icon: 'pi pi-download',
         command: () => this.exportarPrincipal(),
-        tooltipOptions: { tooltipLabel: 'Exportar reporte' }
+        tooltipOptions: { tooltipLabel: 'Exportar reporte' },
       },
       {
         icon: 'pi pi-chart-line',
         command: () => this.abrirGraficoTendencias(),
-        tooltipOptions: { tooltipLabel: 'Ver gráficos' }
+        tooltipOptions: { tooltipLabel: 'Ver gráficos' },
       },
       {
         icon: 'pi pi-cog',
         command: () => this.abrirConfiguracion(),
-        tooltipOptions: { tooltipLabel: 'Configuración' }
-      }
+        tooltipOptions: { tooltipLabel: 'Configuración' },
+      },
     ];
 
     this.menuAcciones = [
       {
         label: 'Actualizar',
         icon: 'pi pi-refresh',
-        command: () => this.actualizarDatos()
+        command: () => this.actualizarDatos(),
       },
       {
         label: 'Exportar',
@@ -620,86 +672,118 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           {
             label: 'Excel',
             icon: 'pi pi-file-excel',
-            command: () => this.exportarVentas('excel')
+            command: () => this.exportarVentas('excel'),
           },
           {
             label: 'PDF',
             icon: 'pi pi-file-pdf',
-            command: () => this.exportarVentas('pdf')
+            command: () => this.exportarVentas('pdf'),
           },
           {
             label: 'CSV',
             icon: 'pi pi-file',
-            command: () => this.exportarVentas('csv')
-          }
-        ]
-      }
+            command: () => this.exportarVentas('csv'),
+          },
+        ],
+      },
     ];
 
     this.opcionesExportacion = [
       {
-        label: 'Ventas de Hoy',
-        icon: 'pi pi-calendar',
-        command: () => this.exportarPorPeriodo('hoy')
+        label: '📅 Por Período',
+        items: [
+          {
+            label: 'Hoy - Excel',
+            icon: 'pi pi-file-excel',
+            command: () => this.exportarPorPeriodo('hoy'),
+          },
+          {
+            label: 'Hoy - CSV',
+            icon: 'pi pi-file',
+            command: () => this.exportarCSVPorPeriodo('hoy'),
+          },
+          {
+            label: 'Hoy - PDF',
+            icon: 'pi pi-file-pdf',
+            command: () => this.exportarPDFPorPeriodo('hoy'),
+          },
+          { separator: true },
+          {
+            label: 'Esta Semana - Excel',
+            icon: 'pi pi-file-excel',
+            command: () => this.exportarPorPeriodo('semana'),
+          },
+          {
+            label: 'Esta Semana - CSV',
+            icon: 'pi pi-file',
+            command: () => this.exportarCSVPorPeriodo('semana'),
+          },
+          {
+            label: 'Esta Semana - PDF',
+            icon: 'pi pi-file-pdf',
+            command: () => this.exportarPDFPorPeriodo('semana'),
+          },
+          { separator: true },
+          {
+            label: 'Este Mes - Excel',
+            icon: 'pi pi-file-excel',
+            command: () => this.exportarPorPeriodo('mes'),
+          },
+          {
+            label: 'Este Mes - CSV',
+            icon: 'pi pi-file',
+            command: () => this.exportarCSVPorPeriodo('mes'),
+          },
+          {
+            label: 'Este Mes - PDF',
+            icon: 'pi pi-file-pdf',
+            command: () => this.exportarPDFPorPeriodo('mes'),
+          },
+        ],
       },
+      { separator: true },
       {
-        label: 'Ventas de Ayer',
-        icon: 'pi pi-calendar-minus',
-        command: () => this.exportarPorPeriodo('ayer')
+        label: '📊 Todas las Ventas',
+        items: [
+          {
+            label: 'Excel Completo',
+            icon: 'pi pi-file-excel',
+            command: () => this.exportarExcelModerno(),
+          },
+          {
+            label: 'CSV Completo',
+            icon: 'pi pi-file',
+            command: () => this.exportarCSVPorPeriodo('todas'),
+          },
+          {
+            label: 'PDF Completo',
+            icon: 'pi pi-file-pdf',
+            command: () => this.exportarPDFPorPeriodo('todas'),
+          },
+        ],
       },
-      {
-        label: 'Ventas de la Semana',
-        icon: 'pi pi-calendar',
-        command: () => this.exportarPorPeriodo('semana')
-      },
-      {
-        label: 'Ventas del Mes',
-        icon: 'pi pi-calendar',
-        command: () => this.exportarPorPeriodo('mes')
-      },
-      {
-        separator: true
-      },
-      {
-        label: 'Todas las Ventas (Filtradas)',
-        icon: 'pi pi-download',
-        command: () => this.exportarExcelModerno()
-      },
-      {
-        separator: true
-      },
-      {
-        label: 'Exportar CSV',
-        icon: 'pi pi-file',
-        command: () => this.exportarCSV()
-      },
-      {
-        label: 'Exportar PDF',
-        icon: 'pi pi-file-pdf',
-        command: () => this.exportarPDF()
-      }
     ];
 
     this.menuContextual = [
       {
         label: 'Ver Detalle',
         icon: 'pi pi-eye',
-        command: () => this.verDetalleVenta(this.ventaSeleccionada!)
+        command: () => this.verDetalleVenta(this.ventaSeleccionada!),
       },
       {
         label: 'Imprimir',
         icon: 'pi pi-print',
-        command: () => this.imprimirComprobante(this.ventaSeleccionada!)
+        command: () => this.imprimirComprobante(this.ventaSeleccionada!),
       },
       {
-        separator: true
+        separator: true,
       },
       {
         label: 'Anular Venta',
         icon: 'pi pi-ban',
         command: () => this.confirmarAnulacion(this.ventaSeleccionada!),
-        disabled: this.ventaSeleccionada?.estado !== 'COMPLETADA'
-      }
+        disabled: this.ventaSeleccionada?.estado !== 'COMPLETADA',
+      },
     ];
   }
 
@@ -709,17 +793,17 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
-        }
+          display: false,
+        },
       },
       scales: {
         x: {
-          display: false
+          display: false,
         },
         y: {
-          display: false
-        }
-      }
+          display: false,
+        },
+      },
     };
 
     this.datosGraficoTendencia = {
@@ -730,9 +814,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           borderColor: '#10b981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
           tension: 0.4,
-          fill: true
-        }
-      ]
+          fill: true,
+        },
+      ],
     };
   }
 
@@ -743,49 +827,57 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       estados: [],
       metodosPago: [],
       montoMinimo: 0,
-      montoMaximo: 50000
+      montoMaximo: 50000,
     };
   }
 
   // ✅ CARGA DE DATOS
   cargarVentas(evento?: LazyLoadEvent): void {
     this.cargandoVentas = true;
-    
+
     console.log('📊 Cargando ventas desde API...', evento);
-    
+
     // Construir filtros para la API
     const filtrosApi = {
       fechaDesde: this.rangoFechas[0],
       fechaHasta: this.rangoFechas[1],
-      estado: this.estadosSeleccionados.length === 1 ? this.estadosSeleccionados[0] : undefined,
-      termino: this.busquedaRapida || undefined
+      estado:
+        this.estadosSeleccionados.length === 1
+          ? this.estadosSeleccionados[0]
+          : undefined,
+      termino: this.busquedaRapida || undefined,
     };
-    
+
     // Llamar al servicio real
-    this.ventasService.obtenerVentas(filtrosApi)
+    this.ventasService
+      .obtenerVentas(filtrosApi)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.ventas = data.map(venta => ({
+          this.ventas = data.map((venta) => ({
             id: venta.id,
             numeroVenta: venta.numeroVenta,
             fechaVenta: new Date(venta.fechaCreacion),
-            cliente: venta.cliente ? {
-              id: venta.cliente.id,
-              nombres: venta.cliente.nombres,
-              apellidos: venta.cliente.apellidos,
-              dni: venta.cliente.documento,
-              ruc: venta.cliente.documento,
-              email: '',
-              telefono: '',
-              calificacion: 0
-            } : undefined,
-            usuario: venta.usuario ? {
-              id: venta.usuario.id,
-              nombres: venta.usuario.nombre,
-              apellidos: '',
-              email: ''
-            } : undefined,
+            cliente: venta.cliente
+              ? {
+                  id: venta.cliente.id,
+                  nombres: venta.cliente.nombres,
+                  apellidos: venta.cliente.apellidos,
+                  dni: venta.cliente.documento,
+                  ruc: venta.cliente.documento,
+                  email: '',
+                  telefono: '',
+                  calificacion: 0,
+                }
+              : undefined,
+            usuario: venta.usuario
+              ? {
+                  id: venta.usuario.id,
+                  nombres: venta.usuario.nombre,
+                  apellidos: '',
+                  email: '',
+                }
+              : undefined,
             total: venta.total,
             subtotal: venta.subtotal,
             estado: venta.estado as EstadoVenta,
@@ -793,154 +885,160 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
             serieComprobante: venta.serieComprobante,
             pago: undefined,
             detalles: [],
-            observaciones: venta.observaciones
+            observaciones: venta.observaciones,
           }));
-          
+
           this.aplicarFiltrosYOrdenamiento();
           this.cargandoVentas = false;
-          
+
           this.messageService.add({
             severity: 'success',
             summary: '✅ Datos Cargados',
             detail: `${this.ventasFiltradas.length} ventas encontradas`,
-            life: 3000
+            life: 3000,
           });
         },
         error: (error) => {
           console.error('❌ [API ERROR] Error al cargar ventas:', error);
           this.cargandoVentas = false;
-          
+
           // Inicializar con arrays vacíos en caso de error
           this.ventas = [];
           this.ventasFiltradas = [];
           this.ventasPaginadas = [];
-          
+
           this.messageService.add({
             severity: 'error',
             summary: '❌ Error',
             detail: `No se pudieron cargar las ventas: ${error.message || 'Error del servidor'}`,
-            life: 5000
+            life: 5000,
           });
-        }
+        },
       });
   }
 
   private procesarVentasAPI(data: VentaResponse[]): void {
-    console.log('🔄 [MAPEO] Procesando ventas del API con estructura correcta...');
-    
+    console.log(
+      '🔄 [MAPEO] Procesando ventas del API con estructura correcta...',
+    );
+
     try {
       this.ventas = data.map((venta, index) => {
         if (index < 3) {
           console.log(`📝 [MAPEO ${index}] Estructura de venta:`, venta);
         }
-        
+
         // ✅ MAPEO CORRECTO según tu API real
         const ventaMapeada: Venta = {
           id: venta.id,
           numeroVenta: venta.numeroVenta,
           fechaVenta: new Date(venta.fechaCreacion),
-          
+
           // Cliente con estructura correcta
-          cliente: venta.cliente ? {
-            id: venta.cliente.id,
-            nombres: venta.cliente.nombres,
-            apellidos: venta.cliente.apellidos,
-            dni: venta.cliente.documento,
-            ruc: venta.cliente.documento,
-            email: '',
-            telefono: '',
-            calificacion: Math.floor(Math.random() * 5) + 1 // Temporal hasta que tengas este dato
-          } : {
-            id: 0,
-            nombres: 'Público',
-            apellidos: 'General',
-            dni: '',
-            calificacion: 0
-          },
-          
+          cliente: venta.cliente
+            ? {
+                id: venta.cliente.id,
+                nombres: venta.cliente.nombres,
+                apellidos: venta.cliente.apellidos,
+                dni: venta.cliente.documento,
+                ruc: venta.cliente.documento,
+                email: '',
+                telefono: '',
+                calificacion: Math.floor(Math.random() * 5) + 1, // Temporal hasta que tengas este dato
+              }
+            : {
+                id: 0,
+                nombres: 'Público',
+                apellidos: 'General',
+                dni: '',
+                calificacion: 0,
+              },
+
           // Usuario con estructura correcta
-          usuario: venta.usuario ? {
-            id: venta.usuario.id,
-            nombres: venta.usuario.nombre,
-            apellidos: venta.usuario.username,
-            email: `${venta.usuario.username}@sistema.com`
-          } : {
-            id: 1,
-            nombres: 'Emerson147',
-            apellidos: 'Sistema',
-            email: 'emerson147@sistema.com'
-          },
-          
+          usuario: venta.usuario
+            ? {
+                id: venta.usuario.id,
+                nombres: venta.usuario.nombre,
+                apellidos: venta.usuario.username,
+                email: `${venta.usuario.username}@sistema.com`,
+              }
+            : {
+                id: 1,
+                nombres: 'Emerson147',
+                apellidos: 'Sistema',
+                email: 'emerson147@sistema.com',
+              },
+
           // Montos
           total: venta.total,
           subtotal: venta.subtotal,
-          
+
           // Estado y comprobante
           estado: this.mapearEstado(venta.estado),
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
-          
+
           // Pago (asumir efectivo por defecto, puedes agregar lógica específica)
           pago: {
             id: venta.id,
             metodoPago: this.determinarMetodoPago(),
-            monto: venta.total
+            monto: venta.total,
           },
-          
+
           // Detalles mapeados correctamente
-          detalles: venta.detalles?.map(detalle => ({
-            id: detalle.id,
-            producto: {
-              id: detalle.producto.id,
-              nombre: detalle.producto.nombre,
-              codigo: detalle.producto.codigo
-            },
-            cantidad: detalle.cantidad,
-            precioUnitario: detalle.precioUnitario,
-            subtotal: detalle.subtotal
-          })) || [],
-          
-          observaciones: venta.observaciones || ''
+          detalles:
+            venta.detalles?.map((detalle) => ({
+              id: detalle.id,
+              producto: {
+                id: detalle.producto.id,
+                nombre: detalle.producto.nombre,
+                codigo: detalle.producto.codigo,
+              },
+              cantidad: detalle.cantidad,
+              precioUnitario: detalle.precioUnitario,
+              subtotal: detalle.subtotal,
+            })) || [],
+
+          observaciones: venta.observaciones || '',
         };
-        
+
         return ventaMapeada;
       });
-      
+
       console.log('✅ [MAPEO] Ventas procesadas correctamente:', {
         total: this.ventas.length,
         primeraVenta: this.ventas[0],
-        estructura: 'Mapeado según API real'
+        estructura: 'Mapeado según API real',
       });
-      
+
       this.aplicarFiltrosYOrdenamiento();
       this.cargandoVentas = false;
-      
+
       this.messageService.add({
         severity: 'success',
         summary: '✅ Ventas Cargadas',
         detail: `${this.ventas.length} ventas cargadas desde la base de datos`,
-        life: 3000
+        life: 3000,
       });
-      
     } catch (error) {
       console.error('❌ [MAPEO ERROR] Error al procesar ventas:', error);
       this.cargandoVentas = false;
       this.ventas = [];
       this.ventasFiltradas = [];
       this.ventasPaginadas = [];
-      
+
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error de Mapeo',
         detail: 'Error al procesar los datos del servidor',
-        life: 5000
+        life: 5000,
       });
     }
   }
-  
 
   private cargarEstadisticas(): void {
-    this.ventasService.obtenerResumenDiario()
+    this.ventasService
+      .obtenerResumenDiario()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (resumen) => {
@@ -951,73 +1049,82 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
             clientesUnicos: resumen.clientesUnicos || 0,
             clientesNuevos: resumen.clientesNuevos || 0,
             productosVendidos: resumen.cantidadProductos || 0, // Usar cantidadProductos
-            tiposProductos: resumen.tiposProductos || resumen.cantidadProductos || 0,
+            tiposProductos:
+              resumen.tiposProductos || resumen.cantidadProductos || 0,
             porcentajeCrecimiento: resumen.porcentajeCrecimiento || 0,
-            promedioVenta: resumen.totalVentas && resumen.cantidadVentas 
-              ? resumen.totalVentas / resumen.cantidadVentas 
-              : 0,
-            metaDiaria: 10000
+            promedioVenta:
+              resumen.totalVentas && resumen.cantidadVentas
+                ? resumen.totalVentas / resumen.cantidadVentas
+                : 0,
+            metaDiaria: 10000,
           };
-          
+
           // Actualizar progreso de meta
-          this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
-          
+          this.progresoMeta = Math.min(
+            100,
+            Math.round(
+              (this.estadisticas.totalVentasHoy /
+                this.estadisticas.metaDiaria) *
+                100,
+            ),
+          );
+
           // Generar datos complementarios desde el API
           this.generarDatosComplementariosDesdeAPI();
-          
+
           this.messageService.add({
             severity: 'success',
             summary: '📊 Estadísticas Cargadas',
             detail: `${this.estadisticas.ventasHoy} ventas hoy - S/ ${this.estadisticas.totalVentasHoy}`,
-            life: 4000
+            life: 4000,
           });
         },
         error: (error) => {
           console.error('❌ [ESTADISTICAS ERROR]:', error);
           this.cargarEstadisticasPorDefecto();
-          
+
           this.messageService.add({
             severity: 'warn',
             summary: '⚠️ Estadísticas Offline',
             detail: 'Mostrando estadísticas de ejemplo',
-            life: 3000
+            life: 3000,
           });
-        }
+        },
       });
   }
-  
+
   private generarDatosComplementariosDesdeAPI(): void {
     // Generar distribución de pagos por defecto ya que ResumenDiarioResponse no incluye esta info
     this.distribucionPagos = [
       { nombre: 'Efectivo', cantidad: 25, porcentaje: 55, color: '#10b981' },
       { nombre: 'Tarjeta', cantidad: 15, porcentaje: 33, color: '#3b82f6' },
-      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' }
+      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' },
     ];
-    
+
     // Top productos por defecto ya que ResumenDiarioResponse no incluye esta info
     this.topProductos = [
       { nombre: 'Producto A', cantidad: 25 },
       { nombre: 'Producto B', cantidad: 18 },
-      { nombre: 'Producto C', cantidad: 12 }
+      { nombre: 'Producto C', cantidad: 12 },
     ];
-    
+
     // Actividad reciente
     this.actividadReciente = [
-      { 
-        titulo: 'Resumen actualizado', 
-        descripcion: `${this.estadisticas.ventasHoy} ventas registradas hoy`, 
-        tiempo: 'hace 1 min' 
+      {
+        titulo: 'Resumen actualizado',
+        descripcion: `${this.estadisticas.ventasHoy} ventas registradas hoy`,
+        tiempo: 'hace 1 min',
       },
-      { 
-        titulo: 'Total del día', 
-        descripcion: `S/ ${this.estadisticas.totalVentasHoy.toFixed(2)} en ventas`, 
-        tiempo: 'hace 2 min' 
+      {
+        titulo: 'Total del día',
+        descripcion: `S/ ${this.estadisticas.totalVentasHoy.toFixed(2)} en ventas`,
+        tiempo: 'hace 2 min',
       },
-      { 
-        titulo: 'Sistema activo', 
-        descripcion: 'Conexión con API establecida', 
-        tiempo: 'hace 3 min' 
-      }
+      {
+        titulo: 'Sistema activo',
+        descripcion: 'Conexión con API establecida',
+        tiempo: 'hace 3 min',
+      },
     ];
   }
 
@@ -1031,33 +1138,48 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       tiposProductos: 15,
       porcentajeCrecimiento: 15.2,
       promedioVenta: 204.23,
-      metaDiaria: 10000
+      metaDiaria: 10000,
     };
-    
-    this.progresoMeta = Math.min(100, Math.round((this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100));
-    
+
+    this.progresoMeta = Math.min(
+      100,
+      Math.round(
+        (this.estadisticas.totalVentasHoy / this.estadisticas.metaDiaria) * 100,
+      ),
+    );
+
     this.generarDatosComplementarios();
   }
-  
-  
 
   private generarDatosComplementarios(): void {
     this.distribucionPagos = [
       { nombre: 'Efectivo', cantidad: 25, porcentaje: 55, color: '#10b981' },
       { nombre: 'Tarjeta', cantidad: 15, porcentaje: 33, color: '#3b82f6' },
-      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' }
+      { nombre: 'Digital', cantidad: 5, porcentaje: 12, color: '#8b5cf6' },
     ];
-    
+
     this.topProductos = [
       { nombre: 'Producto A', cantidad: 25 },
       { nombre: 'Producto B', cantidad: 18 },
-      { nombre: 'Producto C', cantidad: 12 }
+      { nombre: 'Producto C', cantidad: 12 },
     ];
-    
+
     this.actividadReciente = [
-      { titulo: 'Venta completada', descripcion: 'V-2024-001234 - S/ 125.50', tiempo: 'hace 2 min' },
-      { titulo: 'Cliente nuevo', descripcion: 'Juan Pérez registrado', tiempo: 'hace 5 min' },
-      { titulo: 'Pago procesado', descripcion: 'Tarjeta terminada en 1234', tiempo: 'hace 8 min' }
+      {
+        titulo: 'Venta completada',
+        descripcion: 'V-2024-001234 - S/ 125.50',
+        tiempo: 'hace 2 min',
+      },
+      {
+        titulo: 'Cliente nuevo',
+        descripcion: 'Juan Pérez registrado',
+        tiempo: 'hace 5 min',
+      },
+      {
+        titulo: 'Pago procesado',
+        descripcion: 'Tarjeta terminada en 1234',
+        tiempo: 'hace 8 min',
+      },
     ];
   }
 
@@ -1071,9 +1193,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           borderColor: '#10b981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
           tension: 0.4,
-          fill: true
-        }
-      ]
+          fill: true,
+        },
+      ],
     };
   }
 
@@ -1086,31 +1208,33 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       metodosSeleccionados: this.metodosSeleccionados,
       rangoMonto: this.rangoMonto,
       fechaDesde: this.filtros.fechaDesde,
-      fechaHasta: this.filtros.fechaHasta
+      fechaHasta: this.filtros.fechaHasta,
     });
-    
-    this.ventasFiltradas = this.ventas.filter(venta => {
+
+    this.ventasFiltradas = this.ventas.filter((venta) => {
       // Filtro por búsqueda rápida
       if (this.busquedaRapida) {
         const busqueda = this.busquedaRapida.toLowerCase();
-        const coincide = 
+        const coincide =
           venta.numeroVenta.toLowerCase().includes(busqueda) ||
-          (venta.cliente?.nombres + ' ' + venta.cliente?.apellidos).toLowerCase().includes(busqueda) ||
+          (venta.cliente?.nombres + ' ' + venta.cliente?.apellidos)
+            .toLowerCase()
+            .includes(busqueda) ||
           venta.cliente?.dni?.includes(busqueda) ||
           venta.cliente?.ruc?.includes(busqueda);
-        
+
         if (!coincide) return false;
       }
 
       // Filtro por fechas - Comparación mejorada
       if (this.filtros.fechaDesde || this.filtros.fechaHasta) {
         const fechaVenta = new Date(venta.fechaVenta);
-        
+
         if (this.filtros.fechaDesde) {
           const fechaDesde = new Date(this.filtros.fechaDesde);
           if (fechaVenta < fechaDesde) return false;
         }
-        
+
         if (this.filtros.fechaHasta) {
           const fechaHasta = new Date(this.filtros.fechaHasta);
           if (fechaVenta > fechaHasta) return false;
@@ -1118,17 +1242,27 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       }
 
       // Filtro por estados
-      if (this.estadosSeleccionados.length > 0 && !this.estadosSeleccionados.includes(venta.estado)) {
+      if (
+        this.estadosSeleccionados.length > 0 &&
+        !this.estadosSeleccionados.includes(venta.estado)
+      ) {
         return false;
       }
 
       // Filtro por métodos de pago
-      if (this.metodosSeleccionados.length > 0 && venta.pago?.metodoPago && !this.metodosSeleccionados.includes(venta.pago.metodoPago)) {
+      if (
+        this.metodosSeleccionados.length > 0 &&
+        venta.pago?.metodoPago &&
+        !this.metodosSeleccionados.includes(venta.pago.metodoPago)
+      ) {
         return false;
       }
 
       // Filtro por rango de monto
-      if (venta.total < this.rangoMonto[0] || venta.total > this.rangoMonto[1]) {
+      if (
+        venta.total < this.rangoMonto[0] ||
+        venta.total > this.rangoMonto[1]
+      ) {
         return false;
       }
 
@@ -1137,24 +1271,24 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     this.ordenarVentas();
     this.actualizarPaginacion();
-    
+
     console.log('✅ [FILTROS] Filtrado completado:', {
       ventasFiltradas: this.ventasFiltradas.length,
       ventasPaginadas: this.ventasPaginadas.length,
       paginaActual: this.paginaActual,
-      totalPaginas: this.totalPaginas
+      totalPaginas: this.totalPaginas,
     });
   }
 
   buscarSugerencias(evento: EventoAutoComplete): void {
     const query = evento.query.toLowerCase();
-    
+
     // TODO: Implementar búsqueda real en el backend
     this.sugerenciasBusqueda = [
       { label: 'V-2024-001234', tipo: 'Venta', icon: 'pi pi-receipt' },
       { label: 'Juan Pérez', tipo: 'Cliente', icon: 'pi pi-user' },
-      { label: 'Producto ABC', tipo: 'Producto', icon: 'pi pi-box' }
-    ].filter(item => item.label.toLowerCase().includes(query));
+      { label: 'Producto ABC', tipo: 'Producto', icon: 'pi pi-box' },
+    ].filter((item) => item.label.toLowerCase().includes(query));
   }
 
   seleccionarSugerencia(evento: AutoCompleteSelectEvent): void {
@@ -1165,15 +1299,18 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   filtrarPorPeriodo(periodo: string): void {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0); // Resetear a inicio del día
-    
+
     const finHoy = new Date();
     finHoy.setHours(23, 59, 59, 999); // Fin del día actual
 
     const ayer = new Date(hoy);
     ayer.setDate(hoy.getDate() - 1);
-    
+
     const finAyer = new Date(ayer);
     finAyer.setHours(23, 59, 59, 999);
+
+    // Actualizar el período seleccionado
+    this.periodoSeleccionado = periodo;
 
     switch (periodo) {
       case 'hoy':
@@ -1199,21 +1336,143 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     this.filtros.fechaDesde = this.rangoFechas[0];
     this.filtros.fechaHasta = this.rangoFechas[1];
-    
+
     console.log('📅 [PERIODO] Filtro aplicado:', {
       periodo,
       fechaDesde: this.filtros.fechaDesde,
       fechaHasta: this.filtros.fechaHasta,
-      totalVentas: this.ventas.length
+      totalVentas: this.ventas.length,
     });
-    
+
     this.filtrarVentas();
+
+    // Actualizar el período seleccionado
+    this.periodoSeleccionado = periodo;
 
     this.messageService.add({
       severity: 'info',
       summary: '📅 Filtro Aplicado',
       detail: `Mostrando ventas de: ${periodo}`,
-      life: 3000
+      life: 3000,
+    });
+  }
+
+  limpiarFiltrosPeriodo(): void {
+    this.periodoSeleccionado = 'todos';
+    // Mantener fechas personalizadas si las hay
+    this.filtrarVentas();
+
+    this.messageService.add({
+      severity: 'info',
+      summary: '🔄 Filtro Removido',
+      detail: 'Mostrando todas las ventas sin filtro de período',
+      life: 3000,
+    });
+  }
+
+  // ✅ MÉTODOS DE EXPORTACIÓN MEJORADOS
+  exportarExcel(): void {
+    this.exportarExcelModerno();
+  }
+
+  exportarCSVPorPeriodo(periodo: string): void {
+    const ventasPeriodo = this.obtenerVentasPorPeriodo(periodo);
+    this.generarCSV(
+      ventasPeriodo,
+      `ventas_${periodo}_${new Date().toISOString().slice(0, 10)}`,
+    );
+  }
+
+  exportarPDFPorPeriodo(periodo: string): void {
+    const ventasPeriodo = this.obtenerVentasPorPeriodo(periodo);
+    this.exportarPDFPersonalizado(
+      ventasPeriodo,
+      `Reporte de Ventas - ${this.obtenerDescripcionPeriodo(periodo).toUpperCase()}`,
+    );
+  }
+
+  private obtenerVentasPorPeriodo(periodo: string): Venta[] {
+    if (periodo === 'todas') {
+      return this.ventasFiltradas;
+    }
+
+    const { fechaInicio, fechaFin } = this.calcularRangoFechas(
+      periodo as 'hoy' | 'ayer' | 'semana' | 'mes',
+    );
+
+    return this.ventasFiltradas.filter((venta) => {
+      const fechaVenta = new Date(venta.fechaVenta);
+      return fechaVenta >= fechaInicio && fechaVenta <= fechaFin;
+    });
+  }
+
+  private obtenerDescripcionPeriodo(periodo: string): string {
+    switch (periodo) {
+      case 'hoy':
+        return 'de hoy';
+      case 'ayer':
+        return 'de ayer';
+      case 'semana':
+        return 'de esta semana';
+      case 'mes':
+        return 'de este mes';
+      case 'todas':
+        return 'completo';
+      default:
+        return 'filtradas';
+    }
+  }
+
+  private generarCSV(ventas: Venta[], nombreArchivo: string): void {
+    const headers = [
+      'Fecha',
+      'Nº Venta',
+      'Cliente',
+      'Total',
+      'Estado',
+      'Método Pago',
+    ];
+    const csvContent = [
+      headers.join(','),
+      ...ventas.map((venta) =>
+        [
+          new Date(venta.fechaVenta).toLocaleDateString(),
+          venta.numeroVenta,
+          `"${venta.cliente?.nombres || 'Sin cliente'} ${venta.cliente?.apellidos || ''}"`,
+          venta.total.toString(),
+          venta.estado,
+          venta.pago?.metodoPago || 'N/A',
+        ].join(','),
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${nombreArchivo}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: '📄 CSV Generado',
+      detail: `Archivo ${nombreArchivo}.csv descargado exitosamente`,
+      life: 4000,
+    });
+  }
+
+  private exportarPDFPersonalizado(ventas: Venta[], titulo: string): void {
+    // Aquí iría la lógica de generación de PDF
+    console.log('🔴 Generando PDF:', titulo, ventas.length, 'ventas');
+
+    this.messageService.add({
+      severity: 'info',
+      summary: '📄 PDF en Desarrollo',
+      detail: 'Funcionalidad de PDF será implementada próximamente',
+      life: 4000,
     });
   }
 
@@ -1226,7 +1485,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.calificacionMinima = 0;
     this.rangoMonto = [0, 10000];
     this.filtrosRapidos = [];
-    
+
     this.inicializarFiltros();
     this.filtrarVentas();
 
@@ -1234,7 +1493,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       severity: 'success',
       summary: '🧹 Filtros Limpiados',
       detail: 'Todos los filtros han sido restablecidos',
-      life: 3000
+      life: 3000,
     });
   }
 
@@ -1248,7 +1507,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       montoMinimo: this.rangoMonto[0],
       montoMaximo: this.rangoMonto[1],
       usuarios: this.usuariosSeleccionados,
-      calificacionMinima: this.calificacionMinima
+      calificacionMinima: this.calificacionMinima,
     };
 
     this.filtrarVentas();
@@ -1257,7 +1516,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       severity: 'success',
       summary: '✅ Filtros Aplicados',
       detail: `${this.ventasFiltradas.length} ventas encontradas`,
-      life: 3000
+      life: 3000,
     });
   }
 
@@ -1269,19 +1528,19 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       // Asegurar que las fechas tengan el rango completo del día
       const fechaInicio = new Date(this.rangoFechas[0]);
       fechaInicio.setHours(0, 0, 0, 0);
-      
+
       const fechaFin = new Date(this.rangoFechas[1]);
       fechaFin.setHours(23, 59, 59, 999);
-      
+
       this.filtros.fechaDesde = fechaInicio;
       this.filtros.fechaHasta = fechaFin;
       this.filtrarVentas();
-      
+
       this.messageService.add({
         severity: 'info',
         summary: '📅 Rango de Fechas',
         detail: 'Filtro de fechas aplicado',
-        life: 2000
+        life: 2000,
       });
     }
   }
@@ -1294,19 +1553,19 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.filtros.fechaDesde = undefined;
     this.filtros.fechaHasta = undefined;
     this.filtrarVentas();
-    
+
     this.messageService.add({
       severity: 'info',
       summary: '🗑️ Fechas Limpiadas',
       detail: 'Filtro de fechas eliminado',
-      life: 2000
+      life: 2000,
     });
   }
 
   // ✅ ORDENAMIENTO
   ordenarVentas(): void {
     console.log('🔄 [ORDENAMIENTO] Ordenando ventas por:', this.ordenarPor);
-    
+
     this.ventasFiltradas.sort((a, b) => {
       let valorA: string | number | Date, valorB: string | number | Date;
 
@@ -1341,21 +1600,21 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   // ✅ PAGINACIÓN
   private actualizarPaginacion(): void {
     console.log('🔄 [PAGINACION] Actualizando paginación...');
-    
+
     this.totalVentas = this.ventasFiltradas.length;
     this.totalPaginas = Math.ceil(this.totalVentas / this.ventasPorPagina);
-    
+
     const inicio = (this.paginaActual - 1) * this.ventasPorPagina;
     const fin = inicio + this.ventasPorPagina;
-    
+
     this.ventasPaginadas = this.ventasFiltradas.slice(inicio, fin);
-    
+
     console.log('✅ [PAGINACION] Paginación actualizada:', {
       totalVentas: this.totalVentas,
       totalPaginas: this.totalPaginas,
       paginaActual: this.paginaActual,
       ventasPorPagina: this.ventasPorPagina,
-      ventasPaginadas: this.ventasPaginadas.length
+      ventasPaginadas: this.ventasPaginadas.length,
     });
   }
 
@@ -1397,13 +1656,13 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
   imprimirComprobante(venta: Venta): void {
     console.log('🖨️ Imprimir comprobante:', venta);
-    
+
     if (!venta?.id) {
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error',
         detail: 'No se puede imprimir: Venta inválida',
-        life: 4000
+        life: 4000,
       });
       return;
     }
@@ -1429,11 +1688,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       },
       reject: () => {
         this.imprimirSoloTicket(venta);
-      }
+      },
     });
   }
-
-
 
   /**
    * Imprime en ticketera Y descarga PDF automáticamente
@@ -1443,44 +1700,46 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       severity: 'info',
       summary: '⏳ Procesando',
       detail: 'Imprimiendo ticket y generando PDF...',
-      life: 3000
+      life: 3000,
     });
 
     // Ejecutar ambas operaciones en paralelo
     // Ticket directo desde venta, PDF requiere comprobante
     Promise.all([
       this.enviarTicketDesdeVenta(venta.id, venta.numeroVenta),
-      this.asegurarComprobante(venta).then(comprobante => 
-        this.descargarPDFComprobante(comprobante.id, venta.numeroVenta)
-      )
-    ]).then((resultados) => {
-      const [ticketResult, pdfResult] = resultados;
-      
-      // Mostrar resultado combinado
-      if (ticketResult && pdfResult) {
+      this.asegurarComprobante(venta).then((comprobante) =>
+        this.descargarPDFComprobante(comprobante.id, venta.numeroVenta),
+      ),
+    ])
+      .then((resultados) => {
+        const [ticketResult, pdfResult] = resultados;
+
+        // Mostrar resultado combinado
+        if (ticketResult && pdfResult) {
+          this.messageService.add({
+            severity: 'success',
+            summary: '✅ Impresión Completa',
+            detail: `Ticket enviado a ticketera y PDF descargado para venta ${venta.numeroVenta}`,
+            life: 5000,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'warn',
+            summary: '⚠️ Parcialmente Completado',
+            detail: `${ticketResult ? 'Ticket enviado' : 'Error en ticket'} - ${pdfResult ? 'PDF descargado' : 'Error en PDF'}`,
+            life: 4000,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('❌ Error en impresión dual:', error);
         this.messageService.add({
-          severity: 'success',
-          summary: '✅ Impresión Completa',
-          detail: `Ticket enviado a ticketera y PDF descargado para venta ${venta.numeroVenta}`,
-          life: 5000
+          severity: 'error',
+          summary: '❌ Error en Impresión',
+          detail: error.message || 'Ocurrió un error durante la impresión',
+          life: 4000,
         });
-      } else {
-        this.messageService.add({
-          severity: 'warn',
-          summary: '⚠️ Parcialmente Completado',
-          detail: `${ticketResult ? 'Ticket enviado' : 'Error en ticket'} - ${pdfResult ? 'PDF descargado' : 'Error en PDF'}`,
-          life: 4000
-        });
-      }
-    }).catch((error) => {
-      console.error('❌ Error en impresión dual:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: '❌ Error en Impresión',
-        detail: error.message || 'Ocurrió un error durante la impresión',
-        life: 4000
       });
-    });
   }
 
   /**
@@ -1491,29 +1750,33 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       severity: 'info',
       summary: '📄 Generando PDF',
       detail: 'Preparando comprobante PDF...',
-      life: 2000
+      life: 2000,
     });
 
-    this.asegurarComprobante(venta).then((comprobante) => {
-      this.descargarPDFComprobante(comprobante.id, venta.numeroVenta).then((exito) => {
-        if (exito) {
-          this.messageService.add({
-            severity: 'success',
-            summary: '📄 PDF Descargado',
-            detail: `Comprobante PDF de venta ${venta.numeroVenta} descargado`,
-            life: 4000
-          });
-        }
+    this.asegurarComprobante(venta)
+      .then((comprobante) => {
+        this.descargarPDFComprobante(comprobante.id, venta.numeroVenta).then(
+          (exito) => {
+            if (exito) {
+              this.messageService.add({
+                severity: 'success',
+                summary: '📄 PDF Descargado',
+                detail: `Comprobante PDF de venta ${venta.numeroVenta} descargado`,
+                life: 4000,
+              });
+            }
+          },
+        );
+      })
+      .catch((error) => {
+        console.error('❌ Error generando PDF:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: '❌ Error',
+          detail: 'No se pudo generar el PDF',
+          life: 4000,
+        });
       });
-    }).catch((error) => {
-      console.error('❌ Error generando PDF:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: '❌ Error',
-        detail: 'No se pudo generar el PDF',
-        life: 4000
-      });
-    });
   }
 
   /**
@@ -1524,34 +1787,36 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       severity: 'info',
       summary: '🎫 Imprimiendo Ticket',
       detail: 'Enviando a ticketera...',
-      life: 2000
+      life: 2000,
     });
 
-    this.enviarTicketDesdeVenta(venta.id, venta.numeroVenta).then((exito) => {
-      if (exito) {
-        this.messageService.add({
-          severity: 'success',
-          summary: '✅ Ticket Enviado',
-          detail: `Ticket de venta ${venta.numeroVenta} enviado a ticketera`,
-          life: 4000
-        });
-      } else {
+    this.enviarTicketDesdeVenta(venta.id, venta.numeroVenta)
+      .then((exito) => {
+        if (exito) {
+          this.messageService.add({
+            severity: 'success',
+            summary: '✅ Ticket Enviado',
+            detail: `Ticket de venta ${venta.numeroVenta} enviado a ticketera`,
+            life: 4000,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: '❌ Error',
+            detail: 'No se pudo imprimir el ticket',
+            life: 4000,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('❌ Error imprimiendo ticket:', error);
         this.messageService.add({
           severity: 'error',
           summary: '❌ Error',
-          detail: 'No se pudo imprimir el ticket',
-          life: 4000
+          detail: 'Error al enviar ticket a ticketera',
+          life: 4000,
         });
-      }
-    }).catch((error) => {
-      console.error('❌ Error imprimiendo ticket:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: '❌ Error',
-        detail: 'Error al enviar ticket a ticketera',
-        life: 4000
       });
-    });
   }
 
   /**
@@ -1562,24 +1827,29 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       // Primero intentar obtener comprobante existente
       this.comprobantesService.obtenerComprobantePorVenta(venta.id).subscribe({
         next: (comprobante: any) => {
-          console.log(`✅ Usando comprobante existente ID: ${comprobante.id} para venta ${venta.numeroVenta}`);
+          console.log(
+            `✅ Usando comprobante existente ID: ${comprobante.id} para venta ${venta.numeroVenta}`,
+          );
           resolve(comprobante);
         },
         error: (error: any) => {
           // Verificar si es un error 404 (comprobante no encontrado)
-          const esError404 = error.status === 404 || 
-                            error?.message?.includes('no encontrado') || 
-                            error?.message?.includes('404');
-          
+          const esError404 =
+            error.status === 404 ||
+            error?.message?.includes('no encontrado') ||
+            error?.message?.includes('404');
+
           if (esError404) {
-            console.log(`� Generando comprobante automáticamente para venta ${venta.numeroVenta}...`);
+            console.log(
+              `� Generando comprobante automáticamente para venta ${venta.numeroVenta}...`,
+            );
             // Generar comprobante nuevo
             this.generarComprobanteCompleto(venta).then(resolve).catch(reject);
           } else {
             console.error('❌ Error inesperado obteniendo comprobante:', error);
             reject(error);
           }
-        }
+        },
       });
     });
   }
@@ -1590,33 +1860,41 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private async generarComprobanteCompleto(venta: Venta): Promise<any> {
     return new Promise((resolve, reject) => {
       // Determinar tipo de comprobante según cliente
-      const tipoDocumento = venta.cliente?.ruc && venta.cliente.ruc.length > 8 ? 'FACTURA' : 'BOLETA';
+      const tipoDocumento =
+        venta.cliente?.ruc && venta.cliente.ruc.length > 8
+          ? 'FACTURA'
+          : 'BOLETA';
       const serie = tipoDocumento === 'FACTURA' ? 'F001' : 'B001';
 
       const comprobanteRequest = {
         ventaId: venta.id,
         tipoDocumento: tipoDocumento as any,
         serie: serie,
-        observaciones: `Comprobante generado para impresión - ${venta.numeroVenta}`
+        observaciones: `Comprobante generado para impresión - ${venta.numeroVenta}`,
       };
 
-      this.comprobantesService.generarComprobante(comprobanteRequest).subscribe({
-        next: (comprobante: any) => {
-          console.log(`✅ ${tipoDocumento} generado:`, comprobante.id);
-          resolve(comprobante);
-        },
-        error: (error: any) => {
-          console.error('❌ Error generando comprobante:', error);
-          reject(error);
-        }
-      });
+      this.comprobantesService
+        .generarComprobante(comprobanteRequest)
+        .subscribe({
+          next: (comprobante: any) => {
+            console.log(`✅ ${tipoDocumento} generado:`, comprobante.id);
+            resolve(comprobante);
+          },
+          error: (error: any) => {
+            console.error('❌ Error generando comprobante:', error);
+            reject(error);
+          },
+        });
     });
   }
 
   /**
    * Envía ticket directo desde venta (sin necesidad de comprobante)
    */
-  private async enviarTicketDesdeVenta(ventaId: number, numeroVenta: string): Promise<boolean> {
+  private async enviarTicketDesdeVenta(
+    ventaId: number,
+    numeroVenta: string,
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       this.comprobantesService.imprimirTicketDesdeVenta(ventaId).subscribe({
         next: (response: any) => {
@@ -1631,7 +1909,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         error: (error: any) => {
           console.error('❌ Error enviando ticket desde venta:', error);
           resolve(false);
-        }
+        },
       });
     });
   }
@@ -1640,7 +1918,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
    * Envía comprobante a la ticketera (retorna Promise)
    * @deprecated Usar enviarTicketDesdeVenta para imprimir directo desde venta
    */
-  private async enviarATicketera(comprobanteId: number, numeroVenta: string): Promise<boolean> {
+  private async enviarATicketera(
+    comprobanteId: number,
+    numeroVenta: string,
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       this.comprobantesService.imprimirEnTicketera(comprobanteId).subscribe({
         next: (response: any) => {
@@ -1655,7 +1936,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         error: (error: any) => {
           console.error('❌ Error enviando a ticketera:', error);
           resolve(false);
-        }
+        },
       });
     });
   }
@@ -1663,7 +1944,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   /**
    * Descarga PDF del comprobante (retorna Promise)
    */
-  private async descargarPDFComprobante(comprobanteId: number, numeroVenta: string): Promise<boolean> {
+  private async descargarPDFComprobante(
+    comprobanteId: number,
+    numeroVenta: string,
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       this.comprobantesService.descargarPDF(comprobanteId).subscribe({
         next: (pdfBlob: any) => {
@@ -1676,14 +1960,14 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           enlace.click();
           document.body.removeChild(enlace);
           window.URL.revokeObjectURL(url);
-          
+
           console.log('✅ PDF descargado exitosamente');
           resolve(true);
         },
         error: (error: any) => {
           console.error('❌ Error descargando PDF:', error);
           resolve(false);
-        }
+        },
       });
     });
   }
@@ -1697,21 +1981,21 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       rejectLabel: 'Cancelar',
       accept: () => {
         this.anularVenta(venta);
-      }
+      },
     });
   }
 
   anularVenta(venta: Venta): void {
     console.log('❌ Anular venta:', venta);
-    
+
     // TODO: Implementar lógica de anulación
     venta.estado = 'ANULADA';
-    
+
     this.messageService.add({
       severity: 'warn',
       summary: '❌ Venta Anulada',
       detail: `La venta ${venta.numeroVenta} ha sido anulada`,
-      life: 5000
+      life: 5000,
     });
   }
 
@@ -1721,7 +2005,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   }
 
   // ✅ EXPORTACIÓN MODERNA A EXCEL
-  
+
   /**
    * Exportar ventas por período de tiempo específico
    * @param periodo - Período a exportar: 'hoy', 'ayer', 'semana', 'mes'
@@ -1729,12 +2013,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   exportarPorPeriodo(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): void {
     try {
       console.log(`📅 Exportando ventas del período: ${periodo}`);
-      
+
       // Calcular rango de fechas según el período
       const { fechaInicio, fechaFin } = this.calcularRangoFechas(periodo);
-      
+
       // Filtrar ventas por el período
-      const ventasPeriodo = this.ventasFiltradas.filter(venta => {
+      const ventasPeriodo = this.ventasFiltradas.filter((venta) => {
         const fechaVenta = new Date(venta.fechaVenta);
         return fechaVenta >= fechaInicio && fechaVenta <= fechaFin;
       });
@@ -1744,7 +2028,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
           severity: 'warn',
           summary: '⚠️ Sin Datos',
           detail: `No hay ventas ${this.obtenerDescripcionPeriodo(periodo)}`,
-          life: 4000
+          life: 4000,
         });
         return;
       }
@@ -1753,29 +2037,29 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         severity: 'info',
         summary: '📊 Exportando',
         detail: `Generando reporte ${this.obtenerDescripcionPeriodo(periodo)}...`,
-        life: 2000
+        life: 2000,
       });
 
       // Preparar datos para exportar
-      const datosExportar = this.prepararDatosExportacionPorPeriodo(ventasPeriodo);
-      
+      const datosExportar =
+        this.prepararDatosExportacionPorPeriodo(ventasPeriodo);
+
       // Crear archivo Excel con nombre personalizado
       this.crearArchivoExcelPeriodo(datosExportar, periodo);
-      
+
       this.messageService.add({
         severity: 'success',
         summary: '✅ Exportación Exitosa',
         detail: `${ventasPeriodo.length} ventas ${this.obtenerDescripcionPeriodo(periodo)} exportadas`,
-        life: 4000
+        life: 4000,
       });
-      
     } catch (error) {
       console.error('❌ Error al exportar por período:', error);
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error',
         detail: 'No se pudo exportar el archivo. Intenta nuevamente.',
-        life: 4000
+        life: 4000,
       });
     }
   }
@@ -1783,71 +2067,67 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   /**
    * Calcular rango de fechas según el período
    */
-  private calcularRangoFechas(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): { fechaInicio: Date, fechaFin: Date } {
+  private calcularRangoFechas(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): {
+    fechaInicio: Date;
+    fechaFin: Date;
+  } {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    
+
     const fechaFin = new Date();
     fechaFin.setHours(23, 59, 59, 999);
-    
+
     let fechaInicio = new Date();
-    
+
     switch (periodo) {
       case 'hoy':
         fechaInicio = new Date(hoy);
         break;
-        
+
       case 'ayer':
         fechaInicio = new Date(hoy);
         fechaInicio.setDate(fechaInicio.getDate() - 1);
         fechaFin.setDate(fechaFin.getDate() - 1);
         fechaFin.setHours(23, 59, 59, 999);
         break;
-        
+
       case 'semana':
         fechaInicio = new Date(hoy);
         const diaSemana = fechaInicio.getDay();
         const diferencia = diaSemana === 0 ? 6 : diaSemana - 1; // Lunes = 0
         fechaInicio.setDate(fechaInicio.getDate() - diferencia);
         break;
-        
+
       case 'mes':
         fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
         break;
     }
-    
+
     return { fechaInicio, fechaFin };
   }
 
   /**
    * Obtener descripción del período para mensajes
    */
-  private obtenerDescripcionPeriodo(periodo: 'hoy' | 'ayer' | 'semana' | 'mes'): string {
-    const descripciones = {
-      'hoy': 'de hoy',
-      'ayer': 'de ayer',
-      'semana': 'de la semana',
-      'mes': 'del mes'
-    };
-    return descripciones[periodo];
-  }
 
   /**
    * Preparar datos de ventas por período para exportación
    */
   private prepararDatosExportacionPorPeriodo(ventas: Venta[]): any[] {
-    return ventas.map(venta => ({
+    return ventas.map((venta) => ({
       'Número Venta': venta.numeroVenta || '',
-      'Fecha': this.formatearFechaExcel(venta.fechaVenta),
-      'Hora': this.formatearHoraExcel(venta.fechaVenta),
-      'Cliente': `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() || 'Cliente General',
+      Fecha: this.formatearFechaExcel(venta.fechaVenta),
+      Hora: this.formatearHoraExcel(venta.fechaVenta),
+      Cliente:
+        `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() ||
+        'Cliente General',
       'DNI/RUC': venta.cliente?.dni || venta.cliente?.ruc || 'S/N',
-      'Comprobante': `${venta.tipoComprobante} ${venta.serieComprobante}`,
+      Comprobante: `${venta.tipoComprobante} ${venta.serieComprobante}`,
       'Cantidad Productos': venta.detalles?.length || 0,
       'Método Pago': venta.pago?.metodoPago || 'EFECTIVO',
-      'Subtotal': venta.subtotal || 0,
-      'Total': venta.total || 0,
-      'Estado': venta.estado || 'PENDIENTE'
+      Subtotal: venta.subtotal || 0,
+      Total: venta.total || 0,
+      Estado: venta.estado || 'PENDIENTE',
     }));
   }
 
@@ -1862,16 +2142,16 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     // Crear hoja de cálculo
     const ws = this.crearHojaCalculo(datos);
-    
+
     // Crear libro de trabajo
     const wb = {
-      Sheets: { 'Ventas': ws },
-      SheetNames: ['Ventas']
+      Sheets: { Ventas: ws },
+      SheetNames: ['Ventas'],
     };
-    
+
     // Generar buffer
     const buffer = this.generarBufferExcel(wb);
-    
+
     // Descargar con nombre personalizado
     const nombreArchivo = this.generarNombreArchivoPeriodo(periodo);
     this.descargarExcel(buffer, nombreArchivo);
@@ -1887,9 +2167,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     const dia = String(fecha.getDate()).padStart(2, '0');
     const hora = String(fecha.getHours()).padStart(2, '0');
     const minutos = String(fecha.getMinutes()).padStart(2, '0');
-    
+
     const periodoMayus = periodo.charAt(0).toUpperCase() + periodo.slice(1);
-    
+
     return `Ventas_${periodoMayus}_${año}${mes}${dia}_${hora}${minutos}.csv`;
   }
 
@@ -1899,34 +2179,33 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   exportarExcelModerno(): void {
     try {
       console.log('� Iniciando exportación a Excel...');
-      
+
       this.messageService.add({
         severity: 'info',
         summary: '📊 Exportando',
         detail: 'Generando archivo Excel...',
-        life: 2000
+        life: 2000,
       });
 
       // Preparar datos para exportar
       const datosExportar = this.prepararDatosExportacion();
-      
+
       // Crear archivo Excel
       this.crearArchivoExcel(datosExportar);
-      
+
       this.messageService.add({
         severity: 'success',
         summary: '✅ Exportación Exitosa',
         detail: `${datosExportar.length} ventas exportadas correctamente`,
-        life: 4000
+        life: 4000,
       });
-      
     } catch (error) {
       console.error('❌ Error al exportar:', error);
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error',
         detail: 'No se pudo exportar el archivo. Intenta nuevamente.',
-        life: 4000
+        life: 4000,
       });
     }
   }
@@ -1935,18 +2214,20 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
    * Preparar datos para exportación
    */
   private prepararDatosExportacion(): any[] {
-    return this.ventasFiltradas.map(venta => ({
+    return this.ventasFiltradas.map((venta) => ({
       'Número Venta': venta.numeroVenta || '',
-      'Fecha': this.formatearFechaExcel(venta.fechaVenta),
-      'Hora': this.formatearHoraExcel(venta.fechaVenta),
-      'Cliente': `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() || 'Cliente General',
+      Fecha: this.formatearFechaExcel(venta.fechaVenta),
+      Hora: this.formatearHoraExcel(venta.fechaVenta),
+      Cliente:
+        `${venta.cliente?.nombres || ''} ${venta.cliente?.apellidos || ''}`.trim() ||
+        'Cliente General',
       'DNI/RUC': venta.cliente?.dni || venta.cliente?.ruc || 'S/N',
-      'Comprobante': `${venta.tipoComprobante} ${venta.serieComprobante}`,
+      Comprobante: `${venta.tipoComprobante} ${venta.serieComprobante}`,
       'Cantidad Productos': venta.detalles?.length || 0,
       'Método Pago': venta.pago?.metodoPago || 'EFECTIVO',
-      'Subtotal': venta.subtotal || 0,
-      'Total': venta.total || 0,
-      'Estado': venta.estado || 'PENDIENTE'
+      Subtotal: venta.subtotal || 0,
+      Total: venta.total || 0,
+      Estado: venta.estado || 'PENDIENTE',
     }));
   }
 
@@ -1956,11 +2237,11 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private crearArchivoExcel(datos: any[]): void {
     // Crear un libro de trabajo
     const ws: any = this.crearHojaCalculo(datos);
-    const wb: any = { Sheets: { 'Ventas': ws }, SheetNames: ['Ventas'] };
-    
+    const wb: any = { Sheets: { Ventas: ws }, SheetNames: ['Ventas'] };
+
     // Generar archivo Excel
     const excelBuffer: any = this.generarBufferExcel(wb);
-    
+
     // Descargar archivo
     this.descargarExcel(excelBuffer, this.generarNombreArchivo());
   }
@@ -1971,22 +2252,22 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private crearHojaCalculo(datos: any[]): any {
     // Aquí usaremos una implementación simple
     // En producción, usarías una librería como xlsx
-    
+
     const hoja: any = {};
     const headers = Object.keys(datos[0] || {});
-    
+
     // Agregar encabezados
     headers.forEach((header, colIndex) => {
       const cellRef = this.obtenerReferenciaCelda(0, colIndex);
       hoja[cellRef] = { v: header, t: 's' };
     });
-    
+
     // Agregar datos
     datos.forEach((fila, rowIndex) => {
       headers.forEach((header, colIndex) => {
         const cellRef = this.obtenerReferenciaCelda(rowIndex + 1, colIndex);
         const value = fila[header];
-        
+
         // Determinar tipo de dato
         if (typeof value === 'number') {
           hoja[cellRef] = { v: value, t: 'n' };
@@ -1995,10 +2276,11 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         }
       });
     });
-    
+
     // Definir rango
-    hoja['!ref'] = `A1:${this.obtenerReferenciaCelda(datos.length, headers.length - 1)}`;
-    
+    hoja['!ref'] =
+      `A1:${this.obtenerReferenciaCelda(datos.length, headers.length - 1)}`;
+
     return hoja;
   }
 
@@ -2009,15 +2291,15 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     // Conversión simplificada a CSV para compatibilidad sin librería externa
     const hojaVentas = workbook.Sheets['Ventas'];
     const datos: string[][] = [];
-    
+
     // Extraer rango
     const rango = hojaVentas['!ref'];
     if (!rango) return '';
-    
+
     const [inicio, fin] = rango.split(':');
     const [, filaInicio] = this.parsearReferenciaCelda(inicio);
     const [, filaFin] = this.parsearReferenciaCelda(fin);
-    
+
     // Obtener headers
     const headers: string[] = [];
     let colIndex = 0;
@@ -2028,10 +2310,10 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       headers.push(cell.v);
       colIndex++;
     }
-    
+
     // Construir CSV
     let csv = headers.join(',') + '\n';
-    
+
     for (let row = filaInicio + 1; row <= filaFin; row++) {
       const fila: string[] = [];
       for (let col = 0; col < headers.length; col++) {
@@ -2042,7 +2324,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       }
       csv += fila.join(',') + '\n';
     }
-    
+
     return csv;
   }
 
@@ -2052,7 +2334,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private descargarExcel(buffer: any, nombreArchivo: string): void {
     const blob = new Blob([buffer], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
@@ -2082,12 +2364,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let col = '';
     let num = columna;
-    
+
     while (num >= 0) {
       col = letras[num % 26] + col;
       num = Math.floor(num / 26) - 1;
     }
-    
+
     return col + (fila + 1);
   }
 
@@ -2097,15 +2379,15 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   private parsearReferenciaCelda(ref: string): [number, number] {
     const match = ref.match(/^([A-Z]+)(\d+)$/);
     if (!match) return [0, 0];
-    
+
     const colStr = match[1];
     const rowStr = match[2];
-    
+
     let col = 0;
     for (let i = 0; i < colStr.length; i++) {
       col = col * 26 + colStr.charCodeAt(i) - 65 + 1;
     }
-    
+
     return [col - 1, parseInt(rowStr) - 1];
   }
 
@@ -2131,42 +2413,41 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   exportarPDF(): void {
     try {
       console.log('📄 Iniciando exportación a PDF...');
-      
+
       this.messageService.add({
         severity: 'info',
         summary: '📄 Generando PDF',
         detail: 'Creando documento profesional...',
-        life: 2000
+        life: 2000,
       });
 
       const datos = this.prepararDatosExportacion();
-      
+
       if (datos.length === 0) {
         this.messageService.add({
           severity: 'warn',
           summary: '⚠️ Sin Datos',
           detail: 'No hay ventas para exportar',
-          life: 3000
+          life: 3000,
         });
         return;
       }
 
       this.generarPDFProfesional(datos);
-      
+
       this.messageService.add({
         severity: 'success',
         summary: '✅ PDF Generado',
         detail: `Reporte de ${datos.length} ventas generado exitosamente`,
-        life: 4000
+        life: 4000,
       });
-      
     } catch (error) {
       console.error('❌ Error al generar PDF:', error);
       this.messageService.add({
         severity: 'error',
         summary: '❌ Error',
         detail: 'No se pudo generar el PDF. Intenta nuevamente.',
-        life: 4000
+        life: 4000,
       });
     }
   }
@@ -2179,7 +2460,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
-      format: 'a4'
+      format: 'a4',
     });
 
     // Colores del tema (moderno y profesional) - definidos como tuplas
@@ -2194,13 +2475,17 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     // ============================================
     // ENCABEZADO PRINCIPAL
     // ============================================
-    
+
     // Fondo del encabezado con degradado simulado
     doc.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
     doc.rect(0, 0, pageWidth, 35, 'F');
-    
+
     // Línea decorativa inferior del encabezado
-    doc.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
+    doc.setFillColor(
+      colorSecundario[0],
+      colorSecundario[1],
+      colorSecundario[2],
+    );
     doc.rect(0, 35, pageWidth, 2, 'F');
 
     // Logo/Icono (simulado con texto)
@@ -2224,53 +2509,92 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
 
     // Información de fecha y hora (derecha)
     const fechaActual = new Date();
-    const fechaFormateada = fechaActual.toLocaleDateString('es-PE', { 
-      day: '2-digit', 
-      month: 'long', 
-      year: 'numeric' 
+    const fechaFormateada = fechaActual.toLocaleDateString('es-PE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     });
-    const horaFormateada = fechaActual.toLocaleTimeString('es-PE', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    const horaFormateada = fechaActual.toLocaleTimeString('es-PE', {
+      hour: '2-digit',
+      minute: '2-digit',
     });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha: ${fechaFormateada}`, pageWidth - 15, 15, { align: 'right' });
+    doc.text(`Fecha: ${fechaFormateada}`, pageWidth - 15, 15, {
+      align: 'right',
+    });
     doc.text(`Hora: ${horaFormateada}`, pageWidth - 15, 21, { align: 'right' });
-    doc.text(`Total Ventas: ${datos.length}`, pageWidth - 15, 27, { align: 'right' });
+    doc.text(`Total Ventas: ${datos.length}`, pageWidth - 15, 27, {
+      align: 'right',
+    });
 
     // ============================================
     // INFORMACIÓN RESUMIDA (Tarjetas de métricas)
     // ============================================
-    
+
     const yInicio = 42;
-    const totalGeneral = datos.reduce((sum, venta) => sum + (parseFloat(venta['Total']) || 0), 0);
+    const totalGeneral = datos.reduce(
+      (sum, venta) => sum + (parseFloat(venta['Total']) || 0),
+      0,
+    );
     const promedioVenta = totalGeneral / datos.length;
-    const ventasCompletadas = datos.filter(v => v['Estado'] === 'COMPLETADA').length;
+    const ventasCompletadas = datos.filter(
+      (v) => v['Estado'] === 'COMPLETADA',
+    ).length;
 
     // Tarjeta 1: Total General
-    this.dibujarTarjetaMetrica(doc, 15, yInicio, 'TOTAL GENERAL', `S/. ${totalGeneral.toFixed(2)}`, colorPrimario);
-    
+    this.dibujarTarjetaMetrica(
+      doc,
+      15,
+      yInicio,
+      'TOTAL GENERAL',
+      `S/. ${totalGeneral.toFixed(2)}`,
+      colorPrimario,
+    );
+
     // Tarjeta 2: Promedio por Venta
-    this.dibujarTarjetaMetrica(doc, 90, yInicio, 'PROMEDIO VENTA', `S/. ${promedioVenta.toFixed(2)}`, [46, 204, 113]);
-    
+    this.dibujarTarjetaMetrica(
+      doc,
+      90,
+      yInicio,
+      'PROMEDIO VENTA',
+      `S/. ${promedioVenta.toFixed(2)}`,
+      [46, 204, 113],
+    );
+
     // Tarjeta 3: Ventas Completadas
-    this.dibujarTarjetaMetrica(doc, 165, yInicio, 'COMPLETADAS', `${ventasCompletadas}/${datos.length}`, [52, 152, 219]);
-    
+    this.dibujarTarjetaMetrica(
+      doc,
+      165,
+      yInicio,
+      'COMPLETADAS',
+      `${ventasCompletadas}/${datos.length}`,
+      [52, 152, 219],
+    );
+
     // Tarjeta 4: Período
     const periodoTexto = this.obtenerTextoPeriodo();
-    this.dibujarTarjetaMetrica(doc, 240, yInicio, 'PERÍODO', periodoTexto, [155, 89, 182]);
+    this.dibujarTarjetaMetrica(
+      doc,
+      240,
+      yInicio,
+      'PERÍODO',
+      periodoTexto,
+      [155, 89, 182],
+    );
 
     // ============================================
     // TABLA DE DATOS
     // ============================================
-    
+
     const yTabla = yInicio + 30;
 
     // Preparar datos para la tabla
     const headers = Object.keys(datos[0]);
-    const rows = datos.map(venta => Object.values(venta).map(v => String(v)));
+    const rows = datos.map((venta) =>
+      Object.values(venta).map((v) => String(v)),
+    );
 
     // Configurar autoTable con diseño moderno
     autoTable(doc, {
@@ -2284,7 +2608,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         font: 'helvetica',
         textColor: colorTexto,
         lineColor: [200, 200, 200],
-        lineWidth: 0.1
+        lineWidth: 0.1,
       },
       headStyles: {
         fillColor: colorSecundario,
@@ -2293,23 +2617,23 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         fontStyle: 'bold',
         halign: 'center',
         valign: 'middle',
-        cellPadding: 4
+        cellPadding: 4,
       },
       alternateRowStyles: {
-        fillColor: colorFondo
+        fillColor: colorFondo,
       },
       columnStyles: {
-        0: { cellWidth: 25, halign: 'left' },   // Número Venta
+        0: { cellWidth: 25, halign: 'left' }, // Número Venta
         1: { cellWidth: 22, halign: 'center' }, // Fecha
         2: { cellWidth: 18, halign: 'center' }, // Hora
-        3: { cellWidth: 35, halign: 'left' },   // Cliente
+        3: { cellWidth: 35, halign: 'left' }, // Cliente
         4: { cellWidth: 22, halign: 'center' }, // DNI/RUC
-        5: { cellWidth: 30, halign: 'left' },   // Comprobante
+        5: { cellWidth: 30, halign: 'left' }, // Comprobante
         6: { cellWidth: 18, halign: 'center' }, // Cantidad
         7: { cellWidth: 25, halign: 'center' }, // Método Pago
-        8: { cellWidth: 20, halign: 'right' },  // Subtotal
-        9: { cellWidth: 20, halign: 'right' },  // Total
-        10: { cellWidth: 22, halign: 'center' } // Estado
+        8: { cellWidth: 20, halign: 'right' }, // Subtotal
+        9: { cellWidth: 20, halign: 'right' }, // Total
+        10: { cellWidth: 22, halign: 'center' }, // Estado
       },
       didParseCell: (data) => {
         // Colorear columna de estado
@@ -2326,9 +2650,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
             data.cell.styles.fontStyle = 'bold';
           }
         }
-        
+
         // Formatear montos
-        if ((data.column.index === 8 || data.column.index === 9) && data.section === 'body') {
+        if (
+          (data.column.index === 8 || data.column.index === 9) &&
+          data.section === 'body'
+        ) {
           const valor = parseFloat(data.cell.raw as string);
           if (!isNaN(valor)) {
             data.cell.text = [`S/. ${valor.toFixed(2)}`];
@@ -2340,7 +2667,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
       didDrawPage: (data) => {
         // Pie de página en cada página
         this.dibujarPiePagina(doc, data.pageNumber, colorTexto, colorPrimario);
-      }
+      },
     });
 
     // Guardar el PDF
@@ -2352,12 +2679,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
    * Dibujar tarjeta de métrica (diseño moderno)
    */
   private dibujarTarjetaMetrica(
-    doc: jsPDF, 
-    x: number, 
-    y: number, 
-    titulo: string, 
-    valor: string, 
-    color: number[]
+    doc: jsPDF,
+    x: number,
+    y: number,
+    titulo: string,
+    valor: string,
+    color: number[],
   ): void {
     const ancho = 65;
     const alto = 20;
@@ -2383,19 +2710,24 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text(titulo, x + ancho/2, y + 9, { align: 'center' });
+    doc.text(titulo, x + ancho / 2, y + 9, { align: 'center' });
 
     // Valor
     doc.setTextColor(color[0], color[1], color[2]);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(valor, x + ancho/2, y + 16, { align: 'center' });
+    doc.text(valor, x + ancho / 2, y + 16, { align: 'center' });
   }
 
   /**
    * Dibujar pie de página
    */
-  private dibujarPiePagina(doc: jsPDF, numeroPagina: number, colorTexto: number[], colorPrimario: number[]): void {
+  private dibujarPiePagina(
+    doc: jsPDF,
+    numeroPagina: number,
+    colorTexto: number[],
+    colorPrimario: number[],
+  ): void {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -2408,15 +2740,22 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     doc.setTextColor(colorTexto[0], colorTexto[1], colorTexto[2]);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'italic');
-    
+
     // Izquierda: Sistema
     doc.text('Sistema de Gestión de Inventario © 2025', 10, pageHeight - 10);
-    
+
     // Centro: Advertencia
-    doc.text('Documento generado automáticamente', pageWidth/2, pageHeight - 10, { align: 'center' });
-    
+    doc.text(
+      'Documento generado automáticamente',
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: 'center' },
+    );
+
     // Derecha: Número de página
-    doc.text(`Página ${numeroPagina}`, pageWidth - 10, pageHeight - 10, { align: 'right' });
+    doc.text(`Página ${numeroPagina}`, pageWidth - 10, pageHeight - 10, {
+      align: 'right',
+    });
   }
 
   /**
@@ -2424,7 +2763,9 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
    */
   private obtenerTextoPeriodo(): string {
     const hoy = new Date();
-    const mes = hoy.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
+    const mes = hoy
+      .toLocaleDateString('es-PE', { month: 'short' })
+      .toUpperCase();
     const año = hoy.getFullYear();
     return `${mes} ${año}`;
   }
@@ -2439,7 +2780,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     const dia = String(fecha.getDate()).padStart(2, '0');
     const hora = String(fecha.getHours()).padStart(2, '0');
     const minutos = String(fecha.getMinutes()).padStart(2, '0');
-    
+
     return `Reporte_Ventas_${año}${mes}${dia}_${hora}${minutos}.pdf`;
   }
 
@@ -2450,32 +2791,35 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     try {
       const datos = this.prepararDatosExportacion();
       const headers = Object.keys(datos[0] || {});
-      
+
       // Crear CSV
       let csv = headers.join(',') + '\n';
-      datos.forEach(fila => {
-        const valores = headers.map(header => `"${fila[header]}"`);
+      datos.forEach((fila) => {
+        const valores = headers.map((header) => `"${fila[header]}"`);
         csv += valores.join(',') + '\n';
       });
-      
+
       // Descargar
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      
+
       link.setAttribute('href', url);
-      link.setAttribute('download', this.generarNombreArchivo().replace('.xlsx', '.csv'));
+      link.setAttribute(
+        'download',
+        this.generarNombreArchivo().replace('.xlsx', '.csv'),
+      );
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
+
       this.messageService.add({
         severity: 'success',
         summary: '✅ CSV Exportado',
         detail: 'Archivo CSV descargado correctamente',
-        life: 3000
+        life: 3000,
       });
     } catch (error) {
       console.error('Error al exportar CSV:', error);
@@ -2483,7 +2827,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
         severity: 'error',
         summary: '❌ Error',
         detail: 'No se pudo exportar el archivo CSV',
-        life: 3000
+        life: 3000,
       });
     }
   }
@@ -2491,7 +2835,7 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   // Métodos heredados (compatibilidad)
   exportarVentas(formato: string): void {
     console.log('📥 Exportar ventas en formato:', formato);
-    
+
     if (formato === 'excel' || formato === 'excel-detallado') {
       this.exportarExcelModerno();
     } else if (formato === 'csv') {
@@ -2505,6 +2849,29 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
     this.exportarExcelModerno();
   }
 
+  exportarData(): void {
+    this.exportarPrincipal();
+  }
+
+  exportarReporteActual(): void {
+    this.exportarPrincipal();
+  }
+
+  hayFiltrosActivos(): boolean {
+    return !!(
+      this.busquedaRapida?.trim() ||
+      this.estadosSeleccionados?.length ||
+      this.metodosSeleccionados?.length ||
+      this.usuariosSeleccionados?.length ||
+      this.metodoPagoSeleccionado ||
+      this.calificacionMinima > 0 ||
+      (this.rangoMonto &&
+        (this.rangoMonto[0] > 0 || this.rangoMonto[1] < 10000)) ||
+      this.filtrosRapidos?.length ||
+      this.periodoSeleccionado !== 'todos'
+    );
+  }
+
   private descargarArchivo(formato: string): void {
     console.log('💾 Descargando archivo:', formato);
     this.exportarExcelModerno();
@@ -2513,12 +2880,12 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   // ✅ VISTA Y INTERFAZ
   cambiarVista(vista: TipoVista): void {
     this.tipoVista = vista;
-    
+
     this.messageService.add({
       severity: 'info',
       summary: '👁️ Vista Cambiada',
       detail: `Mostrando en vista de ${vista === 'list' ? 'lista' : 'tarjetas'}`,
-      life: 2000
+      life: 2000,
     });
   }
 
@@ -2530,64 +2897,69 @@ export class HistorialVentasComponent implements OnInit, OnDestroy {
   formatearMoneda(monto: number): string {
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',
-      currency: 'PEN'
+      currency: 'PEN',
     }).format(monto);
   }
 
   private mapearEstado(estado: string): EstadoVenta {
     console.log('🔄 [MAPEO] Mapeando estado:', estado);
-    
+
     const estados: Record<string, EstadoVenta> = {
-      'PENDIENTE': 'PENDIENTE',
-      'COMPLETADA': 'COMPLETADA',
-      'ANULADA': 'ANULADA',
-      'PROCESANDO': 'PROCESANDO'
+      PENDIENTE: 'PENDIENTE',
+      COMPLETADA: 'COMPLETADA',
+      ANULADA: 'ANULADA',
+      PROCESANDO: 'PROCESANDO',
     };
-    
+
     const estadoMapeado = estados[estado] || 'PENDIENTE';
     console.log('✅ [MAPEO] Estado mapeado:', estado, '→', estadoMapeado);
-    
+
     return estadoMapeado;
   }
 
   private determinarMetodoPago(): MetodoPago {
     console.log('🔄 [PAGO] Determinando método de pago...');
-    
+
     // Por defecto asumir efectivo, puedes ajustar según tu lógica de negocio
     const metodoPago = 'EFECTIVO';
     console.log('✅ [PAGO] Método de pago determinado:', metodoPago);
-    
+
     return metodoPago;
   }
 
   getEstadoClass(estado: EstadoVenta): string {
     const clases = {
-      'PENDIENTE': 'bg-yellow-100 text-yellow-800',
-      'COMPLETADA': 'bg-green-100 text-green-800',
-      'ANULADA': 'bg-red-100 text-red-800',
-      'PROCESANDO': 'bg-blue-100 text-blue-800'
+      PENDIENTE: 'bg-yellow-100 text-yellow-800',
+      COMPLETADA: 'bg-green-100 text-green-800',
+      ANULADA: 'bg-red-100 text-red-800',
+      PROCESANDO: 'bg-blue-100 text-blue-800',
     };
     return clases[estado] || 'bg-gray-100 text-gray-800';
   }
 
-getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' | 'secondary' {
-  const severities: Record<EstadoVenta, 'warn' | 'success' | 'danger' | 'info' | 'secondary'> = {
-    'PENDIENTE': 'warn',
-    'COMPLETADA': 'success',
-    'ANULADA': 'danger',
-    'PROCESANDO': 'info'
-  };
-  return severities[estado] || 'secondary';
-}
+  getEstadoSeverity(
+    estado: EstadoVenta,
+  ): 'warn' | 'success' | 'danger' | 'info' | 'secondary' {
+    const severities: Record<
+      EstadoVenta,
+      'warn' | 'success' | 'danger' | 'info' | 'secondary'
+    > = {
+      PENDIENTE: 'warn',
+      COMPLETADA: 'success',
+      ANULADA: 'danger',
+      PROCESANDO: 'info',
+    };
+    return severities[estado] || 'secondary';
+  }
 
   getMetodoPagoIcon(metodo: MetodoPago): string {
     const iconos = {
-      'EFECTIVO': 'pi pi-money-bill',
-      'TARJETA_DEBITO': 'pi pi-credit-card',
-      'TARJETA_CREDITO': 'pi pi-credit-card',
-      'YAPE': 'pi pi-mobile',
-      'PLIN': 'pi pi-mobile',
-      'TRANSFERENCIA': 'pi pi-send'
+      EFECTIVO: 'pi pi-money-bill',
+      TARJETA_DEBITO: 'pi pi-credit-card',
+      TARJETA_CREDITO: 'pi pi-credit-card',
+      YAPE: 'pi pi-mobile',
+      PLIN: 'pi pi-mobile',
+      TRANSFERENCIA: 'pi pi-send',
     };
     return iconos[metodo] || 'pi pi-question';
   }
@@ -2603,12 +2975,12 @@ getEstadoSeverity(estado: EstadoVenta): 'warn' | 'success' | 'danger' | 'info' |
   actualizarDatos(): void {
     console.log('🔄 Actualizando datos...');
     this.cargarDatosIniciales();
-    
+
     this.messageService.add({
       severity: 'success',
       summary: '🔄 Datos Actualizados',
       detail: 'La información ha sido actualizada exitosamente',
-      life: 3000
+      life: 3000,
     });
   }
 

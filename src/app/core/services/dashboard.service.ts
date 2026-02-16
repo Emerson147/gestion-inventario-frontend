@@ -1,5 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, forkJoin, map, catchError, of, BehaviorSubject, interval } from 'rxjs';
+import {
+  Observable,
+  forkJoin,
+  map,
+  catchError,
+  of,
+  BehaviorSubject,
+  interval,
+} from 'rxjs';
 import { ProductoService } from './producto.service';
 import { AlmacenService } from './almacen.service';
 import { UsuarioService } from './usuario.service';
@@ -17,29 +25,29 @@ export interface DashboardMetrics {
   totalVentas: number;
   totalAlmacenes: number;
   usuariosActivos: number;
-  
+
   // Métricas financieras
   valorTotalInventario: number;
   ventasTotalesHoy: number;
   ventasTotalesMes: number;
   ticketPromedio: number;
-  
+
   // Métricas de inventario
   productosStockCritico: number;
   productosAgotados: number;
   entradasHoy: number;
   salidasHoy: number;
-  
+
   // Métricas de rendimiento
   eficienciaInventario: number;
   rotacionProductos: number;
   crecimientoDiario: number;
   crecimientoMensual: number;
-  
+
   // Análisis de usuarios
   usuariosNuevos: number;
   usuariosInactivos: number;
-  
+
   // Alertas y estados
   alertasCriticas: number;
   alertasAdvertencia: number;
@@ -76,7 +84,6 @@ export interface KPIDashboard {
  */
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  
   // Inyección de servicios
   private productoService = inject(ProductoService);
   private almacenService = inject(AlmacenService);
@@ -106,43 +113,52 @@ export class DashboardService {
 
     return forkJoin({
       productos: this.productoService.getProducts(0, 1000).pipe(
-        map(response => response.contenido || []),
-        catchError(() => of([]))
+        map((response) => response.contenido || []),
+        catchError(() => of([])),
       ),
-      ventasHoy: this.ventasService.obtenerVentasPorFecha(hoy).pipe(catchError(() => of([]))),
-      ventasMes: this.ventasService.obtenerVentasEntreFechas(this.getFechaInicioMes(), hoy).pipe(catchError(() => of([]))),
+      ventasHoy: this.ventasService
+        .obtenerVentasPorFecha(hoy)
+        .pipe(catchError(() => of([]))),
+      ventasMes: this.ventasService
+        .obtenerVentasEntreFechas(this.getFechaInicioMes(), hoy)
+        .pipe(catchError(() => of([]))),
       almacenes: this.almacenService.getAlmacenes().pipe(
-        map(response => Array.isArray(response) ? response : response.contenido || []),
-        catchError(() => of([]))
+        map((response) =>
+          Array.isArray(response) ? response : response.contenido || [],
+        ),
+        catchError(() => of([])),
       ),
       usuarios: this.usuarioService.getUsers(0, 1000).pipe(
-        map(response => response.contenido || []),
-        catchError(() => of([]))
+        map((response) => response.contenido || []),
+        catchError(() => of([])),
       ),
       inventarios: this.inventarioService.obtenerInventarios(0, 1000).pipe(
-        map(response => response.contenido || []),
-        catchError(() => of([]))
+        map((response) => response.contenido || []),
+        catchError(() => of([])),
       ),
       movimientos: this.movimientosService.getMovimientos(0, 1000).pipe(
-        map(response => response.contenido || []),
-        catchError(error => {
-          console.warn('⚠️ No se pudieron cargar movimientos (opcional):', error.message);
+        map((response) => response.contenido || []),
+        catchError((error) => {
+          console.warn(
+            '⚠️ No se pudieron cargar movimientos (opcional):',
+            error.message,
+          );
           return of([]);
-        })
-      )
+        }),
+      ),
     }).pipe(
-      map(data => {
+      map((data) => {
         const metrics = this.calcularMetricas(data);
         this.metricsSubject.next(metrics);
         this.loadingSubject.next(false);
         return metrics;
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('❌ Error al obtener métricas del dashboard:', error);
         this.errorSubject.next('Error al cargar las métricas del dashboard');
         this.loadingSubject.next(false);
         return of(this.getMetricasVacias());
-      })
+      }),
     );
   }
 
@@ -157,7 +173,7 @@ export class DashboardService {
       almacenes,
       usuarios,
       inventarios,
-      movimientos
+      movimientos,
     } = data;
 
     // Extraer marcas únicas como categorías
@@ -179,7 +195,9 @@ export class DashboardService {
     // Métricas de inventario
     const productosStockCritico = this.contarStockCritico(inventarios);
     const productosAgotados = this.contarProductosAgotados(inventarios);
-    const { entradas, salidas } = this.calcularMovimientosHoy(movimientos.content || []);
+    const { entradas, salidas } = this.calcularMovimientosHoy(
+      movimientos.content || [],
+    );
 
     // Métricas de rendimiento
     const eficienciaInventario = this.calcularEficienciaInventario(inventarios);
@@ -192,7 +210,8 @@ export class DashboardService {
     const usuariosInactivos = usuarios.length - usuariosActivos;
 
     // Alertas
-    const alertasCriticas = productosAgotados + this.contarAlertasCriticas(inventarios);
+    const alertasCriticas =
+      productosAgotados + this.contarAlertasCriticas(inventarios);
     const alertasAdvertencia = productosStockCritico;
 
     return {
@@ -216,7 +235,7 @@ export class DashboardService {
       usuariosNuevos,
       usuariosInactivos,
       alertasCriticas,
-      alertasAdvertencia
+      alertasAdvertencia,
     };
   }
 
@@ -227,7 +246,7 @@ export class DashboardService {
     return inventarios.reduce((sum, inv) => {
       const precio = inv.producto?.precioVenta || 0;
       const cantidad = inv.cantidad || 0;
-      return sum + (precio * cantidad);
+      return sum + precio * cantidad;
     }, 0);
   }
 
@@ -242,7 +261,7 @@ export class DashboardService {
    * ⚠️ Cuenta productos en stock crítico
    */
   private contarStockCritico(inventarios: any[]): number {
-    return inventarios.filter(inv => {
+    return inventarios.filter((inv) => {
       const stockMinimo = inv.stockMinimo || 10;
       const cantidad = inv.cantidad || 0;
       return cantidad > 0 && cantidad <= stockMinimo;
@@ -253,13 +272,16 @@ export class DashboardService {
    * 🚫 Cuenta productos agotados
    */
   private contarProductosAgotados(inventarios: any[]): number {
-    return inventarios.filter(inv => (inv.cantidad || 0) === 0).length;
+    return inventarios.filter((inv) => (inv.cantidad || 0) === 0).length;
   }
 
   /**
    * 📦 Calcula movimientos del día (entradas y salidas)
    */
-  private calcularMovimientosHoy(movimientos: any[]): { entradas: number; salidas: number } {
+  private calcularMovimientosHoy(movimientos: any[]): {
+    entradas: number;
+    salidas: number;
+  } {
     // Si no hay movimientos disponibles, retornar 0
     if (!movimientos || movimientos.length === 0) {
       return { entradas: 0, salidas: 0 };
@@ -268,7 +290,7 @@ export class DashboardService {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    const movimientosHoy = movimientos.filter(m => {
+    const movimientosHoy = movimientos.filter((m) => {
       if (!m.fecha) return false;
       const fechaMov = new Date(m.fecha);
       fechaMov.setHours(0, 0, 0, 0);
@@ -276,11 +298,11 @@ export class DashboardService {
     });
 
     const entradas = movimientosHoy
-      .filter(m => m.tipoMovimiento === 'ENTRADA')
+      .filter((m) => m.tipoMovimiento === 'ENTRADA')
       .reduce((sum, m) => sum + (m.cantidad || 0), 0);
 
     const salidas = movimientosHoy
-      .filter(m => m.tipoMovimiento === 'SALIDA')
+      .filter((m) => m.tipoMovimiento === 'SALIDA')
       .reduce((sum, m) => sum + (m.cantidad || 0), 0);
 
     return { entradas, salidas };
@@ -291,8 +313,10 @@ export class DashboardService {
    */
   private calcularEficienciaInventario(inventarios: any[]): number {
     if (inventarios.length === 0) return 0;
-    
-    const disponibles = inventarios.filter(inv => (inv.cantidad || 0) > 0).length;
+
+    const disponibles = inventarios.filter(
+      (inv) => (inv.cantidad || 0) > 0,
+    ).length;
     return (disponibles / inventarios.length) * 100;
   }
 
@@ -312,15 +336,18 @@ export class DashboardService {
   /**
    * 📈 Calcula el crecimiento (simulado con datos reales)
    */
-  private calcularCrecimiento(ventas: any[], tipo: 'diario' | 'mensual'): number {
+  private calcularCrecimiento(
+    ventas: any[],
+    tipo: 'diario' | 'mensual',
+  ): number {
     // Por ahora retornamos un valor calculado basado en ventas
     // En el futuro se puede comparar con período anterior
     if (ventas.length === 0) return 0;
-    
+
     const totalActual = this.calcularVentasTotales(ventas);
     const meta = tipo === 'diario' ? 5000 : 150000; // Metas ejemplo
-    
-    return ((totalActual / meta) - 1) * 100;
+
+    return (totalActual / meta - 1) * 100;
   }
 
   /**
@@ -330,7 +357,7 @@ export class DashboardService {
     const fechaLimite = new Date();
     fechaLimite.setDate(fechaLimite.getDate() - 30);
 
-    return usuarios.filter(u => {
+    return usuarios.filter((u) => {
       if (!u.fechaCreacion) return false;
       return new Date(u.fechaCreacion) >= fechaLimite;
     }).length;
@@ -341,7 +368,7 @@ export class DashboardService {
    */
   private contarAlertasCriticas(inventarios: any[]): number {
     // Productos con stock muy bajo (< 3 unidades)
-    return inventarios.filter(inv => {
+    return inventarios.filter((inv) => {
       const cantidad = inv.cantidad || 0;
       return cantidad > 0 && cantidad < 3;
     }).length;
@@ -361,7 +388,7 @@ export class DashboardService {
         porcentajeCambio: metrics.crecimientoDiario,
         icon: 'pi-shopping-cart',
         color: '#10b981',
-        descripcion: `${metrics.totalVentas} transacciones realizadas`
+        descripcion: `${metrics.totalVentas} transacciones realizadas`,
       },
       {
         id: 'valor-inventario',
@@ -372,7 +399,7 @@ export class DashboardService {
         porcentajeCambio: 0,
         icon: 'pi-database',
         color: '#3b82f6',
-        descripcion: `${metrics.totalProductos} productos en stock`
+        descripcion: `${metrics.totalProductos} productos en stock`,
       },
       {
         id: 'eficiencia',
@@ -383,7 +410,7 @@ export class DashboardService {
         porcentajeCambio: metrics.eficienciaInventario - 80,
         icon: 'pi-chart-line',
         color: '#8b5cf6',
-        descripcion: 'Productos disponibles vs total'
+        descripcion: 'Productos disponibles vs total',
       },
       {
         id: 'alertas',
@@ -394,7 +421,7 @@ export class DashboardService {
         porcentajeCambio: -metrics.alertasCriticas,
         icon: 'pi-exclamation-triangle',
         color: '#ef4444',
-        descripcion: `${metrics.productosAgotados} productos agotados`
+        descripcion: `${metrics.productosAgotados} productos agotados`,
       },
       {
         id: 'ticket-promedio',
@@ -405,7 +432,7 @@ export class DashboardService {
         porcentajeCambio: 5.2,
         icon: 'pi-wallet',
         color: '#f59e0b',
-        descripcion: 'Valor promedio por venta'
+        descripcion: 'Valor promedio por venta',
       },
       {
         id: 'usuarios-activos',
@@ -416,8 +443,8 @@ export class DashboardService {
         porcentajeCambio: metrics.usuariosNuevos,
         icon: 'pi-users',
         color: '#06b6d4',
-        descripcion: `${metrics.usuariosNuevos} nuevos este mes`
-      }
+        descripcion: `${metrics.usuariosNuevos} nuevos este mes`,
+      },
     ];
   }
 
@@ -459,8 +486,150 @@ export class DashboardService {
       usuariosNuevos: 0,
       usuariosInactivos: 0,
       alertasCriticas: 0,
-      alertasAdvertencia: 0
+      alertasAdvertencia: 0,
     };
+  }
+
+  /**
+   * 🔄 Obtiene ventas recientes (últimas 5-10)
+   */
+  getVentasRecientes(): Observable<any[]> {
+    return this.ventasService.obtenerVentasRecientes(10).pipe(
+      map((response) => response || []),
+      catchError(() => of([])),
+    );
+  }
+
+  /**
+   * 🏆 Obtiene productos más vendidos (Calculado desde historial de ventas)
+   * Nota: Idealmente esto debería ser un endpoint de backend.
+   */
+  getProductosMasVendidos(): Observable<any[]> {
+    // Obtenemos ventas del último mes para calcular best sellers
+    const hoy = this.getFechaActual();
+    const inicioImes = this.getFechaInicioMes();
+
+    return this.ventasService.obtenerVentasEntreFechas(inicioImes, hoy).pipe(
+      map((ventas) => {
+        const productoMap = new Map<
+          string,
+          {
+            nombre: string;
+            cantidad: number;
+            total: number;
+            categoria: string;
+          }
+        >();
+
+        ventas.forEach((venta) => {
+          venta.detalles?.forEach((detalle: any) => {
+            const id = detalle.producto?.id || detalle.producto?.nombre;
+            if (!id) return;
+
+            // Intentamos obtener categoría o marca como fallback
+            const categoria =
+              detalle.producto?.categoria?.nombre ||
+              detalle.producto?.marca ||
+              'General';
+
+            const current = productoMap.get(id) || {
+              nombre: detalle.producto?.nombre || 'Producto Desconocido',
+              cantidad: 0,
+              total: 0,
+              categoria: categoria,
+            };
+
+            current.cantidad += detalle.cantidad;
+            current.total += detalle.subtotal;
+            productoMap.set(id, current);
+          });
+        });
+
+        // Convertir a array y ordenar por cantidad
+        return Array.from(productoMap.values())
+          .sort((a, b) => b.cantidad - a.cantidad)
+          .slice(0, 6); // Top 6
+      }),
+      catchError(() => of([])),
+    );
+  }
+
+  /**
+   * 📈 Obtiene datos para el gráfico de flujo de ingresos (Por categorías o tiempo)
+   */
+  getFlujoIngresos(): Observable<any> {
+    const hoy = this.getFechaActual();
+    const inicioAno = new Date(new Date().getFullYear(), 0, 1)
+      .toISOString()
+      .split('T')[0];
+
+    return this.ventasService.obtenerVentasEntreFechas(inicioAno, hoy).pipe(
+      map((ventas) => {
+        // Agrupar por trimestres (Q1, Q2, Q3, Q4) y categorías
+        const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+        const categoriasMap = new Map<string, number[]>();
+
+        ventas.forEach((venta) => {
+          // Usar fechaCreacion o fecha como fallback
+          const fechaStr = venta.fechaCreacion || (venta as any).fecha;
+          if (!fechaStr) return;
+
+          const fecha = new Date(fechaStr);
+          const mes = fecha.getMonth();
+          const qIndex = Math.floor(mes / 3); // 0=Q1, 1=Q2, etc.
+
+          venta.detalles?.forEach((detalle: any) => {
+            // Intentamos obtener categoría o marca como fallback
+            const cat =
+              detalle.producto?.categoria?.nombre ||
+              detalle.producto?.marca ||
+              'General';
+
+            if (!categoriasMap.has(cat)) {
+              categoriasMap.set(cat, [0, 0, 0, 0]);
+            }
+
+            const currentData = categoriasMap.get(cat)!;
+            currentData[qIndex] += detalle.subtotal;
+          });
+        });
+
+        // Formatear para chart.js
+        const datasets = Array.from(categoriasMap.entries()).map(
+          ([label, data], index) => {
+            // Colores Zen predefinidos rotativos
+            const colors = [
+              'rgba(99, 102, 241, 0.8)', // Indigo
+              'rgba(16, 185, 129, 0.8)', // Emerald
+              'rgba(245, 158, 11, 0.8)', // Amber
+              'rgba(236, 72, 153, 0.8)', // Pink
+              'rgba(6, 182, 212, 0.8)', // Cyan
+            ];
+            const color = colors[index % colors.length];
+
+            return {
+              type: 'bar',
+              label,
+              backgroundColor: color,
+              data,
+              barThickness: 32,
+              borderRadius: {
+                topLeft: 8,
+                topRight: 8,
+                bottomLeft: 0,
+                bottomRight: 0,
+              },
+            };
+          },
+        );
+
+        return {
+          labels: quarters,
+          datasets,
+        };
+      }),
+      catchError(() => of({ labels: [], datasets: [] })),
+    );
   }
 
   /**

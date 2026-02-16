@@ -1,0 +1,18 @@
+// 2. TABLA ZEN CLEAN
+:host ::ng-deep .zen-table-clean {
+  .p-datatable-header {
+    @apply bg-transparent border-0 p-0;
+  }
+
+  .p-datatable-thead > tr > th {
+    @apply bg-transparent text-surface-400 border-0 text-[10px] font-bold uppercase tracking-widest py-3;
+  }
+
+  .p-datatable-tbody > tr {
+    @apply bg-transparent transition-colors duration-200;
+
+    > td {
+      @apply border-0 py-3;
+    }
+  }
+}

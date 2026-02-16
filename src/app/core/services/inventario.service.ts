@@ -4,8 +4,18 @@ import { environment } from '../../../environments/environment';
 import { Observable, of, throwError, forkJoin } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { catchError, tap, shareReplay, map, switchMap } from 'rxjs/operators';
-import { Inventario, MovimientoInventario, PagedResponse, InventarioRequest, EstadoInventario } from '../models/inventario.model';
-import { InventarioStats, SugerenciaReposicion, InventarioValidationResult } from '../models/inventario-response.model';
+import {
+  Inventario,
+  MovimientoInventario,
+  PagedResponse,
+  InventarioRequest,
+  EstadoInventario,
+} from '../models/inventario.model';
+import {
+  InventarioStats,
+  SugerenciaReposicion,
+  InventarioValidationResult,
+} from '../models/inventario-response.model';
 
 export interface FiltrosInventario {
   producto?: string;
@@ -22,15 +32,17 @@ export interface FiltrosInventario {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InventarioService {
-
   private apiUrl = `${environment.apiUrl}api/inventarios`;
   private http = inject(HttpClient);
 
   // Cache simple en memoria
-  private inventariosCache = new Map<string, { data: any; timestamp: number }>();
+  private inventariosCache = new Map<
+    string,
+    { data: any; timestamp: number }
+  >();
 
   /**
    * Obtener inventarios con paginación y filtros
@@ -40,11 +52,17 @@ export class InventarioService {
     size = 10,
     sortBy = 'id',
     sortDir = 'asc',
-    filtros?: FiltrosInventario
+    filtros?: FiltrosInventario,
   ): Observable<PagedResponse<Inventario>> {
     // NO usar caché cuando se solicitan muchos registros (para exportación)
     const useCache = size <= 200;
-    const cacheKey = this.generateCacheKey('inventarios', { page, size, sortBy, sortDir, filtros });
+    const cacheKey = this.generateCacheKey('inventarios', {
+      page,
+      size,
+      sortBy,
+      sortDir,
+      filtros,
+    });
 
     // Verificar cache solo si el tamaño es pequeño
     if (useCache) {
@@ -66,19 +84,21 @@ export class InventarioService {
       params = this.applyFilters(params, filtros);
     }
 
-    return this.http.get<PagedResponse<Inventario>>(this.apiUrl, { params }).pipe(
-      tap(response => {
-        // Guardar en cache solo si el tamaño es pequeño
-        if (useCache) {
-          this.setCache(cacheKey, response, 2);
-        }
-      }),
-      catchError(error => {
-        console.error('Error al cargar inventarios:', error);
-        return throwError(() => error);
-      }),
-      shareReplay(1)
-    );
+    return this.http
+      .get<PagedResponse<Inventario>>(this.apiUrl, { params })
+      .pipe(
+        tap((response) => {
+          // Guardar en cache solo si el tamaño es pequeño
+          if (useCache) {
+            this.setCache(cacheKey, response, 2);
+          }
+        }),
+        catchError((error) => {
+          console.error('Error al cargar inventarios:', error);
+          return throwError(() => error);
+        }),
+        shareReplay(1),
+      );
   }
 
   /**
@@ -86,10 +106,10 @@ export class InventarioService {
    */
   obtenerInventarioPorId(id: number): Observable<Inventario> {
     return this.http.get<Inventario>(`${this.apiUrl}/${id}`).pipe(
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al obtener inventario:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -97,12 +117,14 @@ export class InventarioService {
    * Obtener inventario por producto
    */
   obtenerInventarioPorProducto(productoId: number): Observable<Inventario> {
-    return this.http.get<Inventario>(`${this.apiUrl}/producto/${productoId}`).pipe(
-      catchError(error => {
-        console.error('Error al obtener inventario por producto:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .get<Inventario>(`${this.apiUrl}/producto/${productoId}`)
+      .pipe(
+        catchError((error) => {
+          console.error('Error al obtener inventario por producto:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
@@ -111,40 +133,46 @@ export class InventarioService {
    */
   getAllInventarios(): Observable<Inventario[]> {
     const pageSize = 100; // Tamaño de página que el backend acepta
-    
+
     // Primera llamada para saber el total de elementos
     return this.obtenerInventarios(0, pageSize, 'id', 'asc').pipe(
-      switchMap(firstResponse => {
+      switchMap((firstResponse) => {
         const totalElementos = firstResponse.totalElementos || 0;
         const totalPaginas = Math.ceil(totalElementos / pageSize);
-        
-        console.log(`🔍 Total de inventarios en BD: ${totalElementos} (${totalPaginas} páginas)`);
-        
+
+        console.log(
+          `🔍 Total de inventarios en BD: ${totalElementos} (${totalPaginas} páginas)`,
+        );
+
         if (totalPaginas <= 1) {
           // Si solo hay una página, retornar los datos de la primera llamada
           return of(firstResponse.contenido || []);
         }
-        
+
         // Crear array de llamadas para las páginas restantes
-        const requests: Observable<PagedResponse<Inventario>>[] = [of(firstResponse)];
-        
+        const requests: Observable<PagedResponse<Inventario>>[] = [
+          of(firstResponse),
+        ];
+
         for (let page = 1; page < totalPaginas; page++) {
           requests.push(this.obtenerInventarios(page, pageSize, 'id', 'asc'));
         }
-        
+
         // Ejecutar todas las llamadas en paralelo y combinar resultados
         return forkJoin(requests).pipe(
-          map(responses => {
-            const allInventarios = responses.flatMap(r => r.contenido || []);
-            console.log(`✅ Cargados ${allInventarios.length} de ${totalElementos} inventarios`);
+          map((responses) => {
+            const allInventarios = responses.flatMap((r) => r.contenido || []);
+            console.log(
+              `✅ Cargados ${allInventarios.length} de ${totalElementos} inventarios`,
+            );
             return allInventarios;
-          })
+          }),
         );
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al obtener todos los inventarios:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -153,29 +181,32 @@ export class InventarioService {
    */
   crearInventario(inventario: InventarioRequest): Observable<Inventario> {
     return this.http.post<Inventario>(`${this.apiUrl}/crear`, inventario).pipe(
-      tap(response => {
+      tap((response) => {
         // Limpiar cache relacionado
         this.clearInventariosCache();
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al crear inventario:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
   /**
    * Actualizar inventario
    */
-  actualizarInventario(id: number, inventario: InventarioRequest): Observable<Inventario> {
+  actualizarInventario(
+    id: number,
+    inventario: InventarioRequest,
+  ): Observable<Inventario> {
     return this.http.put<Inventario>(`${this.apiUrl}/${id}`, inventario).pipe(
-      tap(response => {
+      tap((response) => {
         this.clearInventariosCache();
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al actualizar inventario:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -187,10 +218,10 @@ export class InventarioService {
       tap(() => {
         this.clearInventariosCache();
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al eliminar inventario:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -200,21 +231,22 @@ export class InventarioService {
   obtenerMovimientos(
     inventarioId: number,
     page = 0,
-    size = 10
+    size = 10,
   ): Observable<PagedResponse<MovimientoInventario>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<PagedResponse<MovimientoInventario>>(
-      `${this.apiUrl}/${inventarioId}/movimientos`,
-      { params }
-    ).pipe(
-      catchError(error => {
-        console.error('Error al obtener movimientos:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .get<
+        PagedResponse<MovimientoInventario>
+      >(`${this.apiUrl}/${inventarioId}/movimientos`, { params })
+      .pipe(
+        catchError((error) => {
+          console.error('Error al obtener movimientos:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
@@ -227,21 +259,27 @@ export class InventarioService {
     descripcion: string;
     referencia?: string;
   }): Observable<MovimientoInventario> {
-    return this.http.post<MovimientoInventario>(`${this.apiUrl}/movimiento`, movimiento).pipe(
-      tap(() => {
-        this.clearInventariosCache();
-      }),
-      catchError(error => {
-        console.error('Error al registrar movimiento:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .post<MovimientoInventario>(`${this.apiUrl}/movimiento`, movimiento)
+      .pipe(
+        tap(() => {
+          this.clearInventariosCache();
+        }),
+        catchError((error) => {
+          console.error('Error al registrar movimiento:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
    * Búsqueda avanzada de inventarios con filtros múltiples
    */
-  buscarInventarios(filtros: FiltrosInventario, page = 0, size = 20): Observable<PagedResponse<Inventario>> {
+  buscarInventarios(
+    filtros: FiltrosInventario,
+    page = 0,
+    size = 20,
+  ): Observable<PagedResponse<Inventario>> {
     const cacheKey = this.generateCacheKey('buscar', { filtros, page, size });
 
     const cached = this.getFromCache<PagedResponse<Inventario>>(cacheKey);
@@ -255,15 +293,17 @@ export class InventarioService {
 
     params = this.applyFilters(params, filtros);
 
-    return this.http.get<PagedResponse<Inventario>>(`${this.apiUrl}/buscar`, { params }).pipe(
-      tap(response => {
-        this.setCache(cacheKey, response, 1); // Cache por 1 minuto
-      }),
-      catchError(error => {
-        console.error('Error en la búsqueda de inventarios:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .get<PagedResponse<Inventario>>(`${this.apiUrl}/buscar`, { params })
+      .pipe(
+        tap((response) => {
+          this.setCache(cacheKey, response, 1); // Cache por 1 minuto
+        }),
+        catchError((error) => {
+          console.error('Error en la búsqueda de inventarios:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
@@ -277,13 +317,13 @@ export class InventarioService {
     }
 
     return this.http.get<InventarioStats>(`${this.apiUrl}/estadisticas`).pipe(
-      tap(response => {
+      tap((response) => {
         this.setCache(cacheKey, response, 5); // Cache por 5 minutos
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al obtener estadísticas:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -293,12 +333,14 @@ export class InventarioService {
   obtenerStockCritico(limite = 10): Observable<Inventario[]> {
     const params = new HttpParams().set('limite', limite.toString());
 
-    return this.http.get<Inventario[]>(`${this.apiUrl}/stock-critico`, { params }).pipe(
-      catchError(error => {
-        console.error('Error al obtener stock crítico:', error);
-        return of([]);
-      })
-    );
+    return this.http
+      .get<Inventario[]>(`${this.apiUrl}/stock-critico`, { params })
+      .pipe(
+        catchError((error) => {
+          console.error('Error al obtener stock crítico:', error);
+          return of([]);
+        }),
+      );
   }
 
   /**
@@ -306,10 +348,10 @@ export class InventarioService {
    */
   obtenerProductosAgotados(): Observable<Inventario[]> {
     return this.http.get<Inventario[]>(`${this.apiUrl}/agotados`).pipe(
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al obtener productos agotados:', error);
         return of([]);
-      })
+      }),
     );
   }
 
@@ -317,62 +359,121 @@ export class InventarioService {
    * Obtener sugerencias de reposición
    */
   obtenerSugerenciasReposicion(): Observable<SugerenciaReposicion[]> {
-    return this.http.get<SugerenciaReposicion[]>(`${this.apiUrl}/sugerencias-reposicion`).pipe(
-      map(response => Array.isArray(response) ? response : []),
-      catchError(error => {
-        console.error('Error al obtener sugerencias:', error);
-        return of([]);
-      })
-    );
+    return this.http
+      .get<SugerenciaReposicion[]>(`${this.apiUrl}/sugerencias-reposicion`)
+      .pipe(
+        map((response) => (Array.isArray(response) ? response : [])),
+        catchError((error) => {
+          console.error('Error al obtener sugerencias:', error);
+          return of([]);
+        }),
+      );
   }
 
   /**
    * Validar inventario
    */
-  validarInventario(inventarioId: number): Observable<InventarioValidationResult> {
-    return this.http.post<InventarioValidationResult>(`${this.apiUrl}/${inventarioId}/validar`, {});
+  validarInventario(
+    inventarioId: number,
+  ): Observable<InventarioValidationResult> {
+    return this.http.post<InventarioValidationResult>(
+      `${this.apiUrl}/${inventarioId}/validar`,
+      {},
+    );
   }
 
   /**
    * Actualizar múltiples inventarios
    */
-  actualizarMultiples(inventarios: { id: number; cantidad: number }[]): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizar-multiples`, { inventarios }).pipe(
-      tap(() => {
-        this.clearInventariosCache();
+  actualizarMultiples(
+    inventarios: { id: number; cantidad: number }[],
+  ): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/actualizar-multiples`, { inventarios })
+      .pipe(
+        tap(() => {
+          this.clearInventariosCache();
+        }),
+        catchError((error) => {
+          console.error('Error en actualización masiva:', error);
+          return throwError(() => error);
+        }),
+      );
+  }
+
+  /**
+   * Obtener valorización total del inventario (Precio Compra * Stock)
+   * Calcula en el frontend sumando todos los inventarios
+   */
+  obtenerValorizacionInventario(): Observable<{
+    totalCosto: number;
+    totalVenta: number;
+    items: number;
+  }> {
+    return this.getAllInventarios().pipe(
+      map((inventarios) => {
+        return inventarios.reduce(
+          (acc, inv) => {
+            const costo = inv.producto?.precioCompra || 0;
+            const precio = inv.producto?.precioVenta || 0;
+            const cantidad = inv.cantidad || 0;
+
+            return {
+              totalCosto: acc.totalCosto + costo * cantidad,
+              totalVenta: acc.totalVenta + precio * cantidad,
+              items: acc.items + cantidad,
+            };
+          },
+          { totalCosto: 0, totalVenta: 0, items: 0 },
+        );
       }),
-      catchError(error => {
-        console.error('Error en actualización masiva:', error);
-        return throwError(() => error);
-      })
+    );
+  }
+
+  /**
+   * Obtener lista de productos con stock bajo (real)
+   */
+  obtenerStockBajoReal(limite: number = 5): Observable<Inventario[]> {
+    return this.getAllInventarios().pipe(
+      map((inventarios) =>
+        inventarios.filter((inv) => (inv.cantidad || 0) <= limite),
+      ),
     );
   }
 
   /**
    * Exportar inventarios
    */
-  exportarInventarios(filtros?: FiltrosInventario, formato: 'excel' | 'csv' | 'pdf' = 'excel'): Observable<Blob> {
+  exportarInventarios(
+    filtros?: FiltrosInventario,
+    formato: 'excel' | 'csv' | 'pdf' = 'excel',
+  ): Observable<Blob> {
     let params = new HttpParams().set('formato', formato);
 
     if (filtros) {
       params = this.applyFilters(params, filtros);
     }
 
-    return this.http.get(`${this.apiUrl}/exportar`, {
-      params,
-      responseType: 'blob'
-    }).pipe(
-      catchError(error => {
-        console.error('Error al exportar inventarios:', error);
-        return throwError(() => error);
+    return this.http
+      .get(`${this.apiUrl}/exportar`, {
+        params,
+        responseType: 'blob',
       })
-    );
+      .pipe(
+        catchError((error) => {
+          console.error('Error al exportar inventarios:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
    * Aplicar filtros a los parámetros HTTP
    */
-  private applyFilters(params: HttpParams, filtros: FiltrosInventario): HttpParams {
+  private applyFilters(
+    params: HttpParams,
+    filtros: FiltrosInventario,
+  ): HttpParams {
     if (filtros.producto) {
       params = params.set('producto', filtros.producto);
     }
@@ -438,7 +539,7 @@ export class InventarioService {
   private setCache<T>(key: string, data: T, ttlMinutes: number = 2): void {
     this.inventariosCache.set(key, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 

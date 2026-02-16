@@ -1,4 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -16,23 +23,21 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ChipsModule } from 'primeng/chips';
-import { PanelModule } from 'primeng/panel'; // 👈 Nuevo import
-import { TooltipModule } from 'primeng/tooltip'; // 👈 Nuevo import
-import { AvatarModule } from 'primeng/avatar'; // 👈 Nuevo import
-import { CardModule } from 'primeng/card'; // 👈 Nuevo import
-import { ChipModule } from 'primeng/chip'; // 👈 Nuevo import
-import { BadgeModule } from 'primeng/badge'; // 👈 Nuevo import
-import { TabViewModule } from 'primeng/tabview'; // 👈 Nuevo import
-import { SelectButtonModule } from 'primeng/selectbutton'; // 👈 Nuevo import
-import { OverlayPanelModule } from 'primeng/overlaypanel'; // 👈 Nuevo import
-import { SliderModule } from 'primeng/slider'; // 👈 Nuevo import
+import { ChipModule } from 'primeng/chip';
+import { BadgeModule } from 'primeng/badge';
+import { TabViewModule } from 'primeng/tabview';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { Color, Talla } from '../../../core/models/colors.model';
 import { Producto } from '../../../core/models/product.model';
 import { ColorService } from '../../../core/services/colores.service';
 import { ProductoService } from '../../../core/services/producto.service';
-import { PermissionService, PermissionType } from '../../../core/services/permission.service';
+import {
+  PermissionService,
+  PermissionType,
+} from '../../../core/services/permission.service';
 import { finalize, forkJoin, catchError, of, firstValueFrom } from 'rxjs';
 
 interface ViewOption {
@@ -53,9 +58,9 @@ interface ColorStats {
   totalColores: number;
   totalTallas: number;
   combinaciones: number;
-  coloresPopulares: { color: Color, count: number }[];
-  tallasPopulares: { talla: string, count: number }[];
-  distribucionTallas: { categoria: string, count: number }[];
+  coloresPopulares: { color: Color; count: number }[];
+  tallasPopulares: { talla: string; count: number }[];
+  distribucionTallas: { categoria: string; count: number }[];
 }
 
 @Component({
@@ -76,202 +81,25 @@ interface ColorStats {
     SelectModule,
     TableModule,
     TagModule,
+    TagModule,
     ToastModule,
     ToolbarModule,
-    PanelModule, // 👈 Nuevo import
-    TooltipModule, // 👈 Nuevo import
-    AvatarModule, // 👈 Nuevo import
-    CardModule, // 👈 Nuevo import
-    ChipModule, // 👈 Nuevo import
-    BadgeModule, // 👈 Nuevo import
-    TabViewModule, // 👈 Nuevo import
-    SelectButtonModule, // 👈 Nuevo import
-    OverlayPanelModule, // 👈 Nuevo import
-    SliderModule, // 👈 Nuevo import
-    HasPermissionDirective
+    TooltipModule,
+    ChipModule,
+    BadgeModule,
+    TabViewModule,
+    SelectButtonModule,
+    HasPermissionDirective,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './colores.component.html',
-  styles: [`
-    :host ::ng-deep {
-      /* Paleta de colores moderna */
-      .color-palette-item {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-      }
-      
-      .color-palette-item:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      }
-      
-      /* Color picker personalizado */
-      .p-colorpicker-input {
-        border-radius: 12px !important;
-        border: 2px solid #e5e7eb !important;
-        transition: all 0.3s ease !important;
-      }
-      
-      .p-colorpicker-input:focus {
-        border-color: #8b5cf6 !important;
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1) !important;
-      }
-      
-      /* Chips de tallas modernos */
-      .p-chip {
-        border-radius: 20px !important;
-        padding: 0.5rem 0.75rem !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-      }
-      
-      .p-chip:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-      
-      /* Tabs modernos */
-      .p-tabview .p-tabview-nav li .p-tabview-nav-link {
-        border-radius: 12px 12px 0 0 !important;
-        transition: all 0.3s ease !important;
-      }
-      
-      /* Cards con efectos */
-      .p-card {
-        border-radius: 16px !important;
-        transition: all 0.3s ease !important;
-        border: 1px solid #f3f4f6 !important;
-      }
-      
-      .p-card:hover {
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-      }
-      
-      /* Dialogs modernos */
-      .color-dialog-header .p-dialog-header {
-        background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 16px 16px 0 0 !important;
-      }
-      
-      /* Botones con efectos modernos */
-      .p-button {
-        border-radius: 12px !important;
-        transition: all 0.3s ease !important;
-      }
-      
-      .p-button:hover {
-        transform: translateY(-1px);
-      }
-      
-      /* Sliders modernos */
-      .p-slider .p-slider-handle {
-        border-radius: 50% !important;
-        transition: all 0.3s ease !important;
-      }
-    }
-
-    /* 👇 Utilidades CSS personalizadas */
-    .color-preview {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      transition: all 0.3s ease;
-    }
-
-    .color-preview:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    }
-
-    .talla-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.25rem 0.75rem;
-      border-radius: 1rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .talla-chip:hover {
-      transform: translateY(-1px);
-    }
-
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .palette-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .size-chart {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-      gap: 0.5rem;
-    }
-
-    /* Animaciones de entrada */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .fade-in-up {
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    /* Color wheel efecto */
-    .color-wheel {
-      background: conic-gradient(
-        hsl(360, 100%, 50%),
-        hsl(315, 100%, 50%),
-        hsl(270, 100%, 50%),
-        hsl(225, 100%, 50%),
-        hsl(180, 100%, 50%),
-        hsl(135, 100%, 50%),
-        hsl(90, 100%, 50%),
-        hsl(45, 100%, 50%),
-        hsl(0, 100%, 50%)
-      );
-      border-radius: 50%;
-    }
-
-    /* Ajuste del Color Picker para que sea más grande y Zen */
-.color-picker-premium .p-colorpicker-preview {
-    width: 3rem !important; /* 48px */
-    height: 3rem !important;
-    border-radius: 0.75rem !important; /* rounded-xl */
-    border: 1px solid var(--p-surface-200) !important;
-}
-
-.dark .color-picker-premium .p-colorpicker-preview {
-    border-color: var(--p-surface-700) !important;
-}
-
-/* Animación de entrada de chips */
-@keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
-}
-.animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-  `]
+  styles: [
+    `
+      /* Estilos manejados via Tailwind */
+    `,
+  ],
 })
-export class ColoresComponent implements OnInit, AfterViewInit {
+export class ColoresComponent implements OnInit {
   @ViewChild('coloresTable') coloresTable!: ElementRef;
   @Input() loading: boolean = false; // Para activar el modo carga
 
@@ -280,7 +108,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   // Función nativa para copiar (No requiere importar nada extra)
   copiarHex(hex: string) {
     if (!hex) return;
-    
+
     navigator.clipboard.writeText(hex).then(() => {
       this.textoCopiado = true;
       // Regresa al estado normal después de 1.5 segundos
@@ -313,18 +141,13 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   editMode = false;
   submitted = false;
   currentView: 'table' | 'palette' | 'grid' = 'palette';
-  
+
   // 👇 Nuevas propiedades para el diseño moderno
   estadisticasDialog = false;
   detalleColorDialog = false;
   colorDetalle: Color | null = null;
   filtrosPanelCollapsed = true;
   activeTab = 0; // 0: Colores, 1: Tallas, 2: Combinaciones
-  
-  // Color picker avanzado
-  brightness = 100;
-  saturation = 100;
-  selectedColorPreset = '';
 
   // ========== PERMISOS ==========
   permissionTypes = PermissionType;
@@ -332,7 +155,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   // ========== CONFIGURACIÓN ==========
   viewOptions: ViewOption[] = [
     { label: 'Paleta', value: 'palette', icon: 'pi pi-palette' },
-    { label: 'Tabla', value: 'table', icon: 'pi pi-list' }
+    { label: 'Tabla', value: 'table', icon: 'pi pi-list' },
   ];
 
   // Categorías de tallas mejoradas
@@ -342,29 +165,29 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       value: 'ropa',
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
       icon: 'pi pi-user',
-      color: 'blue'
+      color: 'blue',
     },
     {
       label: 'Tallas Numéricas',
       value: 'numericas',
       sizes: ['32', '34', '36', '38', '40', '42', '44', '46', '48'],
       icon: 'pi pi-hashtag',
-      color: 'green'
+      color: 'green',
     },
     {
       label: 'Calzado',
       value: 'calzado',
       sizes: ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
       icon: 'pi pi-map',
-      color: 'orange'
+      color: 'orange',
     },
     {
       label: 'Niños',
       value: 'ninos',
       sizes: ['2T', '3T', '4T', '5T', '6', '7', '8', '10', '12', '14', '16'],
       icon: 'pi pi-heart',
-      color: 'pink'
-    }
+      color: 'pink',
+    },
   ];
 
   // Colores preset populares
@@ -380,30 +203,19 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     { nombre: 'Gris', hex: '#6b7280', popular: false },
     { nombre: 'Marrón', hex: '#92400e', popular: false },
     { nombre: 'Naranja', hex: '#ea580c', popular: false },
-    { nombre: 'Índigo', hex: '#4f46e5', popular: false }
+    { nombre: 'Índigo', hex: '#4f46e5', popular: false },
   ];
 
   private readonly colorService: ColorService = inject(ColorService);
   private readonly productoService: ProductoService = inject(ProductoService);
   private readonly messageService: MessageService = inject(MessageService);
-  private readonly confirmationService: ConfirmationService = inject(ConfirmationService);
-  private readonly permissionService: PermissionService = inject(PermissionService);
+  private readonly confirmationService: ConfirmationService =
+    inject(ConfirmationService);
+  private readonly permissionService: PermissionService =
+    inject(PermissionService);
 
-  
   ngOnInit(): void {
     this.loadProductos();
-  }
-
-  ngAfterViewInit(): void {
-    // Animaciones de entrada
-    if (this.coloresTable) {
-      setTimeout(() => {
-        const elements = document.querySelectorAll('.fade-in-up');
-        elements.forEach((el, index) => {
-          (el as HTMLElement).style.animationDelay = `${index * 0.1}s`;
-        });
-      }, 100);
-    }
   }
 
   // ========== NUEVOS MÉTODOS PARA EL DISEÑO MODERNO ==========
@@ -415,17 +227,17 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     const totalColores = this.coloresFiltrados?.length || 0;
     const totalTallas = this.getTotalTallas();
     const combinaciones = this.getTotalCombinaciones();
-    
+
     // Colores más populares (simulado - podrías obtenerlo del backend)
     const coloresPopulares = this.coloresFiltrados
-      .map(color => ({ color, count: color.tallas?.length || 0 }))
+      .map((color) => ({ color, count: color.tallas?.length || 0 }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
     // Tallas más populares
     const tallasMap = new Map<string, number>();
-    this.coloresFiltrados.forEach(color => {
-      color.tallas?.forEach(talla => {
+    this.coloresFiltrados.forEach((color) => {
+      color.tallas?.forEach((talla) => {
         const count = tallasMap.get(talla.numero) || 0;
         tallasMap.set(talla.numero, count + 1);
       });
@@ -437,9 +249,9 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       .slice(0, 5);
 
     // Distribución por categorías
-    const distribucionTallas = this.tallaCategories.map(categoria => ({
+    const distribucionTallas = this.tallaCategories.map((categoria) => ({
       categoria: categoria.label,
-      count: this.getTallasPorCategoria(categoria.sizes)
+      count: this.getTallasPorCategoria(categoria.sizes),
     }));
 
     return {
@@ -448,7 +260,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       combinaciones,
       coloresPopulares,
       tallasPopulares,
-      distribucionTallas
+      distribucionTallas,
     };
   }
 
@@ -457,8 +269,8 @@ export class ColoresComponent implements OnInit, AfterViewInit {
    */
   getTotalTallas(): number {
     const tallasUnicas = new Set<string>();
-    this.coloresFiltrados.forEach(color => {
-      color.tallas?.forEach(talla => tallasUnicas.add(talla.numero));
+    this.coloresFiltrados.forEach((color) => {
+      color.tallas?.forEach((talla) => tallasUnicas.add(talla.numero));
     });
     return tallasUnicas.size;
   }
@@ -467,8 +279,9 @@ export class ColoresComponent implements OnInit, AfterViewInit {
    * 👇 Obtiene total de combinaciones color-talla
    */
   getTotalCombinaciones(): number {
-    return this.coloresFiltrados.reduce((total, color) => 
-      total + (color.tallas?.length || 0), 0
+    return this.coloresFiltrados.reduce(
+      (total, color) => total + (color.tallas?.length || 0),
+      0,
     );
   }
 
@@ -477,8 +290,8 @@ export class ColoresComponent implements OnInit, AfterViewInit {
    */
   getTallasPorCategoria(sizesCategoria: string[]): number {
     const tallasEnCategoria = new Set<string>();
-    this.coloresFiltrados.forEach(color => {
-      color.tallas?.forEach(talla => {
+    this.coloresFiltrados.forEach((color) => {
+      color.tallas?.forEach((talla) => {
         if (sizesCategoria.includes(talla.numero)) {
           tallasEnCategoria.add(talla.numero);
         }
@@ -534,13 +347,15 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   /**
    * 👇 Convierte HEX a RGB
    */
-  hexToRgb(hex: string): { r: number, g: number, b: number } | null {
+  hexToRgb(hex: string): { r: number; g: number; b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   }
 
   /**
@@ -548,22 +363,22 @@ export class ColoresComponent implements OnInit, AfterViewInit {
    */
   getColoresSimilares(color: Color): Color[] {
     if (!color.codigoHex) return [];
-    
+
     const targetRgb = this.hexToRgb(color.codigoHex);
     if (!targetRgb) return [];
 
     return this.coloresFiltrados
-      .filter(c => c.id !== color.id && c.codigoHex)
-      .filter(c => {
+      .filter((c) => c.id !== color.id && c.codigoHex)
+      .filter((c) => {
         const rgb = this.hexToRgb(c.codigoHex!);
         if (!rgb) return false;
-        
+
         const distance = Math.sqrt(
           Math.pow(targetRgb.r - rgb.r, 2) +
-          Math.pow(targetRgb.g - rgb.g, 2) +
-          Math.pow(targetRgb.b - rgb.b, 2)
+            Math.pow(targetRgb.g - rgb.g, 2) +
+            Math.pow(targetRgb.b - rgb.b, 2),
         );
-        
+
         return distance < 100; // Umbral de similitud
       })
       .slice(0, 3);
@@ -580,7 +395,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const diff = max - min;
-    
+
     if (diff < 30) {
       if (max < 50) return 'Negro';
       if (max > 200) return 'Blanco';
@@ -591,7 +406,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     if (max === r) hue = ((g - b) / diff) % 6;
     else if (max === g) hue = (b - r) / diff + 2;
     else hue = (r - g) / diff + 4;
-    
+
     hue = Math.round(hue * 60);
     if (hue < 0) hue += 360;
 
@@ -608,17 +423,19 @@ export class ColoresComponent implements OnInit, AfterViewInit {
    */
   agregarTallasCategoria(categoria: TallaCategory): void {
     let agregadas = 0;
-    categoria.sizes.forEach(size => {
-      if (!this.tallas.some(t => t.numero === size)) {
+    categoria.sizes.forEach((size) => {
+      if (!this.tallas.some((t) => t.numero === size)) {
         this.tallas.push({ numero: size });
         agregadas++;
       }
     });
-    
+
     if (agregadas > 0) {
       this.showSuccess(`${agregadas} tallas agregadas de ${categoria.label}`);
     } else {
-      this.showWarning(`Todas las tallas de ${categoria.label} ya están agregadas`);
+      this.showWarning(
+        `Todas las tallas de ${categoria.label} ya están agregadas`,
+      );
     }
   }
 
@@ -652,7 +469,8 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       next: (response) => {
         this.productos = response.contenido || [];
       },
-      error: (error) => this.handleError(error, 'No se pudo cargar los productos')
+      error: (error) =>
+        this.handleError(error, 'No se pudo cargar los productos'),
     });
   }
 
@@ -663,24 +481,29 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       this.selectedColores = [];
       return;
     }
-    
+
     this.loading = true;
-    this.colorService.getColoresPorProducto(this.productoSeleccionadoFiltro.id).subscribe({
-      next: (response) => {
-        console.log('Colores cargados:', response); // 👈 Debug temporal
-        this.colores = response || []; // 👈 Actualizar array principal
-        this.coloresFiltrados = [...this.colores]; // 👈 Copiar al filtrado
-        this.aplicarFiltrosTexto(); // 👈 Aplicar filtros existentes
-      },
-      error: (error) => {
-        this.handleError(error, 'No se pudieron cargar los colores para este producto');
-        this.colores = []; // 👈 Limpiar en caso de error
-        this.coloresFiltrados = [];
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
+    this.colorService
+      .getColoresPorProducto(this.productoSeleccionadoFiltro.id)
+      .subscribe({
+        next: (response) => {
+          console.log('Colores cargados:', response); // 👈 Debug temporal
+          this.colores = response || []; // 👈 Actualizar array principal
+          this.coloresFiltrados = [...this.colores]; // 👈 Copiar al filtrado
+          this.aplicarFiltrosTexto(); // 👈 Aplicar filtros existentes
+        },
+        error: (error) => {
+          this.handleError(
+            error,
+            'No se pudieron cargar los colores para este producto',
+          );
+          this.colores = []; // 👈 Limpiar en caso de error
+          this.coloresFiltrados = [];
+        },
+        complete: () => {
+          this.loading = false;
+        },
+      });
   }
 
   debugColores(): void {
@@ -697,24 +520,24 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   aplicarFiltrosTexto(): void {
     // 👈 Usar el array principal 'colores' en lugar de verificar producto
     let coloresFiltrados = [...this.colores];
-  
+
     // Filtro por texto (nombre del color)
     if (this.filtroTexto?.trim()) {
       const texto = this.filtroTexto.toLowerCase();
-      coloresFiltrados = coloresFiltrados.filter(color => 
-        color.nombre?.toLowerCase().includes(texto)
+      coloresFiltrados = coloresFiltrados.filter((color) =>
+        color.nombre?.toLowerCase().includes(texto),
       );
     }
-  
+
     // Filtro por talla
     if (this.filtroTalla?.trim()) {
-      coloresFiltrados = coloresFiltrados.filter(color => 
-        color.tallas?.some(talla => 
-          talla.numero.toLowerCase().includes(this.filtroTalla.toLowerCase())
-        )
+      coloresFiltrados = coloresFiltrados.filter((color) =>
+        color.tallas?.some((talla) =>
+          talla.numero.toLowerCase().includes(this.filtroTalla.toLowerCase()),
+        ),
       );
     }
-  
+
     this.coloresFiltrados = coloresFiltrados;
   }
 
@@ -741,8 +564,6 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     this.nuevaTalla = '';
     this.submitted = false;
     this.visible = true;
-    this.brightness = 100;
-    this.saturation = 100;
   }
 
   editColor(color: Color): void {
@@ -761,48 +582,53 @@ export class ColoresComponent implements OnInit, AfterViewInit {
 
   guardarColor(): void {
     this.submitted = true;
-    
+
     if (!this.isValidColor()) {
       return;
     }
-    
+
     const colorRequest = {
       nombre: this.color.nombre.trim(),
       codigoHex: this.color.codigoHex,
-      tallas: this.tallas.map(t => ({ numero: t.numero }))
+      tallas: this.tallas.map((t) => ({ numero: t.numero })),
     };
-    
+
     this.loading = true;
 
     if (this.editMode && this.color.id) {
-      this.colorService.actualizarColor(this.color.id, colorRequest)
-        .pipe(finalize(() => this.loading = false))
+      this.colorService
+        .actualizarColor(this.color.id, colorRequest)
+        .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: () => {
             this.showSuccess('Color actualizado correctamente');
             this.hideDialog();
             this.cargarColoresPorProducto();
           },
-          error: (error) => this.handleError(error, 'No se pudo actualizar el color')
+          error: (error) =>
+            this.handleError(error, 'No se pudo actualizar el color'),
         });
     } else {
-      const productoId = this.productoSeleccionado?.id || this.productoSeleccionadoFiltro?.id;
-      
+      const productoId =
+        this.productoSeleccionado?.id || this.productoSeleccionadoFiltro?.id;
+
       if (!productoId) {
         this.showError('Debe seleccionar un producto');
         this.loading = false;
         return;
       }
-      
-      this.colorService.crearColor(productoId, colorRequest)
-        .pipe(finalize(() => this.loading = false))
+
+      this.colorService
+        .crearColor(productoId, colorRequest)
+        .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: () => {
             this.showSuccess('Color creado correctamente');
             this.hideDialog();
             this.cargarColoresPorProducto();
           },
-          error: (error) => this.handleError(error, 'No se pudo crear el color')
+          error: (error) =>
+            this.handleError(error, 'No se pudo crear el color'),
         });
     }
   }
@@ -814,24 +640,29 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     }
 
     if (!color.id) return;
-    
+
     this.confirmationService.confirm({
       message: `¿Está seguro que desea eliminar el color "${color.nombre}"?`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.loading = true;
-        this.colorService.eliminarColor(color.id!)
-          .pipe(finalize(() => this.loading = false))
+        this.colorService
+          .eliminarColor(color.id!)
+          .pipe(finalize(() => (this.loading = false)))
           .subscribe({
             next: () => {
               this.showSuccess('Color eliminado correctamente');
               this.cargarColoresPorProducto();
               this.selectedColores = [];
             },
-            error: (error) => this.handleError(error, 'No se pudo eliminar el color, tiene inventario asociado')
+            error: (error) =>
+              this.handleError(
+                error,
+                'No se pudo eliminar el color, tiene inventario asociado',
+              ),
           });
-      }
+      },
     });
   }
 
@@ -842,12 +673,12 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     }
 
     if (!this.selectedColores.length) return;
-    
+
     this.confirmationService.confirm({
       message: `¿Está seguro que desea eliminar los ${this.selectedColores.length} colores seleccionados?`,
       header: 'Confirmar eliminación múltiple',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => this.processMultipleDelete()
+      accept: () => this.processMultipleDelete(),
     });
   }
 
@@ -855,24 +686,24 @@ export class ColoresComponent implements OnInit, AfterViewInit {
 
   agregarTalla(): void {
     if (!this.nuevaTalla?.trim()) return;
-    
+
     const tallaNumero = this.nuevaTalla.trim().toUpperCase();
-    
-    if (this.tallas.some(t => t.numero === tallaNumero)) {
+
+    if (this.tallas.some((t) => t.numero === tallaNumero)) {
       this.showWarning(`La talla ${tallaNumero} ya existe en este color`);
       return;
     }
-    
+
     this.tallas.push({ numero: tallaNumero });
     this.nuevaTalla = '';
   }
 
   agregarTallaComun(talla: string): void {
-    if (this.tallas.some(t => t.numero === talla)) {
+    if (this.tallas.some((t) => t.numero === talla)) {
       this.showWarning(`La talla ${talla} ya existe en este color`);
       return;
     }
-    
+
     this.tallas.push({ numero: talla });
   }
 
@@ -882,7 +713,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
 
   eliminarTallaPorId(tallaId: number | undefined): void {
     if (!tallaId) return;
-    this.tallas = this.tallas.filter(talla => talla.id !== tallaId);
+    this.tallas = this.tallas.filter((talla) => talla.id !== tallaId);
   }
 
   // ========== VALIDACIONES (Manteniendo funcionalidad original) ==========
@@ -898,7 +729,11 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       return false;
     }
 
-    if (!this.editMode && !this.productoSeleccionado && !this.productoSeleccionadoFiltro) {
+    if (
+      !this.editMode &&
+      !this.productoSeleccionado &&
+      !this.productoSeleccionadoFiltro
+    ) {
       this.showError('Debe seleccionar un producto');
       return false;
     }
@@ -913,22 +748,23 @@ export class ColoresComponent implements OnInit, AfterViewInit {
 
   private async processMultipleDelete(): Promise<void> {
     this.loading = true;
-    
+
     try {
       const deleteOperations = this.selectedColores
-        .filter(color => color.id)
-        .map(color => 
-          this.colorService.eliminarColor(color.id!)
-            .pipe(catchError(() => of(false)))
+        .filter((color) => color.id)
+        .map((color) =>
+          this.colorService
+            .eliminarColor(color.id!)
+            .pipe(catchError(() => of(false))),
         );
-        
+
       if (deleteOperations.length === 0) {
         this.loading = false;
         return;
       }
 
       const results = await firstValueFrom(forkJoin(deleteOperations));
-      const successful = results.filter(result => result !== false).length;
+      const successful = results.filter((result) => result !== false).length;
       const failed = results.length - successful;
 
       this.showDeleteResults(successful, failed);
@@ -945,9 +781,11 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     if (successful > 0) {
       this.showSuccess(`${successful} colores eliminados correctamente`);
     }
-    
+
     if (failed > 0) {
-      this.showWarning(`${failed} colores no pudieron ser eliminados (pueden tener inventario asociado)`);
+      this.showWarning(
+        `${failed} colores no pudieron ser eliminados (pueden tener inventario asociado)`,
+      );
     }
   }
 
@@ -961,7 +799,10 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     this.nuevaTalla = '';
   }
 
-  onGlobalFilter(dt: { filterGlobal: (value: string, filterType: string) => void }, event: Event): void {
+  onGlobalFilter(
+    dt: { filterGlobal: (value: string, filterType: string) => void },
+    event: Event,
+  ): void {
     const element = event.target as HTMLInputElement;
     dt.filterGlobal(element.value, 'contains');
   }
@@ -978,22 +819,30 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    import('xlsx').then(xlsx => {
-      const dataToExport = this.coloresFiltrados.map(color => ({
-        'Color': color.nombre || '',
-        'Código Hex': color.codigoHex || '',
-        'Producto': this.productoSeleccionadoFiltro?.nombre || '',
-        'Tallas': color.tallas?.map(t => t.numero).join(', ') || '',
-        'Total Tallas': color.tallas?.length || 0
-      }));
-      
-      const worksheet = xlsx.utils.json_to_sheet(dataToExport);
-      const workbook = { Sheets: { 'Colores': worksheet }, SheetNames: ['Colores'] };
-      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-      this.guardarArchivo(excelBuffer, 'colores_tallas');
-    }).catch(() => {
-      this.showError('Error al cargar la biblioteca de exportación');
-    });
+    import('xlsx')
+      .then((xlsx) => {
+        const dataToExport = this.coloresFiltrados.map((color) => ({
+          Color: color.nombre || '',
+          'Código Hex': color.codigoHex || '',
+          Producto: this.productoSeleccionadoFiltro?.nombre || '',
+          Tallas: color.tallas?.map((t) => t.numero).join(', ') || '',
+          'Total Tallas': color.tallas?.length || 0,
+        }));
+
+        const worksheet = xlsx.utils.json_to_sheet(dataToExport);
+        const workbook = {
+          Sheets: { Colores: worksheet },
+          SheetNames: ['Colores'],
+        };
+        const excelBuffer = xlsx.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+        this.guardarArchivo(excelBuffer, 'colores_tallas');
+      })
+      .catch(() => {
+        this.showError('Error al cargar la biblioteca de exportación');
+      });
   }
 
   /**
@@ -1008,7 +857,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
     try {
       const xlsx = await import('xlsx');
       const stats = this.calcularEstadisticas();
-      
+
       // Datos de resumen
       const resumenData = [
         ['ESTADÍSTICAS DE COLORES Y TALLAS', ''],
@@ -1019,31 +868,37 @@ export class ColoresComponent implements OnInit, AfterViewInit {
         ['', ''],
         ['COLORES MÁS POPULARES', ''],
         ['Color', 'Cantidad de Tallas'],
-        ...stats.coloresPopulares.map(item => [item.color.nombre, item.count])
+        ...stats.coloresPopulares.map((item) => [
+          item.color.nombre,
+          item.count,
+        ]),
       ];
 
       // Datos de tallas populares
       const tallasData = [
         ['TALLAS MÁS POPULARES', ''],
         ['Talla', 'Cantidad de Colores'],
-        ...stats.tallasPopulares.map(item => [item.talla, item.count])
+        ...stats.tallasPopulares.map((item) => [item.talla, item.count]),
       ];
 
       // Crear hojas
       const resumenSheet = xlsx.utils.aoa_to_sheet(resumenData);
       const tallasSheet = xlsx.utils.aoa_to_sheet(tallasData);
-      
+
       const workbook = {
         Sheets: {
-          'Resumen': resumenSheet,
-          'Tallas Populares': tallasSheet
+          Resumen: resumenSheet,
+          'Tallas Populares': tallasSheet,
         },
-        SheetNames: ['Resumen', 'Tallas Populares']
+        SheetNames: ['Resumen', 'Tallas Populares'],
       };
 
-      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
       this.guardarArchivo(excelBuffer, 'estadisticas_colores_tallas');
-      
+
       this.showSuccess('Estadísticas exportadas correctamente');
       this.hideEstadisticasDialog();
     } catch (error) {
@@ -1052,7 +907,9 @@ export class ColoresComponent implements OnInit, AfterViewInit {
   }
 
   private guardarArchivo(buffer: ArrayBuffer, fileName: string): void {
-    const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const data = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(data);
     link.download = `${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
@@ -1066,7 +923,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       id: undefined,
       nombre: '',
       codigoHex: '#000000',
-      tallas: []
+      tallas: [],
     };
   }
 
@@ -1077,7 +934,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       severity: 'success',
       summary: 'Éxito',
       detail: message,
-      life: 3000
+      life: 3000,
     });
   }
 
@@ -1086,7 +943,7 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       severity: 'warn',
       summary: 'Advertencia',
       detail: message,
-      life: 3000
+      life: 3000,
     });
   }
 
@@ -1095,43 +952,46 @@ export class ColoresComponent implements OnInit, AfterViewInit {
       severity: 'error',
       summary: 'Error',
       detail: message,
-      life: 5000
+      life: 5000,
     });
   }
 
   private handleError(error: unknown, defaultMessage: string): void {
     console.error('Error:', error);
-    const errorMessage = error instanceof Error ? error.message : 
-                       typeof error === 'string' ? error : 
-                       defaultMessage;
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'string'
+          ? error
+          : defaultMessage;
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
       detail: errorMessage,
-      life: 5000
+      life: 5000,
     });
   }
 
   // ========== UTILIDADES ADICIONALES (Manteniendo funcionalidad original) ==========
 
   isTallaAdded(tallaNumero: string): boolean {
-    return this.tallas.some(t => t.numero === tallaNumero);
+    return this.tallas.some((t) => t.numero === tallaNumero);
   }
 
   getContrastColor(hexColor: string | undefined): string {
     if (!hexColor) return '#000000';
-    
+
     // Remover el # si existe
     const color = hexColor.replace('#', '');
-    
+
     // Convertir a RGB
     const r = parseInt(color.substr(0, 2), 16);
     const g = parseInt(color.substr(2, 2), 16);
     const b = parseInt(color.substr(4, 2), 16);
-    
+
     // Calcular luminancia
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Retornar color contrastante
     return luminance > 0.5 ? '#000000' : '#ffffff';
   }

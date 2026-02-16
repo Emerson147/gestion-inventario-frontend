@@ -1,381 +1,413 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../../shared/components/layout/service/layout.service';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 
 interface ChartDataset {
-    type: string;
-    label: string;
-    backgroundColor: string;
-    data: number[];
-    barThickness?: number;
-    borderRadius?: {
-        topLeft: number;
-        topRight: number;
-        bottomLeft: number;
-        bottomRight: number;
-    };
-    borderSkipped?: boolean;
+  type: string;
+  label: string;
+  backgroundColor: string;
+  data: number[];
+  barThickness?: number;
+  borderRadius?: {
+    topLeft: number;
+    topRight: number;
+    bottomLeft: number;
+    bottomRight: number;
+  };
+  borderSkipped?: boolean;
 }
 
 interface ChartData {
-    labels: string[];
-    datasets: ChartDataset[];
+  labels: string[];
+  datasets: ChartDataset[];
 }
 
 interface ChartOptions {
-    maintainAspectRatio: boolean;
-    aspectRatio: number;
-    plugins: {
-        legend: {
-            labels: {
-                color: string;
-                font?: {
-                    weight: string;
-                    size: number;
-                };
-                padding: number;
-                usePointStyle: boolean;
-            };
+  maintainAspectRatio: boolean;
+  aspectRatio: number;
+  plugins: {
+    legend: {
+      labels: {
+        color: string;
+        font?: {
+          weight: string;
+          size: number;
         };
-        tooltip: {
-            backgroundColor: string;
-            titleColor: string;
-            bodyColor: string;
-            borderColor: string;
-            borderWidth: number;
-            padding: number;
-            displayColors: boolean;
-        };
+        padding: number;
+        usePointStyle: boolean;
+      };
     };
-    scales: {
-        x: {
-            stacked: boolean;
-            ticks: {
-                color: string;
-                font?: {
-                    size: number;
-                    weight: string;
-                };
-            };
-            grid: {
-                color: string;
-                borderColor: string;
-            };
-        };
-        y: {
-            stacked: boolean;
-            ticks: {
-                color: string;
-                callback?: (value: any) => string;
-            };
-            grid: {
-                color: string;
-                borderColor: string;
-                drawTicks: boolean;
-            };
-        };
+    tooltip: {
+      backgroundColor: string;
+      titleColor: string;
+      bodyColor: string;
+      borderColor: string;
+      borderWidth: number;
+      padding: number;
+      displayColors: boolean;
     };
+  };
+  scales: {
+    x: {
+      stacked: boolean;
+      ticks: {
+        color: string;
+        font?: {
+          size: number;
+          weight: string;
+        };
+      };
+      grid: {
+        color: string;
+        borderColor: string;
+      };
+    };
+    y: {
+      stacked: boolean;
+      ticks: {
+        color: string;
+        callback?: (value: any) => string;
+      };
+      grid: {
+        color: string;
+        borderColor: string;
+        drawTicks: boolean;
+      };
+    };
+  };
 }
 
 @Component({
-    standalone: true,
-    selector: 'app-revenue-stream-widget',
-    imports: [CommonModule, ChartModule, ButtonModule, MenuModule],
-    template: `
-    <div class="card hover:shadow-xl transition-all duration-300 border-l-4 border-indigo-500 !mb-8">
-        <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-            <div>
-                <h2 class="font-bold text-2xl text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
-                    <i class="pi pi-chart-bar text-indigo-500"></i>
-                    Flujo de Ingresos
-                </h2>
-                <p class="text-sm text-gray-500">Análisis trimestral por categoría</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-                    <i class="pi pi-calendar text-gray-500 text-sm"></i>
-                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">2025</span>
-                </div>
-                <button 
-                    pButton 
-                    type="button" 
-                    icon="pi pi-ellipsis-v" 
-                    class="p-button-rounded p-button-text p-button-plain hover:bg-gray-100 dark:hover:bg-gray-700" 
-                    (click)="menu.toggle($event)">
-                    <span class="sr-only">Mostrar opciones</span>
-                </button>
-                <p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
-            </div>
+  standalone: true,
+  selector: 'app-revenue-stream-widget',
+  imports: [CommonModule, ChartModule, ButtonModule, MenuModule],
+  template: ` <div
+    class="rounded-[2rem] bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full"
+  >
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2
+          class="font-bold text-xl text-surface-900 dark:text-surface-0 mb-1 flex items-center gap-2"
+        >
+          <span
+            class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400"
+          >
+            <i class="pi pi-chart-bar text-sm"></i>
+          </span>
+          Flujo de Ingresos
+        </h2>
+        <p class="text-sm text-surface-500 dark:text-surface-400 ml-10">
+          Análisis trimestral por categoría
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div
+          class="flex items-center gap-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-1.5 shadow-sm"
+        >
+          <i class="pi pi-calendar text-surface-400 text-xs"></i>
+          <span
+            class="text-sm font-semibold text-surface-700 dark:text-surface-300"
+            >{{ currentYear }}</span
+          >
         </div>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-ellipsis-v"
+          class="p-button-rounded p-button-text p-button-secondary hover:bg-surface-100 dark:hover:bg-surface-800"
+          (click)="menu.toggle($event)"
+        >
+          <span class="sr-only">Mostrar opciones</span>
+        </button>
+        <p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
+      </div>
+    </div>
 
-        <!-- Statistics Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <!-- Total Revenue -->
-            <div class="p-4 rounded-lg bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border border-indigo-200 dark:border-indigo-700">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Total</span>
-                    <i class="pi pi-chart-line text-indigo-500"></i>
-                </div>
-                <div class="text-2xl font-bold text-indigo-700 dark:text-indigo-300">
-                    S/. {{getTotalRevenue() | number:'1.0-0'}}
-                </div>
-                <div class="text-xs text-indigo-600 dark:text-indigo-400 mt-1 flex items-center gap-1">
-                    <i class="pi pi-arrow-up text-xs"></i>
-                    <span>+15.3% vs año anterior</span>
-                </div>
-            </div>
+    <!-- Statistics Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <!-- Total Revenue -->
+      <div
+        class="p-4 rounded-[1.5rem] bg-white dark:bg-surface-900 border border-surface-100 dark:border-surface-800 shadow-sm relative overflow-hidden group"
+      >
+        <div
+          class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 dark:bg-indigo-900/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        ></div>
 
-            <!-- Subscriptions -->
-            <div class="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border border-blue-200 dark:border-blue-700">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Suscripciones</span>
-                    <i class="pi pi-users text-blue-500"></i>
-                </div>
-                <div class="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                    S/. {{getDatasetTotal(0) | number:'1.0-0'}}
-                </div>
-                <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    {{getDatasetPercentage(0)}}% del total
-                </div>
-            </div>
-
-            <!-- Advertising -->
-            <div class="p-4 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border border-purple-200 dark:border-purple-700">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Publicidad</span>
-                    <i class="pi pi-megaphone text-purple-500"></i>
-                </div>
-                <div class="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                    S/. {{getDatasetTotal(1) | number:'1.0-0'}}
-                </div>
-                <div class="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                    {{getDatasetPercentage(1)}}% del total
-                </div>
-            </div>
-
-            <!-- Affiliate -->
-            <div class="p-4 rounded-lg bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 border border-pink-200 dark:border-pink-700">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold text-pink-600 dark:text-pink-400 uppercase tracking-wide">Afiliados</span>
-                    <i class="pi pi-link text-pink-500"></i>
-                </div>
-                <div class="text-2xl font-bold text-pink-700 dark:text-pink-300">
-                    S/. {{getDatasetTotal(2) | number:'1.0-0'}}
-                </div>
-                <div class="text-xs text-pink-600 dark:text-pink-400 mt-1">
-                    {{getDatasetPercentage(2)}}% del total
-                </div>
-            </div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-2">
+            <span
+              class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider"
+              >Total</span
+            >
+            <i class="pi pi-chart-line text-indigo-500"></i>
+          </div>
+          <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+            S/. {{ getTotalRevenue() | number: '1.0-0' }}
+          </div>
+          <div
+            class="text-xs text-surface-500 dark:text-surface-400 mt-1 flex items-center gap-1"
+          >
+            <i class="pi pi-check-circle text-[10px] text-emerald-500"></i>
+            <span>Acumulado anual</span>
+          </div>
         </div>
+      </div>
 
-        <!-- Chart Section -->
-        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
+      <!-- Dynamic Category Cards -->
+      <div
+        *ngFor="let dataset of chartData?.datasets; let i = index"
+        class="p-4 rounded-[1.5rem] bg-white dark:bg-surface-900 border border-surface-100 dark:border-surface-800 shadow-sm transition-all hover:scale-[1.02] hover:shadow-md cursor-default"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span
+            class="text-[10px] font-bold uppercase tracking-wider truncate max-w-[70%]"
+            [style.color]="dataset.backgroundColor"
+          >
+            {{ dataset.label }}
+          </span>
+          <div
+            class="w-2 h-2 rounded-full"
+            [style.background-color]="dataset.backgroundColor"
+          ></div>
         </div>
+        <div class="text-xl font-bold text-surface-900 dark:text-surface-0">
+          S/. {{ getDatasetTotal(i) | number: '1.0-0' }}
+        </div>
+        <div
+          class="text-xs mt-1 font-medium"
+          [style.color]="dataset.backgroundColor"
+        >
+          {{ getDatasetPercentage(i) }}%
+        </div>
+      </div>
+    </div>
 
-        <!-- Quarter Analysis -->
-        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div *ngFor="let quarter of quarters; let i = index" 
-                 class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{quarter}}</span>
-                    <i class="pi pi-calendar text-gray-400 text-xs"></i>
-                </div>
-                <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                    S/. {{getQuarterTotal(i) | number:'1.0-0'}}
-                </div>
-                <div class="text-xs text-gray-500 mt-1">
-                    {{getQuarterGrowth(i)}}% crecimiento
-                </div>
-            </div>
-        </div>
+    <!-- Chart Section -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-[1.5rem] p-4 border border-surface-100 dark:border-surface-800 relative shadow-sm"
+    >
+      <div
+        *ngIf="loading"
+        class="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] rounded-[1.5rem]"
+      >
+        <i class="pi pi-spin pi-spinner text-3xl text-indigo-500"></i>
+      </div>
+      <p-chart
+        type="bar"
+        [data]="chartData"
+        [options]="chartOptions"
+        class="h-80"
+      />
+    </div>
 
-        <!-- Footer -->
-        <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-500 flex items-center gap-2">
-                    <i class="pi pi-info-circle"></i>
-                    Datos actualizados en tiempo real
-                </span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button pButton label="Exportar" icon="pi pi-download" 
-                        class="p-button-sm p-button-outlined">
-                </button>
-                <button pButton label="Ver Reporte Completo" icon="pi pi-arrow-right" iconPos="right"
-                        class="p-button-sm">
-                </button>
-            </div>
+    <!-- Quarter Analysis -->
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div
+        *ngFor="let quarter of quarters; let i = index"
+        class="p-3 rounded-2xl border border-transparent hover:border-surface-200 dark:hover:border-surface-700 hover:bg-white dark:hover:bg-surface-900 transition-all duration-300 group"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span
+            class="text-xs font-bold text-surface-400 dark:text-surface-500 group-hover:text-surface-700 dark:group-hover:text-surface-300 transition-colors"
+            >{{ quarter }}</span
+          >
+          <i class="pi pi-calendar text-surface-300 text-[10px]"></i>
         </div>
-    </div>`
+        <div
+          class="text-lg font-bold text-surface-700 dark:text-surface-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+        >
+          S/. {{ getQuarterTotal(i) | number: '1.0-0' }}
+        </div>
+        <div class="text-[10px] text-surface-500 mt-1">
+          <span
+            [ngClass]="{
+              'text-emerald-500': getQuarterGrowth(i).includes('+'),
+              'text-rose-500':
+                !getQuarterGrowth(i).includes('+') &&
+                getQuarterGrowth(i) !== '0',
+            }"
+          >
+            {{ getQuarterGrowth(i) }}%
+          </span>
+          vs prev
+        </div>
+      </div>
+    </div>
+  </div>`,
 })
 export class RevenueStreamWidget implements OnInit, OnDestroy {
-    chartData!: ChartData;
-    chartOptions!: ChartOptions;
-    subscription!: Subscription;
-    quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-    
-    menuItems = [
-        { label: 'Ver Detalles', icon: 'pi pi-fw pi-eye' },
-        { label: 'Exportar a Excel', icon: 'pi pi-fw pi-file-excel' },
-        { label: 'Exportar a PDF', icon: 'pi pi-fw pi-file-pdf' },
-        { separator: true },
-        { label: 'Configurar Gráfico', icon: 'pi pi-fw pi-cog' }
-    ];
-    
-    private layoutService = inject(LayoutService);
+  chartData: ChartData = { labels: [], datasets: [] };
+  chartOptions!: ChartOptions;
+  subscription!: Subscription;
+  quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+  loading = true;
+  currentYear = new Date().getFullYear();
 
-    constructor() {
-        this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
-            this.initChart();
-        });
-    }
+  menuItems = [
+    { label: 'Ver Detalles', icon: 'pi pi-fw pi-eye' },
+    {
+      label: 'Actualizar',
+      icon: 'pi pi-fw pi-refresh',
+      command: () => this.loadData(),
+    },
+  ];
 
-    ngOnInit() {
-        this.initChart();
-    }
+  private layoutService = inject(LayoutService);
+  private dashboardService = inject(DashboardService);
+  private cd = inject(ChangeDetectorRef);
 
-    initChart() {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const borderColor = documentStyle.getPropertyValue('--surface-border');
-        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
-
-        this.chartData = {
-            labels: this.quarters,
-            datasets: [
-                {
-                    type: 'bar',
-                    label: 'Suscripciones',
-                    backgroundColor: 'rgba(99, 102, 241, 0.8)', // Indigo
-                    data: [4000, 10000, 15000, 4000],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Publicidad',
-                    backgroundColor: 'rgba(147, 51, 234, 0.8)', // Purple
-                    data: [2100, 8400, 2400, 7500],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Afiliados',
-                    backgroundColor: 'rgba(236, 72, 153, 0.8)', // Pink
-                    data: [4100, 5200, 3400, 7400],
-                    borderRadius: {
-                        topLeft: 8,
-                        topRight: 8,
-                        bottomLeft: 0,
-                        bottomRight: 0
-                    },
-                    borderSkipped: false,
-                    barThickness: 32
-                }
-            ]
-        };
-
-        this.chartOptions = {
-            maintainAspectRatio: false,
-            aspectRatio: 0.8,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColor,
-                        font: {
-                            weight: '600',
-                            size: 12
-                        },
-                        padding: 15,
-                        usePointStyle: true
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: 1,
-                    padding: 12,
-                    displayColors: true
-                }
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    ticks: {
-                        color: textMutedColor,
-                        font: {
-                            size: 12,
-                            weight: '600'
-                        }
-                    },
-                    grid: {
-                        color: 'transparent',
-                        borderColor: 'transparent'
-                    }
-                },
-                y: {
-                    stacked: true,
-                    ticks: {
-                        color: textMutedColor,
-                        callback: function(value: any) {
-                            return 'S/. ' + value.toLocaleString();
-                        }
-                    },
-                    grid: {
-                        color: borderColor,
-                        borderColor: 'transparent',
-                        drawTicks: false
-                    }
-                }
-            }
-        };
-    }
-
-    getTotalRevenue(): number {
-        if (!this.chartData || !this.chartData.datasets) return 0;
-        return this.chartData.datasets.reduce((total, dataset) => {
-            return total + dataset.data.reduce((sum, value) => sum + value, 0);
-        }, 0);
-    }
-
-    getDatasetTotal(datasetIndex: number): number {
-        if (!this.chartData || !this.chartData.datasets[datasetIndex]) return 0;
-        return this.chartData.datasets[datasetIndex].data.reduce((sum, value) => sum + value, 0);
-    }
-
-    getDatasetPercentage(datasetIndex: number): string {
-        const total = this.getTotalRevenue();
-        if (total === 0) return '0';
-        const datasetTotal = this.getDatasetTotal(datasetIndex);
-        return ((datasetTotal / total) * 100).toFixed(1);
-    }
-
-    getQuarterTotal(quarterIndex: number): number {
-        if (!this.chartData || !this.chartData.datasets) return 0;
-        return this.chartData.datasets.reduce((total, dataset) => {
-            return total + (dataset.data[quarterIndex] || 0);
-        }, 0);
-    }
-
-    getQuarterGrowth(quarterIndex: number): string {
-        if (quarterIndex === 0) return '+12.5';
-        const current = this.getQuarterTotal(quarterIndex);
-        const previous = this.getQuarterTotal(quarterIndex - 1);
-        if (previous === 0) return '0';
-        const growth = ((current - previous) / previous) * 100;
-        return growth > 0 ? `+${growth.toFixed(1)}` : growth.toFixed(1);
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
+  constructor() {
+    this.subscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.chartData && this.chartData.datasets.length > 0) {
+          this.updateChartOptions();
         }
+      });
+  }
+
+  ngOnInit() {
+    this.updateChartOptions(); // Init options first
+    this.loadData();
+  }
+
+  loadData() {
+    this.loading = true;
+    this.dashboardService.getFlujoIngresos().subscribe((data) => {
+      this.chartData = data;
+      this.loading = false;
+      this.cd.markForCheck();
+    });
+  }
+
+  updateChartOptions() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const borderColor = documentStyle.getPropertyValue('--surface-border');
+    const textMutedColor = documentStyle.getPropertyValue(
+      '--text-color-secondary',
+    );
+
+    this.chartOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.8,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: {
+              weight: '600',
+              size: 12,
+            },
+            padding: 15,
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: textMutedColor,
+            font: {
+              size: 12,
+              weight: '600',
+            },
+          },
+          grid: {
+            color: 'transparent',
+            borderColor: 'transparent',
+          },
+        },
+        y: {
+          stacked: true,
+          ticks: {
+            color: textMutedColor,
+            callback: function (value: any) {
+              return 'S/. ' + value.toLocaleString();
+            },
+          },
+          grid: {
+            color: borderColor,
+            borderColor: 'transparent',
+            drawTicks: false,
+          },
+        },
+      },
+    };
+  }
+
+  getTotalRevenue(): number {
+    if (!this.chartData || !this.chartData.datasets) return 0;
+    return this.chartData.datasets.reduce((total, dataset) => {
+      return total + dataset.data.reduce((sum, value) => sum + value, 0);
+    }, 0);
+  }
+
+  getDatasetTotal(datasetIndex: number): number {
+    if (!this.chartData || !this.chartData.datasets[datasetIndex]) return 0;
+    return this.chartData.datasets[datasetIndex].data.reduce(
+      (sum, value) => sum + value,
+      0,
+    );
+  }
+
+  getDatasetPercentage(datasetIndex: number): string {
+    const total = this.getTotalRevenue();
+    if (total === 0) return '0';
+    const datasetTotal = this.getDatasetTotal(datasetIndex);
+    return ((datasetTotal / total) * 100).toFixed(1);
+  }
+
+  getQuarterTotal(quarterIndex: number): number {
+    if (!this.chartData || !this.chartData.datasets) return 0;
+    return this.chartData.datasets.reduce((total, dataset) => {
+      return total + (dataset.data[quarterIndex] || 0);
+    }, 0);
+  }
+
+  getQuarterGrowth(quarterIndex: number): string {
+    if (quarterIndex === 0) return '0';
+    const current = this.getQuarterTotal(quarterIndex);
+    const previous = this.getQuarterTotal(quarterIndex - 1);
+    if (previous === 0) return current > 0 ? '+100' : '0';
+    const growth = ((current - previous) / previous) * 100;
+    return growth > 0 ? `+${growth.toFixed(1)}` : growth.toFixed(1);
+  }
+
+  hexToRgba(hex: string, alpha: number): string {
+    // Simple helper to create background colors from chart colors which are rgba strings
+    // If it's already rgba, just replace alpha
+    if (hex.startsWith('rgba')) {
+      return hex.replace(/[\d\.]+\)$/g, `${alpha})`);
     }
+    return hex; // Fallback
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
 }

@@ -1,0 +1,23 @@
+// 1. SELECT BUTTON MINIMALISTA
+:host ::ng-deep .zen-select-button {
+  .p-button {
+    @apply border-0 bg-transparent text-surface-500 font-bold text-xs uppercase tracking-wider px-4 py-2 transition-all duration-300;
+
+    &:hover {
+      @apply bg-surface-50 text-surface-700;
+    }
+
+    &.p-highlight {
+      @apply bg-white text-indigo-600 shadow-sm rounded-xl;
+
+      .dark & {
+        @apply bg-surface-800 text-indigo-400;
+      }
+    }
+
+    // Eliminar focus ring default
+    &:focus {
+      @apply shadow-none ring-0;
+    }
+  }
+}

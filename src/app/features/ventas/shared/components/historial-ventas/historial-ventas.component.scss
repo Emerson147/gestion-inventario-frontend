@@ -1,42 +1,30 @@
+// Estilos específicos que no se pueden manejar solo con Tailwind
 :root {
-  --brand-primary: #3b82f6;
-  --brand-secondary: #1e40af;
   --surface-ground: #ffffff;
   --surface-section: #f8fafc;
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
-  --shadow-premium: 0 4px 20px -4px rgba(0, 0, 0, 0.1);
-  --gradient-premium: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.premium-card {
-  @apply bg-white rounded-xl border border-gray-200 hover:shadow-xl transition-all duration-300 hover:border-gray-300;
-}
+// Personalización de Scrollbar para coincidir con el tema
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-.premium-button {
-  @apply transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md;
-}
+  &::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
 
-.premium-metric {
-  @apply bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-gray-300;
-}
+  &::-webkit-scrollbar-thumb {
+    @apply bg-surface-200 dark:bg-surface-700 rounded-full;
 
-.premium-badge {
-  @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border;
-}
-
-.premium-input {
-  @apply transition-all duration-200 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100;
-}
-
-.skeleton-loader {
-  @apply animate-pulse bg-gray-200 rounded;
-}
-
-// Nuevas clases para el diseño mejorado
-.premium-metric-compact {
-  @apply bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-all duration-200 hover:border-blue-300;
+    &:hover {
+      @apply bg-surface-300 dark:bg-surface-600;
+    }
+  }
 }
 
 .sidebar-filtros {

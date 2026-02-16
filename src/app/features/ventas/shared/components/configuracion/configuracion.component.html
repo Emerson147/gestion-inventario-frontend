@@ -1,1645 +1,2133 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-  
+<div
+  class="config-zen-shell min-h-screen bg-surface-50 dark:bg-surface-950 transition-colors duration-300"
+>
   <!-- 🛡️ HEADER PRINCIPAL EMPRESARIAL -->
-  <div class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-6 py-4">
-      <div class="flex items-center justify-between">
+  <div
+    class="sticky top-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 shadow-sm"
+  >
+    <div class="max-w-[1600px] mx-auto px-6 py-6">
+      <div class="relative flex items-center justify-between">
+        <!-- Blob Decorativo Orgánico -->
+        <div
+          class="pointer-events-none absolute -top-20 -right-20 w-96 h-96 rounded-full bg-primary-200/30 dark:bg-primary-500/10 blur-[100px] animate-pulse-slow"
+        ></div>
+
         <!-- Logo y Título -->
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <i class="pi pi-cog text-2xl text-white"></i>
+        <div class="flex items-center gap-6 relative z-10">
+          <div class="relative group cursor-default">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-surface-0 to-surface-50 dark:from-surface-800 dark:to-surface-900 rounded-[1.5rem] flex items-center justify-center shadow-lg border border-surface-200 dark:border-surface-700 group-hover:scale-105 transition-transform duration-500 ease-out"
+            >
+              <i
+                class="pi pi-cog text-3xl text-primary-600 dark:text-primary-400"
+              ></i>
             </div>
-            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            <div
+              class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-surface-0 dark:border-surface-950 shadow-sm"
+            ></div>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Panel de Administración</h2>
-            <p class="text-sm text-gray-500">
-              <span class="text-indigo-600 font-medium">{{currentUser}}</span>
-              <span class="mx-2">•</span>
-              <span>{{currentDateTime}}</span>
-            </p>
+            <h2
+              class="text-3xl font-bold text-surface-900 dark:text-surface-0 tracking-tight leading-tight"
+            >
+              Configuración
+            </h2>
 
-            <!-- Breadcrumbs -->
-            <div class="mt-2 text-sm text-gray-500">
-              <nav class="flex items-center gap-2" aria-label="Breadcrumb">
-                <a class="hover:text-blue-600 transition-colors" (click)="irInicio()">Inicio</a>
-                <i class="pi pi-angle-right text-xs text-gray-400"></i>
-                <a class="hover:text-blue-600 transition-colors" (click)="irVentas()">Ventas</a>
-                <i class="pi pi-angle-right text-xs text-gray-400"></i>
-                <span class="text-gray-900 font-medium">Configuración</span>
-              </nav>
+            <!-- Breadcrumbs Zen -->
+            <div
+              class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 mt-1"
+            >
+              <a
+                class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                (click)="irInicio()"
+                >Inicio</a
+              >
+              <i class="pi pi-angle-right text-xs opacity-50"></i>
+              <a
+                class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                (click)="irVentas()"
+                >Ventas</a
+              >
+              <i class="pi pi-angle-right text-xs opacity-50"></i>
+              <span class="font-medium text-surface-900 dark:text-surface-100"
+                >Panel General</span
+              >
             </div>
           </div>
         </div>
-        
+
         <!-- Estado del Sistema -->
-        <div class="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
-          <div class="relative">
-            <i class="pi pi-shield text-green-600 text-lg"></i>
-            <span class="absolute -top-1 -right-1 flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
+        <div
+          class="hidden sm:flex items-center gap-4 px-5 py-3 bg-surface-0/50 dark:bg-surface-800/50 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-700/50 shadow-sm"
+        >
+          <div class="text-right">
+            <div
+              class="text-xs font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-0.5"
+            >
+              Usuario Activo
+            </div>
+            <div
+              class="font-semibold text-surface-700 dark:text-surface-200 text-sm"
+            >
+              {{ currentUser }}
+            </div>
           </div>
-          <div class="text-sm">
-            <div class="font-semibold text-green-900">Sistema Online</div>
-            <div class="text-green-600 text-xs">Todos los servicios activos</div>
+          <div class="h-8 w-px bg-surface-200 dark:bg-surface-700"></div>
+          <div class="relative">
+            <div
+              class="absolute inset-0 bg-emerald-500/20 blur-lg rounded-full"
+            ></div>
+            <div
+              class="relative flex items-center justify-center w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400"
+            >
+              <i class="pi pi-shield text-lg"></i>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- 📋 CONTENEDOR PRINCIPAL -->
-  <div class="max-w-[1600px] mx-auto px-6 py-6">
-    <!-- Tabs empresariales con diseño moderno -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <p-tabView [(activeIndex)]="seccionActiva" styleClass="modern-tabs">
-        
-        <!-- 👤 GESTIÓN DE USUARIOS -->
-        <p-tabPanel>
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-                <i class="pi pi-users text-white text-lg font-bold"></i>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Usuarios</span>
-                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold min-w-[24px] text-center">
-                  {{usuarios.length}}
-                </span>
-              </div>
-            </div>
-          </ng-template>
-          
-          <div class="p-6">
-            <!-- Toolbar moderno -->
-            <div class="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100/50">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-lg font-bold text-gray-900 mb-1">Gestión de Usuarios</h3>
-                  <p class="text-sm text-gray-600">
-                    Administrar accesos y permisos del sistema
-                    <span class="mx-2">•</span>
-                    <span class="text-blue-600 font-medium">{{currentUser}}</span>
-                  </p>
-                </div>
-                <p-button 
-                  icon="pi pi-plus"
-                  label="Nuevo Usuario"
-                  severity="success"
-                  styleClass="shadow-md hover:shadow-lg transition-all"
-                  (click)="mostrarNuevoUsuario()">
-                </p-button>
-              </div>
-            </div>
-            
-            <!-- Tabla moderna y limpia -->
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <p-table 
-                [value]="usuarios" 
-                styleClass="modern-table"
-                [paginator]="true"
-                [rows]="10"
-                [responsive]="true"
-                [lazy]="true"
-                (onLazyLoad)="cargarUsuariosLazy($event)">
-              
-                <ng-template pTemplate="header">
-                  <tr class="bg-gray-50/80">
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Usuario</th>
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Información</th>
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Rol</th>
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Último Acceso</th>
-                    <th class="text-xs font-semibold text-gray-600 uppercase tracking-wider text-center">Acciones</th>
-                  </tr>
-                </ng-template>
-                
-                <!-- 🎨 Empty State para tabla vacía -->
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="6" class="p-0">
-                      <div class="py-16 px-6 text-center">
-                        <div class="max-w-md mx-auto">
-                          <!-- Icono decorativo -->
-                          <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                            <i class="pi pi-users text-5xl text-blue-400"></i>
-                          </div>
-                          
-                          <!-- Título y descripción -->
-                          <h3 class="text-xl font-bold text-gray-900 mb-3">No hay usuarios registrados</h3>
-                          <p class="text-sm text-gray-600 mb-6 leading-relaxed">
-                            Comienza a construir tu equipo agregando el primer usuario al sistema.
-                            <br>Podrás asignar roles y permisos específicos.
-                          </p>
-                          
-                          <!-- Botón de acción -->
-                          <p-button 
-                            icon="pi pi-plus-circle" 
-                            label="Crear Primer Usuario" 
-                            severity="success"
-                            styleClass="shadow-lg hover:shadow-xl transition-all"
-                            (click)="mostrarNuevoUsuario()">
-                          </p-button>
-                          
-                          <!-- Ayuda adicional -->
-                          <div class="mt-6 pt-6 border-t border-gray-200">
-                            <p class="text-xs text-gray-500 flex items-center justify-center gap-2">
-                              <i class="pi pi-info-circle"></i>
-                              <span>Los usuarios pueden tener roles de Administrador, Vendedor o Cajero</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-                
-                <ng-template pTemplate="body" let-usuario>
-                  <tr class="hover:bg-blue-50/30 transition-colors border-b border-gray-100">
-                    <!-- Usuario -->
-                    <td class="py-4">
-                      <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md">
-                          {{usuario.avatar || usuario.nombre.substring(0, 2).toUpperCase()}}
-                        </div>
-                        <div>
-                          <div class="font-semibold text-gray-900 text-sm">{{usuario.nombre}}</div>
-                          <div class="text-xs text-gray-500">{{ '@' + usuario.username}}</div>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <!-- Información -->
-                    <td class="py-4">
-                      <div class="space-y-1">
-                        <div class="flex items-center gap-2 text-xs">
-                          <i class="pi pi-envelope text-blue-500"></i>
-                          <span class="text-gray-600">{{usuario.email}}</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs" *ngIf="usuario.telefono">
-                          <i class="pi pi-phone text-green-500"></i>
-                          <span class="text-gray-600">{{usuario.telefono}}</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs">
-                          <i class="pi pi-building text-purple-500"></i>
-                          <span class="text-gray-600">{{usuario.sucursal}}</span>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <!-- Rol -->
-                    <td class="py-4">
-                      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" 
-                           [class]="getRolClasses(usuario.rol)">
-                        <i [class]="getRolIcon(usuario.rol)"></i>
-                        <span>{{usuario.rol}}</span>
-                      </div>
-                    </td>
-                    
-                    <!-- Estado -->
-                    <td class="py-4">
-                      <p-tag 
-                        [value]="usuario.estado"
-                        [severity]="getEstadoSeverity(usuario.estado)"
-                        styleClass="font-medium text-xs">
-                      </p-tag>
-                    </td>
-                    
-                    <!-- Último acceso -->
-                    <td class="py-4">
-                      <div class="text-xs">
-                        <div class="font-medium text-gray-900">{{formatearFechaUltimoAcceso(usuario.ultimoAcceso)}}</div>
-                        <div class="text-gray-500">{{usuario.ultimoAcceso | date:'dd/MM/yy HH:mm'}}</div>
-                      </div>
-                    </td>
-                    
-                    <!-- Acciones -->
-                    <td class="py-4 text-center">
-                      <div class="flex justify-center gap-1">
-                        <p-button 
-                          icon="pi pi-pencil"
-                          [text]="true"
-                          [rounded]="true"
-                          size="small"
-                          severity="info"
-                          pTooltip="Editar"
-                          tooltipPosition="top"
-                          styleClass="w-8 h-8 hover:bg-blue-50"
-                          (click)="editarUsuario(usuario)">
-                        </p-button>
-                        <p-button 
-                          icon="pi pi-trash"
-                          [text]="true"
-                          [rounded]="true"
-                          size="small"
-                          severity="danger"
-                          pTooltip="Eliminar"
-                          tooltipPosition="top"
-                          styleClass="w-8 h-8 hover:bg-red-50"
-                          (click)="eliminarUsuario(usuario)"
-                          [disabled]="usuario.username === currentUser.toLowerCase()">
-                        </p-button>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </div>
-          </div>
-        </p-tabPanel>
-        
-        <!-- 🏪 CONFIGURACIÓN DEL NEGOCIO -->
-        <p-tabPanel>
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-                <i class="pi pi-building text-white text-lg font-bold"></i>
-              </div>
-              <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Negocio</span>
-            </div>
-          </ng-template>
-          
-          <div class="p-6">
-            <div class="mb-6 p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100/50">
-              <h3 class="text-lg font-bold text-gray-900 mb-1">Configuración del Negocio</h3>
-              <p class="text-sm text-gray-600">
-                Datos de la empresa y configuración general
-                <span class="mx-2">•</span>
-                <span class="text-green-600 font-medium">{{currentUser}}</span>
-              </p>
-            </div>
-            
-            <div class="space-y-4">
-              <p-accordion [multiple]="true" [activeIndex]="[0]" styleClass="modern-accordion">
-              
-              <!-- Información Básica -->
-              <p-accordionTab header="Información Básica de la Empresa" [selected]="true">
-                <div class="p-6 bg-blue-50">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
-                    <div class="space-y-2">
-                      <label for="nombreEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-building text-blue-600"></i>
-                        <span>Nombre de la Empresa</span>
-                      </label>
-                      <input 
-                        id="nombreEmpresa"
-                        type="text"
-                        pInputText
-                        [(ngModel)]="configNegocio.nombre"
-                        placeholder="Nombre completo de la empresa"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="rucEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-id-card text-green-600"></i>
-                        <span>RUC</span>
-                        <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Número de RUC de 11 dígitos. Ej: 20123456789" tooltipPosition="top"></i>
-                      </label>
-                      <input 
-                        id="rucEmpresa"
-                        type="text"
-                        pInputText
-                        [(ngModel)]="configNegocio.ruc"
-                        placeholder="20123456789"
-                        maxlength="11"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
-                    </div>
-                    
-                    <div class="md:col-span-2 space-y-2">
-                      <label for="direccionEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-map-marker text-purple-600"></i>
-                        <span>Dirección</span>
-                      </label>
-                      <textarea 
-                        id="direccionEmpresa"
-                        pInputTextarea
-                        [(ngModel)]="configNegocio.direccion"
-                        placeholder="Dirección completa de la empresa"
-                        rows="3"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all">
-                      </textarea>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="telefonoEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-phone text-orange-600"></i>
-                        <span>Teléfono</span>
-                      </label>
-                      <input 
-                        id="telefonoEmpresa"
-                        type="text"
-                        pInputText
-                        [(ngModel)]="configNegocio.telefono"
-                        placeholder="+51 987 654 321"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="emailEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-envelope text-red-600"></i>
-                        <span>Email</span>
-                      </label>
-                      <input 
-                        id="emailEmpresa"
-                        type="email"
-                        pInputText
-                        [(ngModel)]="configNegocio.email"
-                        placeholder="contacto@empresa.com"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="websiteEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-globe text-blue-600"></i>
-                        <span>Sitio Web</span>
-                      </label>
-                      <input 
-                        id="websiteEmpresa"
-                        type="url"
-                        pInputText
-                        [(ngModel)]="configNegocio.website"
-                        placeholder="www.empresa.com"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="sloganEmpresa" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-comment text-pink-600"></i>
-                        <span>Slogan</span>
-                      </label>
-                      <input 
-                        id="sloganEmpresa"
-                        type="text"
-                        pInputText
-                        [(ngModel)]="configNegocio.slogan"
-                        placeholder="Tu slogan empresarial"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all" />
-                    </div>
-                  </div>
-                </div>
-              </p-accordionTab>
-              
-              <!-- Configuración Operativa -->
-              <p-accordionTab header="Configuración Operativa">
-                <div class="p-6 bg-purple-50">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
-                    <div class="space-y-2">
-                      <label for="horarioApertura" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-clock text-green-600"></i>
-                        <span>Hora de Apertura</span>
-                      </label>
-                      <input 
-                        type="time"
-                        pInputText
-                        [(ngModel)]="configNegocio.horarioApertura"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="horarioCierre" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-clock text-red-600"></i>
-                        <span>Hora de Cierre</span>
-                      </label>
-                      <input 
-                        type="time"
-                        pInputText
-                        [(ngModel)]="configNegocio.horarioCierre"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all" />
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="monedaPrincipal" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-money-bill text-yellow-600"></i>
-                        <span>Moneda Principal</span>
-                      </label>
-                      <p-dropdown 
-                        id="monedaPrincipal"
-                        [(ngModel)]="configNegocio.moneda"
-                        [options]="opcionesMoneda"
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="Seleccionar moneda"
-                        styleClass="w-full">
-                      </p-dropdown>
-                    </div>
-                    
-                    <!-- Días laborales optimizado -->
-                    <div class="lg:col-span-3 space-y-3">
-                      <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <i class="pi pi-calendar text-indigo-600"></i>
-                        <span>Días Laborales</span>
-                      </label>
-                      <div class="flex flex-wrap gap-4">
-                        <div *ngFor="let dia of diasSemana; let i = index; trackBy: trackByDiaId" 
-                             class="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
-                          <p-checkbox 
-                            [inputId]="'dia-' + i"
-                            [binary]="true"
-                            [ngModel]="configNegocio.diasLaborales.includes(dia.value)"
-                            (onChange)="onDiaLaboralChange(dia, $event)">
-                          </p-checkbox>
-                          <label [for]="'dia-' + i" class="text-sm font-medium text-gray-700 cursor-pointer">
-                            {{dia.label}}
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </p-accordionTab>
-              
-              <!-- Logo y Branding optimizado -->
-              <p-accordionTab header="Logo y Branding">
-                <div class="p-6 bg-green-50">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
-                    <!-- Upload Logo -->
-                    <div class="space-y-4">
-                      <h4 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        <i class="pi pi-image text-blue-600"></i>
-                        Logo de la Empresa
-                      </h4>
-                      
-                      <div *ngIf="configNegocio.logo" 
-                           class="w-32 h-32 bg-white rounded-xl shadow-lg border border-gray-200 p-4 flex items-center justify-center">
-                        <img [src]="configNegocio.logo" alt="Logo empresa" class="max-w-full max-h-full object-contain" />
-                      </div>
-                      
-                      <div class="space-y-2">
-                        <p-fileUpload 
-                          mode="basic"
-                          accept="image/*"
-                          maxFileSize="1000000"
-                          chooseLabel="Seleccionar Logo"
-                          (onSelect)="onUploadLogo($event)"
-                          styleClass="w-full">
-                        </p-fileUpload>
-                        <p class="text-xs text-gray-500">
-                          Formato: JPG, PNG | Máximo: 1MB | Recomendado: 200x200px
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <!-- Vista previa optimizada -->
-                    <div class="space-y-4">
-                      <h4 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        <i class="pi pi-eye text-purple-600"></i>
-                        Vista Previa
-                      </h4>
-                      
-                      <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                        <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
-                          <div *ngIf="configNegocio.logo" class="w-16 h-16 bg-gray-100 rounded-lg p-2">
-                            <img [src]="configNegocio.logo" alt="Logo" class="w-full h-full object-contain" />
-                          </div>
-                          <div class="flex-1">
-                            <h5 class="text-lg font-bold text-gray-900">
-                              {{configNegocio.nombre || "Nombre de la Empresa"}}
-                            </h5>
-                            <p class="text-gray-600">{{configNegocio.slogan || "Tu slogan aquí"}}</p>
-                          </div>
-                        </div>
-                        
-                        <div class="space-y-3">
-                          <div class="flex items-center gap-3 text-sm">
-                            <i class="pi pi-map-marker text-purple-600"></i>
-                            <span class="text-gray-700">{{configNegocio.direccion || "Dirección de la empresa"}}</span>
-                          </div>
-                          <div class="flex items-center gap-3 text-sm">
-                            <i class="pi pi-phone text-green-600"></i>
-                            <span class="text-gray-700">{{configNegocio.telefono || "Teléfono"}}</span>
-                          </div>
-                          <div class="flex items-center gap-3 text-sm">
-                            <i class="pi pi-envelope text-blue-600"></i>
-                            <span class="text-gray-700">{{configNegocio.email || "Email"}}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </p-accordionTab>
-            </p-accordion>
-            
-            <!-- Botón guardar moderno -->
-            <div class="mt-6 p-5 bg-white rounded-xl border border-gray-200 flex justify-end">
-              <p-button 
-                icon="pi pi-save"
-                label="Guardar Configuración"
-                severity="success"
-                styleClass="shadow-md hover:shadow-lg transition-all"
-                [loading]="guardando"
-                (click)="guardarConfiguracionNegocio()">
-              </p-button>
-            </div>
-            </div>
-          </div>
-        </p-tabPanel>
-        
-        <!-- 🖨️ IMPRESORAS Y DISPOSITIVOS -->
-        <p-tabPanel>
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-                <i class="pi pi-print text-white text-lg font-bold"></i>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Impresoras</span>
-                <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold min-w-[24px] text-center">
-                  {{impresoras.length}}
-                </span>
-              </div>
-            </div>
-          </ng-template>
-          
-          <div class="p-6">
-            <div class="mb-6 p-5 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-xl border border-purple-100/50">
-              <h3 class="text-lg font-bold text-gray-900 mb-1">Gestión de Impresoras</h3>
-              <p class="text-sm text-gray-600">
-                Configuración de hardware del sistema
-                <span class="mx-2">•</span>
-                <span class="text-purple-600 font-medium">{{currentUser}}</span>
-              </p>
-            </div>
-          
-          <!-- 🎨 Empty State para impresoras -->
-          <div *ngIf="impresoras.length === 0" class="py-16 px-6 text-center">
-            <div class="max-w-md mx-auto">
-              <!-- Icono decorativo -->
-              <div class="w-24 h-24 mx-auto bg-gradient-to-br from-purple-50 to-fuchsia-100 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                <i class="pi pi-print text-5xl text-purple-400"></i>
-              </div>
-              
-              <!-- Título y descripción -->
-              <h3 class="text-xl font-bold text-gray-900 mb-3">No hay impresoras configuradas</h3>
-              <p class="text-sm text-gray-600 mb-6 leading-relaxed">
-                Configura tu primera impresora para comenzar a imprimir tickets y comprobantes.
-                <br>Compatible con impresoras térmicas y de red.
-              </p>
-              
-              <!-- Botón de acción -->
-              <p-button 
-                icon="pi pi-plus-circle" 
-                label="Agregar Primera Impresora" 
-                severity="success"
-                styleClass="shadow-lg hover:shadow-xl transition-all"
-                (click)="mostrarNuevaImpresora()">
-              </p-button>
-              
-              <!-- Ayuda adicional -->
-              <div class="mt-6 pt-6 border-t border-gray-200">
-                <div class="flex items-center justify-center gap-4 text-xs text-gray-500">
-                  <div class="flex items-center gap-1">
-                    <i class="pi pi-check-circle text-green-500"></i>
-                    <span>Impresoras USB</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <i class="pi pi-check-circle text-green-500"></i>
-                    <span>Impresoras de Red</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <i class="pi pi-check-circle text-green-500"></i>
-                    <span>Tickets 80mm</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Grid de impresoras optimizado -->
-          <div *ngIf="impresoras.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div *ngFor="let impresora of impresoras; trackBy: trackByImpresoraId" 
-                 class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-              
-              <!-- Header de la impresora -->
-              <div class="p-6 border-b border-gray-200 bg-gray-50">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center"
-                         [class]="getImpresoraTipoClasses(impresora.tipo)">
-                      <i class="pi pi-print text-xl text-white"></i>
-                    </div>
-                    <div>
-                      <h4 class="font-bold text-gray-900">{{impresora.nombre}}</h4>
-                      <p class="text-sm text-gray-600">{{impresora.ubicacion}}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex items-center justify-between">
-                  <p-tag 
-                    [value]="impresora.estado"
-                    [severity]="getEstadoImpresoraSeverity(impresora.estado)"
-                    styleClass="font-medium">
-                  </p-tag>
-                  <div *ngIf="impresora.esDefault" 
-                       class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="pi pi-star"></i>
-                    <span>Principal</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Información técnica -->
-              <div class="p-6 space-y-3">
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-600">Tipo:</span>
-                  <span class="text-sm font-medium text-gray-900">{{impresora.tipo}}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-600">Papel:</span>
-                    <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Ancho del rollo de papel compatible con la impresora (ej: 80mm)" tooltipPosition="top"></i>
-                  </div>
-                  <span class="text-sm font-medium text-gray-900">{{impresora.tamanoPapel}}</span>
-                </div>
-                <div class="flex justify-between" *ngIf="impresora.ip">
-                  <span class="text-sm text-gray-600">IP:</span>
-                  <span class="text-sm font-medium text-gray-900">{{impresora.ip}}:{{impresora.puerto}}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-600">Driver:</span>
-                    <i class="pi pi-info-circle text-xs text-gray-400 cursor-help" pTooltip="Controlador o driver necesario para la comunicación con la impresora" tooltipPosition="top"></i>
-                  </div>
-                  <span class="text-sm font-medium text-gray-900">{{impresora.driver}}</span>
-                </div>
-              </div>
-              
-              <!-- Acciones de la impresora -->
-              <div class="p-6 bg-gray-50 border-t border-gray-200 space-y-3">
-                <p-button 
-                  icon="pi pi-wifi"
-                  label="Test Conexión"
-                  [outlined]="true"
-                  size="small"
-                  [loading]="testConexionImpresora"
-                  (click)="testearConexionImpresora(impresora)"
-                  styleClass="w-full">
-                </p-button>
-                
-                <div class="flex gap-2">
-                  <p-button 
-                    icon="pi pi-star"
-                    [outlined]="!impresora.esDefault"
-                    [disabled]="impresora.esDefault"
-                    size="small"
-                    severity="danger"
-                    pTooltip="Establecer como principal"
-                    (click)="establecerImpresoraDefault(impresora)"
-                    styleClass="flex-1">
-                  </p-button>
-                  
-                  <p-button 
-                    icon="pi pi-cog"
-                    [outlined]="true"
-                    size="small"
-                    severity="info"
-                    pTooltip="Configurar"
-                    styleClass="flex-1">
-                  </p-button>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Card agregar impresora optimizada -->
-            <div class="bg-white rounded-xl shadow-lg border-2 border-dashed border-gray-300 hover:border-purple-400 transition-all duration-300 flex items-center justify-center p-8">
-              <div class="text-center">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i class="pi pi-plus text-2xl text-purple-600"></i>
-                </div>
-                <h4 class="text-lg font-bold text-gray-900 mb-2">Agregar Impresora</h4>
-                <p class="text-gray-600 mb-4">Configurar nueva impresora</p>
-                <p-button 
-                  icon="pi pi-plus"
-                  label="Agregar"
-                  severity="success"
-                  (click)="mostrarFormularioImpresora = true">
-                </p-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </p-tabPanel>
-      
-      <!-- 💰 CONFIGURACIÓN FISCAL -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-              <i class="pi pi-calculator text-white text-lg font-bold"></i>
-            </div>
-            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Fiscal</span>
-          </div>
-        </ng-template>
-        
-        <div class="seccion-content fiscal-section p-6">
-          <div class="fiscal-header mb-6 bg-orange-50 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Configuración Fiscal - SUNAT</h3>
-            <p class="text-gray-600">
-              Parámetros de facturación electrónica - Responsable: 
-              <span class="text-orange-600 font-semibold">{{currentUser}}</span>
-            </p>
-          </div>
-          
-          <div class="fiscal-form">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              <!-- Configuración SUNAT -->
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <i class="pi pi-globe text-blue-600"></i>
-                  Configuración SUNAT
-                </h4>
-                
-                <div class="space-y-6">
-                  <div class="space-y-3">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-globe text-blue-600"></i>
-                      <span>Entorno SUNAT</span>
-                    </label>
-                    <div class="flex gap-4">
-                      <div class="flex items-center gap-2 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                        <p-radioButton 
-                          inputId="beta"
-                          name="entorno"
-                          value="BETA"
-                          [(ngModel)]="configFiscal.entornoSunat">
-                        </p-radioButton>
-                        <label for="beta" class="text-sm font-medium text-yellow-800 cursor-pointer">
-                          BETA (Pruebas)
-                        </label>
-                      </div>
-                      
-                      <div class="flex items-center gap-2 bg-green-50 p-3 rounded-lg border border-green-200">
-                        <p-radioButton 
-                          inputId="produccion"
-                          name="entorno"
-                          value="PRODUCCION"
-                          [(ngModel)]="configFiscal.entornoSunat">
-                        </p-radioButton>
-                        <label for="produccion" class="text-sm font-medium text-green-800 cursor-pointer">
-                          PRODUCCIÓN
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label for="usuarioSol" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-user text-green-600"></i>
-                      <span>Usuario SOL</span>
-                    </label>
-                    <input 
-                      type="text"
-                      pInputText
-                      [(ngModel)]="configFiscal.usuarioSol"
-                      placeholder="Usuario SUNAT"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label for="claveSol" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-lock text-red-600"></i>
-                      <span>Clave SOL</span>
-                    </label>
-                    <p-password 
-                      [(ngModel)]="configFiscal.claveSol"
-                      placeholder="Clave SUNAT"
-                      styleClass="w-full"
-                      [feedback]="false"
-                      inputStyleClass="p-3">
-                    </p-password>
-                  </div>
-                  
-                  <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <div class="flex items-center gap-3">
-                      <p-inputSwitch 
-                        inputId="emisorElectronico"
-                        [(ngModel)]="configFiscal.emisorElectronico">
-                      </p-inputSwitch>
-                      <div>
-                        <label for="emisorElectronico" class="text-sm font-semibold text-blue-900 cursor-pointer">
-                          Emisor Electrónico
-                        </label>
-                        <p class="text-xs text-blue-700">Habilitar facturación electrónica</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Configuración de Comprobantes -->
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <i class="pi pi-file text-purple-600"></i>
-                  Series de Comprobantes
-                </h4>
-                
-                <div class="space-y-6">
-                  <div class="space-y-2">
-                    <label for="serieFactura" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-file text-blue-600"></i>
-                      <span>Serie Facturas</span>
-                    </label>
-                    <input 
-                      type="text"
-                      pInputText
-                      [(ngModel)]="configFiscal.serieFactura"
-                      placeholder="F001"
-                      maxlength="4"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" />
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label for="serieBoleta" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-receipt text-green-600"></i>
-                      <span>Serie Boletas</span>
-                    </label>
-                    <input 
-                      type="text"
-                      pInputText
-                      [(ngModel)]="configFiscal.serieBoleta"
-                      placeholder="B001"
-                      maxlength="4"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label for="serieNota" class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-bookmark text-purple-600"></i>
-                      <span>Serie Notas</span>
-                    </label>
-                    <input 
-                      type="text"
-                      pInputText
-                      [(ngModel)]="configFiscal.serieNota"
-                      placeholder="N001"
-                      maxlength="4"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all" />
-                  </div>
-                  
 
-                </div>
-              </div>
-            </div>
-            
-            <!-- Estado de certificados optimizado -->
-            <div class="certificados-section mt-8">
-              <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <i class="pi pi-shield text-green-600"></i>
-                Estado de Certificados
-              </h4>
-              
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 flex items-center gap-4">
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="pi pi-shield text-green-600 text-xl"></i>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-gray-900">Certificado Digital</h5>
-                    <p class="text-sm text-green-600 font-medium">Válido hasta 15/12/2025</p>
-                  </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 flex items-center gap-4">
-                  <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="pi pi-wifi text-blue-600 text-xl"></i>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-gray-900">Conexión SUNAT</h5>
-                    <p class="text-sm text-blue-600 font-medium">Activa</p>
-                  </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 flex items-center gap-4">
-                  <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <i class="pi pi-clock text-yellow-600 text-xl"></i>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-gray-900">Última Sincronización</h5>
-                    <p class="text-sm text-yellow-600 font-medium">Hace 2 horas</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Botón guardar fiscal -->
-            <div class="form-actions mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div class="flex justify-end">
-                <p-button 
-                  icon="pi pi-save"
-                  label="Guardar Configuración Fiscal"
-                  severity="success"
-                  styleClass="shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-3"
-                  [loading]="guardando"
-                  (click)="guardarConfiguracionFiscal()">
-                </p-button>
-              </div>
-            </div>
+  <main class="relative max-w-[1600px] mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <!-- METRICS GRID (Zen Cards) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card Usuarios -->
+      <div
+        class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      >
+        <div
+          class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+        >
+          <i class="pi pi-users text-8xl text-primary-500"></i>
+        </div>
+        <div class="relative z-10">
+          <p
+            class="text- surface-500 dark:text-surface-400 text-sm font-medium mb-2"
+          >
+            Total Usuarios
+          </p>
+          <h3
+            class="text-4xl font-bold text-surface-900 dark:text-surface-0 tracking-tight"
+          >
+            {{ usuarios.length }}
+          </h3>
+          <div
+            class="mt-4 flex items-center gap-2 text-primary-600 dark:text-primary-400 text-sm font-medium"
+          >
+            <span
+              class="bg-primary-50 dark:bg-primary-900/30 px-2.5 py-1 rounded-lg"
+              >Activos</span
+            >
           </div>
         </div>
-      </p-tabPanel>
-      
-      <!-- 🎨 PERSONALIZACIÓN -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-            <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-              <i class="pi pi-palette text-white text-lg font-bold"></i>
-            </div>
-            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Personalización</span>
-          </div>
-        </ng-template>
-        
-        <div class="seccion-content personalizacion-section p-6">
-          <div class="personalizacion-header mb-6 bg-pink-50 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Personalización del Sistema</h3>
-            <p class="text-gray-600">
-              Themes, colores y apariencia - Designer: 
-              <span class="text-pink-600 font-semibold">{{currentUser}}</span>
-            </p>
-          </div>
-          
-          <div class="personalizacion-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              <!-- Panel de colores -->
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <i class="pi pi-palette text-purple-600"></i>
-                  Esquema de Colores
-                </h4>
-                
-                <div class="space-y-6">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                      <label for="colorPrimario" class="text-sm font-semibold text-gray-700">Color Primario</label>
-                      <div class="flex gap-2">
-                        <p-colorPicker 
-                          inputId="colorPrimario"
-                          [(ngModel)]="temaActual.colorPrimario"
-                          format="hex">
-                        </p-colorPicker>
-                        <input 
-                          type="text"
-                          pInputText
-                          [(ngModel)]="temaActual.colorPrimario"
-                          class="flex-1 p-2 border border-gray-300 rounded text-sm" />
-                      </div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="colorSecundario" class="text-sm font-semibold text-gray-700">Color Secundario</label>
-                      <div class="flex gap-2">
-                        <p-colorPicker 
-                          [(ngModel)]="temaActual.colorSecundario"
-                          format="hex">
-                        </p-colorPicker>
-                        <input 
-                          type="text"
-                          pInputText
-                          [(ngModel)]="temaActual.colorSecundario"
-                          class="flex-1 p-2 border border-gray-300 rounded text-sm" />
-                      </div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="colorAcento" class="text-sm font-semibold text-gray-700">Color de Acento</label>
-                      <div class="flex gap-2">
-                        <p-colorPicker 
-                          [(ngModel)]="temaActual.colorAcento"
-                          format="hex">
-                        </p-colorPicker>
-                        <input 
-                          type="text"
-                          pInputText
-                          [(ngModel)]="temaActual.colorAcento"
-                          class="flex-1 p-2 border border-gray-300 rounded text-sm" />
-                      </div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                      <label for="colorFondo" class="text-sm font-semibold text-gray-700">Color de Fondo</label>
-                      <div class="flex gap-2">
-                        <p-colorPicker 
-                          [(ngModel)]="temaActual.colorFondo"
-                          format="hex">
-                        </p-colorPicker>
-                        <input 
-                          type="text"
-                          pInputText
-                          [(ngModel)]="temaActual.colorFondo"
-                          class="flex-1 p-2 border border-gray-300 rounded text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Opciones adicionales -->
-                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center gap-3">
-                      <p-inputSwitch 
-                        [(ngModel)]="temaActual.esOscuro">
-                      </p-inputSwitch>
-                      <div>
-                        <label for="esOscuro" class="text-sm font-semibold text-gray-700 cursor-pointer">
-                          Modo Oscuro
-                        </label>
-                        <p class="text-xs text-gray-500">Activar tema oscuro del sistema</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Vista previa del tema -->
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <i class="pi pi-eye text-blue-600"></i>
-                  Vista Previa
-                </h4>
-                
-                <div class="rounded-lg overflow-hidden border border-gray-300" 
-                     [style.background]="temaActual.colorFondo">
-                  <div class="p-4 text-white" [style.background]="temaActual.colorPrimario">
-                    <h5 class="font-bold m-0">Sistema POS Emerson147</h5>
-                  </div>
-                  
-                  <div class="p-4 space-y-3">
-                    <div class="flex gap-2">
-                      <div class="px-4 py-2 rounded text-white text-sm font-medium" 
-                           [style.background]="temaActual.colorPrimario">
-                        Botón Primario
-                      </div>
-                      <div class="px-4 py-2 rounded text-white text-sm font-medium" 
-                           [style.background]="temaActual.colorSecundario">
-                        Botón Secundario
-                      </div>
-                      <div class="px-4 py-2 rounded text-white text-sm font-medium" 
-                           [style.background]="temaActual.colorAcento">
-                        Botón Acento
-                      </div>
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded border-l-4" 
-                         [style.border-left-color]="temaActual.colorPrimario">
-                      <h6 class="font-semibold text-gray-900 mb-2">Tarjeta de Ejemplo</h6>
-                      <p class="text-gray-600 text-sm">Contenido de la tarjeta con el tema seleccionado</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Acciones del tema -->
-            <div class="tema-actions mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div class="flex justify-between">
-                <p-button 
-                  icon="pi pi-refresh"
-                  label="Resetear"
-                  [outlined]="true"
-                  severity="secondary"
-                  (click)="resetearTema()">
-                </p-button>
-                <div class="flex gap-4">
-                  <p-button 
-                    icon="pi pi-eye"
-                    label="Vista Previa"
-                    [outlined]="true"
-                    severity="info"
-                    (click)="aplicarTemaPreview()">
-                  </p-button>
-                  <p-button 
-                    icon="pi pi-check"
-                    label="Aplicar Tema"
-                    severity="success"
-                    styleClass="shadow-lg hover:shadow-xl transition-all duration-300"
-                    [loading]="guardando"
-                    (click)="aplicarTema()">
-                  </p-button>
-                </div>
-              </div>
-            </div>
+      </div>
+
+      <!-- Card Impresoras -->
+      <div
+        class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      >
+        <div
+          class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+        >
+          <i class="pi pi-print text-8xl text-violet-500"></i>
+        </div>
+        <div class="relative z-10">
+          <p
+            class="text- surface-500 dark:text-surface-400 text-sm font-medium mb-2"
+          >
+            Impresoras
+          </p>
+          <h3
+            class="text-4xl font-bold text-surface-900 dark:text-surface-0 tracking-tight"
+          >
+            {{ impresoras.length }}
+          </h3>
+          <div
+            class="mt-4 flex items-center gap-2 text-violet-600 dark:text-violet-400 text-sm font-medium"
+          >
+            <span
+              class="bg-violet-50 dark:bg-violet-900/30 px-2.5 py-1 rounded-lg"
+              >Configuradas</span
+            >
           </div>
         </div>
-      </p-tabPanel>
-      
-      <!-- 💾 BACKUP Y SINCRONIZACIÓN -->
-      <p-tabPanel>
-        <ng-template pTemplate="header">
-          <div class="flex items-center gap-3 px-6 py-4 transition-all group">
-            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 group-hover:shadow-xl">
-              <i class="pi pi-database text-white text-lg font-bold"></i>
-            </div>
-            <span class="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Backup</span>
+      </div>
+
+      <!-- Card Fiscal -->
+      <div
+        class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      >
+        <div
+          class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+        >
+          <i class="pi pi-file text-8xl text-amber-500"></i>
+        </div>
+        <div class="relative z-10">
+          <p
+            class="text- surface-500 dark:text-surface-400 text-sm font-medium mb-2"
+          >
+            Entorno Fiscal
+          </p>
+          <h3
+            class="text-2xl font-bold text-surface-900 dark:text-surface-0 tracking-tight truncate"
+          >
+            {{ configFiscal.entornoSunat }}
+          </h3>
+          <div
+            class="mt-4 flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm font-medium"
+          >
+            <span
+              class="bg-amber-50 dark:bg-amber-900/30 px-2.5 py-1 rounded-lg"
+              >SUNAT</span
+            >
           </div>
-        </ng-template>
-        
-        <div class="seccion-content backup-section p-6">
-          <div class="backup-header mb-6 bg-indigo-50 rounded-xl p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Backup y Sincronización</h3>
-            <p class="text-gray-600">
-              Respaldo de datos y configuración - Admin: 
-              <span class="text-indigo-600 font-semibold">{{currentUser}}</span>
-            </p>
+        </div>
+      </div>
+
+      <!-- Card Backup -->
+      <div
+        class="group relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      >
+        <div
+          class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+        >
+          <i class="pi pi-database text-8xl text-emerald-500"></i>
+        </div>
+        <div class="relative z-10">
+          <p
+            class="text- surface-500 dark:text-surface-400 text-sm font-medium mb-2"
+          >
+            Respaldo
+          </p>
+          <h3
+            class="text-2xl font-bold text-surface-900 dark:text-surface-0 tracking-tight"
+          >
+            {{ configBackup.frecuenciaBackup }}
+          </h3>
+          <div
+            class="mt-4 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium"
+          >
+            <span
+              class="bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg"
+              >Automático</span
+            >
           </div>
-          
-          <div class="backup-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              <!-- Configuración de backup -->
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <i class="pi pi-cog text-blue-600"></i>
-                  Configuración de Backup
-                </h4>
-                
-                <div class="space-y-6">
-                  <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <div class="flex items-center gap-3">
-                      <p-inputSwitch 
-                        [(ngModel)]="configBackup.backupAutomatico">
-                      </p-inputSwitch>
-                      <div>
-                        <label class="text-sm font-semibold text-blue-900 cursor-pointer">
-                          Backup Automático
-                        </label>
-                        <p class="text-xs text-blue-700">Realizar respaldos automáticos</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div *ngIf="configBackup.backupAutomatico" class="space-y-2">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-clock text-green-600"></i>
-                      <span>Frecuencia</span>
-                    </label>
-                    <p-dropdown 
-                      [(ngModel)]="configBackup.frecuenciaBackup"
-                      [options]="opcionesFrecuenciaBackup"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Seleccionar frecuencia"
-                      styleClass="w-full">
-                    </p-dropdown>
-                  </div>
-                  
-                  <div *ngIf="configBackup.backupAutomatico" class="space-y-2">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-calendar-times text-purple-600"></i>
-                      <span>Hora de Backup</span>
-                    </label>
-                    <input 
-                      type="time"
-                      pInputText
-                      [(ngModel)]="configBackup.horaBackup"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all" />
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-folder text-orange-600"></i>
-                      <span>Ubicación de Backup</span>
-                    </label>
-                    <input 
-                      type="text"
-                      pInputText
-                      [(ngModel)]="configBackup.ubicacionBackup"
-                      placeholder="/ruta/backup"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all" />
-                  </div>
-                  
-                  <div class="space-y-2">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <i class="pi pi-history text-red-600"></i>
-                      <span>Retención (días)</span>
-                    </label>
-                    <p-inputNumber 
-                      [(ngModel)]="configBackup.retencionDias"
-                      min="1"
-                      max="365"
-                      suffix=" días"
-                      inputStyleClass="p-3"
-                      styleClass="w-full">
-                    </p-inputNumber>
-                  </div>
-                </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZEN TOOLBAR (Floating Navigation) -->
+    <section class="sticky top-28 z-40 mx-auto max-w-4xl">
+      <div
+        class="bg-surface-900/5 dark:bg-surface-0/5 backdrop-blur-xl border border-surface-200/50 dark:border-surface-700/50 p-1.5 rounded-[2rem] shadow-lg flex justify-between items-center overflow-x-auto"
+      >
+        <div class="flex flex-nowrap gap-1 w-full">
+          <button
+            *ngFor="
+              let tab of [
+                { label: 'Usuarios', icon: 'pi pi-users' },
+                { label: 'Negocio', icon: 'pi pi-building' },
+                { label: 'Impresoras', icon: 'pi pi-print' },
+                { label: 'Fiscal', icon: 'pi pi-calculator' },
+                { label: 'Tema', icon: 'pi pi-palette' },
+                { label: 'Backup', icon: 'pi pi-database' },
+              ];
+              let i = index
+            "
+            (click)="irASeccion(i)"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-[1.5rem] text-sm font-bold transition-all duration-300 whitespace-nowrap"
+            [ngClass]="
+              seccionActiva === i
+                ? 'bg-surface-0 dark:bg-surface-800 text-primary-600 dark:text-primary-400 shadow-md transform scale-100'
+                : 'text-surface-600 dark:text-surface-400 hover:bg-surface-0/50 dark:hover:bg-surface-800/50 hover:text-surface-900 dark:hover:text-surface-200'
+            "
+          >
+            <i [class]="tab.icon"></i>
+            <span class="hidden sm:inline">{{ tab.label }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENEDOR PRINCIPAL DE SECCIONES (ngSwitch) -->
+    <div class="mt-8 relative min-h-[500px]" [ngSwitch]="seccionActiva">
+      <!-- 0. 👤 GESTIÓN DE USUARIOS -->
+      <section *ngSwitchCase="0" class="animate-fade-in-up">
+        <div class="space-y-6">
+          <!-- Toolbar Usuarios -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center gap-4 p-6 bg-surface-0 dark:bg-surface-900 rounded-[2rem] shadow-sm border border-surface-200 dark:border-surface-800"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/40 flex items-center justify-center text-primary-600 dark:text-primary-400"
+              >
+                <i class="pi pi-users text-xl"></i>
               </div>
-              
-              <!-- Estado y acciones -->
-              <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                  <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <i class="pi pi-info-circle text-purple-600"></i>
-                    Estado del Sistema
-                  </h4>
-                  
-                  <div class="space-y-4">
-                    <!-- Último backup -->
-                    <div class="flex items-center gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                      <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                        <i class="pi pi-check-circle text-white text-xl"></i>
-                      </div>
-                      <div>
-                        <h5 class="font-bold text-green-900">Último Backup</h5>
-                        <p class="text-sm text-green-700 font-medium">02/06/2025 02:00:15</p>
-                        <p class="text-xs text-green-600">Backup automático completado exitosamente</p>
-                      </div>
-                    </div>
-                    
-                    <!-- Tamaño de base de datos -->
-                    <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                        <i class="pi pi-database text-white text-xl"></i>
-                      </div>
-                      <div>
-                        <h5 class="font-bold text-blue-900">Tamaño de BD</h5>
-                        <p class="text-sm text-blue-700 font-medium">127.5 MB</p>
-                        <p class="text-xs text-blue-600">2,847 registros de ventas</p>
-                      </div>
-                    </div>
-                    
-                    <!-- Espacio disponible -->
-                    <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                      <div class="flex items-center gap-4 mb-3">
-                        <div class="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center">
-                          <i class="pi pi-server text-white text-xl"></i>
-                        </div>
-                        <div>
-                          <h5 class="font-bold text-yellow-900">Espacio Disponible</h5>
-                          <p class="text-sm text-yellow-700 font-medium">4.2 GB / 10 GB</p>
-                        </div>
-                      </div>
-                      <p-progressBar 
-                        [value]="42"
-                        [style]="{'height': '8px'}"
-                        [showValue]="false">
-                      </p-progressBar>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Acciones de backup -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                  <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <i class="pi pi-cog text-indigo-600"></i>
-                    Acciones de Backup
-                  </h4>
-                  
-                  <div class="space-y-3">
-                    <p-button 
-                      icon="pi pi-download"
-                      label="Backup Manual"
-                      severity="success"
-                      [loading]="backupEnProgreso"
-                      (click)="ejecutarBackupManual()"
-                      styleClass="w-full shadow-lg hover:shadow-xl transition-all duration-300">
-                    </p-button>
-                    
-                    <p-button 
-                      icon="pi pi-upload"
-                      label="Restaurar Backup"
-                      severity="info"
-                      [outlined]="true"
-                      styleClass="w-full">
-                    </p-button>
-                    
-                    <p-button 
-                      icon="pi pi-trash"
-                      label="Limpiar Backups Antiguos"
-                      severity="danger"
-                      [outlined]="true"
-                      styleClass="w-full">
-                    </p-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Progreso de backup optimizado -->
-            <div *ngIf="backupEnProgreso" class="backup-progress mt-8">
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <div class="flex items-center justify-between mb-4">
-                  <h5 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="pi pi-spin pi-spinner text-blue-600"></i>
-                    Realizando Backup...
-                  </h5>
-                  <span class="text-2xl font-bold text-blue-600">{{progresBackup.toFixed(0)}}%</span>
-                </div>
-                <p-progressBar 
-                  [value]="progresBackup"
-                  [style]="{'height': '12px'}"
-                  [showValue]="false"
-                  styleClass="mb-3">
-                </p-progressBar>
-                <p class="text-gray-600">
-                  Respaldando datos del sistema de 
-                  <span class="font-semibold text-indigo-600">{{currentUser}}</span>
+              <div>
+                <h3
+                  class="text-xl font-bold text-surface-900 dark:text-surface-0 tracking-tight"
+                >
+                  Gestión de Usuarios
+                </h3>
+                <p class="text-surface-500 dark:text-surface-400 text-sm">
+                  Administra los accesos del sistema
                 </p>
               </div>
             </div>
+
+            <p-button
+              icon="pi pi-plus"
+              label="Nuevo Usuario"
+              severity="primary"
+              styleClass="rounded-xl shadow-lg shadow-primary-500/20"
+              (click)="mostrarNuevoUsuario()"
+            >
+            </p-button>
+          </div>
+
+          <!-- Zen Table -->
+          <div
+            class="bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 overflow-hidden shadow-sm"
+          >
+            <p-table
+              [value]="usuarios"
+              styleClass="p-datatable-sm"
+              [paginator]="true"
+              [rows]="10"
+              [responsive]="true"
+              [rowHover]="true"
+            >
+              <ng-template pTemplate="header">
+                <tr class="bg-surface-50/50 dark:bg-surface-800/20">
+                  <th
+                    class="py-4 px-6 text-xs font-bold uppercase text-surface-500 dark:text-surface-400 tracking-wider border-b border-surface-100 dark:border-surface-800"
+                  >
+                    Usuario
+                  </th>
+                  <th
+                    class="py-4 px-6 text-xs font-bold uppercase text-surface-500 dark:text-surface-400 tracking-wider border-b border-surface-100 dark:border-surface-800"
+                  >
+                    Contacto
+                  </th>
+                  <th
+                    class="py-4 px-6 text-xs font-bold uppercase text-surface-500 dark:text-surface-400 tracking-wider border-b border-surface-100 dark:border-surface-800"
+                  >
+                    Rol
+                  </th>
+                  <th
+                    class="py-4 px-6 text-xs font-bold uppercase text-surface-500 dark:text-surface-400 tracking-wider border-b border-surface-100 dark:border-surface-800"
+                  >
+                    Estado
+                  </th>
+                  <th
+                    class="py-4 px-6 text-xs font-bold uppercase text-surface-500 dark:text-surface-400 tracking-wider border-b border-surface-100 dark:border-surface-800 text-right"
+                  >
+                    Acciones
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="p-12 text-center">
+                    <div
+                      class="flex flex-col items-center justify-center opacity-60"
+                    >
+                      <i
+                        class="pi pi-users text-6xl text-surface-300 dark:text-surface-600 mb-4"
+                      ></i>
+                      <p
+                        class="text-surface-600 dark:text-surface-400 font-medium"
+                      >
+                        No hay usuarios registrados
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-usuario>
+                <tr
+                  class="transition-colors duration-200 hover:bg-surface-50 dark:hover:bg-surface-800/30"
+                >
+                  <td
+                    class="py-4 px-6 border-b border-surface-50 dark:border-surface-800/50"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-800 flex items-center justify-center font-bold text-surface-600 dark:text-surface-300 text-sm"
+                      >
+                        {{ usuario.nombre.charAt(0).toUpperCase() }}
+                      </div>
+                      <div class="flex flex-col">
+                        <span
+                          class="font-bold text-surface-900 dark:text-surface-0 text-sm"
+                          >{{ usuario.nombre }}</span
+                        >
+                        <span
+                          class="text-xs text-surface-500 dark:text-surface-400"
+                          >&#64;{{ usuario.username }}</span
+                        >
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="py-4 px-6 border-b border-surface-50 dark:border-surface-800/50"
+                  >
+                    <div class="flex flex-col gap-1">
+                      <div
+                        class="flex items-center gap-2 text-xs text-surface-600 dark:text-surface-300"
+                      >
+                        <i class="pi pi-envelope text-surface-400"></i>
+                        {{ usuario.email }}
+                      </div>
+                      <div
+                        *ngIf="usuario.telefono"
+                        class="flex items-center gap-2 text-xs text-surface-600 dark:text-surface-300"
+                      >
+                        <i class="pi pi-phone text-surface-400"></i>
+                        {{ usuario.telefono }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="py-4 px-6 border-b border-surface-50 dark:border-surface-800/50"
+                  >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700"
+                    >
+                      <i [class]="getRolIcon(usuario.rol)"></i>
+                      {{ usuario.rol }}
+                    </span>
+                  </td>
+                  <td
+                    class="py-4 px-6 border-b border-surface-50 dark:border-surface-800/50"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="relative flex h-2.5 w-2.5">
+                        <span
+                          class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                          [ngClass]="
+                            usuario.estado === 'ACTIVO'
+                              ? 'bg-emerald-400'
+                              : 'bg-surface-400'
+                          "
+                        ></span>
+                        <span
+                          class="relative inline-flex rounded-full h-2.5 w-2.5"
+                          [ngClass]="
+                            usuario.estado === 'ACTIVO'
+                              ? 'bg-emerald-500'
+                              : 'bg-surface-500'
+                          "
+                        ></span>
+                      </span>
+                      <span
+                        class="text-xs font-medium text-surface-600 dark:text-surface-300"
+                        >{{ usuario.estado }}</span
+                      >
+                    </div>
+                  </td>
+                  <td
+                    class="py-4 px-6 border-b border-surface-50 dark:border-surface-800/50 text-right"
+                  >
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        (click)="editarUsuario(usuario)"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-surface-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
+                      >
+                        <i class="pi pi-pencil text-sm"></i>
+                      </button>
+                      <button
+                        (click)="eliminarUsuario(usuario)"
+                        [disabled]="
+                          usuario.username === currentUser.toLowerCase()
+                        "
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-surface-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all disabled:opacity-50"
+                      >
+                        <i class="pi pi-trash text-sm"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
         </div>
-      </p-tabPanel>
-    </p-tabView>
-  </div>
-</div>
+      </section>
 
-<!-- 🔄 LOADING OVERLAY MODERNO -->
-<div *ngIf="loading" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50">
-  <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
-    <div class="relative w-16 h-16 mx-auto mb-6">
-      <div class="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
-      <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-      <div class="absolute inset-2 border-3 border-indigo-300 rounded-full border-r-transparent animate-spin" style="animation-direction: reverse; animation-duration: 1s;"></div>
-    </div>
-    <h3 class="text-lg font-bold text-gray-900 mb-2">Cargando configuración</h3>
-    <p class="text-sm text-gray-600">
-      Usuario: <span class="font-semibold text-indigo-600">{{currentUser}}</span>
-    </p>
-  </div>
-</div>
+      <!-- 1. 🏪 CONFIGURACIÓN DEL NEGOCIO -->
+      <section *ngSwitchCase="1" class="animate-fade-in-up">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Header / Sidebar Info -->
+          <div class="lg:col-span-1 space-y-6">
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-6 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <div class="text-center mb-6">
+                <div class="relative inline-block">
+                  <div
+                    class="w-32 h-32 rounded-[2rem] bg-surface-50 dark:bg-surface-800 flex items-center justify-center mx-auto overflow-hidden border-2 border-dashed border-surface-200 dark:border-surface-700 hover:border-primary-500 transition-colors cursor-pointer group"
+                  >
+                    <img
+                      *ngIf="configNegocio.logo"
+                      [src]="configNegocio.logo"
+                      class="w-full h-full object-contain p-2"
+                    />
+                    <div
+                      *ngIf="!configNegocio.logo"
+                      class="flex flex-col items-center gap-2 text-surface-400 group-hover:text-primary-500"
+                    >
+                      <i class="pi pi-image text-3xl"></i>
+                      <span class="text-xs font-medium">Subir Logo</span>
+                    </div>
+                    <!-- Hidden File Upload overlay/trigger would go here, simplified for now -->
+                  </div>
+                  <div
+                    class="absolute -bottom-2 -right-2 bg-white dark:bg-surface-800 p-2 rounded-full shadow-md border border-surface-100 dark:border-surface-700"
+                  >
+                    <p-fileUpload
+                      mode="basic"
+                      chooseIcon="pi pi-pencil"
+                      styleClass="p-button-rounded p-button-text p-button-sm"
+                      [auto]="true"
+                      (onSelect)="onUploadLogo($event)"
+                    ></p-fileUpload>
+                  </div>
+                </div>
+                <h3
+                  class="mt-4 text-xl font-bold text-surface-900 dark:text-surface-0"
+                >
+                  {{ configNegocio.nombre || "Nombre Empresa" }}
+                </h3>
+                <p class="text-surface-500 dark:text-surface-400 text-sm">
+                  {{ configNegocio.slogan || "Sin slogan definido" }}
+                </p>
+              </div>
 
-<!-- 🗨️ DIÁLOGOS -->
-<p-confirmDialog styleClass="modern-confirm-dialog"></p-confirmDialog>
-<p-toast position="top-right" styleClass="modern-toast"></p-toast>
+              <div class="space-y-3">
+                <div
+                  class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800/50 rounded-xl"
+                >
+                  <div
+                    class="w-8 h-8 rounded-lg bg-white dark:bg-surface-800 flex items-center justify-center text-surface-500 shadow-sm"
+                  >
+                    <i class="pi pi-id-card"></i>
+                  </div>
+                  <div class="flex-1 overflow-hidden">
+                    <p class="text-xs text-surface-500 uppercase font-bold">
+                      RUC
+                    </p>
+                    <p
+                      class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate"
+                    >
+                      {{ configNegocio.ruc || "---" }}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800/50 rounded-xl"
+                >
+                  <div
+                    class="w-8 h-8 rounded-lg bg-white dark:bg-surface-800 flex items-center justify-center text-surface-500 shadow-sm"
+                  >
+                    <i class="pi pi-map-marker"></i>
+                  </div>
+                  <div class="flex-1 overflow-hidden">
+                    <p class="text-xs text-surface-500 uppercase font-bold">
+                      Dirección
+                    </p>
+                    <p
+                      class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate"
+                    >
+                      {{ configNegocio.direccion || "---" }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-<!-- 👤 DIÁLOGO USUARIO MODERNO -->
-<p-dialog 
-  [(visible)]="mostrarFormularioUsuario"
-  [header]="(usuarioSeleccionado ? 'Editar Usuario' : 'Nuevo Usuario')"
-  [modal]="true"
-  [style]="{width: '650px'}"
-  [closable]="true"
-  styleClass="modern-dialog">
-  
-  <div class="space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      
-      <div class="space-y-2">
-        <label for="nombre" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-user text-blue-600 text-xs"></i>
-          <span>Nombre Completo</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevoUsuario.nombre"
-          placeholder="Nombre completo"
-          class="w-full" />
-      </div>
-      
-      <div class="space-y-2">
-        <label for="username" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-at text-purple-600 text-xs"></i>
-          <span>Username</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevoUsuario.username"
-          placeholder="usuario123"
-          class="w-full" />
-      </div>
-      
-      <div class="space-y-2">
-        <label for="email" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-envelope text-green-600 text-xs"></i>
-          <span>Email</span>
-        </label>
-        <input 
-          type="email"
-          pInputText
-          [(ngModel)]="nuevoUsuario.email"
-          placeholder="usuario@empresa.com"
-          class="w-full" />
-      </div>
-      
-      <div class="space-y-2">
-        <label for="telefono" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-phone text-orange-600 text-xs"></i>
-          <span>Teléfono</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevoUsuario.telefono"
-          placeholder="+51 987 654 321"
-          class="w-full" />
-      </div>
-      
-      <div class="space-y-2">
-        <label for="rol" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-users text-indigo-600 text-xs"></i>
-          <span>Rol</span>
-        </label>
-        <p-dropdown 
-          [(ngModel)]="nuevoUsuario.rol"
-          [options]="opcionesRol"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccionar rol"
-          styleClass="w-full">
-        </p-dropdown>
-      </div>
-      
-      <div class="space-y-2">
-        <label for="estado" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-circle text-red-600 text-xs"></i>
-          <span>Estado</span>
-        </label>
-        <p-dropdown 
-          [(ngModel)]="nuevoUsuario.estado"
-          [options]="opcionesEstado"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccionar estado"
-          styleClass="w-full">
-        </p-dropdown>
-      </div>
-      
-      <div class="md:col-span-2 space-y-2">
-        <label for="sucursal" class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <i class="pi pi-building text-teal-600 text-xs"></i>
-          <span>Sucursal</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevoUsuario.sucursal"
-          placeholder="Principal"
-          class="w-full" />
-      </div>
-    </div>
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-      <p-button 
-        icon="pi pi-times"
-        label="Cancelar"
-        [outlined]="true"
-        severity="secondary"
-        (click)="mostrarFormularioUsuario = false">
-      </p-button>
-      <p-button 
-        icon="pi pi-check"
-        [label]="usuarioSeleccionado ? 'Actualizar' : 'Crear Usuario'"
-        severity="success"
-        styleClass="shadow-md hover:shadow-lg transition-all"
-        [loading]="guardando"
-        (click)="guardarUsuario()">
-      </p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+            <button
+              class="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-[1.5rem] font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95 flex items-center justify-center gap-2"
+              (click)="guardarConfiguracionNegocio()"
+              [disabled]="guardando"
+            >
+              <i
+                class="pi"
+                [ngClass]="guardando ? 'pi-spin pi-spinner' : 'pi-save'"
+              ></i>
+              <span>{{ guardando ? "Guardando..." : "Guardar Cambios" }}</span>
+            </button>
+          </div>
 
-<!-- 🖨️ DIÁLOGO IMPRESORA OPTIMIZADO -->
-<p-dialog 
-  [(visible)]="mostrarFormularioImpresora"
-  header="Configurar Nueva Impresora"
-  [modal]="true"
-  [style]="{width: '600px'}"
-  [closable]="true"
-  styleClass="impresora-dialog">
-  
-  <div class="impresora-form">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <div class="space-y-2">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-print text-purple-600"></i>
-          <span>Nombre de la Impresora</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevaImpresora.nombre"
-          placeholder="Impresora Principal"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all" />
-      </div>
-      
-      <div class="space-y-2">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-map-marker text-green-600"></i>
-          <span>Ubicación</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevaImpresora.ubicacion"
-          placeholder="Caja Principal"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all" />
-      </div>
-      
-      <div class="space-y-2">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-cog text-blue-600"></i>
-          <span>Tipo de Impresora</span>
-        </label>
-        <p-dropdown 
-          [(ngModel)]="nuevaImpresora.tipo"
-          [options]="tiposImpresora"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccionar tipo"
-          styleClass="w-full">
-        </p-dropdown>
-      </div>
-      
-      <div class="space-y-2">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-file text-orange-600"></i>
-          <span>Tamaño de Papel</span>
-        </label>
-        <p-dropdown 
-          [(ngModel)]="nuevaImpresora.tamanoPapel"
-          [options]="tamanosPapel"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccionar tamaño"
-          styleClass="w-full">
-        </p-dropdown>
-      </div>
-      
-      <div class="space-y-2" *ngIf="nuevaImpresora.tipo === 'TERMICA'">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-wifi text-indigo-600"></i>
-          <span>Dirección IP</span>
-        </label>
-        <input 
-          type="text"
-          pInputText
-          [(ngModel)]="nuevaImpresora.ip"
-          placeholder="192.168.1.100"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all" />
-      </div>
-      
-      <div class="space-y-2" *ngIf="nuevaImpresora.tipo === 'TERMICA'">
-        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i class="pi pi-server text-teal-600"></i>
-          <span>Puerto</span>
-        </label>
-        <p-inputNumber 
-          [(ngModel)]="nuevaImpresora.puerto"
-          min="1"
-          max="65535"
-          placeholder="9100"
-          inputStyleClass="p-3"
-          styleClass="w-full">
-        </p-inputNumber>
-      </div>
-    </div>
-    
-    <div class="mt-6 space-y-3">
-      <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <div class="flex items-center gap-3">
-          <p-inputSwitch 
-            [(ngModel)]="nuevaImpresora.esDefault">
-          </p-inputSwitch>
+          <!-- Form Content -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Datos Generales -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <i class="pi pi-info-circle text-primary-500"></i> Información
+                General
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Nombre Comercial</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.nombre"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                    placeholder="Ej: Mi Tienda S.A.C."
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >RUC</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.ruc"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                    placeholder="20100000000"
+                    maxlength="11"
+                  />
+                </div>
+                <div class="md:col-span-2 space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Slogan</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.slogan"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                    placeholder="Frase distintiva de la empresa"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Contacto -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <i class="pi pi-phone text-indigo-500"></i> Contacto y Ubicación
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2 space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Dirección Fiscal</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.direccion"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                    placeholder="Av. Principal 123"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Teléfono</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.telefono"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Email</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.email"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Sitio Web</label
+                  >
+                  <input
+                    pInputText
+                    [(ngModel)]="configNegocio.website"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 focus:border-primary-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Operativo -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <i class="pi pi-cog text-emerald-500"></i> Configuración
+                Operativa
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Moneda</label
+                  >
+                  <p-dropdown
+                    [options]="opcionesMoneda"
+                    [(ngModel)]="configNegocio.moneda"
+                    styleClass="w-full rounded-2xl"
+                    placeholder="Seleccionar"
+                  ></p-dropdown>
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Apertura</label
+                  >
+                  <input
+                    type="time"
+                    pInputText
+                    [(ngModel)]="configNegocio.horarioApertura"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300"
+                    >Cierre</label
+                  >
+                  <input
+                    type="time"
+                    pInputText
+                    [(ngModel)]="configNegocio.horarioCierre"
+                    class="w-full rounded-2xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700"
+                  />
+                </div>
+                <div class="col-span-full pt-2">
+                  <label
+                    class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3 block"
+                    >Días Laborales</label
+                  >
+                  <div class="flex flex-wrap gap-3">
+                    <div
+                      *ngFor="let dia of diasSemana"
+                      (click)="toggleDiaLaboral(dia.value)"
+                      class="cursor-pointer px-4 py-2 rounded-xl text-sm font-semibold transition-all select-none border"
+                      [ngClass]="
+                        configNegocio.diasLaborales.includes(dia.value)
+                          ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 border-primary-200 dark:border-primary-700'
+                          : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-100'
+                      "
+                    >
+                      {{ dia.label }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 🖨️ IMPRESORAS -->
+      <section *ngSwitchCase="2" class="animate-fade-in-up">
+        <!-- Empty State (No hay impresoras) -->
+        <div
+          *ngIf="impresoras.length === 0"
+          class="flex flex-col items-center justify-center p-16 bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm text-center"
+        >
+          <div
+            class="w-24 h-24 mb-6 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center"
+          >
+            <i class="pi pi-print text-4xl text-violet-500"></i>
+          </div>
+          <h3
+            class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-3"
+          >
+            No hay impresoras configuradas
+          </h3>
+          <p
+            class="text-surface-600 dark:text-surface-400 max-w-md mx-auto mb-8"
+          >
+            Configura tu primera impresora para comenzar a emitir tickets y
+            comprobantes. El sistema soporta impresoras USB y de Red.
+          </p>
+          <p-button
+            icon="pi pi-plus"
+            label="Agregar Primera Impresora"
+            severity="help"
+            styleClass="rounded-xl px-6 py-3 shadow-lg shadow-violet-500/20"
+            (click)="mostrarNuevaImpresora()"
+          ></p-button>
+        </div>
+
+        <!-- Grid de impresoras -->
+        <div *ngIf="impresoras.length > 0" class="space-y-6">
+          <div
+            class="flex justify-between items-center bg-surface-0 dark:bg-surface-900 p-6 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm"
+          >
+            <div>
+              <h3
+                class="text-xl font-bold text-surface-900 dark:text-surface-0 tracking-tight"
+              >
+                Impresoras Conectadas
+              </h3>
+              <p class="text-surface-500 dark:text-surface-400 text-sm">
+                Gestiona tus dispositivos de impresión
+              </p>
+            </div>
+            <p-button
+              icon="pi pi-plus"
+              label="Agregar Impresora"
+              [text]="true"
+              [rounded]="true"
+              severity="help"
+              (click)="mostrarFormularioImpresora = true"
+            ></p-button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card Impresora -->
+            <div
+              *ngFor="let impresora of impresoras; trackBy: trackByImpresoraId"
+              class="group relative bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            >
+              <!-- Status Bar -->
+              <div
+                class="absolute top-0 inset-x-0 h-1"
+                [ngClass]="
+                  impresora.estado === 'CONECTADA'
+                    ? 'bg-emerald-500'
+                    : 'bg-surface-300 dark:bg-surface-700'
+                "
+              ></div>
+
+              <div class="p-6">
+                <div class="flex justify-between items-start mb-6">
+                  <div
+                    class="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg"
+                    [ngClass]="getImpresoraTipoClasses(impresora.tipo)"
+                  >
+                    <i class="pi pi-print text-2xl"></i>
+                  </div>
+                  <div
+                    *ngIf="impresora.esDefault"
+                    class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-yellow-200 dark:border-yellow-800"
+                  >
+                    <i class="pi pi-star-fill text-[10px]"></i> Principal
+                  </div>
+                </div>
+
+                <h4
+                  class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1"
+                >
+                  {{ impresora.nombre }}
+                </h4>
+                <p
+                  class="text-sm text-surface-500 dark:text-surface-400 mb-4 flex items-center gap-1"
+                >
+                  <i class="pi pi-map-marker text-xs"></i>
+                  {{ impresora.ubicacion }}
+                </p>
+
+                <div
+                  class="space-y-3 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-xl mb-6"
+                >
+                  <div class="flex justify-between text-sm">
+                    <span class="text-surface-500 dark:text-surface-400"
+                      >Tipo</span
+                    >
+                    <span
+                      class="font-medium text-surface-900 dark:text-surface-0"
+                      >{{ impresora.tipo }}</span
+                    >
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-surface-500 dark:text-surface-400"
+                      >Papel</span
+                    >
+                    <span
+                      class="font-medium text-surface-900 dark:text-surface-0"
+                      >{{ impresora.tamanoPapel }}</span
+                    >
+                  </div>
+                  <div
+                    *ngIf="impresora.ip"
+                    class="flex justify-between text-sm"
+                  >
+                    <span class="text-surface-500 dark:text-surface-400"
+                      >IP</span
+                    >
+                    <span
+                      class="font-medium text-surface-900 dark:text-surface-0 font-mono"
+                      >{{ impresora.ip }}</span
+                    >
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <p-button
+                    label="Probar"
+                    icon="pi pi-wifi"
+                    styleClass="w-full p-button-sm p-button-outlined p-button-secondary rounded-xl"
+                    [loading]="testConexionImpresora"
+                    (click)="testearConexionImpresora(impresora)"
+                  >
+                  </p-button>
+                  <p-button
+                    *ngIf="!impresora.esDefault"
+                    icon="pi pi-star"
+                    styleClass="p-button-sm p-button-outlined p-button-warning rounded-xl"
+                    pTooltip="Hacer Principal"
+                    (click)="establecerImpresoraDefault(impresora)"
+                  >
+                  </p-button>
+                  <p-button
+                    icon="pi pi-pencil"
+                    styleClass="p-button-sm p-button-outlined rounded-xl"
+                    (click)="editarImpresora(impresora)"
+                  >
+                  </p-button>
+                  <p-button
+                    icon="pi pi-trash"
+                    styleClass="p-button-sm p-button-outlined p-button-danger rounded-xl"
+                    (click)="eliminarImpresora(impresora)"
+                  >
+                  </p-button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Agregar (Empty slot style) -->
+            <div
+              class="group min-h-[300px] bg-surface-0 dark:bg-surface-900 rounded-[2rem] border-2 border-dashed border-surface-200 dark:border-surface-700 hover:border-violet-500 dark:hover:border-violet-400 transition-all duration-300 flex flex-col items-center justify-center cursor-pointer gap-4 p-6"
+              (click)="mostrarFormularioImpresora = true"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-surface-50 dark:bg-surface-800 group-hover:bg-violet-50 dark:group-hover:bg-violet-900/20 flex items-center justify-center transition-colors"
+              >
+                <i
+                  class="pi pi-plus text-2xl text-surface-400 dark:text-surface-500 group-hover:text-violet-500 mx-auto"
+                ></i>
+              </div>
+              <span
+                class="font-bold text-surface-600 dark:text-surface-400 group-hover:text-violet-500 transition-colors"
+                >Configurar Nueva Impresora</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 💰 FISCAL -->
+      <section *ngSwitchCase="3" class="animate-fade-in-up">
+        <!-- Header Section -->
+        <div
+          class="mb-8 p-6 bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
           <div>
-            <label class="text-sm font-semibold text-blue-900 cursor-pointer">
-              Establecer como impresora principal
-            </label>
-            <p class="text-xs text-blue-700">Esta impresora se usará por defecto</p>
+            <h3
+              class="text-xl font-bold text-surface-900 dark:text-surface-0 tracking-tight flex items-center gap-2"
+            >
+              <i class="pi pi-briefcase text-amber-500"></i> Configuración
+              Fiscal
+            </h3>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">
+              Gestiona tu facturación electrónica y parámetros SUNAT
+            </p>
+          </div>
+          <div
+            class="px-4 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-xl text-sm font-semibold border border-amber-100 dark:border-amber-800/30"
+          >
+            <i class="pi pi-user mr-2"></i> {{ currentUser }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <!-- Column 1: SUNAT Connection -->
+          <div class="xl:col-span-1 space-y-8">
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm relative overflow-hidden group"
+            >
+              <div
+                class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"
+              >
+                <i class="pi pi-globe text-9xl text-amber-500"></i>
+              </div>
+
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2 relative z-10"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400"
+                  ><i class="pi pi-cloud"></i
+                ></span>
+                Conexión SUNAT
+              </h4>
+
+              <div class="space-y-6 relative z-10">
+                <!-- Entorno Switch -->
+                <div
+                  class="p-4 bg-surface-50 dark:bg-surface-800/50 rounded-[1.5rem] border border-surface-100 dark:border-surface-700"
+                >
+                  <p
+                    class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase mb-3 ml-1"
+                  >
+                    Entorno de Operación
+                  </p>
+                  <div
+                    class="flex bg-surface-200 dark:bg-surface-700 p-1.5 rounded-2xl"
+                  >
+                    <div
+                      class="flex-1 py-2 px-3 rounded-xl text-center text-sm font-bold cursor-pointer transition-all"
+                      [ngClass]="
+                        configFiscal.entornoSunat === 'BETA'
+                          ? 'bg-white dark:bg-surface-800 text-amber-600 shadow-sm'
+                          : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'
+                      "
+                      (click)="configFiscal.entornoSunat = 'BETA'"
+                    >
+                      BETA
+                    </div>
+                    <div
+                      class="flex-1 py-2 px-3 rounded-xl text-center text-sm font-bold cursor-pointer transition-all"
+                      [ngClass]="
+                        configFiscal.entornoSunat === 'PRODUCCION'
+                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                          : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'
+                      "
+                      (click)="configFiscal.entornoSunat = 'PRODUCCION'"
+                    >
+                      PRODUCCIÓN
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Credentials -->
+                <div class="space-y-4">
+                  <span class="p-float-label">
+                    <input
+                      pInputText
+                      id="usuarioSol"
+                      [(ngModel)]="configFiscal.usuarioSol"
+                      class="w-full p-3 rounded-2xl bg-surface-50 dark:bg-surface-800 border-0 focus:ring-2 focus:ring-amber-500/20 transition-all font-mono text-sm"
+                    />
+                    <label for="usuarioSol">Usuario SOL</label>
+                  </span>
+                  <span class="p-float-label">
+                    <p-password
+                      [(ngModel)]="configFiscal.claveSol"
+                      [toggleMask]="true"
+                      [feedback]="false"
+                      styleClass="w-full"
+                      inputStyleClass="w-full p-3 rounded-2xl bg-surface-50 dark:bg-surface-800 border-0 focus:ring-2 focus:ring-amber-500/20 transition-all font-mono text-sm"
+                    ></p-password>
+                    <label>Clave SOL</label>
+                  </span>
+                </div>
+
+                <!-- Emisor Switch -->
+                <div
+                  class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800/50 rounded-[1.5rem] border border-surface-100 dark:border-surface-700"
+                >
+                  <div class="flex flex-col">
+                    <span class="font-bold text-surface-900 dark:text-surface-0"
+                      >Emisor Electrónico</span
+                    >
+                    <span class="text-xs text-surface-500"
+                      >Habilitar facturación</span
+                    >
+                  </div>
+                  <p-inputSwitch
+                    [(ngModel)]="configFiscal.emisorElectronico"
+                  ></p-inputSwitch>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Series -->
+          <div class="xl:col-span-2 space-y-8">
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
+                  ><i class="pi pi-ticket"></i
+                ></span>
+                Series y Numeración
+              </h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Factura -->
+                <div
+                  class="p-6 rounded-[2rem] bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30"
+                >
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white dark:bg-surface-800 flex items-center justify-center text-indigo-500 shadow-sm"
+                    >
+                      <i class="pi pi-file"></i>
+                    </div>
+                    <div>
+                      <p
+                        class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider"
+                      >
+                        Facturas
+                      </p>
+                      <p class="text-xs text-indigo-400 dark:text-indigo-500">
+                        Comprobante Tipo 01
+                      </p>
+                    </div>
+                  </div>
+                  <input
+                    pInputText
+                    [(ngModel)]="configFiscal.serieFactura"
+                    class="w-full text-center text-xl font-bold font-mono tracking-widest text-indigo-700 dark:text-indigo-300 bg-white/50 dark:bg-surface-800/50 border-0 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20"
+                    maxlength="4"
+                    placeholder="F001"
+                  />
+                </div>
+
+                <!-- Boleta -->
+                <div
+                  class="p-6 rounded-[2rem] bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30"
+                >
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white dark:bg-surface-800 flex items-center justify-center text-emerald-500 shadow-sm"
+                    >
+                      <i class="pi pi-ticket"></i>
+                    </div>
+                    <div>
+                      <p
+                        class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider"
+                      >
+                        Boletas
+                      </p>
+                      <p class="text-xs text-emerald-400 dark:text-emerald-500">
+                        Comprobante Tipo 03
+                      </p>
+                    </div>
+                  </div>
+                  <input
+                    pInputText
+                    [(ngModel)]="configFiscal.serieBoleta"
+                    class="w-full text-center text-xl font-bold font-mono tracking-widest text-emerald-700 dark:text-emerald-300 bg-white/50 dark:bg-surface-800/50 border-0 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/20"
+                    maxlength="4"
+                    placeholder="B001"
+                  />
+                </div>
+
+                <!-- Nota -->
+                <div
+                  class="p-6 rounded-[2rem] bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800/30"
+                >
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white dark:bg-surface-800 flex items-center justify-center text-violet-500 shadow-sm"
+                    >
+                      <i class="pi pi-copy"></i>
+                    </div>
+                    <div>
+                      <p
+                        class="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider"
+                      >
+                        Notas
+                      </p>
+                      <p class="text-xs text-violet-400 dark:text-violet-500">
+                        Crédito / Débito
+                      </p>
+                    </div>
+                  </div>
+                  <input
+                    pInputText
+                    [(ngModel)]="configFiscal.serieNota"
+                    class="w-full text-center text-xl font-bold font-mono tracking-widest text-violet-700 dark:text-violet-300 bg-white/50 dark:bg-surface-800/50 border-0 rounded-xl p-3 focus:ring-2 focus:ring-violet-500/20"
+                    maxlength="4"
+                    placeholder="N001"
+                  />
+                </div>
+              </div>
+
+              <!-- Status Cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                <div
+                  class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400"
+                  >
+                    <i class="pi pi-shield-check"></i>
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+                    >
+                      Certificado Digital
+                    </p>
+                    <p
+                      class="text-sm font-bold text-green-600 dark:text-green-400"
+                    >
+                      Válido 2025
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"
+                  >
+                    <i class="pi pi-wifi"></i>
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+                    >
+                      Conexión OSE
+                    </p>
+                    <p
+                      class="text-sm font-bold text-blue-600 dark:text-blue-400"
+                    >
+                      En Línea
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400"
+                  >
+                    <i class="pi pi-sync"></i>
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-surface-500 dark:text-surface-400 font-medium"
+                    >
+                      Sincronización
+                    </p>
+                    <p
+                      class="text-sm font-bold text-yellow-600 dark:text-yellow-400"
+                    >
+                      2h atrás
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <p-button
+              label="Guardar Configuración Fiscal"
+              icon="pi pi-save"
+              styleClass="w-full py-4 rounded-[1.5rem] shadow-xl shadow-primary-500/20"
+              [loading]="guardando"
+              (click)="guardarConfiguracionFiscal()"
+            >
+            </p-button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 🎨 PERSONALIZACIÓN -->
+      <section *ngSwitchCase="4" class="animate-fade-in-up">
+        <!-- Header Section -->
+        <div
+          class="mb-8 p-6 bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h3
+              class="text-xl font-bold text-surface-900 dark:text-surface-0 tracking-tight flex items-center gap-2"
+            >
+              <i class="pi pi-palette text-rose-500"></i> Personalización del
+              Sistema
+            </h3>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">
+              Adapta la apariencia visual a tu marca
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <p-button
+              icon="pi pi-refresh"
+              label="Resetear"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (click)="resetearTema()"
+            >
+            </p-button>
+            <p-button
+              icon="pi pi-check"
+              label="Aplicar Cambios"
+              rounded="true"
+              severity="help"
+              size="small"
+              [loading]="guardando"
+              (click)="aplicarTema()"
+            >
+            </p-button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <!-- Column 1: Config -->
+          <div class="xl:col-span-1 space-y-6">
+            <!-- Color Scheme -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400"
+                  ><i class="pi pi-palette"></i
+                ></span>
+                Esquema de Colores
+              </h4>
+
+              <div class="space-y-5">
+                <!-- Primary -->
+                <div class="space-y-2">
+                  <label
+                    class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                    >Color Principal</label
+                  >
+                  <div
+                    class="flex items-center gap-3 p-2 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                  >
+                    <p-colorPicker
+                      [(ngModel)]="temaActual.colorPrimario"
+                      styleClass="scale-110 ml-1"
+                    ></p-colorPicker>
+                    <input
+                      pInputText
+                      [(ngModel)]="temaActual.colorPrimario"
+                      class="flex-1 bg-transparent border-0 font-mono text-surface-900 dark:text-surface-0 focus:ring-0"
+                    />
+                    <div
+                      class="w-6 h-6 rounded-full border border-surface-200 dark:border-surface-600"
+                      [style.background]="temaActual.colorPrimario"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Secondary -->
+                <div class="space-y-2">
+                  <label
+                    class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                    >Color Secundario</label
+                  >
+                  <div
+                    class="flex items-center gap-3 p-2 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                  >
+                    <p-colorPicker
+                      [(ngModel)]="temaActual.colorSecundario"
+                      styleClass="scale-110 ml-1"
+                    ></p-colorPicker>
+                    <input
+                      pInputText
+                      [(ngModel)]="temaActual.colorSecundario"
+                      class="flex-1 bg-transparent border-0 font-mono text-surface-900 dark:text-surface-0 focus:ring-0"
+                    />
+                    <div
+                      class="w-6 h-6 rounded-full border border-surface-200 dark:border-surface-600"
+                      [style.background]="temaActual.colorSecundario"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Accent -->
+                <div class="space-y-2">
+                  <label
+                    class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                    >Color Acento</label
+                  >
+                  <div
+                    class="flex items-center gap-3 p-2 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700"
+                  >
+                    <p-colorPicker
+                      [(ngModel)]="temaActual.colorAcento"
+                      styleClass="scale-110 ml-1"
+                    ></p-colorPicker>
+                    <input
+                      pInputText
+                      [(ngModel)]="temaActual.colorAcento"
+                      class="flex-1 bg-transparent border-0 font-mono text-surface-900 dark:text-surface-0 focus:ring-0"
+                    />
+                    <div
+                      class="w-6 h-6 rounded-full border border-surface-200 dark:border-surface-600"
+                      [style.background]="temaActual.colorAcento"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appearance -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-600 dark:text-surface-400"
+                  ><i class="pi pi-moon"></i
+                ></span>
+                Apariencia
+              </h4>
+
+              <div
+                class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800/50 rounded-2xl cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                (click)="temaActual.esOscuro = !temaActual.esOscuro"
+              >
+                <div class="flex flex-col">
+                  <span class="font-bold text-surface-900 dark:text-surface-0"
+                    >Modo Oscuro</span
+                  >
+                  <span class="text-xs text-surface-500"
+                    >Interfaz con alto contraste</span
+                  >
+                </div>
+                <p-inputSwitch
+                  [(ngModel)]="temaActual.esOscuro"
+                ></p-inputSwitch>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Live Preview -->
+          <div class="xl:col-span-2">
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm h-full flex flex-col"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h4
+                  class="text-lg font-bold text-surface-900 dark:text-surface-0 flex items-center gap-2"
+                >
+                  <span
+                    class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400"
+                    ><i class="pi pi-eye"></i
+                  ></span>
+                  Vista Previa en Vivo
+                </h4>
+                <span
+                  class="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-wide"
+                  >Live Preview</span
+                >
+              </div>
+
+              <div
+                class="flex-1 rounded-[2rem] overflow-hidden border-4 border-surface-100 dark:border-surface-800 shadow-inner relative transition-all duration-300"
+                [style.background]="temaActual.esOscuro ? '#18181b' : '#ffffff'"
+              >
+                <!-- Fake App Window -->
+                <!-- Header -->
+                <div
+                  class="h-16 px-6 flex items-center justify-between transition-colors duration-300"
+                  [style.background]="
+                    temaActual.esOscuro ? '#09090b' : '#ffffff'
+                  "
+                  [style.border-bottom]="
+                    '1px solid ' + (temaActual.esOscuro ? '#27272a' : '#e4e4e7')
+                  "
+                >
+                  <div
+                    class="w-32 h-4 rounded-full bg-surface-200 dark:bg-surface-700"
+                  ></div>
+                  <div class="flex gap-2">
+                    <div
+                      class="w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-800"
+                    ></div>
+                    <div
+                      class="w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-800"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Body -->
+                <div class="p-8">
+                  <!-- Zen Card Preview -->
+                  <div
+                    class="rounded-[2rem] p-6 mb-6 border transition-all duration-300 shadow-sm"
+                    [style.background]="
+                      temaActual.esOscuro ? '#09090b' : '#ffffff'
+                    "
+                    [style.border-color]="
+                      temaActual.esOscuro ? '#27272a' : '#e4e4e7'
+                    "
+                  >
+                    <div class="flex items-center gap-3 mb-4">
+                      <div
+                        class="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg transition-colors duration-300"
+                        [style.background]="temaActual.colorPrimario"
+                      >
+                        <i class="pi pi-bolt"></i>
+                      </div>
+                      <div>
+                        <div
+                          class="w-24 h-3 rounded-full mb-2 bg-surface-200 dark:bg-surface-700"
+                        ></div>
+                        <div
+                          class="w-16 h-2 rounded-full bg-surface-100 dark:bg-surface-800"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                      <button
+                        class="px-4 py-2 rounded-xl text-white text-sm font-bold shadow-lg transition-all active:scale-95 duration-300"
+                        [style.background]="temaActual.colorPrimario"
+                      >
+                        Principal
+                      </button>
+                      <button
+                        class="px-4 py-2 rounded-xl text-white text-sm font-bold shadow-lg transition-all active:scale-95 duration-300"
+                        [style.background]="temaActual.colorSecundario"
+                      >
+                        Secundario
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Progress Bar Preview -->
+                  <div class="space-y-2 mb-6">
+                    <div
+                      class="flex justify-between text-xs font-bold"
+                      [style.color]="
+                        temaActual.esOscuro ? '#a1a1aa' : '#71717a'
+                      "
+                    >
+                      <span>Progreso</span>
+                      <span [style.color]="temaActual.colorAcento">75%</span>
+                    </div>
+                    <div
+                      class="h-3 rounded-full overflow-hidden bg-surface-100 dark:bg-surface-800"
+                    >
+                      <div
+                        class="h-full rounded-full transition-all duration-300 w-3/4"
+                        [style.background]="temaActual.colorAcento"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 💾 BACKUP -->
+      <section *ngSwitchCase="5" class="animate-fade-in-up">
+        <!-- Header Section -->
+        <div
+          class="mb-8 p-6 bg-surface-0 dark:bg-surface-900 rounded-[2rem] border border-surface-200 dark:border-surface-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h3
+              class="text-xl font-bold text-surface-900 dark:text-surface-0 tracking-tight flex items-center gap-2"
+            >
+              <i class="pi pi-database text-emerald-500"></i> Backup y
+              Recuperación
+            </h3>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">
+              Gestiona las copias de seguridad de tu información
+            </p>
+          </div>
+          <p-tag
+            [value]="
+              configBackup.backupAutomatico ? 'Automático Activo' : 'Manual'
+            "
+            [severity]="configBackup.backupAutomatico ? 'success' : 'warning'"
+            styleClass="px-3 py-1 text-sm font-bold rounded-lg"
+          ></p-tag>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <!-- Column 1: Configuración -->
+          <div class="xl:col-span-1 space-y-6">
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm"
+            >
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
+                  ><i class="pi pi-cog"></i
+                ></span>
+                Configuración
+              </h4>
+
+              <div class="space-y-6">
+                <!-- Backup Auto Switch -->
+                <div
+                  class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800/50 rounded-2xl border border-surface-100 dark:border-surface-700"
+                >
+                  <div class="flex flex-col">
+                    <span class="font-bold text-surface-900 dark:text-surface-0"
+                      >Respaldo Automático</span
+                    >
+                    <span class="text-xs text-surface-500"
+                      >Programar copias diarias</span
+                    >
+                  </div>
+                  <p-inputSwitch
+                    [(ngModel)]="configBackup.backupAutomatico"
+                  ></p-inputSwitch>
+                </div>
+
+                <div
+                  *ngIf="configBackup.backupAutomatico"
+                  class="space-y-4 animate-fade-in"
+                >
+                  <div class="space-y-2">
+                    <label
+                      class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                      >Frecuencia</label
+                    >
+                    <p-dropdown
+                      [options]="opcionesFrecuenciaBackup"
+                      [(ngModel)]="configBackup.frecuenciaBackup"
+                      optionLabel="label"
+                      optionValue="value"
+                      styleClass="w-full rounded-xl border-surface-200 dark:border-surface-700"
+                    ></p-dropdown>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label
+                      class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                      >Hora Ejecución</label
+                    >
+                    <input
+                      type="time"
+                      pInputText
+                      [(ngModel)]="configBackup.horaBackup"
+                      class="w-full p-3 bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700"
+                    />
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label
+                    class="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider ml-1"
+                    >Retención (Días)</label
+                  >
+                  <p-inputNumber
+                    [(ngModel)]="configBackup.retencionDias"
+                    [min]="1"
+                    [max]="365"
+                    suffix=" días"
+                    styleClass="w-full"
+                    inputStyleClass="w-full p-3 rounded-xl bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700"
+                  ></p-inputNumber>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Estado y Acciones -->
+          <div class="xl:col-span-2 space-y-6">
+            <!-- Metrics Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                class="bg-surface-0 dark:bg-surface-900 p-6 rounded-[2rem] border border-surface-200 dark:border-surface-800 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400"
+                >
+                  <i class="pi pi-check-circle text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-500 uppercase font-bold">
+                    Último Backup
+                  </p>
+                  <p
+                    class="text-sm font-bold text-surface-900 dark:text-surface-0"
+                  >
+                    Hoy, 02:00 AM
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-surface-0 dark:bg-surface-900 p-6 rounded-[2rem] border border-surface-200 dark:border-surface-800 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"
+                >
+                  <i class="pi pi-database text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-500 uppercase font-bold">
+                    Tamaño BD
+                  </p>
+                  <p
+                    class="text-sm font-bold text-surface-900 dark:text-surface-0"
+                  >
+                    128.5 MB
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-surface-0 dark:bg-surface-900 p-6 rounded-[2rem] border border-surface-200 dark:border-surface-800 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400"
+                >
+                  <i class="pi pi-server text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-500 uppercase font-bold">
+                    Espacio Libre
+                  </p>
+                  <p
+                    class="text-sm font-bold text-surface-900 dark:text-surface-0"
+                  >
+                    45 GB
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Area -->
+            <div
+              class="bg-surface-0 dark:bg-surface-900 rounded-[2.5rem] p-8 border border-surface-200 dark:border-surface-800 shadow-sm relative overflow-hidden"
+            >
+              <div class="absolute top-0 right-0 p-8 opacity-5">
+                <i
+                  class="pi pi-save text-9xl text-surface-900 dark:text-surface-0"
+                ></i>
+              </div>
+
+              <h4
+                class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6 flex items-center gap-2 relative z-10"
+              >
+                <span
+                  class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400"
+                  ><i class="pi pi-bolt"></i
+                ></span>
+                Acciones Manuales
+              </h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                <button
+                  class="p-6 rounded-[2rem] bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-left group"
+                  (click)="ejecutarBackupManual()"
+                  [disabled]="backupEnProgreso"
+                >
+                  <div class="flex items-center justify-between mb-2">
+                    <i
+                      class="pi pi-download text-2xl text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform"
+                    ></i>
+                    <i
+                      *ngIf="backupEnProgreso"
+                      class="pi pi-spin pi-spinner text-primary-500"
+                    ></i>
+                  </div>
+                  <h5 class="font-bold text-surface-900 dark:text-surface-0">
+                    Generar Backup Ahora
+                  </h5>
+                  <p class="text-xs text-surface-500 mt-1">
+                    Descarga una copia completa de la base de datos localmente.
+                  </p>
+                </button>
+
+                <button
+                  class="p-6 rounded-[2rem] bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-left group"
+                >
+                  <div class="flex items-center justify-between mb-2">
+                    <i
+                      class="pi pi-upload text-2xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform"
+                    ></i>
+                  </div>
+                  <h5 class="font-bold text-surface-900 dark:text-surface-0">
+                    Restaurar Copia
+                  </h5>
+                  <p class="text-xs text-surface-500 mt-1">
+                    Importar un archivo de respaldo para restaurar datos.
+                  </p>
+                </button>
+              </div>
+
+              <!-- Progress Bar -->
+              <div
+                *ngIf="backupEnProgreso"
+                class="mt-8 relative z-10 bg-surface-50 dark:bg-surface-800 p-4 rounded-2xl border border-surface-200 dark:border-surface-700 animate-fade-in"
+              >
+                <div class="flex justify-between items-center mb-2">
+                  <span
+                    class="text-sm font-bold text-primary-600 dark:text-primary-400"
+                    >Procesando respaldo...</span
+                  >
+                  <span class="text-sm font-bold"
+                    >{{ progresBackup | number: "1.0-0" }}%</span
+                  >
+                </div>
+                <p-progressBar
+                  [value]="progresBackup"
+                  [showValue]="false"
+                  styleClass="h-2"
+                ></p-progressBar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- End of ngSwitch -->
+  </main>
+
+  <!-- 🗨️ DIÁLOGOS -->
+  <p-confirmDialog styleClass="modern-confirm-dialog"></p-confirmDialog>
+  <p-toast position="top-right" styleClass="modern-toast"></p-toast>
+
+  <!-- 👤 DIÁLOGO USUARIO MODERNO -->
+  <p-dialog
+    [(visible)]="mostrarFormularioUsuario"
+    [header]="usuarioSeleccionado ? 'Editar Usuario' : 'Nuevo Usuario'"
+    [modal]="true"
+    [style]="{ width: '650px' }"
+    [closable]="true"
+    styleClass="modern-dialog"
+  >
+    <div class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label
+            for="nombre"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-user text-blue-600 text-xs"></i>
+            <span>Nombre Completo</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevoUsuario.nombre"
+            placeholder="Nombre completo"
+            class="w-full rounded-2xl bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="username"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-at text-purple-600 text-xs"></i>
+            <span>Username</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevoUsuario.username"
+            placeholder="usuario123"
+            class="w-full rounded-2xl bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="email"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-envelope text-green-600 text-xs"></i>
+            <span>Email</span>
+          </label>
+          <input
+            type="email"
+            pInputText
+            [(ngModel)]="nuevoUsuario.email"
+            placeholder="usuario@empresa.com"
+            class="w-full rounded-2xl bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="telefono"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-phone text-orange-600 text-xs"></i>
+            <span>Teléfono</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevoUsuario.telefono"
+            placeholder="+51 987 654 321"
+            class="w-full rounded-2xl bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="rol"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-users text-indigo-600 text-xs"></i>
+            <span>Rol</span>
+          </label>
+          <p-dropdown
+            [(ngModel)]="nuevoUsuario.rol"
+            [options]="opcionesRol"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccionar rol"
+            styleClass="w-full"
+          >
+          </p-dropdown>
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="estado"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-circle text-red-600 text-xs"></i>
+            <span>Estado</span>
+          </label>
+          <p-dropdown
+            [(ngModel)]="nuevoUsuario.estado"
+            [options]="opcionesEstado"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccionar estado"
+            styleClass="w-full"
+          >
+          </p-dropdown>
+        </div>
+
+        <div class="md:col-span-2 space-y-2">
+          <label
+            for="sucursal"
+            class="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-building text-teal-600 text-xs"></i>
+            <span>Sucursal</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevoUsuario.sucursal"
+            placeholder="Principal"
+            class="w-full rounded-2xl bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700"
+          />
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div
+        class="flex justify-end gap-3 pt-4 border-t border-surface-200 dark:border-surface-700"
+      >
+        <p-button
+          icon="pi pi-times"
+          label="Cancelar"
+          [outlined]="true"
+          severity="secondary"
+          (click)="mostrarFormularioUsuario = false"
+        >
+        </p-button>
+        <p-button
+          icon="pi pi-check"
+          [label]="usuarioSeleccionado ? 'Actualizar' : 'Crear Usuario'"
+          severity="success"
+          styleClass="shadow-md hover:shadow-lg transition-all"
+          [loading]="guardando"
+          (click)="guardarUsuario()"
+        >
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- 🖨️ DIÁLOGO IMPRESORA OPTIMIZADO -->
+  <p-dialog
+    [(visible)]="mostrarFormularioImpresora"
+    header="Configurar Nueva Impresora"
+    [modal]="true"
+    [style]="{ width: '600px' }"
+    [closable]="true"
+    styleClass="impresora-dialog"
+  >
+    <div class="impresora-form">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-print text-purple-600"></i>
+            <span>Nombre de la Impresora</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevaImpresora.nombre"
+            placeholder="Impresora Principal"
+            class="w-full p-3 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all duration-300 ease-out"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-map-marker text-green-600"></i>
+            <span>Ubicación</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevaImpresora.ubicacion"
+            placeholder="Caja Principal"
+            class="w-full p-3 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all duration-300 ease-out"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-cog text-blue-600"></i>
+            <span>Tipo de Impresora</span>
+          </label>
+          <p-dropdown
+            [(ngModel)]="nuevaImpresora.tipo"
+            [options]="tiposImpresora"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccionar tipo"
+            styleClass="w-full"
+          >
+          </p-dropdown>
+        </div>
+
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-file text-orange-600"></i>
+            <span>Tamaño de Papel</span>
+          </label>
+          <p-dropdown
+            [(ngModel)]="nuevaImpresora.tamanoPapel"
+            [options]="tamanosPapel"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccionar tamaño"
+            styleClass="w-full"
+          >
+          </p-dropdown>
+        </div>
+
+        <div class="space-y-2" *ngIf="nuevaImpresora.tipo === 'TERMICA'">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-wifi text-indigo-600"></i>
+            <span>Dirección IP</span>
+          </label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="nuevaImpresora.ip"
+            placeholder="192.168.1.100"
+            class="w-full p-3 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all duration-300 ease-out"
+          />
+        </div>
+
+        <div class="space-y-2" *ngIf="nuevaImpresora.tipo === 'TERMICA'">
+          <label
+            class="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300"
+          >
+            <i class="pi pi-server text-teal-600"></i>
+            <span>Puerto</span>
+          </label>
+          <p-inputNumber
+            [(ngModel)]="nuevaImpresora.puerto"
+            min="1"
+            max="65535"
+            placeholder="9100"
+            inputStyleClass="p-3"
+            styleClass="w-full"
+          >
+          </p-inputNumber>
+        </div>
+      </div>
+
+      <div class="mt-6 space-y-3">
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div class="flex items-center gap-3">
+            <p-inputSwitch [(ngModel)]="nuevaImpresora.esDefault">
+            </p-inputSwitch>
+            <div>
+              <label class="text-sm font-semibold text-blue-900 cursor-pointer">
+                Establecer como impresora principal
+              </label>
+              <p class="text-xs text-blue-700">
+                Esta impresora se usará por defecto
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
-      <p-button 
-        icon="pi pi-times"
-        label="Cancelar"
-        [outlined]="true"
-        severity="secondary"
-        (click)="mostrarFormularioImpresora = false">
-      </p-button>
-      <p-button 
-        icon="pi pi-wifi"
-        label="Probar Conexión"
-        [outlined]="true"
-        severity="info"
-        [loading]="probandoConexion"
-        (click)="probarConexionImpresora()">
-      </p-button>
-      <p-button 
-        icon="pi pi-plus"
-        label="Agregar Impresora"
-        severity="success"
-        styleClass="shadow-lg hover:shadow-xl transition-all duration-300"
-        [loading]="guardando"
-        (click)="guardarImpresora()">
-      </p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+
+    <ng-template pTemplate="footer">
+      <div
+        class="flex justify-end gap-4 pt-4 border-t border-surface-200 dark:border-surface-700"
+      >
+        <p-button
+          icon="pi pi-times"
+          label="Cancelar"
+          [outlined]="true"
+          severity="secondary"
+          (click)="mostrarFormularioImpresora = false"
+        >
+        </p-button>
+        <p-button
+          icon="pi pi-wifi"
+          label="Probar Conexión"
+          [outlined]="true"
+          severity="info"
+          [loading]="probandoConexion"
+          (click)="probarConexionImpresora()"
+        >
+        </p-button>
+        <p-button
+          icon="pi pi-plus"
+          label="Agregar Impresora"
+          severity="success"
+          styleClass="shadow-lg hover:shadow-xl transition-all duration-300"
+          [loading]="guardando"
+          (click)="guardarImpresora()"
+        >
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
 </div>

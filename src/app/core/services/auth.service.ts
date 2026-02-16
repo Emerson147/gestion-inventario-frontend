@@ -69,16 +69,16 @@ export class AuthService {
               username: response.username,
               email: response.email,
               roles: response.roles,
-            })
+            }),
           );
-        })
+        }),
       );
   }
 
   registro(registroRequest: RegistroRequest): Observable<JwtResponse> {
     return this.http.post<JwtResponse>(
       `${this.apiUrl}/registro`,
-      registroRequest
+      registroRequest,
     );
   }
 
@@ -89,16 +89,16 @@ export class AuthService {
         tap((response) => {
           localStorage.setItem('token', response.token);
           localStorage.setItem('refreshToken', response.refreshToken);
-        })
+        }),
       );
   }
 
   cambiarPassword(
-    cambiarPasswordRequest: CambiarPasswordRequest
+    cambiarPasswordRequest: CambiarPasswordRequest,
   ): Observable<MensajeResponse> {
     return this.http.post<MensajeResponse>(
       `${this.apiUrl}/cambiar-password`,
-      cambiarPasswordRequest
+      cambiarPasswordRequest,
     );
   }
 
@@ -112,7 +112,7 @@ export class AuthService {
         tap(() => {
           localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
-        })
+        }),
       );
   }
 
@@ -230,6 +230,19 @@ export class AuthService {
       this.clearSession();
       this.router.navigate(['/login']);
     }
+  }
+
+  getCurrentUser(): any {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (e) {
+        console.error('Error parsing user from localStorage', e);
+        return null;
+      }
+    }
+    return null;
   }
 
   getCurrentUserRole() {
